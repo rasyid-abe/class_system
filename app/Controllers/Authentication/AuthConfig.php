@@ -60,6 +60,7 @@ class AuthConfig extends BaseController
             if ($pass) {
                 if ($user['user_status'] == 1) {
                     if ($user['user_role_id'] == 11 || $user['user_role_id'] == 12) {
+                        
                         $session = \Config\Services::session();
                         $data = [
                             'c_id' => $user['user_id'],
@@ -73,6 +74,7 @@ class AuthConfig extends BaseController
                         } else if ($user['user_role_id'] == 12) {
                             return redirect()->to('/dashboard/student');
                         } 
+
                     } else {
                         session()->setFlashdata('msg', 'Akun <b>'.$req['username'].'</b> tidak memiliki wewenang untuk masuk ke sistem!');
                     }
