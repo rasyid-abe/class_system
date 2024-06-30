@@ -1,0 +1,3 @@
+admin hanya configurasi dan registrasi sekolah
+
+yang membuat akun siswa dan guru harus admin sekolah
