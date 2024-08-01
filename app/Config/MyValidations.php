@@ -3,7 +3,7 @@ namespace Config;
 
 class MyValidations
 {
-      public function my_unique(string $str, ?string &$param = null, array $data): bool
+      public function my_unique(string $str, ?string &$param = null, array $data = null): bool
       {
             $db = \Config\Database::connect();
 

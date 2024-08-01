@@ -4,7 +4,7 @@
 <div class="card">
     <div class="card-header border-0 pt-6">
         <div class="card-toolbar">
-            <?= button_add('/config/menu/add-method/'.$id.'/'.$parent) ?>
+            <?= button_add('/sms/master/major/create') ?>
         </div>
     </div>
     <div class="card-body py-4">
@@ -12,38 +12,13 @@
             <thead>
                 <tr class="text-start fw-bold fs-7 text-uppercase gs-0">
                     <th class="text-center">#</th>
-                    <th>Mehtod</th>
-                    <th>URL</th>
+                    <th>Jurusan</th>
+                    <th>Keterangan</th>
                     <th class="text-center">Status</th>
                     <th class="text-center">Aksi</th>
                 </tr>
             </thead>
-            <tbody>
-                <?php foreach ($submenu as $k => $v): ?>
-                    <tr>
-                        <td class="text-center">
-                            <?= $k + 1 ?>
-                        </td>
-                        <td class="text-left">
-                            <?= $v['menu_name'] ?>
-                        </td>
-                        <td class="text-left">
-                            <?= $v['menu_url'] ?>
-                        </td>
-                        <td class="d-flex">
-                            <div
-                                class="d-flex flex-grow-1 justify-content-center form-check form-switch form-check-custom form-check-solid">
-                                <input class="form-check-input"id="chx_<?= $v['menu_id'] ?>" type="checkbox" value="<?= $v['menu_status'] ?>" data-id="<?= $v['menu_id'] ?>" data-id="<?= $v['menu_id'] ?>"
-                                    <?= check_status($v['menu_status']) ?> />
-                            </div>
-                        </td>
-                        <td class="text-center">
-                            <?= button_edit('/config/menu/edit-submenu/' . $v['menu_id']) ?>
-                            <?= button_delete('/config/menu/delete/', $v['menu_id']) ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
+            
         </table>
     </div>
 </div>
@@ -87,9 +62,9 @@
         }).then(function(confirm){
             if (confirm.isConfirmed) {
                 $.ajax({
-                    url: '<?= base_url('/config/menu/status') ?>',
-                    method: 'post',
+                    url: '<?= base_url('/sms/master/major/status') ?>',
                     data: { 'id':id, 'sts':sts },
+                    method: 'post',
                     dataType: 'json',
                     success: function (e) {
                         sts < 1 ? $('#chx_'+id).val(1) : $('#chx_'+id).val(0) 
@@ -140,8 +115,6 @@
                         })
                     }
                 })
-                console.log(url);
-                console.log(id);
             }
         });
     })

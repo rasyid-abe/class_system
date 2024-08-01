@@ -1,42 +1,39 @@
 <?php
 
-namespace App\Controllers\SchoolMS\Master;
+namespace App\Controllers\Lessons;
 
 use App\Controllers\BaseController;
-use App\Models\Masters\MajorModel;
+use App\Models\Lessons\StandartLessonModel;
 
-class Major extends BaseController
+class SchoolLesson extends BaseController
 {
 
     protected $title;
-    protected $major;
+    protected $subtitle;
+    protected $standart_lesson;
 
     public function __construct()
     {
-        $this->title = "Master";
-        $this->major = new MajorModel();
+        $this->title = "Materi Pelajaran";
+        $this->subtitle = "Materi Sekolah";
+        $this->standart_lesson = new StandartLessonModel();
     }
 
     public function index()
     {
-        $data["title"] = $this->title;
-        $data["sidebar"] = 'Jurusan';
+        $data["title"] = $this->subtitle;
+        $data["sidebar"] = 'School';
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '##' => 'Jurusan',
+            '##' => $this->subtitle,
         ];
 
-        $data['row'] = $this->major
-            ->where('major_status < 9')
-            ->where('major_school_id', userdata()['school_id'])
-            ->findAll();
-
-        return view("schoolms/major/index", $data);
+        return view("lms/lesson_school/index", $data);
     }
 
     public function create()
     {
-        $data["title"] = $this->title;
+        $data["title"] = $this->subtitle;
         $data["sidebar"] = 'Jurusan';
         $data["breadcrumb"] = [
             '#' => $this->title,
