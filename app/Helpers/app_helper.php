@@ -78,7 +78,7 @@ function check_status($status)
 
 function get_list($filename)
 {
-    $json = file_get_contents(FCPATH . "blaze-assets/json/" . $filename . ".json");
+    $json = file_get_contents(FCPATH . "assets/json/" . $filename . ".json");
     $json_data = json_decode($json, true);
 
     return $json_data;
