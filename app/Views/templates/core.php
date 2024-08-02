@@ -23,6 +23,11 @@
 		<!--begin::Global Stylesheets Bundle(used by all pages)-->
 		<link href="<?= base_url() ?>assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 		<link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+		<link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
+
+		<script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
+		<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
+		<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
 		<!--end::Global Stylesheets Bundle-->
 	</head>
 	<!--end::Head-->

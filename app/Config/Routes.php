@@ -38,13 +38,14 @@ $routes->get('/dashboard/student', 'Dashboard\DashboardStudent::index', ['filter
 $routes->get('/dashboard/student/change-password', 'Dashboard\DashboardStudent::change_password', ['filter' => 'auth']); #done
 $routes->post('/dashboard/student/update-password', 'Dashboard\DashboardStudent::update_password', ['filter' => 'auth']); #done
 
-$routes->get('/teacher/lesson/standart', 'Lessons\StandartLesson::index', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/standart', 'LearningMS\Lessons\StandartLesson::index', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/standart/create', 'LearningMS\Lessons\StandartLesson::create', ['filter' => 'auth']); #done
 
-$routes->get('/teacher/lesson/school', 'Lessons\SchoolLesson::index', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/school', 'LessonsMS\SchoolLesson::index', ['filter' => 'auth']);
 
-$routes->get('/teacher/lesson/additional', 'Lessons\AdditionalLesson::index', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/additional', 'LessonsMS\AdditionalLesson::index', ['filter' => 'auth']);
 
-$routes->get('/teacher/lesson/public', 'Lessons\PublicLesson::index', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/public', 'LessonsMS\PublicLesson::index', ['filter' => 'auth']);
 
 $routes->get('/sms/user/teacher', 'SchoolMS\Users\Teacher::index', ['filter' => 'auth']); #done
 $routes->get('/sms/user/teacher/show/(:num)', 'SchoolMS\Users\Teacher::show/$1', ['filter' => 'auth']); #done
