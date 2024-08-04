@@ -30,14 +30,31 @@
                     <div class="mb-10">
                         <?php 
                             $fe = $le = $msg = '';
-                            if (session('valid') && array_key_exists("desc", session('valid'))) {
+                            if (session('valid') && array_key_exists("phase", session('valid'))) {
                                 $fe = "is-invalid";
                                 $le = 'text-danger';
-                                $msg = '<small class="text-danger">'.session('valid')['desc'].'</small>';
+                                $msg = '<small class="text-danger">'.session('valid')['phase'].'</small>';
                             }
                         ?>
-                        <label for="name" class="form-label <?= $le ?>">Deskripsi</label>
-                        <textarea class="form-control form-control-sm" name="desc" id="desc" cols="30" rows="3"><?= old('desc') ?></textarea>
+                        <label for="phase" class="form-label <?= $le ?>">Fase Belajar</label>
+                        <select class="form-select form-control-md" data-control="select2" id="phase" name="phase">
+                            <option value="0">Pilih Fase Belajar</option>
+                        </select>
+                        <?= $msg ?>
+                    </div>
+                    <div class="mb-10">
+                        <?php 
+                            $fe = $le = $msg = '';
+                            if (session('valid') && array_key_exists("grade", session('valid'))) {
+                                $fe = "is-invalid";
+                                $le = 'text-danger';
+                                $msg = '<small class="text-danger">'.session('valid')['grade'].'</small>';
+                            }
+                        ?>
+                        <label for="grade" class="form-label <?= $le ?>">Kelas</label>
+                        <select class="form-select form-control-md" data-control="select2" id="grade" name="grade">
+                            <option value="0">Pilih Kelas</option>
+                        </select>
                         <?= $msg ?>
                     </div>
                     <div class="form-group">
@@ -52,25 +69,51 @@
 <script>
 
     $(document).ready(function(){
-        console.log('lalla');
+        ref_data();
     })
 
-    jQuery.ajax({
-        url: "<?= base_url('/sms/user/student/reset-password') ?>",
-        type: "post",
-        data: {id},
-        dataType: "json",
-        success: function (data) {
-            jQuery.toast({
-                heading: data.status ? 'Sukses' : 'Gagal',
-                text: data.status ? 'Password Baru : '+ data.new_pass : 'Terjadi kesalahan.',
-                showHideTransition: 'fade',
-                position: 'top-right',
-                icon: data.status ? 'success' : 'error',
-                hideAfter: false,
-            })
-        },
-    });
+    $('#phase').on('change', function () {
+        let params = {
+            'code': $(this).val(),
+            'len': 8,
+            'fillen': 5,
+            'title': 'subdistrict',
+            'old': ''
+        }
+        if ($(this).val() == "0") {
+            $("#phase").html("<option value=\'0\'>Pilih Fase Belajar</option>");
+        } else {
+            ref_data(params);
+        }
+    })
+
+    function ref_data() {
+        jQuery.ajax({
+            url: "<?= base_url('/teacher/lesson/standart/ref-data') ?>",
+            type: "post",
+            data: {'id':0},
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                // let selected = params.old != '' ? params.old : '';
+                let option = `<option value="0">Pilih Fase Belajar</option>`;
+                $.each(data, function (k, v) {
+                    option += `<option value="${k}">${v.name}</option>`;
+                });
+                $("#phase").html(option);
+                
+                // jQuery.toast({
+                //     heading: data.status ? 'Sukses' : 'Gagal',
+                //     text: data.status ? 'Password Baru : '+ data.new_pass : 'Terjadi kesalahan.',
+                //     showHideTransition: 'fade',
+                //     position: 'top-right',
+                //     icon: data.status ? 'success' : 'error',
+                //     hideAfter: false,
+                // })
+            },
+        });
+    }
+
 
 </script>
 
