@@ -4,7 +4,7 @@
 <div class="card">
     <div class="card-header border-0 pt-6">
         <div class="card-toolbar">
-            <?= button_add('/sms/master/major/create') ?>
+            <?= button_add('/teacher/lesson/additional/create') ?>
         </div>
     </div>
     <div class="card-body py-4">

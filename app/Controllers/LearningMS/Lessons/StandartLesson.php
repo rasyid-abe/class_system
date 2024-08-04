@@ -45,14 +45,11 @@ class StandartLesson extends BaseController
         return view("learningms/lesson_standart/create", $data);
     }
 
-    public function ref_data()
-    {
-        
-    }
-
     public function store()
     {
         $req = $this->request->getVar();
+
+        dd($req);
 
         if (
             !$this->validate([

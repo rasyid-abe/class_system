@@ -84,18 +84,18 @@ function get_list($filename)
     return $json_data;
 }
 
-function school_level()
+function school_level($id)
 {
     $db = \Config\Database::connect();
-    $query = $db->query("SELECT school_level FROM profile_school WHERE school_user_id = " . session()->get('id') . "")->getRowArray();
+    $query = $db->query("SELECT school_level FROM profile_school WHERE school_id = " . $id . "")->getRowArray();
 
     return $query['school_level'];
 }
 
-function school_alias()
+function school_alias($id)
 {
     $db = \Config\Database::connect();
-    $query = $db->query("SELECT school_alias FROM profile_school WHERE school_user_id = " . session()->get('id') . "")->getRowArray();
+    $query = $db->query("SELECT school_alias FROM profile_school WHERE school_id = " . $id . "")->getRowArray();
 
     return $query['school_alias'];
 }

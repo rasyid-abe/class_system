@@ -4,52 +4,58 @@ namespace App\Controllers\LearningMS\Lessons;
 
 use App\Controllers\BaseController;
 use App\Models\Lessons\StandartLessonModel;
+use App\Models\Masters\SubjectModel;
 
 class AdditionalLesson extends BaseController
 {
 
     protected $title;
-    protected $subtitle;
+    protected $sidebar;
+    protected $subject;
     protected $standart_lesson;
 
     public function __construct()
     {
         $this->title = "Materi Pelajaran";
-        $this->subtitle = "Materi Tambahan";
+        $this->sidebar = "Additional";
         $this->standart_lesson = new StandartLessonModel();
+        $this->subject = new SubjectModel();
     }
 
     public function index()
     {
-        $data["title"] = $this->subtitle;
-        $data["sidebar"] = 'Additional';
+        $data["title"] = 'Materi Tambahan';
+        $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '##' => $this->subtitle,
+            '##' => 'Materi Tambahan',
         ];
 
-        return view("lms/lesson_additional/index", $data);
+        return view("learningms/lesson_additional/index", $data);
     }
 
     public function create()
     {
-        $data["title"] = $this->subtitle;
-        $data["sidebar"] = 'Jurusan';
+        $data["title"] = 'Tambah Materi';
+        $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '/sms/master/major' => 'Jurusan',
-            '##' => 'Tambah Jurusan',
+            '/teacher/lesson/additional' => 'Materi Tambahan',
+            '##' => 'Tambah Materi',
         ];
 
-        $data['grade'] = get_list('grade');
+        $data['subject'] = $this->subject
+            ->whereIn('subject_school_id', [-1,userdata()['school_id']])
+            ->findAll();
+        $data['grade'] = get_list('grade')[school_level(userdata()['school_id'])];
 
-        return view("schoolms/major/create", $data);
+        return view("learningms/lesson_additional/create", $data);
     }
 
     public function store()
     {
         $req = $this->request->getVar();
-
+        dd($req);
         if (
             !$this->validate([
                 "name" => [
@@ -59,32 +65,38 @@ class AdditionalLesson extends BaseController
                         'my_unique' => 'Jurusan sudah terdaftar',
                     ]
                 ],
+                "grade" => [
+                    'rules' => 'in_list[1,2,3,4,5,6,7,8,9,10,11,12]',
+                    'errors' => [
+                        'in_list' => 'Kolom kelas harus dipilih',
+                    ]
+                ],
             ])
         ) {
             return redirect()->back()->withInput()->with('valid', $this->validator->getErrors());
         }
 
-        $ins_major = [
-            'major_school_id' => userdata()['school_id'],
-            'major_name' => htmlspecialchars($req['name']),
-            'major_description' => htmlspecialchars($req['desc']),
-            'major_created_by' => userdata()['user_id'],
-            'major_status' => 1,
-        ];
+        // $ins_major = [
+        //     'major_school_id' => userdata()['school_id'],
+        //     'major_name' => htmlspecialchars($req['name']),
+        //     'major_description' => htmlspecialchars($req['desc']),
+        //     'major_created_by' => userdata()['user_id'],
+        //     'major_status' => 1,
+        // ];
 
-        $insert = $this->major->save($ins_major);
+        // $insert = $this->major->save($ins_major);
 
-        if ($insert) {
-            session()->setFlashdata('head', 'Sukses!');
-            session()->setFlashdata('icon', 'success');
-            session()->setFlashdata('msg', 'Tambah jurusan berhasil');
-            session()->setFlashdata('hide', 3000);
-        } else {
-            session()->setFlashdata('head', 'Error!');
-            session()->setFlashdata('icon', 'error');
-            session()->setFlashdata('msg', 'Tambah jurusan gagal');
-            session()->setFlashdata('hide', 3000);
-        }
+        // if ($insert) {
+        //     session()->setFlashdata('head', 'Sukses!');
+        //     session()->setFlashdata('icon', 'success');
+        //     session()->setFlashdata('msg', 'Tambah jurusan berhasil');
+        //     session()->setFlashdata('hide', 3000);
+        // } else {
+        //     session()->setFlashdata('head', 'Error!');
+        //     session()->setFlashdata('icon', 'error');
+        //     session()->setFlashdata('msg', 'Tambah jurusan gagal');
+        //     session()->setFlashdata('hide', 3000);
+        // }
 
         return redirect()->to('/sms/master/major/');
     }

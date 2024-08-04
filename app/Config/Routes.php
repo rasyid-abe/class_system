@@ -40,10 +40,13 @@ $routes->post('/dashboard/student/update-password', 'Dashboard\DashboardStudent:
 
 $routes->get('/teacher/lesson/standart', 'LearningMS\Lessons\StandartLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/standart/create', 'LearningMS\Lessons\StandartLesson::create', ['filter' => 'auth']); #done
+$routes->post('/teacher/lesson/standart/ref-data', 'LearningMS\Lessons\StandartLesson::ref_data', ['filter' => 'auth']);
 
 $routes->get('/teacher/lesson/school', 'LessonsMS\SchoolLesson::index', ['filter' => 'auth']);
 
-$routes->get('/teacher/lesson/additional', 'LessonsMS\AdditionalLesson::index', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/additional', 'LearningMS\Lessons\AdditionalLesson::index', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/additional/create', 'LearningMS\Lessons\AdditionalLesson::create', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/additional/store', 'LearningMS\Lessons\AdditionalLesson::store', ['filter' => 'auth']);
 
 $routes->get('/teacher/lesson/public', 'LessonsMS\PublicLesson::index', ['filter' => 'auth']);
 
