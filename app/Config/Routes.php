@@ -47,6 +47,10 @@ $routes->get('/teacher/lesson/school', 'LessonsMS\SchoolLesson::index', ['filter
 $routes->get('/teacher/lesson/additional', 'LearningMS\Lessons\AdditionalLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/additional/create', 'LearningMS\Lessons\AdditionalLesson::create', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/store', 'LearningMS\Lessons\AdditionalLesson::store', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/additional/edit/(:num)', 'LearningMS\Lessons\AdditionalLesson::edit/$1', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/additional/update', 'LearningMS\Lessons\AdditionalLesson::update', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/additional/status', 'LearningMS\Lessons\AdditionalLesson::status', ['filter' => 'auth']); #done
+$routes->delete('/teacher/lesson/additional/destroy', 'LearningMS\Lessons\AdditionalLesson::destroy', ['filter' => 'auth']); #done
 
 $routes->get('/teacher/lesson/public', 'LessonsMS\PublicLesson::index', ['filter' => 'auth']);
 

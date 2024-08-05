@@ -12,13 +12,40 @@
             <thead>
                 <tr class="text-start fw-bold fs-7 text-uppercase gs-0">
                     <th class="text-center">#</th>
-                    <th>Jurusan</th>
-                    <th>Keterangan</th>
+                    <th>BAB</th>
+                    <th>Sub BAB</th>
+                    <th>Konten Publik</th>
                     <th class="text-center">Status</th>
                     <th class="text-center">Aksi</th>
                 </tr>
             </thead>
-            
+            <tbody>
+                <?php foreach ($additional as $k => $v): ?>
+                    <tr>
+                        <td class="text-center"><?= $k+1 ?></td>
+                        <td><?= $v['lesson_additional_chapter'] ?></td>
+                        <td><?= $v['lesson_additional_subchapter'] ?></td>
+                        <td>
+                            <?php if ($v['lesson_additional_is_share'] == 1):?>
+                                <span class="badge badge-danger">Ya</span>
+                            <?php else: ?>
+                                <span class="badge badge-secondary">Tidak</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="d-flex">
+                            <div
+                                class="d-flex flex-grow-1 justify-content-center form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input"id="chx_<?= $v['lesson_additional_id'] ?>" type="checkbox" value="<?= $v['lesson_additional_status'] ?>" data-id="<?= $v['lesson_additional_id'] ?>" data-id="<?= $v['lesson_additional_id'] ?>"
+                                    <?= check_status($v['lesson_additional_status']) ?> />
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <?= button_edit('/teacher/lesson/additional/edit/' . $v['lesson_additional_id']) ?>
+                            <?= button_delete('/teacher/lesson/additional/destroy', $v['lesson_additional_id']) ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
         </table>
     </div>
 </div>
@@ -62,7 +89,7 @@
         }).then(function(confirm){
             if (confirm.isConfirmed) {
                 $.ajax({
-                    url: '<?= base_url('/sms/master/major/status') ?>',
+                    url: '<?= base_url('/teacher/lesson/additional/status') ?>',
                     data: { 'id':id, 'sts':sts },
                     method: 'post',
                     dataType: 'json',
