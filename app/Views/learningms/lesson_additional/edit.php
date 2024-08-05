@@ -12,8 +12,9 @@
                 </div>
             </div>
             <div class="card-body">
-                <form action="<?= base_url('/teacher/lesson/additional/store') ?>" method="POST">
+                <form action="<?= base_url('/teacher/lesson/additional/update') ?>" method="POST">
                     <?= csrf_field(); ?>
+                    <input type="hidden" name="lesson_additional_id" value="<?= $row['lesson_additional_id'] ?>">
                     <div class="mb-10 text-dark">
                         <?php
                         $fe = $le = $msg = '';
@@ -22,12 +23,13 @@
                             $le = 'text-danger';
                             $msg = '<small class="text-danger">' . session('valid')['subject'] . '</small>';
                         }
+                        $opt_subject = old('subject') ? old('subject') : $row['lesson_additional_subject_id'];
                         ?>
                         <label for="subject" class="required form-label <?= $le ?>">Mata Pelajaran</label>
                         <select class="form-select form-control-md" data-control="select2" id="subject" name="subject">
                             <option value="0">Pilih Mata Pelajaran</option>
                             <?php foreach ($subject as $k => $v): ?>
-                                <option value="<?= $v['subject_id'] ?>" <?= old('subject') == $v['subject_id'] ? 'selected' : '' ?>><?= $v['subject_name'] ?></option>
+                                <option value="<?= $v['subject_id'] ?>" <?= $opt_subject == $v['subject_id'] ? 'selected' : '' ?>><?= $v['subject_name'] ?></option>
                             <?php endforeach; ?>
                         </select>
                         <?= $msg ?>
@@ -40,12 +42,13 @@
                             $le = 'text-danger';
                             $msg = '<small class="text-danger">' . session('valid')['grade'] . '</small>';
                         }
+                        $opt_grade = old('grade') ? old('grade') : $row['lesson_additional_grade'];
                         ?>
                         <label for="grade" class="required form-label <?= $le ?>">Kelas</label>
                         <select class="form-select form-control-md" data-control="select2" id="grade" name="grade">
                             <option value="0">Pilih Kelas</option>
                             <?php foreach ($grade as $k => $v): ?>
-                                <option value="<?= $k ?>" <?= old('grade') == $k ? 'selected' : '' ?>>Kelas <?= $v ?></option>
+                                <option value="<?= $k ?>" <?= $opt_grade == $k ? 'selected' : '' ?>>Kelas <?= $v ?></option>
                             <?php endforeach; ?>
                         </select>
                         <?= $msg ?>
@@ -58,14 +61,15 @@
                             $le = 'text-danger';
                             $msg = '<small class="text-danger">' . session('valid')['doc_type'] . '</small>';
                         }
+                        $opt_type = old('doc_type') ? old('doc_type') : $row['lesson_additional_type'];
                         ?>
                         <label for="doc_type" class="required form-label <?= $le ?>">Tipe Materi</label>
                         <select class="form-select form-control-md" data-control="select2" id="doc_type"
                             name="doc_type">
                             <option value="0">Pilih Tipe Materi</option>
-                            <option value="1" <?= old('doc_type') == "1" ? 'selected' : '' ?>>Teks Manual</option>
-                            <option value="2" <?= old('doc_type') == "2" ? 'selected' : '' ?>>Tautan Dokumen</option>
-                            <option value="3" <?= old('doc_type') == "3" ? 'selected' : '' ?>>Tautan Video</option>
+                            <option value="1" <?= $opt_type == "1" ? 'selected' : '' ?>>Teks Manual</option>
+                            <option value="2" <?= $opt_type == "2" ? 'selected' : '' ?>>Tautan Dokumen</option>
+                            <option value="3" <?= $opt_type == "3" ? 'selected' : '' ?>>Tautan Video</option>
                         </select>
                         <?= $msg ?>
                     </div>
@@ -80,7 +84,7 @@
                         ?>
                         <label for="chapter" class="required form-label <?= $le ?>">Judul BAB</label>
                         <input type="text" class="form-control form-control-md <?= $fe ?>" name="chapter" id="chapter"
-                            value="<?= old('chapter') ?>" />
+                            value="<?= old('chapter') ? old('chapter') : $row['lesson_additional_chapter'] ?>" />
                         <?= $msg ?>
                     </div>
                     <div class="mb-10">
@@ -94,7 +98,7 @@
                         ?>
                         <label for="sub_chapter" class="required form-label <?= $le ?>">Judul Sub BAB</label>
                         <input type="text" class="form-control form-control-md <?= $fe ?>" name="sub_chapter"
-                            id="sub_chapter" value="<?= old('sub_chapter') ?>" />
+                            id="sub_chapter" value="<?= old('sub_chapter') ? old('sub_chapter') : $row['lesson_additional_subchapter'] ?>" />
                         <?= $msg ?>
                     </div>
                     <div class="mb-10" id="link_form">
@@ -107,8 +111,8 @@
                         }
                         ?>
                         <label for="link" class="form-label <?= $le ?>">Tautan</label>
-                        <input type="text" onchange="preview_content();" class="form-control form-control-md <?= $fe ?>" name="link" id="link"
-                            value="<?= old('link') ?>" />
+                        <input type="text" class="form-control form-control-md <?= $fe ?>" name="link" id="link"
+                            value="<?= old('link') ? old('link') : $row['lesson_additional_path'] ?>" />
                         <?= $msg ?>
                     </div>
                     <div class="mb-10" id="content_form">
@@ -121,7 +125,7 @@
                         }
                         ?>
                         <label for="content" class="form-label <?= $le ?>">Konten</label>
-                        <textarea class="tinymce-editor" name="content" id="content"><?= old('content') ?></textarea>
+                        <textarea class="tinymce-editor" name="content" id="content"><?= old('content') ? old('content') : $row['lesson_additional_content'] ?></textarea>
                         <?= $msg ?>
                     </div>
                     <div class="form-group">
@@ -135,13 +139,6 @@
 
 <script>
 
-    function preview_content(){
-        let path  = $('#link').val();
-        console.log(path);
-        
-        // $('#preview_content').html(`<iframe src="${path}" width="640" height="480"></iframe>`)
-        
-    }
     // function view_form() {
     //     let type = $('#doc_type').val();
     //     if (type != 1) {

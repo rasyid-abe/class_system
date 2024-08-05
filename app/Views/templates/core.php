@@ -27,13 +27,14 @@
 		type="text/css" />
 	<!--end::Page Vendor Stylesheets-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
+	<link href="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
-	<link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
+    <link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
 
-	<script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
+    <script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
 	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
-	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
+	<script src="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.js"></script>
 	<!--end::Global Stylesheets Bundle-->
 
 	<style>
@@ -1145,6 +1146,7 @@
 	<script src="<?= base_url() ?>assets/js/custom/widgets.js"></script>
 	<!--end::Page Custom Javascript-->
 	<!--end::Javascript-->
+	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
 	<script>
 		/**
 		* Initiate TinyMCE Editor
@@ -1246,8 +1248,50 @@
 			content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
 		});
 
+		function show_loading() {
+        const loadingEl = document.createElement("div");
+        document.body.prepend(loadingEl);
+        loadingEl.classList.add("page-loader");
+        loadingEl.classList.add("flex-column");
+        loadingEl.classList.add("bg-dark");
+        loadingEl.classList.add("bg-opacity-25");
+        loadingEl.innerHTML = `
+            <span class="spinner-border text-primary" role="status"></span>
+            <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
+        `;
+
+        // Show page loading
+        KTApp.showPageLoading();
+    }
+
+    function hide_loading() {
+        KTApp.hidePageLoading();
+        $('.page-loader').remove();
+    }
+
+    function toast_act(heading, text, icon, hide) {
+        $.toast({
+            heading: heading,
+            text: text,
+            showHideTransition: 'fade',
+            position: 'top-right',
+            icon: icon,
+            hideAfter: hide
+        })
+    }
+
 	</script>
+	<?php if (session()->getFlashdata('msg')): ?>
+		<?=
+			'<script type="text/javascript">',
+			'toast_act( 
+			"<h6>' . ucfirst(session()->getFlashdata('head')) . '</h6>",',
+			'"' . session()->getFlashdata('msg') . '",',
+			'"' . session()->getFlashdata('icon') . '",',
+			'"' . session()->getFlashdata('hide') . '",',
+			')</script>';
+		?>
+	<?php endif; ?>
 </body>
 <!--end::Body-->
-
 </html>
