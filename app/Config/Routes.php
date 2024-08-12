@@ -45,8 +45,12 @@ $routes->post('/teacher/lesson/standart/ref-data', 'LearningMS\Lessons\StandartL
 $routes->get('/teacher/lesson/school', 'LessonsMS\SchoolLesson::index', ['filter' => 'auth']);
 
 $routes->get('/teacher/lesson/additional', 'LearningMS\Lessons\AdditionalLesson::index', ['filter' => 'auth']);
-$routes->get('/teacher/lesson/additional/create', 'LearningMS\Lessons\AdditionalLesson::create', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/additional/view-content/(:num)/(:num)', 'LearningMS\Lessons\AdditionalLesson::view_content/$1/$2', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/additional/create/(:num)/(:num)', 'LearningMS\Lessons\AdditionalLesson::create/$1/$2', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/store', 'LearningMS\Lessons\AdditionalLesson::store', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/additional/grab-chaps', 'LearningMS\Lessons\AdditionalLesson::grab_chaps', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/additional/grab-content', 'LearningMS\Lessons\AdditionalLesson::grab_content', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/additional/update-content', 'LearningMS\Lessons\AdditionalLesson::update_content', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/additional/edit/(:num)', 'LearningMS\Lessons\AdditionalLesson::edit/$1', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/update', 'LearningMS\Lessons\AdditionalLesson::update', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/status', 'LearningMS\Lessons\AdditionalLesson::status', ['filter' => 'auth']); #done

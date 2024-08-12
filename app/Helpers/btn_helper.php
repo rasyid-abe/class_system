@@ -13,6 +13,24 @@
 //     }
 // }
 
+function view_content($url)
+{
+
+    $role = session()->get('role');
+    if ($role < 4) {
+        return '<a href="'.base_url() . $url .'" class="btn btn-success me-3 btn-sm"><i class="fa fa-list"></i> Lihat Materi</a>';
+    }
+}
+
+// function detail_content($url)
+// {
+
+//     $role = session()->get('role');
+//     if ($role < 4) {
+//         return '<a href="'.base_url($url).'" class="btn btn-light-primary me-3 btn-sm"><i class="fa fa-plus"></i> Lihat Materi</a>';
+//     }
+// }
+
 function button_add($url)
 {
 

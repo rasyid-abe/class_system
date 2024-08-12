@@ -14,75 +14,60 @@
             <div class="card-body">
                 <form action="<?= base_url('/teacher/lesson/additional/store') ?>" method="POST">
                     <?= csrf_field(); ?>
-                    <div class="mb-10 text-dark">
-                        <?php
-                        $fe = $le = $msg = '';
-                        if (session('valid') && array_key_exists("subject", session('valid'))) {
-                            $fe = "is-invalid";
-                            $le = 'text-danger';
-                            $msg = '<small class="text-danger">' . session('valid')['subject'] . '</small>';
-                        }
-                        ?>
-                        <label for="subject" class="required form-label <?= $le ?>">Mata Pelajaran</label>
-                        <select class="form-select form-control-md" data-control="select2" id="subject" name="subject">
-                            <option value="0">Pilih Mata Pelajaran</option>
-                            <?php foreach ($subject as $k => $v): ?>
-                                <option value="<?= $v['subject_id'] ?>" <?= old('subject') == $v['subject_id'] ? 'selected' : '' ?>><?= $v['subject_name'] ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <?= $msg ?>
-                    </div>
-                    <div class="mb-10">
-                        <?php
-                        $fe = $le = $msg = '';
-                        if (session('valid') && array_key_exists("grade", session('valid'))) {
-                            $fe = "is-invalid";
-                            $le = 'text-danger';
-                            $msg = '<small class="text-danger">' . session('valid')['grade'] . '</small>';
-                        }
-                        ?>
-                        <label for="grade" class="required form-label <?= $le ?>">Kelas</label>
-                        <select class="form-select form-control-md" data-control="select2" id="grade" name="grade">
-                            <option value="0">Pilih Kelas</option>
-                            <?php foreach ($grade as $k => $v): ?>
-                                <option value="<?= $k ?>" <?= old('grade') == $k ? 'selected' : '' ?>>Kelas <?= $v ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <?= $msg ?>
-                    </div>
-                    <div class="mb-10">
-                        <?php
-                        $fe = $le = $msg = '';
-                        if (session('valid') && array_key_exists("doc_type", session('valid'))) {
-                            $fe = "is-invalid";
-                            $le = 'text-danger';
-                            $msg = '<small class="text-danger">' . session('valid')['doc_type'] . '</small>';
-                        }
-                        ?>
-                        <label for="doc_type" class="required form-label <?= $le ?>">Tipe Materi</label>
-                        <select class="form-select form-control-md" data-control="select2" id="doc_type"
-                            name="doc_type">
-                            <option value="0">Pilih Tipe Materi</option>
-                            <option value="1" <?= old('doc_type') == "1" ? 'selected' : '' ?>>Teks Manual</option>
-                            <option value="2" <?= old('doc_type') == "2" ? 'selected' : '' ?>>Tautan Dokumen</option>
-                            <option value="3" <?= old('doc_type') == "3" ? 'selected' : '' ?>>Tautan Video</option>
-                        </select>
-                        <?= $msg ?>
-                    </div>
-                    <div class="mb-10">
-                        <?php
-                        $fe = $le = $msg = '';
-                        if (session('valid') && array_key_exists("chapter", session('valid'))) {
-                            $fe = "is-invalid";
-                            $le = 'text-danger';
-                            $msg = '<small class="text-danger">' . session('valid')['chapter'] . '</small>';
-                        }
-                        ?>
-                        <label for="chapter" class="required form-label <?= $le ?>">Judul BAB</label>
-                        <input type="text" class="form-control form-control-md <?= $fe ?>" name="chapter" id="chapter"
-                            value="<?= old('chapter') ?>" />
-                        <?= $msg ?>
-                    </div>
+                    <input type="hidden" name="subject" value="<?= $subject ?>">
+                    <input type="hidden" name="grade" value="<?= $grade ?>">
+                    <?php if (count($babs) > 0): ?>
+                        <div class="mb-10">
+                            <?php
+                            $fe = $le = $msg = '';
+                            if (session('valid') && array_key_exists("chapter", session('valid'))) {
+                                $fe = "is-invalid";
+                                $le = 'text-danger';
+                                $msg = '<small class="text-danger">' . session('valid')['chapter'] . '</small>';
+                                // dd(session());
+                            }
+                            ?>
+                            <label for="chapter" class="required form-label <?= $le ?>">BAB</label>
+                            <select class="form-select form-control-md" data-control="select2" id="chapter" name="chapter" onchange="form_nchap();">
+                                <option value="0">Pilih BAB</option>
+                                <option value="-1" <?= old('chapter') == '-1' ? 'selected' : '' ?>>Buat BAB Baru</option>
+                                <?php foreach($babs as $k => $v): ?>
+                                    <option value="<?= $v['lesson_additional_chapter'] ?>" <?= old('chapter') == $v['lesson_additional_chapter'] ? 'selected' : '' ?>><?= $v['lesson_additional_chapter'] ?></option>
+                                <?php endforeach ?>
+                            </select>
+                            <?= $msg ?>
+                        </div>
+                    <?php else: ?>
+                        <input type="hidden" name="chapter" value="-2">
+                        <div class="mb-10">
+                            <?php
+                            $fe = $le = $msg = '';
+                            if (session('valid') && array_key_exists("chap_1st", session('valid'))) {
+                                $fe = "is-invalid";
+                                $le = 'text-danger';
+                                $msg = '<small class="text-danger">' . session('valid')['chap_1st'] . '</small>';
+                            }
+                            ?>
+                            <label for="chap_1st" class="required form-label <?= $le ?>">BAB</label>
+                            <input type="text" onchange="preview_content();" class="form-control form-control-md <?= $fe ?>" name="chap_1st" id="chap_1st"
+                                value="<?= old('chap_1st') ?>" />
+                            <?= $msg ?>
+                        </div> 
+                    <?php endif ?>
+                    <div class="mb-10 <?= session('valid') && array_key_exists("chap_2nd", session('valid')) ? '' : 'hide' ?>" id="chap_sec">
+                            <?php
+                            $fe = $le = $msg = '';
+                            if (session('valid') && array_key_exists("chap_2nd", session('valid'))) {
+                                $fe = "is-invalid";
+                                $le = 'text-danger';
+                                $msg = '<small class="text-danger">' . session('valid')['chap_2nd'] . '</small>';
+                            }
+                            ?>
+                            <label for="chap_2nd" class="required form-label <?= $le ?>">BAB Baru</label>
+                            <input type="text" onchange="preview_content();" class="form-control form-control-md <?= $fe ?>" name="chap_2nd" id="chap_2nd"
+                                value="<?= old('chap_2nd') ?>" />
+                            <?= $msg ?>
+                        </div> 
                     <div class="mb-10">
                         <?php
                         $fe = $le = $msg = '';
@@ -92,9 +77,22 @@
                             $msg = '<small class="text-danger">' . session('valid')['sub_chapter'] . '</small>';
                         }
                         ?>
-                        <label for="sub_chapter" class="required form-label <?= $le ?>">Judul Sub BAB</label>
+                        <label for="sub_chapter" class="required form-label <?= $le ?>">Sub BAB</label>
                         <input type="text" class="form-control form-control-md <?= $fe ?>" name="sub_chapter"
                             id="sub_chapter" value="<?= old('sub_chapter') ?>" />
+                        <?= $msg ?>
+                    </div>
+                    <div class="mb-10" id="content_form">
+                        <?php
+                        $fe = $le = $msg = '';
+                        if (session('valid') && array_key_exists("content", session('valid'))) {
+                            $fe = "is-invalid";
+                            $le = 'text-danger';
+                            $msg = '<small class="text-danger">' . session('valid')['content'] . '</small>';
+                        }
+                        ?>
+                        <label for="content" class="form-label <?= $le ?>">Konten</label>
+                        <textarea class="richtext" name="content" id="content"><?= old('content') ?></textarea>
                         <?= $msg ?>
                     </div>
                     <div class="mb-10" id="link_form">
@@ -111,19 +109,6 @@
                             value="<?= old('link') ?>" />
                         <?= $msg ?>
                     </div>
-                    <div class="mb-10" id="content_form">
-                        <?php
-                        $fe = $le = $msg = '';
-                        if (session('valid') && array_key_exists("content", session('valid'))) {
-                            $fe = "is-invalid";
-                            $le = 'text-danger';
-                            $msg = '<small class="text-danger">' . session('valid')['content'] . '</small>';
-                        }
-                        ?>
-                        <label for="content" class="form-label <?= $le ?>">Konten</label>
-                        <textarea class="tinymce-editor" name="content" id="content"><?= old('content') ?></textarea>
-                        <?= $msg ?>
-                    </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-md btn-round btn-primary">Simpan</button>
                     </div>
@@ -135,24 +120,26 @@
 
 <script>
 
+    function form_nchap(){
+        let val = $('#chapter').val();
+        if (val == -1) {
+            $('#chap_sec').removeClass('hide')
+        } else {
+            $('#chap_sec').addClass('hide')
+        }
+    }
     function preview_content(){
         let path  = $('#link').val();
-        console.log(path);
-        
-        // $('#preview_content').html(`<iframe src="${path}" width="640" height="480"></iframe>`)
-        
     }
-    // function view_form() {
-    //     let type = $('#doc_type').val();
-    //     if (type != 1) {
-    //         $('#link_form').removeClass('hide')
-    //         $('#content_form').addClass('hide')
-    //     } else {
-    //         $('#link_form').addClass('hide')
-    //         $('#content_form').removeClass('hide')
-    //     }
 
-    // }
+    ClassicEditor
+    .create(document.querySelector('.richtext'))
+    .then(editor => {
+        console.log(editor);
+    })
+    .catch(error => {
+        console.error(error);
+    });
 </script>
 
 <?php $this->endSection(); ?>
