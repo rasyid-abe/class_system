@@ -22,19 +22,16 @@
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 	<!--end::Fonts-->
-	<!--begin::Page Vendor Stylesheets(used by this page)-->
-	<link href="<?= base_url() ?>assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet"
-		type="text/css" />
-	<!--end::Page Vendor Stylesheets-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
-	<link href="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+	<link href="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
 
     <script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
 	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
 	<script src="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.js"></script>
+	<script src="<?= base_url() ?>assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
 	<!--end::Global Stylesheets Bundle-->
 
 	<style>
@@ -1138,9 +1135,10 @@
 	<script src="<?= base_url() ?>assets/tinymce/tinymce.min.js"></script>
 	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
 	<script src="<?= base_url() ?>assets/js/scripts.bundle.js"></script>
+	
 	<!--end::Global Javascript Bundle-->
 	<!--begin::Page Vendors Javascript(used by this page)-->
-	<script src="<?= base_url() ?>assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
+	
 	<!--end::Page Vendors Javascript-->
 	<!--begin::Page Custom Javascript(used by this page)-->
 	<script src="<?= base_url() ?>assets/js/custom/widgets.js"></script>
@@ -1148,137 +1146,38 @@
 	<!--end::Javascript-->
 	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
 	<script>
-		/**
-		* Initiate TinyMCE Editor
-		*/
-		const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-		const isSmallScreen = window.matchMedia('(max-width: 1023.5px)').matches;
-
-		tinymce.init({
-			selector: 'textarea.tinymce-editor',
-			plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
-			editimage_cors_hosts: ['picsum.photos'],
-			menubar: 'file edit view insert format tools table help',
-			toolbar: 'undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
-			toolbar_sticky: true,
-			toolbar_sticky_offset: isSmallScreen ? 102 : 108,
-			autosave_ask_before_unload: true,
-			autosave_interval: '30s',
-			autosave_prefix: '{path}{query}-{id}-',
-			autosave_restore_when_empty: false,
-			autosave_retention: '2m',
-			image_advtab: true,
-			link_list: [{
-				title: 'My page 1',
-				value: 'https://www.tiny.cloud'
-			},
-			{
-				title: 'My page 2',
-				value: 'http://www.moxiecode.com'
-			}
-			],
-			image_list: [{
-				title: 'My page 1',
-				value: 'https://www.tiny.cloud'
-			},
-			{
-				title: 'My page 2',
-				value: 'http://www.moxiecode.com'
-			}
-			],
-			image_class_list: [{
-				title: 'None',
-				value: ''
-			},
-			{
-				title: 'Some class',
-				value: 'class-name'
-			}
-			],
-			importcss_append: true,
-			file_picker_callback: (callback, value, meta) => {
-				/* Provide file and text for the link dialog */
-				if (meta.filetype === 'file') {
-					callback('https://www.google.com/logos/google.jpg', {
-						text: 'My text'
-					});
-				}
-
-				/* Provide image and alt text for the image dialog */
-				if (meta.filetype === 'image') {
-					callback('https://www.google.com/logos/google.jpg', {
-						alt: 'My alt text'
-					});
-				}
-
-				/* Provide alternative source and posted for the media dialog */
-				if (meta.filetype === 'media') {
-					callback('movie.mp4', {
-						source2: 'alt.ogg',
-						poster: 'https://www.google.com/logos/google.jpg'
-					});
-				}
-			},
-			templates: [{
-				title: 'New Table',
-				description: 'creates a new table',
-				content: '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>'
-			},
-			{
-				title: 'Starting my story',
-				description: 'A cure for writers block',
-				content: 'Once upon a time...'
-			},
-			{
-				title: 'New list with dates',
-				description: 'New List with dates',
-				content: '<div class="mceTmpl"><span class="cdate">cdate</span><br><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>'
-			}
-			],
-			template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
-			template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
-			height: 600,
-			image_caption: true,
-			quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-			noneditable_class: 'mceNonEditable',
-			toolbar_mode: 'sliding',
-			contextmenu: 'link image table',
-			skin: useDarkMode ? 'oxide' : 'oxide',
-			content_css: useDarkMode ? 'tinymce-5' : 'tinymce-5',
-			content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
-		});
 
 		function show_loading() {
-        const loadingEl = document.createElement("div");
-        document.body.prepend(loadingEl);
-        loadingEl.classList.add("page-loader");
-        loadingEl.classList.add("flex-column");
-        loadingEl.classList.add("bg-dark");
-        loadingEl.classList.add("bg-opacity-25");
-        loadingEl.innerHTML = `
-            <span class="spinner-border text-primary" role="status"></span>
-            <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
-        `;
+			const loadingEl = document.createElement("div");
+			document.body.prepend(loadingEl);
+			loadingEl.classList.add("page-loader");
+			loadingEl.classList.add("flex-column");
+			loadingEl.classList.add("bg-dark");
+			loadingEl.classList.add("bg-opacity-25");
+			loadingEl.innerHTML = `
+				<span class="spinner-border text-primary" role="status"></span>
+				<span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
+			`;
 
-        // Show page loading
-        KTApp.showPageLoading();
-    }
+			// Show page loading
+			KTApp.showPageLoading();
+		}
 
-    function hide_loading() {
-        KTApp.hidePageLoading();
-        $('.page-loader').remove();
-    }
+		function hide_loading() {
+			KTApp.hidePageLoading();
+			$('.page-loader').remove();
+		}
 
-    function toast_act(heading, text, icon, hide) {
-        $.toast({
-            heading: heading,
-            text: text,
-            showHideTransition: 'fade',
-            position: 'top-right',
-            icon: icon,
-            hideAfter: hide
-        })
-    }
+		function toast_act(heading, text, icon, hide) {
+			$.toast({
+				heading: heading,
+				text: text,
+				showHideTransition: 'fade',
+				position: 'top-right',
+				icon: icon,
+				hideAfter: hide
+			})
+		}
 
 	</script>
 	<?php if (session()->getFlashdata('msg')): ?>
