@@ -225,6 +225,17 @@ class AdditionalLesson extends BaseController
         
         echo json_encode($data);
     }
+
+    public function grab_topic_content()
+    {
+        $id = $this->request->getVar('id');
+        $data = $this->lesson_additional
+            ->select('lesson_additional_content')
+            ->where('lesson_additional_id', $id)
+            ->first();
+
+        echo json_encode($data);
+    }
     
     public function update_content()
     {
@@ -234,15 +245,49 @@ class AdditionalLesson extends BaseController
         if ($req['type'] == 1) {
             $update = $this->lesson_additional
                 ->set('lesson_additional_chapter', $req['val'][0])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
         } elseif ($req['type'] == 2) {
             $update = $this->lesson_additional
                 ->set('lesson_additional_chapter', $req['val'][0])
                 ->set('lesson_additional_subchapter', $req['val'][1])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
+                ->where('lesson_additional_id', $req['id'])
+                ->update();
+        } elseif ($req['type'] == 3) {
+            $update = $this->lesson_additional
+                ->set('lesson_additional_chapter', $req['val'][0])
+                ->set('lesson_additional_subchapter', $req['val'][1])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
+                ->where('lesson_additional_id', $req['id'])
+                ->update();
+        } elseif ($req['type'] == 4) {
+            $arr_ins = [
+                'lesson_additional_school_id' => userdata()['school_id'],
+                'lesson_additional_teacher_id' => userdata()['id_profile'],
+                'lesson_additional_subject_id' => $req['val'][1],
+                'lesson_additional_grade' => $req['val'][2],
+                'lesson_additional_chapter' => htmlspecialchars($req['val'][0]),
+                'lesson_additional_created_by' => userdata()['user_id'],
+                'lesson_additional_status' => 1,
+            ];
+
+            $update = $this->lesson_additional->insert($arr_ins);
+        } elseif ($req['type'] == 5) {
+            $update = $this->lesson_additional
+                ->set('lesson_additional_content', $req['val'][0])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
+                ->where('lesson_additional_id', $req['id'])
+                ->update();
+        } elseif ($req['type'] == 6) {
+            $update = $this->lesson_additional
+                ->set('lesson_additional_video_path', $req['val'][0])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
         }
+
 
         echo json_encode($update);
     }

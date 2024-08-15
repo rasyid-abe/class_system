@@ -50,6 +50,7 @@ $routes->get('/teacher/lesson/additional/create/(:num)/(:num)', 'LearningMS\Less
 $routes->post('/teacher/lesson/additional/store', 'LearningMS\Lessons\AdditionalLesson::store', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/grab-chaps', 'LearningMS\Lessons\AdditionalLesson::grab_chaps', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/grab-content', 'LearningMS\Lessons\AdditionalLesson::grab_content', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/additional/grab-topic-content', 'LearningMS\Lessons\AdditionalLesson::grab_topic_content', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/update-content', 'LearningMS\Lessons\AdditionalLesson::update_content', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/additional/edit/(:num)', 'LearningMS\Lessons\AdditionalLesson::edit/$1', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/update', 'LearningMS\Lessons\AdditionalLesson::update', ['filter' => 'auth']);
