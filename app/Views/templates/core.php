@@ -26,12 +26,11 @@
 	<link href="<?= base_url() ?>assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
-    <link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
+	<link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
 
-    <script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
+	<script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
 	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
 	<script src="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.js"></script>
-	<script src="<?= base_url() ?>assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
 	<!--end::Global Stylesheets Bundle-->
 
 	<style>
@@ -1129,23 +1128,36 @@
 	</div>
 	<!--end::Scrolltop-->
 	<!--end::Main-->
-	<script>var hostUrl = "<?= base_url() ?>assets/";</script>
+	<script>
+		var hostUrl = "<?= base_url() ?>assets/";
+	</script>
 	<!--begin::Javascript-->
 	<!--begin::Global Javascript Bundle(used by all pages)-->
-	<script src="<?= base_url() ?>assets/tinymce/tinymce.min.js"></script>
+
 	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
 	<script src="<?= base_url() ?>assets/js/scripts.bundle.js"></script>
-	
+
 	<!--end::Global Javascript Bundle-->
 	<!--begin::Page Vendors Javascript(used by this page)-->
-	
+
 	<!--end::Page Vendors Javascript-->
 	<!--begin::Page Custom Javascript(used by this page)-->
 	<script src="<?= base_url() ?>assets/js/custom/widgets.js"></script>
 	<!--end::Page Custom Javascript-->
 	<!--end::Javascript-->
 	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
+	<script src="<?= base_url() ?>assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+	<!-- <script src="<?= base_url() ?>assets/plugins/custom/ckeditor/ckeditor-inline.bundle.js"></script> -->
+	<!-- <script src="<?= base_url() ?>assets/plugins/custom/ckeditor/ckeditor-balloon.bundle.js"></script> -->
+	<script src="<?= base_url() ?>assets/tinymce/tinymce.min.js"></script>
+	<script src="<?= base_url() ?>assets/js/tinymce_conf.js"></script>
 	<script>
+
+		function youtube_parser(url) {
+			var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+			var match = url.match(regExp);
+			return (match && match[7].length == 11) ? match[7] : false;
+		}
 
 		function show_loading() {
 			const loadingEl = document.createElement("div");
@@ -1178,19 +1190,19 @@
 				hideAfter: hide
 			})
 		}
-
 	</script>
 	<?php if (session()->getFlashdata('msg')): ?>
 		<?=
-			'<script type="text/javascript">',
-			'toast_act( 
+		'<script type="text/javascript">',
+		'toast_act( 
 			"<h6>' . ucfirst(session()->getFlashdata('head')) . '</h6>",',
-			'"' . session()->getFlashdata('msg') . '",',
-			'"' . session()->getFlashdata('icon') . '",',
-			'"' . session()->getFlashdata('hide') . '",',
-			')</script>';
+		'"' . session()->getFlashdata('msg') . '",',
+		'"' . session()->getFlashdata('icon') . '",',
+		'"' . session()->getFlashdata('hide') . '",',
+		')</script>';
 		?>
 	<?php endif; ?>
 </body>
 <!--end::Body-->
+
 </html>
