@@ -37,6 +37,65 @@
 		.hide {
 			display: none;
 		}
+
+		#files-area {
+			width: 100%;
+			margin: 0 auto;
+		}
+
+		.file-block {
+			border-radius: 10px;
+			background-color: darkgray;
+			margin: 5px;
+			color: initial;
+			display: inline-flex;
+
+			&>span.name {
+				padding-right: 10px;
+				width: max-content;
+				display: inline-flex;
+			}
+		}
+
+		.file-delete {
+			display: flex;
+			width: 24px;
+			color: initial;
+			background-color: #6eb4ff00;
+			font-size: large;
+			justify-content: center;
+			margin-right: 3px;
+			margin-top: 0px;
+			cursor: pointer;
+
+			&:hover {
+				background-color: rgba(144, 163, 203, 0.2);
+				border-radius: 10px;
+			}
+
+			&>span {
+				transform: rotate(45deg);
+			}
+		}
+
+		.file-block>.name {
+			margin-top: 3px;
+		}
+
+		.video-container {
+			position: relative;
+			padding-bottom: 56.25%;
+			/* 16:9 */
+			height: 0;
+		}
+
+		.video-container iframe {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
 	</style>
 </head>
 <!--end::Head-->
@@ -1152,6 +1211,45 @@
 	<script src="<?= base_url() ?>assets/tinymce/tinymce.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/tinymce_conf.js"></script>
 	<script>
+		const dt = new DataTransfer(); // Permet de manipuler les fichiers de l'input file
+
+		$(document.body).on('change', '#attachment', function(e) {
+			for (var i = 0; i < this.files.length; i++) {
+				let fileBloc = $('<span/>', {
+						class: 'file-block'
+					}),
+					fileName = $('<span/>', {
+						class: 'name',
+						text: this.files.item(i).name
+					});
+				fileBloc.append('<span class="file-delete"><span>+</span></span>')
+					.append(fileName);
+				$("#filesList > #files-names").append(fileBloc);
+			};
+			// Ajout des fichiers dans l'objet DataTransfer
+			for (let file of this.files) {
+				dt.items.add(file);
+			}
+			// Mise à jour des fichiers de l'input file après ajout
+			this.files = dt.files;
+
+			// EventListener pour le bouton de suppression créé
+			$('span.file-delete').click(function() {
+				let name = $(this).next('span.name').text();
+				// Supprimer l'affichage du nom de fichier
+				$(this).parent().remove();
+				for (let i = 0; i < dt.items.length; i++) {
+					// Correspondance du fichier et du nom
+					if (name === dt.items[i].getAsFile().name) {
+						// Suppression du fichier dans l'objet DataTransfer
+						dt.items.remove(i);
+						continue;
+					}
+				}
+				// Mise à jour des fichiers de l'input file après suppression
+				document.getElementById('attachment').files = dt.files;
+			});
+		});
 
 		function youtube_parser(url) {
 			var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -1189,6 +1287,19 @@
 				icon: icon,
 				hideAfter: hide
 			})
+		}
+
+		// function getBase64(file, callback) {
+		// 	var reader = new FileReader();
+		// 	reader.readAsDataURL(file[0].files[0])
+		// 	reader.onload = () => {
+		// 		callback(reader.result);
+		// 	};
+		// }
+
+		function resizeIframe(obj) {
+			obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
+			console.log(obj.style.height);
 		}
 	</script>
 	<?php if (session()->getFlashdata('msg')): ?>

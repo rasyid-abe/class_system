@@ -43,11 +43,11 @@ class AdditionalLesson extends BaseController
             ->groupBy('student_group_grade')
             ->findAll();
 
-            
+
         return view("learningms/lesson_additional/index", $data);
     }
-        
-    public function view_content($subject, $grade) 
+
+    public function view_content($subject, $grade)
     {
         $data["title"] = 'Materi Belajar';
         $data["sidebar"] = $this->sidebar;
@@ -69,14 +69,14 @@ class AdditionalLesson extends BaseController
             ->groupBy('lesson_additional_chapter')
             ->findAll();
 
-        foreach($chapter as $k => $v) {
+        foreach ($chapter as $k => $v) {
             $sub_chapter = $this->lesson_additional
                 ->where('lesson_additional_chapter', $v['lesson_additional_chapter'])
                 ->findAll();
-            
+
             $chapter[$k]['sub_chapter'] = $sub_chapter;
         }
-        
+
         $data['chapters'] = $chapter;
 
         return view("learningms/lesson_additional/content", $data);
@@ -99,7 +99,7 @@ class AdditionalLesson extends BaseController
             ->where('lesson_additional_status < 9')
             ->groupBy('lesson_additional_chapter')
             ->findAll();
-        
+
         $data['subject'] = $subject;
         $data['grade'] = $grade;
 
@@ -109,27 +109,27 @@ class AdditionalLesson extends BaseController
     public function store()
     {
         $req = $this->request->getVar();
-        
+
         $babs = $this->lesson_additional
             ->select('lesson_additional_id, lesson_additional_chapter')
             ->where('lesson_additional_subject_id', $req['subject'])
             ->where('lesson_additional_grade', $req['grade'])
             ->where('lesson_additional_status < 9')
             ->findAll();
-        
-        $list_bab = implode(",", array_column($babs,"lesson_additional_chapter"));
 
-        $chap_down = 'in_list['.$list_bab.']';
+        $list_bab = implode(",", array_column($babs, "lesson_additional_chapter"));
+
+        $chap_down = 'in_list[' . $list_bab . ']';
         $chap1st = $chap2nd = 'permit_empty';
         $val_chap = $req['chapter'];
-        
+
         if ($req['chapter'] == -1) {
             $chap_down = 'permit_empty';
             $chap1st = 'permit_empty';
             $chap2nd = 'required';
             $val_chap = $req['chap_2nd'];
         } elseif ($req['chapter'] == 0) {
-            $chap_down = 'in_list['.$list_bab.']';
+            $chap_down = 'in_list[' . $list_bab . ']';
             $chap1st = 'permit_empty';
             $chap2nd = 'permit_empty';
         } elseif ($req['chapter'] == -2) {
@@ -182,7 +182,7 @@ class AdditionalLesson extends BaseController
             'lesson_additional_created_by' => userdata()['user_id'],
             'lesson_additional_status' => 1,
         ];
-        
+
         $insert = $this->lesson_additional->save($ins_additional);
 
         if ($insert) {
@@ -222,7 +222,7 @@ class AdditionalLesson extends BaseController
         $data = $this->lesson_additional
             ->where('lesson_additional_id', $id)
             ->first();
-        
+
         echo json_encode($data);
     }
 
@@ -236,7 +236,7 @@ class AdditionalLesson extends BaseController
 
         echo json_encode($data);
     }
-    
+
     public function update_content()
     {
         $req = $this->request->getVar();
@@ -246,7 +246,7 @@ class AdditionalLesson extends BaseController
             $update = $this->lesson_additional
                 ->set('lesson_additional_chapter', $req['val'][0])
                 ->set('lesson_additional_updated_by', userdata()['user_id'])
-                ->where('lesson_additional_id', $req['id'])
+                ->where('lesson_additional_chapter', $req['id'])
                 ->update();
         } elseif ($req['type'] == 2) {
             $update = $this->lesson_additional
@@ -292,6 +292,61 @@ class AdditionalLesson extends BaseController
         echo json_encode($update);
     }
 
+    public function upload_content()
+    {
+        $req = $this->request->getVar();
+
+        if ($req['type'] == 7) {
+            $old = $this->lesson_additional
+                ->select('lesson_additional_attachment_path')
+                ->where('lesson_additional_id', $req['lesson_id'])
+                ->first();
+
+            $arr_file = [];
+            if ($old['lesson_additional_attachment_path'] != '') {
+                $arr_file = json_decode($old['lesson_additional_attachment_path']);
+            }
+
+            $attach = $this->request->getFileMultiple('file_attach');
+
+            foreach ($attach as $file) {
+                if (!$file->isValid()) {
+                    return $file->getErrorString();
+                } else {
+                    $file->move('attachment');
+                    array_push($arr_file, $req['subject'] . '/' . $req['grade'] . '/' . $file->getName());
+                }
+            }
+
+            $update = $this->lesson_additional
+                ->set('lesson_additional_attachment_path', json_encode($arr_file))
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
+                ->where('lesson_additional_id', $req['lesson_id'])
+                ->update();
+
+            session()->setFlashdata('att_id', $req['lesson_id']);
+        } else if ($req['type'] == 8) {
+            $attach = $this->request->getFile('file_attach');
+
+            if (!$attach->isValid()) {
+                return $attach->getErrorString();
+            } else {
+                $attach->move('lesson_file');
+                $filename = $req['subject'] . '/' . $req['grade'] . '/' . $attach->getName();
+
+                $update = $this->lesson_additional
+                    ->set('lesson_additional_content_path', $filename)
+                    ->set('lesson_additional_updated_by', userdata()['user_id'])
+                    ->where('lesson_additional_id', $req['lesson_id'])
+                    ->update();
+            }
+
+            session()->setFlashdata('file_id', $req['lesson_id']);
+        }
+
+        return redirect()->to('/teacher/lesson/additional/view-content/' . $req['subject'] . '/' . $req['grade']);
+    }
+
     public function edit($id)
     {
         $data["title"] = 'Tambah Materi';
@@ -301,7 +356,7 @@ class AdditionalLesson extends BaseController
             '/teacher/lesson/additional' => 'Materi Tambahan',
             '##' => 'Ubah Materi',
         ];
-       
+
         $old = $this->lesson_additional->where('lesson_additional_id', $id)->first();
         $data['row'] = $old;
         $data['babs'] = $this->lesson_additional
@@ -319,9 +374,9 @@ class AdditionalLesson extends BaseController
         $req = $this->request->getVar();
         $ids = $this->subject
             ->select('subject_id')
-            ->whereIn('subject_school_id', [-1,userdata()['school_id']])
+            ->whereIn('subject_school_id', [-1, userdata()['school_id']])
             ->findAll();
-        $ids_subject = implode(",", array_column($ids,"subject_id"));
+        $ids_subject = implode(",", array_column($ids, "subject_id"));
 
         if (
             !$this->validate([
@@ -344,7 +399,7 @@ class AdditionalLesson extends BaseController
                     ]
                 ],
                 "subject" => [
-                    'rules' => 'in_list['.$ids_subject.']',
+                    'rules' => 'in_list[' . $ids_subject . ']',
                     'errors' => [
                         'in_list' => 'Kolom mata pelajaran harus dipilih',
                     ]
@@ -404,14 +459,14 @@ class AdditionalLesson extends BaseController
     {
         $req = $this->request->getVar();
         $nsts = $req['sts'] == 1 ? 0 : 1;
-        
+
         $msg = $nsts > 0 ? "aktifkan" : "nonaktifkan";
         $this->lesson_additional
-        ->where("lesson_additional_id", $req['id'])
-        ->set("lesson_additional_status", $nsts)
-        ->set("lesson_additional_updated_by", userdata()['user_id'])
-        ->update();
+            ->where("lesson_additional_id", $req['id'])
+            ->set("lesson_additional_status", $nsts)
+            ->set("lesson_additional_updated_by", userdata()['user_id'])
+            ->update();
 
-        echo json_encode(['msg'=>$msg, 'sts'=>true]);
+        echo json_encode(['msg' => $msg, 'sts' => true]);
     }
 }
