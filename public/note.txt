@@ -1,0 +1,9 @@
+; Maximum allowed size for uploaded files.
+upload_max_filesize = 40M
+
+; Must be greater than or equal to upload_max_filesize
+post_max_size = 40M
+
+sudo nano /etc/php/8.1/cli/php.ini
+
+php -i | grep 'php.ini'
