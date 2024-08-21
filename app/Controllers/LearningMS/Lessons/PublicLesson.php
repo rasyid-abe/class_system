@@ -63,7 +63,7 @@ class PublicLesson extends BaseController
         ) {
             return redirect()->back()->withInput()->with('valid', $this->validator->getErrors());
         }
-
+        
         $ins_major = [
             'major_school_id' => userdata()['school_id'],
             'major_name' => htmlspecialchars($req['name']),
@@ -158,11 +158,12 @@ class PublicLesson extends BaseController
             ->update();
 
         // if ($remove) {
-            
+
         // }
 
         echo json_encode(['msg' => 'dihapus', 'sts' => true]);
     }
+
 
     public function status()
     {
@@ -171,11 +172,11 @@ class PublicLesson extends BaseController
 
         $msg = $nsts > 0 ? "aktifkan" : "nonaktifkan";
         $this->major
-        ->where("major_id", $req['id'])
-        ->set("major_status", $nsts)
-        ->set("major_updated_by", userdata()['user_id'])
-        ->update();
+            ->where("major_id", $req['id'])
+            ->set("major_status", $nsts)
+            ->set("major_updated_by", userdata()['user_id'])
+            ->update();
 
-        echo json_encode(['msg'=>$msg, 'sts'=>true]);
+        echo json_encode(['msg' => $msg, 'sts' => true]);
     }
 }

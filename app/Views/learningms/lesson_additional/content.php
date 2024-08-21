@@ -1,6 +1,27 @@
 <?php $this->extend('templates/core') ?>
 <?php $this->section('content'); ?>
 
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_upload_content">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="content_modal">
+            <div class="modal-header">
+                <div id="head_upload_modal"></div>
+            </div>
+            <form enctype="multipart/form-data" action="<?= base_url('/teacher/lesson/additional/upload-content') ?>" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="subject" value="<?= $subject ?>">
+                    <input type="hidden" name="grade" value="<?= $grade ?>">
+                    <div id="body_upload_modal"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-light-danger" data-bs-dismiss="modal">Tutup</button>
+                    <button type="sumbit" class="btn btn-sm btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_update_content">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" id="content_modal">
@@ -104,6 +125,8 @@
         </div>
     </div>
 
+    
+
     <div class="col-sm-9 hide" id="content_tab">
         <div class="hover-scroll-x">
             <div class="d-grid">
@@ -130,9 +153,11 @@
                     <div id="content_lesson"></div>
                 </div>
                 <div class="tab-pane fade content_topic" id="tab_video" role="tabpanel">
+                    <div id="btn_conf_vid_"></div>
                     <div id="video_lesson"></div>
                 </div>
                 <div class="tab-pane fade content_topic" id="tab_attachment" role="tabpanel">
+                    <div id="btn_conf_attach_"></div>
                     <div id="attachment_lesson"></div>
                 </div>
                 <div class="tab-pane fade content_topic" id="tab_task" role="tabpanel">
@@ -145,17 +170,67 @@
 </div>
 
 <script type="text/javascript">
+    $(document).ready(function() {
+        let att_id = '<?= session()->getFlashdata('att_id') ?>'
+        if (att_id != '') {
+            view_content(att_id)
+            $('.tab_topic').removeClass('active')
+            $('.content_topic').removeClass('active')
+            $('.content_topic').removeClass('show')
+
+            $('#tab_attachment').addClass('show')
+            $('#tab_attachment').addClass('active')
+            $('#tab_topic_attachment').addClass('active')
+        }
+       
+        let file_id = '<?= session()->getFlashdata('file_id') ?>'
+        if (file_id != '') {
+            view_content(file_id)
+            $('#kt_accordion_2_item_1').removeClass('show')
+            $('#kt_accordion_2_item_2').addClass('show')
+        }
+    })
+
     function close_modal_content() {
         $('#modal_update_content').modal('hide')
         $('#body_content_modal').html('')
+
     }
     
+    $(document.body).on('click', '#btn_update_content_file', function(){
+        let id = $('#btn_update_attach').data('id');
+
+        let form = `
+            <input type="hidden" name="lesson_id" value="${id}" />
+            <input type="hidden" name="type" value="8" />
+            <p class="mt-2">
+                
+                <label for="attachment">
+                    <a class="btn btn-primary text-light btn-sm" role="button" aria-disabled="false">+ Pilih File</a>
+                </label><br>
+                <small class="text-info">* Hanya menerima file PDF dengan kapasistas maks 10 Mb.</small>
+                <input type="file" name="file_attach" id="attachment" accept="application/pdf" style="visibility: hidden; position: absolute;"/>
+            </p>
+            <p id="files-area">
+                <span id="filesList">
+                    <span id="files-names"></span>
+                </span>
+            </p>
+        `;
+
+        $('#body_upload_modal').html(form)
+        $('#head_upload_modal').html('<h3 class="modal-title">Upload Dokumen File</h3>')
+        $('#modal_upload_content').modal('show')
+    })
+
     $(document.body).on('click', '#btn_update_content', function() {
         $('#body_content_modal').html('')
         let id = $('#btn_update_content').data('id');
         $.ajax({
             url: '<?= base_url('/teacher/lesson/additional/grab-topic-content') ?>',
-            data: {id},
+            data: {
+                id
+            },
             method: 'post',
             dataType: 'json',
             success: function(e) {
@@ -164,7 +239,7 @@
                     <input type="hidden" name="form_type" value="5" />
                     <textarea id="content" name="content" class="tinymce-editor">${e.lesson_additional_content}</textarea>
                 `;
-        
+
                 $('#body_content_modal').html(form)
                 $('#head_content_modal').html('<h3 class="modal-title">Update Materi Pembelajaran</h3>')
                 $('#modal_update_content').modal('show')
@@ -208,12 +283,44 @@
         $('#preview_video').html(view_vid)
     })
 
+    $(document.body).on('click', '#btn_update_attach', function() {
+        let id = $('#btn_update_attach').data('id');
+
+        let form = `
+            <input type="hidden" name="lesson_id" value="${id}" />
+            <input type="hidden" name="type" value="7" />
+            <p class="mt-2">
+                
+                <label for="attachment">
+                    <a class="btn btn-primary text-light" role="button" aria-disabled="false">+ Tambah File</a>
+                </label><br>
+                <small class="text-info">Dapat upload max 5 file sekaligus dengan total kapasitas max 50 Mb.</small>
+                <input type="file" name="file_attach[]" id="attachment" style="visibility: hidden; position: absolute;" multiple="multiple"/>
+            </p>
+            <p id="files-area">
+                <span id="filesList">
+                    <span id="files-names"></span>
+                </span>
+            </p>
+        `;
+
+        $('#body_upload_modal').html(form)
+        $('#head_upload_modal').html('<h3 class="modal-title">Lampiran Dokumen</h3>')
+        $('#modal_upload_content').modal('show')
+    })
+
+    $(document.body).on('click', '#download_attch', function(e){
+        e.preventDefault()
+        let file = $(this).data('file')
+        window.location.href = '<?= base_url() . 'attachment/' ?>' + file;
+    })
+
     function generate_view_lesson(e) {
         $('.btn_content_content').html('');
-        $('.btn_conf').html('');
-        $('#content_lesson').html(e.lesson_additional_content != '' ? e.lesson_additional_content : 'Materi belum tersedia')
+        $('.btn_conf_topic').html('');
+
         let btn_conf = `
-            <div class="d-flex justify-content-end btn_conf">
+            <div class="d-flex justify-content-end btn_conf_topic">
                 <div class="btn_content_content">
                     <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_content" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
                 </div>&nbsp;
@@ -222,20 +329,77 @@
                 </div>
             </div>
         `;
-        $('#content_lesson').before(btn_conf)
+
+        let butn = `
+            <div class="accordion accordion-icon-toggle" id="kt_accordion_2">
+                <div class="mt-5">
+                    <div class="bg-secondary accordion-header d-flex p-1" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_1" style="border-radius: 5px;">
+                        <span class="accordion-icon">
+                            <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
+                        </span>
+                        <span class="px-2">Konten Teks</span>
+                    </div>
+
+                    <div id="kt_accordion_2_item_1" class="fs-6 collapse show m-5" data-bs-parent="#kt_accordion_2" style="max-height: 500px; overflow-y: scroll;">
+                        ${btn_conf}
+                        ${e.lesson_additional_content}
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <div class="bg-secondary accordion-header p-1 d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_2" style="border-radius: 5px;">
+                        <span class="accordion-icon">
+                            <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
+                        </span>
+                        <span class="px-2">Konten File</span>
+                    </div>
+
+                    <div id="kt_accordion_2_item_2" class="collapse fs-6 m-5" data-bs-parent="#kt_accordion_2">
+                        <div class="d-flex justify-content-end btn_conf_topic mb-2">
+                            <div class="btn_content_content">
+                                <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_content_file" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+                            </div>&nbsp;
+                            <div class="btn_content_content">
+                                <button type="button" class="btn btn-sm btn-light-danger" id="btn_delete_content_file" data-id="${e.lesson_additional_id}"><i class="fa fa-trash"></i> Hapus</button>
+                            </div>
+                        </div>
+
+                        <embed src="<?= base_url() . 'lesson_file/aa.pdf' ?>" width="100%" height="500px" />
+                    </div>
+                </div>
+
+            </div>
+
+        `;
+
+        $('#content_lesson').html(e.lesson_additional_content != '' ? butn : 'Materi belum tersedia')
+        // let btn_conf = `
+        //     <div class="d-flex justify-content-end btn_conf_topic">
+        //         <div class="btn_content_content">
+        //             <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_content" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+        //         </div>&nbsp;
+        //         <div class="btn_content_content">
+        //             <button type="button" class="btn btn-sm btn-light-danger" id="btn_delete_content" data-id="${e.lesson_additional_id}"><i class="fa fa-trash"></i> Hapus</button>
+        //         </div>
+        //     </div>
+        // `;
+        // $('#content_lesson').before(btn_conf)
     }
 
     function generate_view_video(e) {
         $('.btn_video_content').html('');
-        $('.btn_conf_vid').html('');
-        let id_vid = youtube_parser(e.lesson_additional_video_path);
-        let vid_view = `<iframe width="100%" height="500"
-            src="https://www.youtube.com/embed/${id_vid}?controls=0">
-            </iframe>`;
+        $('#btn_conf_vid_').html('');
 
-        $('#video_lesson').html(e.lesson_additional_video_path != '' ? vid_view : 'Video belum tersedia' )
+        let id_vid = youtube_parser(e.lesson_additional_video_path);
+        let vid_view = `
+        <div class="video-container">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/${id_vid}?controls=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>`;
+
+        $('#video_lesson').html(e.lesson_additional_video_path != '' ? vid_view : 'Video belum tersedia')
+
         let btn_conf = `
-            <div class="d-flex justify-content-begin btn_conf_vid mb-3">
+            <div class="d-flex justify-content-begin mb-3">
                 <div class="btn_video_content">
                     <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_video" data-url="${e.lesson_additional_video_path}" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
                 </div>&nbsp;
@@ -244,17 +408,46 @@
                 </div>
             </div>
         `;
-        $('#video_lesson').before(btn_conf)
+        $('#btn_conf_vid_').html(btn_conf)
     }
 
     function generate_view_attachment(e) {
-        $('.btn_attachment_content').html('');
-        $('#attachment_lesson').html(e.lesson_additional_attachment_path)
+        $('.btn_attach_content').html('');
+        $('#btn_conf_attach_').html('');
+
+        let btnn = '';
         if (e.lesson_additional_attachment_path != '') {
-            $('#attachment_lesson').before('<div class="btn_attachment_content"><button type="button" class="btn btn-sm btn-primary">Ubah Lampiran</button></div>')
+            let attach = JSON.parse(e.lesson_additional_attachment_path)
+            for (let i = 0; i < attach.length; i++) {
+                spl = attach[i].split("/");
+                btnn += `
+                    <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Button group with nested dropdown">
+                    <button onclick="remove_attch(${e.lesson_additional_id});" type="button" class="btn btn-primary btn-sm btn-icon"><i class="bi bi-x fs-5"></i></button>
+
+                    <div class="btn-group" role="group">
+                        <button type="button" id="download_attch" data-file= "${spl[2]}"class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">
+                        ${spl[2]}
+                        </button>
+                    </div>
+                    </div>
+                `;
+            }
         } else {
-            $('#attachment_lesson').before('<div class="btn_attachment_content"><button type="button" class="btn btn-sm btn-primary">Tambah Lampiran</button></div>')
+            btnn = 'Lampiran belum tersedia';
         }
+
+        $('#attachment_lesson').html(btnn)
+        let btn_conf = `
+            <div class="d-flex justify-content-begin btn_conf_attach mb-3">
+                <div class="btn_attach_content">
+                    <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_attach" data-url="${e.lesson_additional_attachment_path}" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+                </div>&nbsp;
+                <div class="btn_attach_content">
+                    <button type="button" class="btn btn-sm btn-light-danger" id="btn_delete_attach" data-id="${e.lesson_additional_id}"><i class="fa fa-trash"></i> Hapus</button>
+                </div>
+            </div>
+        `;
+        $('#btn_conf_attach_').html(btn_conf)
     }
 
     function generate_view_task(e) {
@@ -265,6 +458,10 @@
         } else {
             $('#task_lesson').before('<div class="btn_task_content"><button type="button" class="btn btn-sm btn-primary">Tambah Video</button></div>')
         }
+    }
+
+    function remove_attch(params) {
+        alert('hapus file')
     }
 
     function view_content(id) {
@@ -294,7 +491,7 @@
         if (e == 1) {
             form = `
                 <input type="hidden" name="form_type" value="${e}" />
-                <input type="hidden" name="lesson_id" value="${id}" />
+                <input type="hidden" name="lesson_id" value="${chap}" />
                 <label for="chapter" class="form-label">Judul BAB</label>
                 <input type="text" class="form-control form-control-md" name="chapter" value="${chap}" />
             `;
@@ -388,6 +585,11 @@
             id = $('input[name=lesson_id]').val();
             video = $('input[name=videolink]').val();
             store_content(type, id, [video])
+        } else if (type == 7) {
+            id = $('input[name=lesson_id]').val();
+            var fd = new FormData();
+            var files = $("#attachment").get(0).files;
+            store_content(type, id, files)
         }
 
         $('#modal_update_content').modal('hide')
@@ -396,11 +598,7 @@
     function store_content(type, id, val) {
         $.ajax({
             url: '<?= base_url('/teacher/lesson/additional/update-content') ?>',
-            data: {
-                type,
-                id,
-                val
-            },
+            data: {type, id, val},
             method: 'post',
             dataType: 'json',
             success: function(e) {
@@ -420,8 +618,15 @@
                 }
             }
         })
+    }
 
-
+    function download_attach(file) {
+        $.ajax({
+            url: '<?= base_url('/teacher/lesson/additional/download-attach') ?>',
+            data: {file},
+            method: 'post',
+            success: function(e) {}
+        })
     }
 
     function delete_content() {
@@ -444,19 +649,11 @@
 
     }
 
-    // ClassicEditor
-    // .create(document.querySelector('.richtext'))
-    // .then(editor => {
-    //     console.log(editor);
-    // })
-    // .catch(error => {
-    //     console.error(error);
-    // });
-
     jQuery('.form-check-input').on('click', function(e) {
         const id = $(this).data('id');
         const sts = $(this).val();
         e.preventDefault();
+
 
         Swal.fire({
             html: `Apakah anda ingin mengubah status?`,
