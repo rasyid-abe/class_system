@@ -15,7 +15,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-light-danger" data-bs-dismiss="modal">Tutup</button>
-                    <button type="sumbit" class="btn btn-sm btn-primary">Simpan</button>
+                    <button type="sumbit" id="submit_upload" class="btn btn-sm btn-primary">Simpan</button>
                 </div>
             </form>
         </div>
@@ -125,8 +125,6 @@
         </div>
     </div>
 
-    
-
     <div class="col-sm-9 hide" id="content_tab">
         <div class="hover-scroll-x">
             <div class="d-grid">
@@ -182,7 +180,7 @@
             $('#tab_attachment').addClass('active')
             $('#tab_topic_attachment').addClass('active')
         }
-       
+
         let file_id = '<?= session()->getFlashdata('file_id') ?>'
         if (file_id != '') {
             view_content(file_id)
@@ -196,8 +194,8 @@
         $('#body_content_modal').html('')
 
     }
-    
-    $(document.body).on('click', '#btn_update_content_file', function(){
+
+    $(document.body).on('click', '#btn_update_content_file', function() {
         let id = $('#btn_update_attach').data('id');
 
         let form = `
@@ -216,11 +214,13 @@
                     <span id="files-names"></span>
                 </span>
             </p>
+            <div id="sum_attach" class="mt-2"></div>
         `;
 
         $('#body_upload_modal').html(form)
         $('#head_upload_modal').html('<h3 class="modal-title">Upload Dokumen File</h3>')
         $('#modal_upload_content').modal('show')
+        $('#submit_upload').attr('disabled','disabled')
     })
 
     $(document.body).on('click', '#btn_update_content', function() {
@@ -294,7 +294,7 @@
                 <label for="attachment">
                     <a class="btn btn-primary text-light" role="button" aria-disabled="false">+ Tambah File</a>
                 </label><br>
-                <small class="text-info">Dapat upload max 5 file sekaligus dengan total kapasitas max 50 Mb.</small>
+                <small class="text-info">Dapat upload max 10 file sekaligus dengan total kapasitas max 50 Mb.</small>
                 <input type="file" name="file_attach[]" id="attachment" style="visibility: hidden; position: absolute;" multiple="multiple"/>
             </p>
             <p id="files-area">
@@ -302,22 +302,122 @@
                     <span id="files-names"></span>
                 </span>
             </p>
+            <div id="sum_attach" class="mt-2"></div>
         `;
 
         $('#body_upload_modal').html(form)
         $('#head_upload_modal').html('<h3 class="modal-title">Lampiran Dokumen</h3>')
+        $('#submit_upload').attr('disabled','disabled');
         $('#modal_upload_content').modal('show')
     })
 
-    $(document.body).on('click', '#download_attch', function(e){
+    const dt = new DataTransfer(); // Permet de manipuler les fichiers de l'input file
+    const sizes = {}
+    $(document.body).on('change', '#attachment', function(e) {
+        for (var i = 0; i < this.files.length; i++) {
+            let fileBloc = $('<span/>', {
+                    class: 'file-block'
+                }),
+                fileName = $('<span/>', {
+                    class: 'name',
+                    text: this.files.item(i).name
+                });
+            fileBloc.append('<span class="file-delete"><span>+</span></span>')
+                .append(fileName);
+            $("#filesList > #files-names").append(fileBloc);
+            sizes[this.files[i].size] = this.files.item(i).name
+        };
+
+        config_size(1)
+
+        // Ajout des fichiers dans l'objet DataTransfer
+        for (let file of this.files) {
+            dt.items.add(file);
+        }
+        // Mise à jour des fichiers de l'input file après ajout
+        this.files = dt.files;
+
+        // EventListener pour le bouton de suppression créé
+        $('span.file-delete').click(function() {
+            let name = $(this).next('span.name').text();
+            // Supprimer l'affichage du nom de fichier
+            $(this).parent().remove();
+            for (let i = 0; i < dt.items.length; i++) {
+                // Correspondance du fichier et du nom
+                if (name === dt.items[i].getAsFile().name) {
+                    config_size(dt.files[i].size)
+                    // Suppression du fichier dans l'objet DataTransfer
+                    dt.items.remove(i);
+                    continue;
+                }
+            }
+            // Mise à jour des fichiers de l'input file après suppression
+            document.getElementById('attachment').files = dt.files;
+        });
+    });
+
+    $(document.body).on('click', '#download_attch', function(e) {
         e.preventDefault()
         let file = $(this).data('file')
         window.location.href = '<?= base_url() . 'attachment/' ?>' + file;
     })
 
+    function config_size(e) {
+        if (e != 1) delete sizes[e];
+        let type = $('input[name=type]').val()
+
+        let si = ii = 0;
+        for (let k in sizes){
+            si += parseInt(k)
+            ii++
+        }
+        
+        let views = ''
+        if (type == 7) {
+            let allow_size = 50000000
+            let allow_file = 10
+    
+            if (si > allow_size || ii > allow_file) {
+                $('#submit_upload').attr('disabled','disabled');
+            } else {
+                $('#submit_upload').removeAttr('disabled');
+            }
+            
+            let views = `
+                <span class="badge badge-${ii > allow_file ? 'danger' : 'info'}">${ii} File</span>
+                <span class="badge badge-${si > allow_size ? 'danger': 'info'}">${formatBytes(si)}</span>
+                ${si > allow_size ? '<br><small class="text-danger">* Total kapasitas melebihi kapasistas maksimal</small>' : ''}
+                ${ii > allow_file ? '<br><small class="text-danger">* Total file melebihi kapasistas maksimal</small>' : ''}
+            `;
+            
+            $('#sum_attach').html(views)
+        } else if (type == 8 ) {
+            let allow_size = 10000000
+           
+            if (si > allow_size) {
+                $('#submit_upload').attr('disabled','disabled');
+            } else {
+                $('#submit_upload').removeAttr('disabled');
+            }
+
+            let views = `
+                <span class="badge badge-${si > allow_size ? 'danger': 'info'}">${formatBytes(si)}</span>
+                ${si > allow_size ? '<br><small class="text-danger">* Total kapasitas melebihi kapasistas maksimal</small>' : ''}
+            `;
+            $('#sum_attach').html(views)
+        }
+
+        if (ii < 1) {
+            $('#sum_attach').html('')
+            $('#submit_upload').attr('disabled','disabled');
+        }
+    }
+
     function generate_view_lesson(e) {
         $('.btn_content_content').html('');
         $('.btn_conf_topic').html('');
+
+        let spl = e.lesson_additional_content_path.split("/");
 
         let btn_conf = `
             <div class="d-flex justify-content-end btn_conf_topic">
@@ -364,7 +464,7 @@
                             </div>
                         </div>
 
-                        <embed src="<?= base_url() . 'lesson_file/aa.pdf' ?>" width="100%" height="500px" />
+                        <embed src="<?= base_url() . 'lesson_file/' ?>${spl[2]}" width="100%" height="500px" />
                     </div>
                 </div>
 
@@ -440,7 +540,7 @@
         let btn_conf = `
             <div class="d-flex justify-content-begin btn_conf_attach mb-3">
                 <div class="btn_attach_content">
-                    <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_attach" data-url="${e.lesson_additional_attachment_path}" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+                    <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_attach" data-url="${e.lesson_additional_attachment_path}" data-id="${e.lesson_additional_id}"><i class="fa fa-plus"></i> Tambah</button>
                 </div>&nbsp;
                 <div class="btn_attach_content">
                     <button type="button" class="btn btn-sm btn-light-danger" id="btn_delete_attach" data-id="${e.lesson_additional_id}"><i class="fa fa-trash"></i> Hapus</button>
@@ -598,7 +698,11 @@
     function store_content(type, id, val) {
         $.ajax({
             url: '<?= base_url('/teacher/lesson/additional/update-content') ?>',
-            data: {type, id, val},
+            data: {
+                type,
+                id,
+                val
+            },
             method: 'post',
             dataType: 'json',
             success: function(e) {
@@ -623,7 +727,9 @@
     function download_attach(file) {
         $.ajax({
             url: '<?= base_url('/teacher/lesson/additional/download-attach') ?>',
-            data: {file},
+            data: {
+                file
+            },
             method: 'post',
             success: function(e) {}
         })

@@ -1211,45 +1211,17 @@
 	<script src="<?= base_url() ?>assets/tinymce/tinymce.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/tinymce_conf.js"></script>
 	<script>
-		const dt = new DataTransfer(); // Permet de manipuler les fichiers de l'input file
+		function formatBytes(bytes, decimals = 2) {
+			if (!+bytes) return '0 Bytes'
 
-		$(document.body).on('change', '#attachment', function(e) {
-			for (var i = 0; i < this.files.length; i++) {
-				let fileBloc = $('<span/>', {
-						class: 'file-block'
-					}),
-					fileName = $('<span/>', {
-						class: 'name',
-						text: this.files.item(i).name
-					});
-				fileBloc.append('<span class="file-delete"><span>+</span></span>')
-					.append(fileName);
-				$("#filesList > #files-names").append(fileBloc);
-			};
-			// Ajout des fichiers dans l'objet DataTransfer
-			for (let file of this.files) {
-				dt.items.add(file);
-			}
-			// Mise à jour des fichiers de l'input file après ajout
-			this.files = dt.files;
+			const k = 1024
+			const dm = decimals < 0 ? 0 : decimals
+			const sizes = ['Bytes', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb']
 
-			// EventListener pour le bouton de suppression créé
-			$('span.file-delete').click(function() {
-				let name = $(this).next('span.name').text();
-				// Supprimer l'affichage du nom de fichier
-				$(this).parent().remove();
-				for (let i = 0; i < dt.items.length; i++) {
-					// Correspondance du fichier et du nom
-					if (name === dt.items[i].getAsFile().name) {
-						// Suppression du fichier dans l'objet DataTransfer
-						dt.items.remove(i);
-						continue;
-					}
-				}
-				// Mise à jour des fichiers de l'input file après suppression
-				document.getElementById('attachment').files = dt.files;
-			});
-		});
+			const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+			return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+		}
 
 		function youtube_parser(url) {
 			var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;

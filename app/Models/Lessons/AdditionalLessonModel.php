@@ -16,6 +16,7 @@ class AdditionalLessonModel extends Model
         'lesson_additional_chapter', 
         'lesson_additional_subchapter', 
         'lesson_additional_content', 
+        'lesson_additional_content_path', 
         'lesson_additional_video_path', 
         'lesson_additional_summary_path', 
         'lesson_additional_attachment_path', 
