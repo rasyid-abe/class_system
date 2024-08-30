@@ -68,10 +68,11 @@ class AdditionalLesson extends BaseController
             ->where('lesson_additional_grade', $grade)
             ->groupBy('lesson_additional_chapter')
             ->findAll();
-
+            
         foreach ($chapter as $k => $v) {
             $sub_chapter = $this->lesson_additional
                 ->where('lesson_additional_chapter', $v['lesson_additional_chapter'])
+                ->where('lesson_additional_status < 9')
                 ->findAll();
 
             $chapter[$k]['sub_chapter'] = $sub_chapter;
@@ -221,16 +222,18 @@ class AdditionalLesson extends BaseController
         $id = $this->request->getVar('id');
         $data = $this->lesson_additional
             ->where('lesson_additional_id', $id)
+            ->where('lesson_additional_status < 9')
             ->first();
-
+            
         echo json_encode($data);
     }
-
+    
     public function grab_topic_content()
     {
         $id = $this->request->getVar('id');
         $data = $this->lesson_additional
             ->select('lesson_additional_content')
+            ->where('lesson_additional_status < 9')
             ->where('lesson_additional_id', $id)
             ->first();
 
@@ -308,13 +311,14 @@ class AdditionalLesson extends BaseController
             }
 
             $attach = $this->request->getFileMultiple('file_attach');
-
+            
             foreach ($attach as $file) {
                 if (!$file->isValid()) {
                     return $file->getErrorString();
                 } else {
-                    $file->move('attachment');
-                    array_push($arr_file, $req['subject'] . '/' . $req['grade'] . '/' . $file->getName());
+                    $filename = $req['subject'] . '^' . $req['grade'] . '^' .$file->getName();
+                    $file->move('attachment', $filename);
+                    array_push($arr_file, $filename);
                 }
             }
 
@@ -331,8 +335,8 @@ class AdditionalLesson extends BaseController
             if (!$attach->isValid()) {
                 return $attach->getErrorString();
             } else {
-                $attach->move('lesson_file');
-                $filename = $req['subject'] . '/' . $req['grade'] . '/' . $attach->getName();
+                $filename = $req['subject'] . '^' . $req['grade'] . '^' . $attach->getName();
+                $attach->move('lesson_file', $filename);
 
                 $update = $this->lesson_additional
                     ->set('lesson_additional_content_path', $filename)
@@ -345,6 +349,81 @@ class AdditionalLesson extends BaseController
         }
 
         return redirect()->to('/teacher/lesson/additional/view-content/' . $req['subject'] . '/' . $req['grade']);
+    }
+
+    public function remove_content()
+    {
+        $req = $this->request->getVar();
+        $update = false;
+        if ($req['type'] == 1) {
+        
+        } elseif ($req['type'] == 2) {
+            $update = $this->lesson_additional
+                ->where('lesson_additional_id', $req['id'])
+                ->set('lesson_additional_status', 9)
+                ->update();
+        } elseif ($req['type'] == 3) {
+        } elseif ($req['type'] == 4) {
+        } elseif ($req['type'] == 5) {
+            $update = $this->lesson_additional
+                ->where('lesson_additional_id', $req['id'])
+                ->set('lesson_additional_content', null)
+                ->update();
+        } elseif ($req['type'] == 6) {
+            $update = $this->lesson_additional
+                ->where('lesson_additional_id', $req['id'])
+                ->set('lesson_additional_video_path', null)
+                ->update();
+
+        } elseif ($req['type'] == 7) {
+           
+            $old = $this->lesson_additional
+                ->select('lesson_additional_attachment_path')
+                ->where('lesson_additional_id', $req['id'])
+                ->first();
+
+            $arr_file = [];
+            if ($old['lesson_additional_attachment_path'] != '') {
+                $arr_file = json_decode($old['lesson_additional_attachment_path']);
+            }
+
+            if ($req['file'] != null) {
+                if (($key = array_search($req['file'], $arr_file)) !== false) {
+                    unset($arr_file[$key]);
+                }
+
+                if (file_exists(FCPATH . '/attachment/' . $req['file'])) {
+                    unlink(FCPATH . '/attachment/' . $req['file']);
+                }
+
+                
+                $files = count($arr_file) > 0 ? json_encode($arr_file) : null;
+              
+                
+                $update = $this->lesson_additional
+                    ->set('lesson_additional_attachment_path', $files)
+                    ->where('lesson_additional_id', $req['id'])
+                    ->update();
+
+            } else {
+                foreach ($arr_file as $k => $v) {
+                    if (($key = array_search($v, $arr_file)) !== false) {
+                        unset($arr_file[$key]);
+                    }
+    
+                    if (file_exists(FCPATH . '/attachment/' . $v)) {
+                        unlink(FCPATH . '/attachment/' . $v);
+                    }
+                }
+
+                $update = $this->lesson_additional
+                    ->set('lesson_additional_attachment_path', null)
+                    ->where('lesson_additional_id', $req['id'])
+                    ->update();
+            }
+        }
+
+        echo json_encode($update);
     }
 
     public function edit($id)

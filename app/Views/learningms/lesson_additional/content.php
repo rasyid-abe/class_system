@@ -76,8 +76,8 @@
                                                 </span>
                                             </div>
                                             <div class="menu-item px-3">
-                                                <a href="#" class="menu-link px-3" data-kt-users-table-filter="delete_row">
-                                                    Hapus
+                                                <a href="#" class="menu-link px-3" onclick="remove_content(<?= $v['lesson_additional_id'] ?>, 1)" data-kt-users-table-filter="delete_row">
+                                                    Hapus BAB
                                                 </a>
                                             </div>
                                         </div>
@@ -101,8 +101,8 @@
                                                             </span>
                                                         </div>
                                                         <div class="menu-item px-3">
-                                                            <a href="#" class="menu-link px-3" data-kt-users-table-filter="delete_row">
-                                                                Hapus
+                                                            <a href="#" class="menu-link px-3" onclick="remove_content(<?= $val['lesson_additional_id'] ?>, 2)" data-kt-users-table-filter="delete_row">
+                                                                Hapus Topik
                                                             </a>
                                                         </div>
                                                     </div>
@@ -425,7 +425,7 @@
                     <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_content" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
                 </div>&nbsp;
                 <div class="btn_content_content">
-                    <button type="button" class="btn btn-sm btn-light-danger" id="btn_delete_content" data-id="${e.lesson_additional_id}"><i class="fa fa-trash"></i> Hapus</button>
+                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content(${e.lesson_additional_id}, 5)"><i class="fa fa-trash"></i> Hapus</button>
                 </div>
             </div>
         `;
@@ -504,7 +504,7 @@
                     <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_video" data-url="${e.lesson_additional_video_path}" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
                 </div>&nbsp;
                 <div class="btn_video_content">
-                    <button type="button" class="btn btn-sm btn-light-danger" id="btn_delete_video" data-id="${e.lesson_additional_id}"><i class="fa fa-trash"></i> Hapus</button>
+                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content(${e.lesson_additional_id}, 6)"><i class="fa fa-trash"></i> Hapus</button>
                 </div>
             </div>
         `;
@@ -519,10 +519,10 @@
         if (e.lesson_additional_attachment_path != '') {
             let attach = JSON.parse(e.lesson_additional_attachment_path)
             for (let i = 0; i < attach.length; i++) {
-                spl = attach[i].split("/");
+                spl = attach[i].split("^");
                 btnn += `
                     <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Button group with nested dropdown">
-                    <button onclick="remove_attch(${e.lesson_additional_id});" type="button" class="btn btn-primary btn-sm btn-icon"><i class="bi bi-x fs-5"></i></button>
+                    <button onclick="remove_content(${e.lesson_additional_id}, 7, '${attach[i]}');" type="button" class="btn btn-primary btn-sm btn-icon"><i class="bi bi-x fs-5"></i></button>
 
                     <div class="btn-group" role="group">
                         <button type="button" id="download_attch" data-file= "${spl[2]}"class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">
@@ -543,7 +543,7 @@
                     <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_attach" data-url="${e.lesson_additional_attachment_path}" data-id="${e.lesson_additional_id}"><i class="fa fa-plus"></i> Tambah</button>
                 </div>&nbsp;
                 <div class="btn_attach_content">
-                    <button type="button" class="btn btn-sm btn-light-danger" id="btn_delete_attach" data-id="${e.lesson_additional_id}"><i class="fa fa-trash"></i> Hapus</button>
+                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content(${e.lesson_additional_id}, 7);" ><i class="fa fa-trash"></i> Hapus</button>
                 </div>
             </div>
         `;
@@ -560,8 +560,43 @@
         }
     }
 
-    function remove_attch(params) {
-        alert('hapus file')
+    function remove_content(id, type, file = null) {
+        let msg = '';
+        
+        if (type ==1) {
+            msg = 'hapus bab materi'
+        } else if (type == 2) {
+            msg = 'hapus topik materi'
+        } else if (type == 3) {
+        } else if (type == 4) {
+        } else if (type == 5) {
+            msg = 'topik pembelajaran'
+        } else if (type == 6) {
+            msg = 'video pembelajaran';
+        } else if (type == 7) {
+            if (file != null) {
+                spl = file.split("^")
+                msg = 'file lampiran ' + spl[2];
+            } else {
+                msg = 'seluruh file lampiran'
+            }
+        }
+        Swal.fire({
+            html: `Apakah anda yakin menghapus ${msg}?`,
+            icon: "info",
+            buttonsStyling: false,
+            showCancelButton: true,
+            confirmButtonText: "Ya",
+            cancelButtonText: 'Tidak',
+            customClass: {
+                confirmButton: "btn btn-sm btn-primary",
+                cancelButton: 'btn btn-sm btn-danger'
+            }
+        }).then(function(confirm) {
+            if (confirm.isConfirmed) {
+                act_remove(id, type, file)
+            }
+        });
     }
 
     function view_content(id) {
@@ -735,10 +770,6 @@
         })
     }
 
-    function delete_content() {
-        alert('hapus data')
-    }
-
     function toggle_collapse(e) {
         // $('.head_collapse').removeClass('collapsed')
         // $('.body_collapse').addClass('hide')
@@ -753,6 +784,40 @@
             $(`#btn_head_${e}`).addClass('collapsed')
         }
 
+    }
+
+    function act_remove(id, type, file) {
+        $.ajax({
+            url: '<?= base_url('/teacher/lesson/additional/remove-content') ?>',
+            data: {id, type, file},
+            method: 'post',
+            dataType: 'json',
+            success: function(e) {
+                if (type == 5) {
+                    view_content(id)
+                } else if (type == 6) {
+                    view_content(id)
+                    $('.tab_topic').removeClass('active')
+                    $('.content_topic').removeClass('active')
+                    $('.content_topic').removeClass('show')
+
+                    $('#tab_video').addClass('show')
+                    $('#tab_video').addClass('active')
+                    $('#tab_topic_video').addClass('active')
+                } else if (type == 7) {
+                    view_content(id)
+                    $('.tab_topic').removeClass('active')
+                    $('.content_topic').removeClass('active')
+                    $('.content_topic').removeClass('show')
+
+                    $('#tab_attachment').addClass('show')
+                    $('#tab_attachment').addClass('active')
+                    $('#tab_topic_attachment').addClass('active')
+                } else {
+                    location.reload()
+                }
+            }
+        })
     }
 
     jQuery('.form-check-input').on('click', function(e) {
