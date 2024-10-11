@@ -21,7 +21,7 @@ class AdditionalLessonModel extends Model
         'lesson_additional_summary_path', 
         'lesson_additional_attachment_path', 
         'lesson_additional_tasks', 
-        'lesson_additional_is_share',
+        'lesson_additional_shared_type',
         'lesson_additional_shared_to',  
         'lesson_additional_status', 
         'lesson_additional_created_by', 

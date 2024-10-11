@@ -41,6 +41,9 @@ $routes->post('/dashboard/student/update-password', 'Dashboard\DashboardStudent:
 $routes->get('/teacher/lesson/standart', 'LearningMS\Lessons\StandartLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/standart/create', 'LearningMS\Lessons\StandartLesson::create', ['filter' => 'auth']); #done
 $routes->post('/teacher/lesson/standart/ref-data', 'LearningMS\Lessons\StandartLesson::ref_data', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/standart/view-subject/(:num)', 'LearningMS\Lessons\StandartLesson::view_subject/$1', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/standart/view-content/(:num)/(:num)', 'LearningMS\Lessons\StandartLesson::view_content/$1/$2', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/standart/grab-content', 'LearningMS\Lessons\StandartLesson::grab_content', ['filter' => 'auth']);
 
 $routes->get('/teacher/lesson/school', 'LessonsMS\SchoolLesson::index', ['filter' => 'auth']);
 
@@ -58,8 +61,11 @@ $routes->get('/teacher/lesson/additional/edit/(:num)', 'LearningMS\Lessons\Addit
 $routes->post('/teacher/lesson/additional/update', 'LearningMS\Lessons\AdditionalLesson::update', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/status', 'LearningMS\Lessons\AdditionalLesson::status', ['filter' => 'auth']); #done
 $routes->delete('/teacher/lesson/additional/destroy', 'LearningMS\Lessons\AdditionalLesson::destroy', ['filter' => 'auth']); #done
+$routes->post('/teacher/lesson/additional/share-topic', 'LearningMS\Lessons\AdditionalLesson::share_topic', ['filter' => 'auth']); #done
 
-$routes->get('/teacher/lesson/public', 'LessonsMS\PublicLesson::index', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/public', 'LearningMS\Lessons\PublicLesson::index', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/public/view-content/(:num)', 'LearningMS\Lessons\PublicLesson::view_content/$1', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/public/get-content', 'LearningMS\Lessons\PublicLesson::get_content', ['filter' => 'auth']);
 
 $routes->get('/sms/user/teacher', 'SchoolMS\Users\Teacher::index', ['filter' => 'auth']); #done
 $routes->get('/sms/user/teacher/show/(:num)', 'SchoolMS\Users\Teacher::show/$1', ['filter' => 'auth']); #done

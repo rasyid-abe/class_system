@@ -4,19 +4,25 @@ namespace App\Controllers\LearningMS\Lessons;
 
 use App\Controllers\BaseController;
 use App\Models\Lessons\StandartLessonModel;
+use App\Models\Masters\SubjectModel;
+use App\Models\Systems\TeacherAssignModel;
 
 class StandartLesson extends BaseController
 {
 
     protected $title;
     protected $sidebar;
-    protected $standart_lesson;
+    protected $subject;
+    protected $lesson_standart;
+    protected $teacher_assign;
 
     public function __construct()
     {
         $this->title = "Materi Pelajaran";
         $this->sidebar = "Standart";
-        $this->standart_lesson = new StandartLessonModel();
+        $this->subject = new SubjectModel();
+        $this->lesson_standart = new StandartLessonModel();
+        $this->teacher_assign = new TeacherAssignModel();
     }
 
     public function index()
@@ -28,155 +34,77 @@ class StandartLesson extends BaseController
             '##' => 'Materi Standar',
         ];
 
+        $grades = $this->teacher_assign
+            ->select('teacher_assign_grade, count(teacher_assign_subject_id) as total_subject')
+            ->where('teacher_assign_status < 9')
+            ->where('teacher_assign_teacher_id', userdata()['id_profile'])
+            ->groupBy('teacher_assign_grade')
+            ->findAll();
+
+        $data['grades'] = $grades;
+
         return view("learningms/lesson_standart/index", $data);
     }
 
-    public function create()
+    public function view_subject($grade)
     {
-        $data["title"] = 'Tambah Materi';
-        $data["sidebar"] = 'Standart';
+        $data["title"] = 'Materi Standar';
+        $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '/teacher/lesson/standart' => 'Materi Standar',
-            '##' => 'Tambah Materi',
-        ];
-        // $data['grade'] = get_list('phase');
-
-        return view("learningms/lesson_standart/create", $data);
-    }
-
-    public function store()
-    {
-        $req = $this->request->getVar();
-
-        dd($req);
-
-        if (
-            !$this->validate([
-                "name" => [
-                    'rules' => 'required|my_unique[master.major.name]',
-                    'errors' => [
-                        'required' => 'Kolom jurusan harus diisi',
-                        'my_unique' => 'Jurusan sudah terdaftar',
-                    ]
-                ],
-            ])
-        ) {
-            return redirect()->back()->withInput()->with('valid', $this->validator->getErrors());
-        }
-
-        $ins_major = [
-            'major_school_id' => userdata()['school_id'],
-            'major_name' => htmlspecialchars($req['name']),
-            'major_description' => htmlspecialchars($req['desc']),
-            'major_created_by' => userdata()['user_id'],
-            'major_status' => 1,
+            '##' => 'Materi Standar',
         ];
 
-        $insert = $this->major->save($ins_major);
+        $subs = $this->lesson_standart->list_subject($grade);
 
-        if ($insert) {
-            session()->setFlashdata('head', 'Sukses!');
-            session()->setFlashdata('icon', 'success');
-            session()->setFlashdata('msg', 'Tambah jurusan berhasil');
-            session()->setFlashdata('hide', 3000);
-        } else {
-            session()->setFlashdata('head', 'Error!');
-            session()->setFlashdata('icon', 'error');
-            session()->setFlashdata('msg', 'Tambah jurusan gagal');
-            session()->setFlashdata('hide', 3000);
-        }
+        $data['subjects'] = $subs;
 
-        return redirect()->to('/sms/master/major/');
+        return view("learningms/lesson_standart/subject", $data);
     }
 
-    public function edit($id)
+    public function view_content($subject, $grade)
     {
-        $data["title"] = $this->title;
-        $data["sidebar"] = 'Jurusan';
+        $data["title"] = 'Materi Belajar';
+        $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '/sms/master/major' => 'Jurusan',
-            '##' => 'Ubah Jurusan',
+            '/teacher/lesson/additional' => 'Materi Tambahan',
+            '##' => 'Materi Belajar',
         ];
 
-        $data['grade'] = get_list('grade');
-        $data['row'] = $this->major->where('major_id', $id)->first();
+        $data['subject'] = $subject;
+        $data['grade'] = $grade;
 
-        return view("schoolms/major/edit", $data);
-    }
-
-    public function update()
-    {
-        $req = $this->request->getVar();
-        $old = $this->major->where('major_id', $req['major_id'])->first();
-        $major_rule = $old['major_name'] == $req['name'] ? 'required' : 'required|my_unique[master.major.name]';
-
-        if (
-            !$this->validate([
-                "name" => [
-                    'rules' => $major_rule,
-                    'errors' => [
-                        'required' => 'Kolom jurusan harus diisi',
-                        'my_unique' => 'Jurusan sudah terdaftar',
-                    ]
-                ],
-            ])
-        ) {
-            return redirect()->back()->withInput()->with('valid', $this->validator->getErrors());
-        }
-
-        $update = $this->major
-            ->where("major_id", $req["major_id"])
-            ->set("major_name", htmlspecialchars($req['name']))
-            ->set("major_description", htmlspecialchars($req['desc']))
-            ->set("major_updated_by", userdata()['user_id'])
-            ->update();
-
-        if ($update) {
-            session()->setFlashdata('head', 'Sukses!');
-            session()->setFlashdata('icon', 'success');
-            session()->setFlashdata('msg', 'Ubah jurusan berhasil');
-            session()->setFlashdata('hide', 3000);
-        } else {
-            session()->setFlashdata('head', 'Error!');
-            session()->setFlashdata('icon', 'error');
-            session()->setFlashdata('msg', 'Ubah jurusan gagal');
-            session()->setFlashdata('hide', 3000);
-        }
-
-        return redirect()->to('/sms/master/major/');
-    }
-
-    public function destroy()
-    {
-        $id = $this->request->getVar()['id'];
-
-        $remove = $this->major
-            ->where('major_id', $id)
-            ->set('major_status', 9)
-            ->set("major_updated_by", userdata()['user_id'])
-            ->update();
-
-        // if ($remove) {
+        $chapter = $this->lesson_standart
+            ->select('lesson_standart_id, lesson_standart_chapter')
+            ->where('lesson_standart_status < 9')
+            ->where('lesson_standart_subject_id', $subject)
+            ->where('lesson_standart_grade', $grade)
+            ->groupBy('lesson_standart_chapter')
+            ->findAll();
             
-        // }
+        foreach ($chapter as $k => $v) {
+            $sub_chapter = $this->lesson_standart
+                ->where('lesson_standart_chapter', $v['lesson_standart_chapter'])
+                ->where('lesson_standart_status < 9')
+                ->findAll();
 
-        echo json_encode(['msg' => 'dihapus', 'sts' => true]);
+            $chapter[$k]['sub_chapter'] = $sub_chapter;
+        }
+
+        $data['chapters'] = $chapter;
+
+        return view("learningms/lesson_standart/content", $data);
     }
 
-    public function status()
+    public function grab_content()
     {
-        $req = $this->request->getVar();
-        $nsts = $req['sts'] == 1 ? 0 : 1;
-
-        $msg = $nsts > 0 ? "aktifkan" : "nonaktifkan";
-        $this->major
-        ->where("major_id", $req['id'])
-        ->set("major_status", $nsts)
-        ->set("major_updated_by", userdata()['user_id'])
-        ->update();
-
-        echo json_encode(['msg'=>$msg, 'sts'=>true]);
+        $id = $this->request->getVar('id');
+        $data = $this->lesson_standart
+            ->where('lesson_standart_id', $id)
+            ->where('lesson_standart_status < 9')
+            ->first();
+            
+        echo json_encode($data);
     }
 }

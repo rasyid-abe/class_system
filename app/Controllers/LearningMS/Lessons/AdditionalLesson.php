@@ -5,7 +5,7 @@ namespace App\Controllers\LearningMS\Lessons;
 use App\Controllers\BaseController;
 use App\Models\Lessons\AdditionalLessonModel;
 use App\Models\Systems\TeacherAssignModel;
-// use App\Models\Masters\SubjectModel;
+use App\Models\Profiles\TeacherModel;
 
 class AdditionalLesson extends BaseController
 {
@@ -14,6 +14,7 @@ class AdditionalLesson extends BaseController
     protected $sidebar;
     protected $teacher_subject;
     protected $lesson_additional;
+    protected $teacher;
     // protected $subject;
 
     public function __construct()
@@ -22,7 +23,7 @@ class AdditionalLesson extends BaseController
         $this->sidebar = "Additional";
         $this->lesson_additional = new AdditionalLessonModel();
         $this->teacher_subject = new TeacherAssignModel();
-        // $this->subject = new SubjectModel();
+        $this->teacher = new TeacherModel();
     }
 
     public function index()
@@ -43,6 +44,7 @@ class AdditionalLesson extends BaseController
             ->groupBy('student_group_grade')
             ->findAll();
 
+       
 
         return view("learningms/lesson_additional/index", $data);
     }
@@ -79,6 +81,10 @@ class AdditionalLesson extends BaseController
         }
 
         $data['chapters'] = $chapter;
+        $data['teachers'] = $this->teacher
+            ->select('teacher_id, teacher_first_name, teacher_last_name, teacher_degree')
+            ->where('teacher_school_id', userdata()['school_id'])
+            ->findAll();
 
         return view("learningms/lesson_additional/content", $data);
     }
@@ -259,12 +265,18 @@ class AdditionalLesson extends BaseController
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
         } elseif ($req['type'] == 3) {
-            $update = $this->lesson_additional
-                ->set('lesson_additional_chapter', $req['val'][0])
-                ->set('lesson_additional_subchapter', $req['val'][1])
-                ->set('lesson_additional_updated_by', userdata()['user_id'])
-                ->where('lesson_additional_id', $req['id'])
-                ->update();
+            $arr_ins = [
+                'lesson_additional_school_id' => userdata()['school_id'],
+                'lesson_additional_teacher_id' => userdata()['id_profile'],
+                'lesson_additional_subject_id' => $req['val'][1],
+                'lesson_additional_grade' => $req['val'][2],
+                'lesson_additional_chapter' => htmlspecialchars($req['val'][0]),
+                'lesson_additional_subchapter' => htmlspecialchars($req['val'][3]),
+                'lesson_additional_created_by' => userdata()['user_id'],
+                'lesson_additional_status' => 1,
+            ];
+
+            $update = $this->lesson_additional->insert($arr_ins);
         } elseif ($req['type'] == 4) {
             $arr_ins = [
                 'lesson_additional_school_id' => userdata()['school_id'],
@@ -356,7 +368,10 @@ class AdditionalLesson extends BaseController
         $req = $this->request->getVar();
         $update = false;
         if ($req['type'] == 1) {
-        
+            $update = $this->lesson_additional
+                ->where('lesson_additional_chapter', $req['file'])
+                ->set('lesson_additional_status', 9)
+                ->update();
         } elseif ($req['type'] == 2) {
             $update = $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
@@ -421,9 +436,41 @@ class AdditionalLesson extends BaseController
                     ->where('lesson_additional_id', $req['id'])
                     ->update();
             }
+        } elseif ($req['type'] == 8) {
+            if (file_exists(FCPATH . '/lesson_file/' . $req['file'])) {
+                unlink(FCPATH . '/lesson_file/' . $req['file']);
+            }
+
+            $update = $this->lesson_additional
+                ->set('lesson_additional_content_path', null)
+                ->where('lesson_additional_id', $req['id'])
+                ->update();
         }
 
         echo json_encode($update);
+    }
+
+    public function share_topic()
+    {
+        // teacher_id or
+        // type all or
+        // certain teacher contain id teacher or
+        // type 2 and subject = subject teacher or
+        // type 3 and subject = subject teacher and class = class teacher
+
+        $req = $this->request->getVar();
+        $shared_to = '';
+        if ($req['val'] == 4) {
+            $shared_to = isset($req['thc']) != '' ? json_encode($req['thc']) : '';
+        } 
+
+        $share = $this->lesson_additional
+            ->where('lesson_additional_id', $req['idd'])
+            ->set('lesson_additional_shared_type', $req['val'])
+            ->set('lesson_additional_shared_to', $shared_to)
+            ->update();
+
+        echo json_encode($share);
     }
 
     public function edit($id)
