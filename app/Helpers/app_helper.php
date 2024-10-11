@@ -124,7 +124,26 @@ function major_name($id)
     return $db->query($sql)->getRow('major_name');
 }
 
-function random_char($length = 10) {
+function teacher_grades($id)
+{
+    $db = \Config\Database::connect();
+    $sql = "SELECT DISTINCT teacher_assign_grade FROM system_teacher_assign WHERE teacher_assign_teacher_id = '$id' AND teacher_assign_status < 9";
+
+    $result = $db->query($sql)->getResultArray();
+    return array_column($result, 'teacher_assign_grade');
+}
+
+function teacher_subjects($id)
+{
+    $db = \Config\Database::connect();
+    $sql = "SELECT DISTINCT teacher_assign_subject_id FROM system_teacher_assign WHERE teacher_assign_teacher_id = '$id' AND teacher_assign_status < 9";
+
+    $result = $db->query($sql)->getResultArray();
+    return array_column($result, 'teacher_assign_subject_id');
+}
+
+function random_char($length = 10) 
+{
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@$%^&*()_}{[]';
     $charactersLength = strlen($characters);
     $randomString = '';
@@ -175,6 +194,7 @@ function teacher_user_id($id)
 
     return $db->query($sql)->getRow('teacher_user_id');
 }
+
 function student_user_id($id)
 {
     $db = \Config\Database::connect();

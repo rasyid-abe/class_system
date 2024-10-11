@@ -14,6 +14,7 @@ class TeacherAssignModel extends Model
         'teacher_assign_teacher_id', 
         'teacher_assign_subject_id', 
         'teacher_assign_student_group_id', 
+        'teacher_assign_grade', 
         'teacher_assign_teaching_schedule_id',
         'teacher_assign_room_id', 
         'teacher_assign_status', 

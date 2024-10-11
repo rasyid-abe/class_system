@@ -45,6 +45,62 @@
     </div>
 </div>
 
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_share">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><div id="shared_title"></div></h3>
+
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="less_id" val="">
+                <div class="form-check form-check-custom form-check-solid me-10 mb-2 form-check-inline">
+                    <input class="form-check-input input_share" type="radio" name="gender" value="1" id="opt1" />
+                    <label class="form-check-label text-dark" for="opt1">
+                        Seluruh Guru
+                    </label>
+                </div>
+                <div class="form-check form-check-custom form-check-solid me-10 mb-2 form-check-inline">
+                    <input class="form-check-input input_share" type="radio" name="gender" value="2" id="opt2" />
+                    <label class="form-check-label text-dark" for="opt2">
+                        Guru Mata Pelajaran yang sama
+                    </label>
+                </div>
+                <div class="form-check form-check-custom form-check-solid me-10 mb-2 form-check-inline">
+                    <input class="form-check-input input_share" type="radio" name="gender" value="3" id="opt3" />
+                    <label class="form-check-label text-dark" for="opt3">
+                        Guru Mata Pelajaran dan Jenjang Kelas yang sama
+                    </label>
+                </div>
+                <div class="form-check form-check-custom form-check-solid me-10 mb-2 form-check-inline">
+                    <input class="form-check-input input_share" type="radio" name="gender" value="4" id="opt4" />
+                    <label class="form-check-label text-dark" for="opt4">
+                        Guru tertentu
+                    </label>
+                </div>
+
+                <select class="form-select hide" id="multiple-select-field" data-placeholder="Pilih Guru" multiple disabled>
+                    <?php foreach ($teachers as $k => $v): ?>
+                        <?php $degr = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : ''  ?>
+                        <option value="<?= $v['teacher_id'] ?>"><?= $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $degr ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-danger" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" onclick="act_share();">Kirim</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
 
     <div class="col-sm-3">
@@ -76,7 +132,7 @@
                                                 </span>
                                             </div>
                                             <div class="menu-item px-3">
-                                                <a href="#" class="menu-link px-3" onclick="remove_content(<?= $v['lesson_additional_id'] ?>, 1)" data-kt-users-table-filter="delete_row">
+                                                <a href="#" class="menu-link px-3" onclick="remove_content(<?= $v['lesson_additional_id'] ?>, 1, '<?= $v['lesson_additional_chapter'] ?>')" data-kt-users-table-filter="delete_row">
                                                     Hapus BAB
                                                 </a>
                                             </div>
@@ -91,6 +147,9 @@
                                             <div class="d-flex justify-content-between">
                                                 <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold" onclick="view_content(<?= $val['lesson_additional_id'] ?>);"><?= $val['lesson_additional_subchapter'] ?></a>
                                                 <div class="">
+                                                    <a href="#" class="" onclick="share_topic(<?= $val['lesson_additional_id'] ?>, '<?= $val['lesson_additional_chapter'] ?>', '<?= $val['lesson_additional_subchapter'] ?>');">
+                                                        <i class="bi bi-share fs-5 text-gray-600"></i>
+                                                    </a>
                                                     <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                         <i class="bi bi-three-dots-vertical fs-3 text-gray-600"></i>
                                                     </a>
@@ -117,7 +176,7 @@
                     <?php endforeach ?>
                 <?php else : ?>
                     <div class="d-grid mb-2">
-                        <a href="<?= base_url('/teacher/lesson/additional/create/' . $subject . '/' . $grade) ?>" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> Tambah Materi</a>
+                        <a href="#" onclick="form_chapter(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran</a>
                     </div>
                 <?php endif ?>
 
@@ -195,6 +254,52 @@
 
     }
 
+    function share_topic(id, chap, subchap) {
+        $('#shared_title').html(`Bagikan BAB ${chap} Topik ${subchap}`)
+        $('input[name=less_id]').val(id);
+        $('#modal_share').modal('show')
+    }
+
+    jQuery('.input_share').on('click', function(e) {
+        const chks = $(this).val();
+        if (chks == 4) {
+            $('#multiple-select-field').removeAttr('disabled')
+        } else {
+            $('#multiple-select-field').attr('data-placeholder', 'Pilih Guru').attr('disabled', true)
+            $('#select2-multiple-select-field-container').html('')
+        }
+    })
+
+    function act_share() {
+        let val = $('.input_share:checked').val()
+        let thc = $('#multiple-select-field').val()
+        let idd = $('input[name=less_id]').val()
+        $('#modal_share').modal('hide')
+        $.ajax({
+            url: '<?= base_url('/teacher/lesson/additional/share-topic') ?>',
+            data: {idd,val,thc},
+            method: 'post',
+            dataType: 'json',
+            success: function(e) {
+                $.toast({
+                    heading: 'Success',
+                    text: 'Data berhasil di' + e.msg,
+                    showHideTransition: 'fade',
+                    position: 'top-right',
+                    icon: 'success'
+                })
+
+            }
+        })
+    }
+
+    $('#multiple-select-field').select2({
+        theme: "bootstrap-5",
+        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+        placeholder: $(this).data('placeholder'),
+        closeOnSelect: false,
+    });
+
     $(document.body).on('click', '#btn_update_content_file', function() {
         let id = $('#btn_update_attach').data('id');
 
@@ -220,7 +325,7 @@
         $('#body_upload_modal').html(form)
         $('#head_upload_modal').html('<h3 class="modal-title">Upload Dokumen File</h3>')
         $('#modal_upload_content').modal('show')
-        $('#submit_upload').attr('disabled','disabled')
+        $('#submit_upload').attr('disabled', 'disabled')
     })
 
     $(document.body).on('click', '#btn_update_content', function() {
@@ -307,7 +412,7 @@
 
         $('#body_upload_modal').html(form)
         $('#head_upload_modal').html('<h3 class="modal-title">Lampiran Dokumen</h3>')
-        $('#submit_upload').attr('disabled','disabled');
+        $('#submit_upload').attr('disabled', 'disabled');
         $('#modal_upload_content').modal('show')
     })
 
@@ -367,35 +472,35 @@
         let type = $('input[name=type]').val()
 
         let si = ii = 0;
-        for (let k in sizes){
+        for (let k in sizes) {
             si += parseInt(k)
             ii++
         }
-        
+
         let views = ''
         if (type == 7) {
             let allow_size = 50000000
             let allow_file = 10
-    
+
             if (si > allow_size || ii > allow_file) {
-                $('#submit_upload').attr('disabled','disabled');
+                $('#submit_upload').attr('disabled', 'disabled');
             } else {
                 $('#submit_upload').removeAttr('disabled');
             }
-            
+
             let views = `
                 <span class="badge badge-${ii > allow_file ? 'danger' : 'info'}">${ii} File</span>
                 <span class="badge badge-${si > allow_size ? 'danger': 'info'}">${formatBytes(si)}</span>
                 ${si > allow_size ? '<br><small class="text-danger">* Total kapasitas melebihi kapasistas maksimal</small>' : ''}
                 ${ii > allow_file ? '<br><small class="text-danger">* Total file melebihi kapasistas maksimal</small>' : ''}
             `;
-            
+
             $('#sum_attach').html(views)
-        } else if (type == 8 ) {
+        } else if (type == 8) {
             let allow_size = 10000000
-           
+
             if (si > allow_size) {
-                $('#submit_upload').attr('disabled','disabled');
+                $('#submit_upload').attr('disabled', 'disabled');
             } else {
                 $('#submit_upload').removeAttr('disabled');
             }
@@ -409,7 +514,7 @@
 
         if (ii < 1) {
             $('#sum_attach').html('')
-            $('#submit_upload').attr('disabled','disabled');
+            $('#submit_upload').attr('disabled', 'disabled');
         }
     }
 
@@ -417,18 +522,7 @@
         $('.btn_content_content').html('');
         $('.btn_conf_topic').html('');
 
-        let spl = e.lesson_additional_content_path.split("/");
-
-        let btn_conf = `
-            <div class="d-flex justify-content-end btn_conf_topic">
-                <div class="btn_content_content">
-                    <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_content" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
-                </div>&nbsp;
-                <div class="btn_content_content">
-                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content(${e.lesson_additional_id}, 5)"><i class="fa fa-trash"></i> Hapus</button>
-                </div>
-            </div>
-        `;
+        let file_path = '<?= base_url() . 'lesson_file/' ?>'
 
         let butn = `
             <div class="accordion accordion-icon-toggle" id="kt_accordion_2">
@@ -441,8 +535,15 @@
                     </div>
 
                     <div id="kt_accordion_2_item_1" class="fs-6 collapse show m-5" data-bs-parent="#kt_accordion_2" style="max-height: 500px; overflow-y: scroll;">
-                        ${btn_conf}
-                        ${e.lesson_additional_content}
+                        <div class="d-flex justify-content-end btn_conf_topic">
+                            <div class="btn_content_content">
+                                <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_content" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+                            </div>&nbsp;
+                            <div class="btn_content_content">
+                                <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content(${e.lesson_additional_id}, 5)"><i class="fa fa-trash"></i> Hapus</button>
+                            </div>
+                        </div>
+                        ${e.lesson_additional_content != '' ? e.lesson_additional_content : 'Materi belum tersedia' }
                     </div>
                 </div>
 
@@ -460,11 +561,11 @@
                                 <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_content_file" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
                             </div>&nbsp;
                             <div class="btn_content_content">
-                                <button type="button" class="btn btn-sm btn-light-danger" id="btn_delete_content_file" data-id="${e.lesson_additional_id}"><i class="fa fa-trash"></i> Hapus</button>
+                                <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content(${e.lesson_additional_id}, 8, '${e.lesson_additional_content_path}')"><i class="fa fa-trash"></i> Hapus</button>
                             </div>
                         </div>
 
-                        <embed src="<?= base_url() . 'lesson_file/' ?>${spl[2]}" width="100%" height="500px" />
+                        ${e.lesson_additional_content_path != '' ? `<embed src="${file_path + e.lesson_additional_content_path}" width="100%" height="500px" />` : 'File belum tersedia' }
                     </div>
                 </div>
 
@@ -472,18 +573,8 @@
 
         `;
 
-        $('#content_lesson').html(e.lesson_additional_content != '' ? butn : 'Materi belum tersedia')
-        // let btn_conf = `
-        //     <div class="d-flex justify-content-end btn_conf_topic">
-        //         <div class="btn_content_content">
-        //             <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_content" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
-        //         </div>&nbsp;
-        //         <div class="btn_content_content">
-        //             <button type="button" class="btn btn-sm btn-light-danger" id="btn_delete_content" data-id="${e.lesson_additional_id}"><i class="fa fa-trash"></i> Hapus</button>
-        //         </div>
-        //     </div>
-        // `;
-        // $('#content_lesson').before(btn_conf)
+
+        $('#content_lesson').html(butn)
     }
 
     function generate_view_video(e) {
@@ -562,14 +653,12 @@
 
     function remove_content(id, type, file = null) {
         let msg = '';
-        
-        if (type ==1) {
+
+        if (type == 1) {
             msg = 'hapus bab materi'
         } else if (type == 2) {
             msg = 'hapus topik materi'
-        } else if (type == 3) {
-        } else if (type == 4) {
-        } else if (type == 5) {
+        } else if (type == 3) {} else if (type == 4) {} else if (type == 5) {
             msg = 'topik pembelajaran'
         } else if (type == 6) {
             msg = 'video pembelajaran';
@@ -580,6 +669,8 @@
             } else {
                 msg = 'seluruh file lampiran'
             }
+        } else if (type == 8) {
+            msg = 'file materi'
         }
         Swal.fire({
             html: `Apakah anda yakin menghapus ${msg}?`,
@@ -623,6 +714,8 @@
 
     function form_chapter(e, chap = null, subchap = null, id = null) {
         let form = ''
+        console.log(e);
+        
         if (e == 1) {
             form = `
                 <input type="hidden" name="form_type" value="${e}" />
@@ -705,8 +798,10 @@
         } else if (type == 3) {
             id = $('input[name=lesson_id]').val();
             chap = $('input[name=chapter]').val();
+            subj = $('input[name=subject]').val();
+            grad = $('input[name=grade]').val();
             subchap = $('input[name=sub_chapter]').val();
-            store_content(type, id, [chap, subchap])
+            store_content(type, id, [chap, subj, grad, subchap])
         } else if (type == 4) {
             chap = $('input[name=chapter]').val();
             subj = $('input[name=subject]').val();
@@ -789,7 +884,11 @@
     function act_remove(id, type, file) {
         $.ajax({
             url: '<?= base_url('/teacher/lesson/additional/remove-content') ?>',
-            data: {id, type, file},
+            data: {
+                id,
+                type,
+                file
+            },
             method: 'post',
             dataType: 'json',
             success: function(e) {
@@ -820,49 +919,49 @@
         })
     }
 
-    jQuery('.form-check-input').on('click', function(e) {
-        const id = $(this).data('id');
-        const sts = $(this).val();
-        e.preventDefault();
+    // jQuery('.form-check-input').on('click', function(e) {
+    //     const id = $(this).data('id');
+    //     const sts = $(this).val();
+    //     e.preventDefault();
 
 
-        Swal.fire({
-            html: `Apakah anda ingin mengubah status?`,
-            icon: "info",
-            buttonsStyling: false,
-            showCancelButton: true,
-            confirmButtonText: "Ya",
-            cancelButtonText: 'Tidak',
-            customClass: {
-                confirmButton: "btn btn-sm btn-primary",
-                cancelButton: 'btn btn-sm btn-danger'
-            }
-        }).then(function(confirm) {
-            if (confirm.isConfirmed) {
-                $.ajax({
-                    url: '<?= base_url('/teacher/lesson/additional/status') ?>',
-                    data: {
-                        'id': id,
-                        'sts': sts
-                    },
-                    method: 'post',
-                    dataType: 'json',
-                    success: function(e) {
-                        sts < 1 ? $('#chx_' + id).val(1) : $('#chx_' + id).val(0)
-                        sts < 1 ? $('#chx_' + id).prop('checked', true) : $('#chx_' + id).prop('checked', false)
-                        $.toast({
-                            heading: 'Success',
-                            text: 'Data berhasil di' + e.msg,
-                            showHideTransition: 'fade',
-                            position: 'top-right',
-                            icon: 'success'
-                        })
+    //     Swal.fire({
+    //         html: `Apakah anda ingin mengubah status?`,
+    //         icon: "info",
+    //         buttonsStyling: false,
+    //         showCancelButton: true,
+    //         confirmButtonText: "Ya",
+    //         cancelButtonText: 'Tidak',
+    //         customClass: {
+    //             confirmButton: "btn btn-sm btn-primary",
+    //             cancelButton: 'btn btn-sm btn-danger'
+    //         }
+    //     }).then(function(confirm) {
+    //         if (confirm.isConfirmed) {
+    //             $.ajax({
+    //                 url: '<?= base_url('/teacher/lesson/additional/status') ?>',
+    //                 data: {
+    //                     'id': id,
+    //                     'sts': sts
+    //                 },
+    //                 method: 'post',
+    //                 dataType: 'json',
+    //                 success: function(e) {
+    //                     sts < 1 ? $('#chx_' + id).val(1) : $('#chx_' + id).val(0)
+    //                     sts < 1 ? $('#chx_' + id).prop('checked', true) : $('#chx_' + id).prop('checked', false)
+    //                     $.toast({
+    //                         heading: 'Success',
+    //                         text: 'Data berhasil di' + e.msg,
+    //                         showHideTransition: 'fade',
+    //                         position: 'top-right',
+    //                         icon: 'success'
+    //                     })
 
-                    }
-                })
-            }
-        });
-    });
+    //                 }
+    //             })
+    //         }
+    //     });
+    // });
 
     $('.delete').on('click', function(e) {
         const id = $(this).data('id');
