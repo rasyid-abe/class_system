@@ -16,6 +16,9 @@ $routes->get('/logout', 'Authentication\AuthConfig::logout');
 $routes->get('/blocked', 'Authentication\AuthConfig::blocked');
 $routes->get('/notfound', 'Authentication\AuthConfig::notfound');
 
+$routes->post('/config-teacher-student/active-year/list-year', 'Configs\ActiveYear::show_years', ['filter' => 'auth']);
+$routes->post('/config-teacher-student/active-year/set-year', 'Configs\ActiveYear::set_year', ['filter' => 'auth']);
+
 $routes->get('/dashboard/admin', 'Dashboard\DashboardAdmin::index', ['filter' => 'auth']);
 $routes->get('/dashboard/admin/change-password', 'Dashboard\DashboardAdmin::change_password', ['filter' => 'auth']); #done
 $routes->post('/dashboard/admin/update-password', 'Dashboard\DashboardAdmin::update_password', ['filter' => 'auth']); #done
@@ -45,7 +48,12 @@ $routes->get('/teacher/lesson/standart/view-subject/(:num)', 'LearningMS\Lessons
 $routes->get('/teacher/lesson/standart/view-content/(:num)/(:num)', 'LearningMS\Lessons\StandartLesson::view_content/$1/$2', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/standart/grab-content', 'LearningMS\Lessons\StandartLesson::grab_content', ['filter' => 'auth']);
 
-$routes->get('/teacher/lesson/school', 'LessonsMS\SchoolLesson::index', ['filter' => 'auth']);
+
+$routes->get('/teacher/lesson/school', 'LearningMS\Lessons\SchoolLesson::index', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/school/view-content/(:num)/(:num)', 'LearningMS\Lessons\SchoolLesson::view_content/$1/$2', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/school/grab-content', 'LearningMS\Lessons\SchoolLesson::grab_content', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/school/update-content', 'LearningMS\Lessons\SchoolLesson::update_content', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/school/grab-all-subchap', 'LearningMS\Lessons\SchoolLesson::grab_all_subchap', ['filter' => 'auth']);
 
 $routes->get('/teacher/lesson/additional', 'LearningMS\Lessons\AdditionalLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/additional/view-content/(:num)/(:num)', 'LearningMS\Lessons\AdditionalLesson::view_content/$1/$2', ['filter' => 'auth']);
