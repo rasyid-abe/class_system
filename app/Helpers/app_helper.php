@@ -92,6 +92,7 @@ function school_level($id)
     return $query['school_level'];
 }
 
+
 function school_alias($id)
 {
     $db = \Config\Database::connect();
@@ -209,6 +210,30 @@ function username_exists($param)
     $sql = "SELECT user_name FROM account_user WHERE user_status < 9 AND user_name = '$param'";
 
     return $db->query($sql)->getNumRows();
+}
+
+function year_active()
+{
+    $db = \Config\Database::connect();
+
+    $user = session()->get('c_id');
+    
+    $sql = "
+        SELECT b.school_year_period, b.school_year_id
+        FROM account_active_year a
+        LEFT JOIN master_school_year b ON b.school_year_id = a.active_year_school_year_id
+        WHERE b.school_year_status < 9 AND a.active_year_user_id = $user
+    ";
+
+    $row = $db->query($sql)->getRowArray();
+    return $row;
+}
+
+function distinct_array($arr, $val)
+{
+    $tempArray = array_unique(array_column($arr, $val));
+    $moreUniqueArray = array_values(array_intersect_key($arr, $tempArray));
+    return $moreUniqueArray;
 }
 
 

@@ -23,19 +23,18 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
-	<link href="<?= base_url() ?>assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+	<link href="<?= base_url() ?>assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
+	<link href="<?= base_url() ?>assets/css/bstreeview.css" rel="stylesheet">
 
 	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" /> -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" /> -->
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" /> -->
 
-	<script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
-	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
-	<script src="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.js"></script>
 	<!--end::Global Stylesheets Bundle-->
+
 
 	<style>
 		.hide {
@@ -106,6 +105,33 @@
 <!--begin::Body-->
 
 <body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled">
+	<input type="hidden" id="base" value="<?php echo base_url(); ?>">
+	<div class="modal fade" id="active_tp" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3 class="modal-title">Tahun Pelajaran Aktif</h3>
+
+					<!--begin::Close-->
+					<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+						<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+					</div>
+					<!--end::Close-->
+				</div>
+
+				<div class="modal-body">
+					<div id="lists_year"></div>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-info" onclick="reload_tp();">Pilih</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
 	<!--begin::Main-->
 	<!--begin::Root-->
 	<div class="d-flex flex-column flex-root">
@@ -848,331 +874,340 @@
 								</div>
 								<!--end::Menu item-->
 								<!--begin::Menu item-->
-								<div class="menu-item px-5">
-									<a href="#" class="menu-link px-5">
-										<span class="menu-text">My Audit Logs</span>
-										<span class="menu-badge">
-											<span class="badge badge-light-danger badge-circle fw-bolder fs-7">3</span>
+								<div id="school_active_year" data-id="<?= year_active() != null ? year_active()['school_year_id'] : '' ?>"></div>
+								<<div class="menu-item px-5"
+									data-kt-menu-placement="left-start" data-kt-menu-offset="-15px, 0">
+									<a onclick="show_tp();" class="menu-link px-5">
+										<span class="menu-title position-relative"><?= year_active() != null ? 'T.P ' . year_active()['school_year_period'] : 'T.P [belum dipilih]' ?>
+											<span class="ms-5 position-absolute translate-middle-y top-50 end-0">
+												<i class="ki-duotone ki-calendar-2 fs-2">
+													<span class="path1"></span>
+													<span class="path2"></span>
+													<span class="path3"></span>
+													<span class="path4"></span>
+													<span class="path5"></span>
+												</i>
+											</span>
 										</span>
 									</a>
-								</div>
-								<!--end::Menu item-->
-								<!--begin::Menu item-->
-								<div class="menu-item px-5" data-kt-menu-trigger="hover"
-									data-kt-menu-placement="right-end">
-									<a href="#" class="menu-link px-5">
-										<span class="menu-title">My Subscription</span>
-										<span class="menu-arrow"></span>
-									</a>
-									<!--begin::Menu sub-->
-									<div class="menu-sub menu-sub-dropdown w-175px py-4">
-										<!--begin::Menu item-->
-										<div class="menu-item px-3">
-											<a href="#" class="menu-link px-5">Referrals</a>
-										</div>
-										<!--end::Menu item-->
-										<!--begin::Menu item-->
-										<div class="menu-item px-3">
-											<a href="#" class="menu-link px-5">Billing</a>
-										</div>
-										<!--end::Menu item-->
-										<!--begin::Menu item-->
-										<div class="menu-item px-3">
-											<a href="#" class="menu-link px-5">Payments</a>
-										</div>
-										<!--end::Menu item-->
-										<!--begin::Menu item-->
-										<div class="menu-item px-3">
-											<a href="#" class="menu-link d-flex flex-stack px-5">Statements
-												<i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
-													title="View your statements"></i></a>
-										</div>
-										<!--end::Menu item-->
-										<!--begin::Menu separator-->
-										<div class="separator my-2"></div>
-										<!--end::Menu separator-->
-										<!--begin::Menu item-->
-										<div class="menu-item px-3">
-											<div class="menu-content px-3">
-												<label
-													class="form-check form-switch form-check-custom form-check-solid">
-													<input class="form-check-input w-30px h-20px" type="checkbox"
-														value="1" checked="checked" name="notifications" />
-													<span class="form-check-label text-muted fs-7">Notifications</span>
-												</label>
-											</div>
-										</div>
-										<!--end::Menu item-->
+							</div>
+							<!--end::Menu item-->
+							<!--begin::Menu item-->
+							<div class="menu-item px-5" data-kt-menu-trigger="hover"
+								data-kt-menu-placement="right-end">
+								<a href="#" class="menu-link px-5">
+									<span class="menu-title">My Subscription</span>
+									<span class="menu-arrow"></span>
+								</a>
+								<!--begin::Menu sub-->
+								<div class="menu-sub menu-sub-dropdown w-175px py-4">
+									<!--begin::Menu item-->
+									<div class="menu-item px-3">
+										<a href="#" class="menu-link px-5">Referrals</a>
 									</div>
-									<!--end::Menu sub-->
+									<!--end::Menu item-->
+									<!--begin::Menu item-->
+									<div class="menu-item px-3">
+										<a href="#" class="menu-link px-5">Billing</a>
+									</div>
+									<!--end::Menu item-->
+									<!--begin::Menu item-->
+									<div class="menu-item px-3">
+										<a href="#" class="menu-link px-5">Payments</a>
+									</div>
+									<!--end::Menu item-->
+									<!--begin::Menu item-->
+									<div class="menu-item px-3">
+										<a href="#" class="menu-link d-flex flex-stack px-5">Statements
+											<i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
+												title="View your statements"></i></a>
+									</div>
+									<!--end::Menu item-->
+									<!--begin::Menu separator-->
+									<div class="separator my-2"></div>
+									<!--end::Menu separator-->
+									<!--begin::Menu item-->
+									<div class="menu-item px-3">
+										<div class="menu-content px-3">
+											<label
+												class="form-check form-switch form-check-custom form-check-solid">
+												<input class="form-check-input w-30px h-20px" type="checkbox"
+													value="1" checked="checked" name="notifications" />
+												<span class="form-check-label text-muted fs-7">Notifications</span>
+											</label>
+										</div>
+									</div>
+									<!--end::Menu item-->
 								</div>
-								<!--end::Menu item-->
-								<!--begin::Menu item-->
-								<div class="menu-item px-5">
-									<a href="#" class="menu-link px-5">My Activities</a>
-								</div>
-								<!--end::Menu item-->
-								<!--begin::Menu separator-->
-								<div class="separator my-2"></div>
-								<!--end::Menu separator-->
-								<!--begin::Menu item-->
-								<div class="menu-item px-5" data-kt-menu-trigger="hover"
-									data-kt-menu-placement="right-end">
-									<a href="#" class="menu-link px-5">
-										<span class="menu-title position-relative">Language
-											<span
-												class="fs-8 rounded bg-light px-3 py-2 position-absolute translate-middle-y top-50 end-0">English
-												<img class="w-15px h-15px rounded-1 ms-2"
+								<!--end::Menu sub-->
+							</div>
+							<!--end::Menu item-->
+							<!--begin::Menu item-->
+							<div class="menu-item px-5">
+								<a href="#" class="menu-link px-5">My Activities</a>
+							</div>
+							<!--end::Menu item-->
+							<!--begin::Menu separator-->
+							<div class="separator my-2"></div>
+							<!--end::Menu separator-->
+							<!--begin::Menu item-->
+							<div class="menu-item px-5" data-kt-menu-trigger="hover"
+								data-kt-menu-placement="right-end">
+								<a href="#" class="menu-link px-5">
+									<span class="menu-title position-relative">Language
+										<span
+											class="fs-8 rounded bg-light px-3 py-2 position-absolute translate-middle-y top-50 end-0">English
+											<img class="w-15px h-15px rounded-1 ms-2"
+												src="<?= base_url() ?>assets/media/flags/united-states.svg"
+												alt="" /></span></span>
+								</a>
+								<!--begin::Menu sub-->
+								<div class="menu-sub menu-sub-dropdown w-175px py-4">
+									<!--begin::Menu item-->
+									<div class="menu-item px-3">
+										<a href="#" class="menu-link d-flex px-5 active">
+											<span class="symbol symbol-20px me-4">
+												<img class="rounded-1"
 													src="<?= base_url() ?>assets/media/flags/united-states.svg"
-													alt="" /></span></span>
-									</a>
-									<!--begin::Menu sub-->
-									<div class="menu-sub menu-sub-dropdown w-175px py-4">
-										<!--begin::Menu item-->
-										<div class="menu-item px-3">
-											<a href="#" class="menu-link d-flex px-5 active">
-												<span class="symbol symbol-20px me-4">
-													<img class="rounded-1"
-														src="<?= base_url() ?>assets/media/flags/united-states.svg"
-														alt="" />
-												</span>English</a>
-										</div>
-										<!--end::Menu item-->
-										<!--begin::Menu item-->
-										<div class="menu-item px-3">
-											<a href="#" class="menu-link d-flex px-5">
-												<span class="symbol symbol-20px me-4">
-													<img class="rounded-1"
-														src="<?= base_url() ?>assets/media/flags/spain.svg" alt="" />
-												</span>Spanish</a>
-										</div>
-										<!--end::Menu item-->
-										<!--begin::Menu item-->
-										<div class="menu-item px-3">
-											<a href="#" class="menu-link d-flex px-5">
-												<span class="symbol symbol-20px me-4">
-													<img class="rounded-1"
-														src="<?= base_url() ?>assets/media/flags/germany.svg" alt="" />
-												</span>German</a>
-										</div>
-										<!--end::Menu item-->
-										<!--begin::Menu item-->
-										<div class="menu-item px-3">
-											<a href="#" class="menu-link d-flex px-5">
-												<span class="symbol symbol-20px me-4">
-													<img class="rounded-1"
-														src="<?= base_url() ?>assets/media/flags/japan.svg" alt="" />
-												</span>Japanese</a>
-										</div>
-										<!--end::Menu item-->
-										<!--begin::Menu item-->
-										<div class="menu-item px-3">
-											<a href="#" class="menu-link d-flex px-5">
-												<span class="symbol symbol-20px me-4">
-													<img class="rounded-1"
-														src="<?= base_url() ?>assets/media/flags/france.svg" alt="" />
-												</span>French</a>
-										</div>
-										<!--end::Menu item-->
+													alt="" />
+											</span>English</a>
 									</div>
-									<!--end::Menu sub-->
-								</div>
-								<!--end::Menu item-->
-								<!--begin::Menu item-->
-								<div class="menu-item px-5 my-1">
-									<a href="#" class="menu-link px-5">Account Settings</a>
-								</div>
-								<!--end::Menu item-->
-								<!--begin::Menu item-->
-								<div class="menu-item px-5">
-									<a href="<?= base_url() ?>logout" class="menu-link px-5">Keluar</a>
-								</div>
-								<!--end::Menu item-->
-								<!--begin::Menu separator-->
-								<div class="separator my-2"></div>
-								<!--end::Menu separator-->
-								<!--begin::Menu item-->
-								<div class="menu-item px-5">
-									<div class="menu-content px-5">
-										<label
-											class="form-check form-switch form-check-custom form-check-solid pulse pulse-success"
-											for="kt_user_menu_dark_mode_toggle">
-											<input class="form-check-input w-30px h-20px" type="checkbox" value="1"
-												name="mode" id="kt_user_menu_dark_mode_toggle"
-												data-kt-url="../dist/index.html" />
-											<span class="pulse-ring ms-n1"></span>
-											<span class="form-check-label text-gray-600 fs-7">Dark Mode</span>
-										</label>
+									<!--end::Menu item-->
+									<!--begin::Menu item-->
+									<div class="menu-item px-3">
+										<a href="#" class="menu-link d-flex px-5">
+											<span class="symbol symbol-20px me-4">
+												<img class="rounded-1"
+													src="<?= base_url() ?>assets/media/flags/spain.svg" alt="" />
+											</span>Spanish</a>
 									</div>
+									<!--end::Menu item-->
+									<!--begin::Menu item-->
+									<div class="menu-item px-3">
+										<a href="#" class="menu-link d-flex px-5">
+											<span class="symbol symbol-20px me-4">
+												<img class="rounded-1"
+													src="<?= base_url() ?>assets/media/flags/germany.svg" alt="" />
+											</span>German</a>
+									</div>
+									<!--end::Menu item-->
+									<!--begin::Menu item-->
+									<div class="menu-item px-3">
+										<a href="#" class="menu-link d-flex px-5">
+											<span class="symbol symbol-20px me-4">
+												<img class="rounded-1"
+													src="<?= base_url() ?>assets/media/flags/japan.svg" alt="" />
+											</span>Japanese</a>
+									</div>
+									<!--end::Menu item-->
+									<!--begin::Menu item-->
+									<div class="menu-item px-3">
+										<a href="#" class="menu-link d-flex px-5">
+											<span class="symbol symbol-20px me-4">
+												<img class="rounded-1"
+													src="<?= base_url() ?>assets/media/flags/france.svg" alt="" />
+											</span>French</a>
+									</div>
+									<!--end::Menu item-->
 								</div>
-								<!--end::Menu item-->
+								<!--end::Menu sub-->
 							</div>
-							<!--end::Menu-->
-							<!--end::Menu wrapper-->
-						</div>
-						<!--end::User-->
-					</div>
-					<!--end::Footer-->
-				</div>
-				<!--end::Primary-->
-				<!--begin::Secondary-->
-				<div class="aside-secondary d-flex flex-row-fluid">
-					<!--begin::Workspace-->
-					<div class="aside-workspace my-5 p-5" id="kt_aside_wordspace">
-						<div class="d-flex h-100 flex-column">
-							<!--begin::Wrapper-->
-							<div class="flex-column-fluid hover-scroll-y" data-kt-scroll="true"
-								data-kt-scroll-activate="true" data-kt-scroll-height="auto"
-								data-kt-scroll-wrappers="#kt_aside_wordspace"
-								data-kt-scroll-dependencies="#kt_aside_secondary_footer" data-kt-scroll-offset="0px">
-								<!--begin::Tab content-->
-								<?= $this->include('templates/sidemenu') ?>
-								<!--end::Tab content-->
+							<!--end::Menu item-->
+							<!--begin::Menu item-->
+							<div class="menu-item px-5 my-1">
+								<a href="#" class="menu-link px-5">Account Settings</a>
 							</div>
-							<!--end::Wrapper-->
-						</div>
-					</div>
-					<!--end::Workspace-->
-				</div>
-				<!--end::Secondary-->
-				<!--begin::Aside Toggle-->
-				<button
-					class="btn btn-sm btn-icon bg-body btn-color-gray-600 btn-active-primary position-absolute translate-middle start-100 end-0 bottom-0 shadow-sm d-none d-lg-flex"
-					data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body"
-					data-kt-toggle-name="aside-minimize" style="margin-bottom: 1.35rem">
-					<!--begin::Svg Icon | path: icons/duotune/arrows/arr063.svg-->
-					<span class="svg-icon svg-icon-2 rotate-180">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-							<rect opacity="0.5" x="6" y="11" width="13" height="2" rx="1" fill="black" />
-							<path
-								d="M8.56569 11.4343L12.75 7.25C13.1642 6.83579 13.1642 6.16421 12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75L5.70711 11.2929C5.31658 11.6834 5.31658 12.3166 5.70711 12.7071L11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25C13.1642 17.8358 13.1642 17.1642 12.75 16.75L8.56569 12.5657C8.25327 12.2533 8.25327 11.7467 8.56569 11.4343Z"
-								fill="black" />
-						</svg>
-					</span>
-					<!--end::Svg Icon-->
-				</button>
-				<!--end::Aside Toggle-->
-			</div>
-			<!--end::Aside-->
-			<!--begin::Wrapper-->
-			<div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
-				<!--begin::Header-->
-				<div id="kt_header" class="header" data-kt-sticky="true" data-kt-sticky-name="header"
-					data-kt-sticky-offset="{default: '200px', lg: '300px'}">
-					<!--begin::Container-->
-					<div class="container-xxl d-flex align-items-center justify-content-between"
-						id="kt_header_container">
-						<!--begin::Page title-->
-						<div class="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-2 pb-5 pb-lg-0"
-							data-kt-swapper="true" data-kt-swapper-mode="prepend"
-							data-kt-swapper-parent="{default: '#kt_content_container', lg: '#kt_header_container'}">
-							<!--begin::Heading-->
-							<h1 class="text-dark fw-bold my-0 fs-2"><?= $title ?></h1>
-							<!--end::Heading-->
-							<!--begin::Breadcrumb-->
-							<ul class="breadcrumb breadcrumb-line text-muted fw-bold fs-base my-1">
-								<li class="breadcrumb-item text-muted">
-									<a href="<?= base_url() ?>" class="text-muted">Home</a>
-								</li>
-								<?php foreach ($breadcrumb as $k => $v): ?>
-									<li class="breadcrumb-item text-muted">
-										<a href="<?= $k ?>" class="text-muted"><?= $v ?></a>
-									</li>
-								<?php endforeach; ?>
-							</ul>
-							<!--end::Breadcrumb-->
-						</div>
-						<!--end::Page title=-->
-						<!--begin::Wrapper-->
-						<div class="d-flex d-lg-none align-items-center ms-n2 me-2">
-							<!--begin::Aside mobile toggle-->
-							<div class="btn btn-icon btn-active-icon-primary" id="kt_aside_toggle">
-								<!--begin::Svg Icon | path: icons/duotune/abstract/abs015.svg-->
-								<span class="svg-icon svg-icon-2x">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-										fill="none">
-										<path
-											d="M21 7H3C2.4 7 2 6.6 2 6V4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V6C22 6.6 21.6 7 21 7Z"
-											fill="black" />
-										<path opacity="0.3"
-											d="M21 14H3C2.4 14 2 13.6 2 13V11C2 10.4 2.4 10 3 10H21C21.6 10 22 10.4 22 11V13C22 13.6 21.6 14 21 14ZM22 20V18C22 17.4 21.6 17 21 17H3C2.4 17 2 17.4 2 18V20C2 20.6 2.4 21 3 21H21C21.6 21 22 20.6 22 20Z"
-											fill="black" />
-									</svg>
-								</span>
-								<!--end::Svg Icon-->
+							<!--end::Menu item-->
+							<!--begin::Menu item-->
+							<div class="menu-item px-5">
+								<a href="<?= base_url() ?>logout" class="menu-link px-5">Keluar</a>
 							</div>
-							<!--end::Aside mobile toggle-->
-							<!--begin::Logo-->
-							<a href="../dist/index.html" class="d-flex align-items-center">
-								<img alt="Logo" src="<?= base_url() ?>assets/media/logos/logo-default.svg"
-									class="h-40px" />
-							</a>
-							<!--end::Logo-->
-						</div>
-						<!--end::Wrapper-->
-						<!--begin::Toolbar wrapper-->
-						<div class="d-flex flex-shrink-0">
-							<!--begin::Invite user-->
-							<div class="d-flex ms-3">
-								<a href="#" class="btn bg-body btn-color-gray-600 btn-active-info" tooltip="New Member"
-									data-bs-toggle="modal" data-bs-target="#kt_modal_invite_friends">New User</a>
+							<!--end::Menu item-->
+							<!--begin::Menu separator-->
+							<div class="separator my-2"></div>
+							<!--end::Menu separator-->
+							<!--begin::Menu item-->
+							<div class="menu-item px-5">
+								<div class="menu-content px-5">
+									<label
+										class="form-check form-switch form-check-custom form-check-solid pulse pulse-success"
+										for="kt_user_menu_dark_mode_toggle">
+										<input class="form-check-input w-30px h-20px" type="checkbox" value="1"
+											name="mode" id="kt_user_menu_dark_mode_toggle"
+											data-kt-url="../dist/index.html" />
+										<span class="pulse-ring ms-n1"></span>
+										<span class="form-check-label text-gray-600 fs-7">Dark Mode</span>
+									</label>
+								</div>
 							</div>
-							<!--end::Invite user-->
-							<!--begin::Create app-->
-							<div class="d-flex ms-3">
-								<a href="#" class="btn btn-info" tooltip="New App" data-bs-toggle="modal"
-									data-bs-target="#kt_modal_create_app" id="kt_toolbar_primary_button">New Goal</a>
-							</div>
-							<!--end::Create app-->
+							<!--end::Menu item-->
 						</div>
-						<!--end::Toolbar wrapper-->
-					</div>
-					<!--end::Container-->
-				</div>
-				<!--end::Header-->
-				<!--begin::Content-->
-				<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-					<!--begin::Container-->
-					<div class="container-xxl" id="kt_content_container">
-						<?php $this->renderSection('content'); ?>
-					</div>
-					<!--end::Container-->
-				</div>
-				<!--end::Content-->
-				<!--begin::Footer-->
-				<div class="footer py-4 d-flex flex-lg-column" id="kt_footer">
-					<!--begin::Container-->
-					<div class="container-xxl d-flex flex-column flex-md-row flex-stack">
-						<!--begin::Copyright-->
-						<div class="text-dark order-2 order-md-1">
-							<span class="text-gray-400 fw-bold me-1">Created by</span>
-							<a href="https://keenthemes.com" target="_blank"
-								class="text-muted text-hover-primary fw-bold me-2 fs-6">Keenthemes</a>
-						</div>
-						<!--end::Copyright-->
-						<!--begin::Menu-->
-						<ul class="menu menu-gray-600 menu-hover-primary fw-bold order-1">
-							<li class="menu-item">
-								<a href="https://keenthemes.com" target="_blank" class="menu-link px-2">About</a>
-							</li>
-							<li class="menu-item">
-								<a href="https://keenthemes.com/support" target="_blank"
-									class="menu-link px-2">Support</a>
-							</li>
-							<li class="menu-item">
-								<a href="https://keenthemes.com/products/seven-html-pro" target="_blank"
-									class="menu-link px-2">Purchase</a>
-							</li>
-						</ul>
 						<!--end::Menu-->
+						<!--end::Menu wrapper-->
 					</div>
-					<!--end::Container-->
+					<!--end::User-->
 				</div>
 				<!--end::Footer-->
 			</div>
-			<!--end::Wrapper-->
+			<!--end::Primary-->
+			<!--begin::Secondary-->
+			<div class="aside-secondary d-flex flex-row-fluid">
+				<!--begin::Workspace-->
+				<div class="aside-workspace my-5 p-5" id="kt_aside_wordspace">
+					<div class="d-flex h-100 flex-column">
+						<!--begin::Wrapper-->
+						<div class="flex-column-fluid hover-scroll-y" data-kt-scroll="true"
+							data-kt-scroll-activate="true" data-kt-scroll-height="auto"
+							data-kt-scroll-wrappers="#kt_aside_wordspace"
+							data-kt-scroll-dependencies="#kt_aside_secondary_footer" data-kt-scroll-offset="0px">
+							<!--begin::Tab content-->
+							<?= $this->include('templates/sidemenu') ?>
+							<!--end::Tab content-->
+						</div>
+						<!--end::Wrapper-->
+					</div>
+				</div>
+				<!--end::Workspace-->
+			</div>
+			<!--end::Secondary-->
+			<!--begin::Aside Toggle-->
+			<button
+				class="btn btn-sm btn-icon bg-body btn-color-gray-600 btn-active-primary position-absolute translate-middle start-100 end-0 bottom-0 shadow-sm d-none d-lg-flex"
+				data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body"
+				data-kt-toggle-name="aside-minimize" style="margin-bottom: 1.35rem">
+				<!--begin::Svg Icon | path: icons/duotune/arrows/arr063.svg-->
+				<span class="svg-icon svg-icon-2 rotate-180">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+						<rect opacity="0.5" x="6" y="11" width="13" height="2" rx="1" fill="black" />
+						<path
+							d="M8.56569 11.4343L12.75 7.25C13.1642 6.83579 13.1642 6.16421 12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75L5.70711 11.2929C5.31658 11.6834 5.31658 12.3166 5.70711 12.7071L11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25C13.1642 17.8358 13.1642 17.1642 12.75 16.75L8.56569 12.5657C8.25327 12.2533 8.25327 11.7467 8.56569 11.4343Z"
+							fill="black" />
+					</svg>
+				</span>
+				<!--end::Svg Icon-->
+			</button>
+			<!--end::Aside Toggle-->
 		</div>
-		<!--end::Page-->
+		<!--end::Aside-->
+		<!--begin::Wrapper-->
+		<div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+			<!--begin::Header-->
+			<div id="kt_header" class="header" data-kt-sticky="true" data-kt-sticky-name="header"
+				data-kt-sticky-offset="{default: '200px', lg: '300px'}">
+				<!--begin::Container-->
+				<div class="container-xxl d-flex align-items-center justify-content-between"
+					id="kt_header_container">
+					<!--begin::Page title-->
+					<div class="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-2 pb-5 pb-lg-0"
+						data-kt-swapper="true" data-kt-swapper-mode="prepend"
+						data-kt-swapper-parent="{default: '#kt_content_container', lg: '#kt_header_container'}">
+						<!--begin::Heading-->
+						<h1 class="text-dark fw-bold my-0 fs-2"><?= $title ?></h1>
+						<!--end::Heading-->
+						<!--begin::Breadcrumb-->
+						<ul class="breadcrumb breadcrumb-line text-muted fw-bold fs-base my-1">
+							<li class="breadcrumb-item text-muted">
+								<a href="<?= base_url() ?>" class="text-muted">Home</a>
+							</li>
+							<?php foreach ($breadcrumb as $k => $v): ?>
+								<li class="breadcrumb-item text-muted">
+									<a href="<?= $k ?>" class="text-muted"><?= $v ?></a>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+						<!--end::Breadcrumb-->
+					</div>
+					<!--end::Page title=-->
+					<!--begin::Wrapper-->
+					<div class="d-flex d-lg-none align-items-center ms-n2 me-2">
+						<!--begin::Aside mobile toggle-->
+						<div class="btn btn-icon btn-active-icon-primary" id="kt_aside_toggle">
+							<!--begin::Svg Icon | path: icons/duotune/abstract/abs015.svg-->
+							<span class="svg-icon svg-icon-2x">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+									fill="none">
+									<path
+										d="M21 7H3C2.4 7 2 6.6 2 6V4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V6C22 6.6 21.6 7 21 7Z"
+										fill="black" />
+									<path opacity="0.3"
+										d="M21 14H3C2.4 14 2 13.6 2 13V11C2 10.4 2.4 10 3 10H21C21.6 10 22 10.4 22 11V13C22 13.6 21.6 14 21 14ZM22 20V18C22 17.4 21.6 17 21 17H3C2.4 17 2 17.4 2 18V20C2 20.6 2.4 21 3 21H21C21.6 21 22 20.6 22 20Z"
+										fill="black" />
+								</svg>
+							</span>
+							<!--end::Svg Icon-->
+						</div>
+						<!--end::Aside mobile toggle-->
+						<!--begin::Logo-->
+						<a href="../dist/index.html" class="d-flex align-items-center">
+							<img alt="Logo" src="<?= base_url() ?>assets/media/logos/logo-default.svg"
+								class="h-40px" />
+						</a>
+						<!--end::Logo-->
+					</div>
+					<!--end::Wrapper-->
+					<!--begin::Toolbar wrapper-->
+					<div class="d-flex flex-shrink-0">
+						<!--begin::Invite user-->
+						<div class="d-flex ms-3">
+							<a href="#" class="btn bg-body btn-color-gray-600 btn-active-info" tooltip="New Member"
+								data-bs-toggle="modal" data-bs-target="#kt_modal_invite_friends">New User</a>
+						</div>
+						<!--end::Invite user-->
+						<!--begin::Create app-->
+						<div class="d-flex ms-3">
+							<a href="#" class="btn btn-info" tooltip="New App" data-bs-toggle="modal"
+								data-bs-target="#kt_modal_create_app" id="kt_toolbar_primary_button">New Goal</a>
+						</div>
+						<!--end::Create app-->
+					</div>
+					<!--end::Toolbar wrapper-->
+				</div>
+				<!--end::Container-->
+			</div>
+			<!--end::Header-->
+			<!--begin::Content-->
+			<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+				<!--begin::Container-->
+				<div class="container-xxl" id="kt_content_container">
+					<?php $this->renderSection('content'); ?>
+				</div>
+				<!--end::Container-->
+			</div>
+			<!--end::Content-->
+			<!--begin::Footer-->
+			<div class="footer py-4 d-flex flex-lg-column" id="kt_footer">
+				<!--begin::Container-->
+				<div class="container-xxl d-flex flex-column flex-md-row flex-stack">
+					<!--begin::Copyright-->
+					<div class="text-dark order-2 order-md-1">
+						<span class="text-gray-400 fw-bold me-1">Created by</span>
+						<a href="https://keenthemes.com" target="_blank"
+							class="text-muted text-hover-primary fw-bold me-2 fs-6">Keenthemes</a>
+					</div>
+					<!--end::Copyright-->
+					<!--begin::Menu-->
+					<ul class="menu menu-gray-600 menu-hover-primary fw-bold order-1">
+						<li class="menu-item">
+							<a href="https://keenthemes.com" target="_blank" class="menu-link px-2">About</a>
+						</li>
+						<li class="menu-item">
+							<a href="https://keenthemes.com/support" target="_blank"
+								class="menu-link px-2">Support</a>
+						</li>
+						<li class="menu-item">
+							<a href="https://keenthemes.com/products/seven-html-pro" target="_blank"
+								class="menu-link px-2">Purchase</a>
+						</li>
+					</ul>
+					<!--end::Menu-->
+				</div>
+				<!--end::Container-->
+			</div>
+			<!--end::Footer-->
+		</div>
+		<!--end::Wrapper-->
+	</div>
+	<!--end::Page-->
 	</div>
 	<!--end::Root-->
 	<!--begin::Scrolltop-->
@@ -1192,10 +1227,17 @@
 	<!--end::Scrolltop-->
 	<!--end::Main-->
 	<script>
-		var hostUrl = "<?= base_url() ?>assets/";
+		const base_url = document.getElementById('base').value;
+		let idc_public = '<?= session()->getFlashdata('id_content') ?>'
+		let att_id = '<?= session()->getFlashdata('att_id') ?>'
+		let file_id = '<?= session()->getFlashdata('file_id') ?>'
+		let hostUrl = "<?= base_url() ?>assets/";
 	</script>
 	<!--begin::Javascript-->
 	<!--begin::Global Javascript Bundle(used by all pages)-->
+	<script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
+	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
+	<!-- <script src="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.js"></script> -->
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -1208,77 +1250,77 @@
 
 	<!--end::Page Vendors Javascript-->
 	<!--begin::Page Custom Javascript(used by this page)-->
-	<script src="<?= base_url() ?>assets/js/custom/widgets.js"></script>
+	<!-- <script src="<?= base_url() ?>assets/js/custom/widgets.js"></script> -->
 	<!--end::Page Custom Javascript-->
 	<!--end::Javascript-->
+
+	
+	<script src="<?= base_url() ?>assets/js/script/lesson_school.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/lesson_additional.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/lesson_standard.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/lesson_public.js"></script>
+	
 	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
-	<script src="<?= base_url() ?>assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
-	<!-- <script src="<?= base_url() ?>assets/plugins/custom/ckeditor/ckeditor-inline.bundle.js"></script> -->
-	<!-- <script src="<?= base_url() ?>assets/plugins/custom/ckeditor/ckeditor-balloon.bundle.js"></script> -->
+	<script src="<?= base_url() ?>assets/js/common.js"></script>
 	<script src="<?= base_url() ?>assets/tinymce/tinymce.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/tinymce_conf.js"></script>
+	<script src="<?= base_url() ?>assets/js/bstreeview.js"></script>
 	<script>
-		function formatBytes(bytes, decimals = 2) {
-			if (!+bytes) return '0 Bytes'
-
-			const k = 1024
-			const dm = decimals < 0 ? 0 : decimals
-			const sizes = ['Bytes', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb']
-
-			const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-			return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
-		}
-
-		function youtube_parser(url) {
-			var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-			var match = url.match(regExp);
-			return (match && match[7].length == 11) ? match[7] : false;
-		}
-
-		function show_loading() {
-			const loadingEl = document.createElement("div");
-			document.body.prepend(loadingEl);
-			loadingEl.classList.add("page-loader");
-			loadingEl.classList.add("flex-column");
-			loadingEl.classList.add("bg-dark");
-			loadingEl.classList.add("bg-opacity-25");
-			loadingEl.innerHTML = `
-				<span class="spinner-border text-primary" role="status"></span>
-				<span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
-			`;
-
-			// Show page loading
-			KTApp.showPageLoading();
-		}
-
-		function hide_loading() {
-			KTApp.hidePageLoading();
-			$('.page-loader').remove();
-		}
-
-		function toast_act(heading, text, icon, hide) {
-			$.toast({
-				heading: heading,
-				text: text,
-				showHideTransition: 'fade',
-				position: 'top-right',
-				icon: icon,
-				hideAfter: hide
+		
+		function set_year(e) {
+			$.ajax({
+				url: "<?= base_url('/config-teacher-student/active-year/set-year') ?>",
+				type: "post",
+				data: {
+					'year_id': $('input[name="radio_tp"]:checked').val()
+				},
+				dataType: "json",
+				beforeSend: function() {
+					// show_loading()
+				},
+				success: function(data) {
+					// hide_loading()
+				}
 			})
 		}
 
-		// function getBase64(file, callback) {
-		// 	var reader = new FileReader();
-		// 	reader.readAsDataURL(file[0].files[0])
-		// 	reader.onload = () => {
-		// 		callback(reader.result);
-		// 	};
-		// }
+		function generate_years(e) {
+			let view = ''
+			let active = '<?= year_active() != null ? year_active()['school_year_id'] : '' ?>'
+			console.log(active);
+			$.each(e, function(i, v) {
+				chk = ''
+				if (active != '') {
+					chk = v.school_year_id == active ? 'checked' : '';
+				}
 
-		function resizeIframe(obj) {
-			obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
-			console.log(obj.style.height);
+				view += `
+            <div class="form-check form-check-custom form-check-solid mb-2">
+                <input class="form-check-input" type="radio" onclick="set_year(${v.school_year_id})" name="radio_tp" value="${v.school_year_id}" id="opt${v.school_year_id}" ${chk} />
+                <label class="form-check-label text-dark" for="opt${v.school_year_id}">
+                    T.P ${v.school_year_period}
+                </label>
+            </div>
+        `
+			})
+			$('#lists_year').html(view)
+			$('#active_tp').modal('show');
+		}
+
+		function show_tp() {
+			$.ajax({
+				url: "<?= base_url('/config-teacher-student/active-year/list-year') ?>",
+				type: "post",
+				// data: {'menu_id': param},
+				dataType: "json",
+				beforeSend: function() {
+					// show_loading()
+				},
+				success: function(data) {
+					generate_years(data)
+					// hide_loading()
+				}
+			})
 		}
 	</script>
 	<?php if (session()->getFlashdata('msg')): ?>

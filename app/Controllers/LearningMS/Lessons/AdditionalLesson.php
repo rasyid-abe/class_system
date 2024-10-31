@@ -44,8 +44,6 @@ class AdditionalLesson extends BaseController
             ->groupBy('student_group_grade')
             ->findAll();
 
-       
-
         return view("learningms/lesson_additional/index", $data);
     }
 
@@ -230,7 +228,8 @@ class AdditionalLesson extends BaseController
             ->where('lesson_additional_id', $id)
             ->where('lesson_additional_status < 9')
             ->first();
-            
+
+        $data['attach_arr'] = $data['lesson_additional_attachment_path'] != '' ? array_values(json_decode($data['lesson_additional_attachment_path'], true)) : [];
         echo json_encode($data);
     }
     
@@ -319,7 +318,7 @@ class AdditionalLesson extends BaseController
 
             $arr_file = [];
             if ($old['lesson_additional_attachment_path'] != '') {
-                $arr_file = json_decode($old['lesson_additional_attachment_path']);
+                $arr_file = array_values(json_decode($old['lesson_additional_attachment_path'], true));
             }
 
             $attach = $this->request->getFileMultiple('file_attach');
@@ -399,7 +398,7 @@ class AdditionalLesson extends BaseController
 
             $arr_file = [];
             if ($old['lesson_additional_attachment_path'] != '') {
-                $arr_file = json_decode($old['lesson_additional_attachment_path']);
+                $arr_file = array_values(json_decode($old['lesson_additional_attachment_path'], true));
             }
 
             if ($req['file'] != null) {
@@ -411,14 +410,14 @@ class AdditionalLesson extends BaseController
                     unlink(FCPATH . '/attachment/' . $req['file']);
                 }
 
-                
                 $files = count($arr_file) > 0 ? json_encode($arr_file) : null;
-              
                 
                 $update = $this->lesson_additional
                     ->set('lesson_additional_attachment_path', $files)
                     ->where('lesson_additional_id', $req['id'])
                     ->update();
+
+                // session()->setFlashdata('att_id', $req['lesson_id']);
 
             } else {
                 foreach ($arr_file as $k => $v) {
@@ -445,6 +444,8 @@ class AdditionalLesson extends BaseController
                 ->set('lesson_additional_content_path', null)
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
+
+            // session()->setFlashdata('file_id', $req['lesson_id']);
         }
 
         echo json_encode($update);

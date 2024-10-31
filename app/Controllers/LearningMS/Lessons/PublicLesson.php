@@ -57,7 +57,7 @@ class PublicLesson extends BaseController
             '##' => 'Materi Belajar',
         ];
 
-        $data['id_content'] = $id;
+        session()->setFlashdata('id_content', $id);
 
         // $chapter = $this->lesson_additional
         //     ->where('lesson_additional_status < 9')
