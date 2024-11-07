@@ -8,8 +8,6 @@ $(document).ready(function(){
             method: 'post',
             dataType: 'json',
             success: function(e) {
-                console.log(e);
-                
                 generate_view_lesson_p(e[0])
                 generate_view_video_p(e[0])
                 generate_view_attachment_p(e[0])
