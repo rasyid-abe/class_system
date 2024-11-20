@@ -34,50 +34,7 @@
                         <input type="hidden" name="subject" value="<?= $subject ?>">
                         <input type="hidden" name="grade" value="<?= $grade ?>">
                         <div id="body_content_modal"></div>
-                        <!-- <div class="private_tree">
-                            <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-0" style="padding-left:1.25rem" aria-level="1"><i class="state-icon fa fa-angle-right fa-fw"></i>Materi Saya</div>
-                            <div role="group" class="hide" id="child_list-0">
-                                <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-1" style="padding-left:2.5rem;" aria-level="2"><i class="state-icon fa fa-angle-right fa-fw"></i>Judul BAB</div>
-                                <div role="group" class="hide" id="child_list-1">
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-2" style="padding-left:3.75rem;" aria-level="3">Topik Pertama</div>
-                                </div>
-                                <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-3" style="padding-left:2.5rem;" aria-level="2"><i class="state-icon fa fa-angle-right fa-fw"></i>Judul BAB 2</div>
-                                <div role="group" class="hide" id="child_list-3">
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-4" style="padding-left:3.75rem;" aria-level="3">Topik Pertama 2</div>
-                                </div>
-                                <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-5" style="padding-left:2.5rem;" aria-level="2"><i class="state-icon fa fa-angle-right fa-fw"></i>Judul BAB 3</div>
-                                <div role="group" class="hide" id="child_list-5">
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-6" style="padding-left:3.75rem;" aria-level="3">Sub BAB 32</div>
-                                </div>
-                            </div>
-                            <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-7" style="padding-left:1.25rem" aria-level="1"><i class="state-icon fa fa-angle-right fa-fw"></i>Materi Standar</div>
-                            <div role="group" class="hide" id="child_list-7">
-                                <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-8" style="padding-left:2.5rem;" aria-level="2"><i class="state-icon fa fa-angle-right fa-fw"></i>1</div>
-                                <div role="group" class="hide" id="child_list-8">
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-9" style="padding-left:3.75rem;" aria-level="3">1.1</div>
-                                </div>
-                                <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-10" style="padding-left:2.5rem;" aria-level="2"><i class="state-icon fa fa-angle-right fa-fw"></i>Test Chapter</div>
-                                <div role="group" class="hide" id="child_list-10">
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-11" style="padding-left:3.75rem;" aria-level="3">Lesson 1</div>
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-12" style="padding-left:3.75rem;" aria-level="3">Lesson 2</div>
-                                </div>
-                                <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-13" style="padding-left:2.5rem;" aria-level="2"><i class="state-icon fa fa-angle-right fa-fw"></i>Test Chapter Duplicate</div>
-                                <div role="group" class="hide" id="child_list-13">
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-14" style="padding-left:3.75rem;" aria-level="3">Lesson 1 Duplicate</div>
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-15" style="padding-left:3.75rem;" aria-level="3">Lesson 2 Duplicate</div>
-                                </div>
-                            </div>
-                            <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-16" style="padding-left:1.25rem" aria-level="1"><i class="state-icon fa fa-angle-right fa-fw"></i>Materi Publik</div>
-                            <div role="group" class="hide" id="child_list-16">
-                                <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-17" style="padding-left:2.5rem;" aria-level="2"><i class="state-icon fa fa-angle-right fa-fw"></i>Shared Test</div>
-                                <div role="group" class="hide" id="child_list-17">
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-18" style="padding-left:3.75rem;" aria-level="3">Share All</div>
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-19" style="padding-left:3.75rem;" aria-level="3">Share Subject</div>
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-20" style="padding-left:3.75rem;" aria-level="3">Shared Subject &amp; Grade</div>
-                                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-21" style="padding-left:3.75rem;" aria-level="3">Shared Directly</div>
-                                </div>
-                            </div>
-                        </div> -->
+                        <div id="private_tree"></div> 
                     </div>
                 </div>
             </div>
@@ -95,17 +52,21 @@
             <div class="" id="kt_accordion_1">
 
                 <?php if (count($chapters) > 0) : ?>
-
+                    
                     <div class="d-grid mb-2">
-                        <a href="#" onclick="form_chapter(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran</a>
+                        <div class="btn-group" role="group" aria-label="Basic outlined example">
+                            <a href="#" onclick="form_chapter(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran &nbsp;</a>
+                            <a href="#" onclick="form_chapter(-1, '', '', '')"class="btn btn-icon btn-active-primary" type="button"><i class="mb-1 fs-2 fa fa-sort"></i></a>
+                        </div>
                     </div>
                     <?php foreach ($chapters as $k => $v) : ?>
+                        <?php $parent = $v['lesson_school_parent_id'] != 0 ? $v['lesson_school_parent_id'] : $v['lesson_school_id'] ?>
                         <div class="accordion-item">
                             <div class="accordion-body bg-light">
                                 <div class="d-flex justify-content-between">
-                                    <a href="#" class="d-grid" style="font-weight: 500;" onclick="toggle_collapse(<?= $k ?>);"><?= $v['lesson_school_chapter'] ?></a>
+                                    <a href="#" class="d-grid" style="font-weight: 500;" onclick="toggle_collapse('<?= $v['lesson_school_id'] ?>');"><?= $v['lesson_school_chapter'] ?></a>
                                     <div class="btnleft">
-                                        <a href="#" class="" onclick="form_chapter(3, '<?= $v['lesson_school_chapter'] ?>', '', '<?= $v['lesson_school_id'] ?>')">
+                                        <a href="#" class="" onclick="form_chapter(3, '<?= $v['lesson_school_chapter'] ?>', '', '<?= $parent ?>')">
                                             <i class="bi bi-plus fs-3 text-gray-600"></i>
                                         </a>
                                         <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
@@ -113,6 +74,11 @@
                                         </a>
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" data-popper-placement="bottom-end"
                                             style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);">
+                                            <div class="menu-item px-3">
+                                                <span onclick="form_chapter(-2, '<?= $v['lesson_school_chapter'] ?>', '', '<?= $parent ?>');" class="menu-link px-3">
+                                                    Urutkan Topik
+                                                </span>
+                                            </div>
                                             <div class="menu-item px-3">
                                                 <span onclick="form_chapter(1, '<?= $v['lesson_school_chapter'] ?>', '', '<?= $v['lesson_school_id'] ?>');" class="menu-link px-3">
                                                     Ubah
@@ -127,11 +93,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="coll_body_<?= $k ?>" class="hide body_collapse">
+                            <div id="coll_body_<?= $v['lesson_school_id'] ?>" class="hide body_collapse">
                                 <div class="accordion-body bg-secondary">
-                                    <?php foreach ($v['sub_chapter'] as $key => $val): ?>
-                                        <?php if ($val['lesson_subchapter'] != '') : ?>
-                                            <?php $lesson_id = $val['lesson_additional_id'] > 0 ? $val['lesson_additional_id'] : $val['lesson_standart_id']; ?>
+                                    <?php if(isset($v['sub_chapter'])): ?>
+                                        <?php foreach ($v['sub_chapter'] as $key => $val): ?>
+                                            <?php $lesson_id = isset($val['lesson_additional_id']) ? $val['lesson_additional_id'] : $val['lesson_standart_id']; ?>
                                             <div class="d-flex justify-content-between">
                                                 <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold" onclick="view_content(<?= $lesson_id ?>, '<?= $val['lesson_source'] ?>');"><?= $val['lesson_subchapter'] ?></a>
                                                 <div class="">
@@ -148,8 +114,8 @@
                                                 </div>
                                             </div>
                                             <?= count($v['sub_chapter']) > 1 ? '<div class="separator separator-dashed my-3"></div>' : '' ?>
-                                        <?php endif; ?>
-                                    <?php endforeach ?>
+                                        <?php endforeach ?>
+                                    <?php endif ?>
                                 </div>
                             </div>
                         </div>

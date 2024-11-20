@@ -19,6 +19,9 @@ class SchoolLessonModel extends Model
         'lesson_school_lesson_additional_id', 
         'lesson_school_lesson_shared_id', 
         'lesson_school_status', 
+        'lesson_school_parent_id', 
+        'lesson_school_order_parent', 
+        'lesson_school_order_child', 
         'lesson_school_created_by', 
         'lesson_school_updated_by', 
     ];
