@@ -52,6 +52,8 @@ $routes->post('/teacher/lesson/standart/grab-content', 'LearningMS\Lessons\Stand
 $routes->get('/teacher/lesson/school', 'LearningMS\Lessons\SchoolLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/school/view-content/(:num)/(:num)', 'LearningMS\Lessons\SchoolLesson::view_content/$1/$2', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/school/grab-content', 'LearningMS\Lessons\SchoolLesson::grab_content', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/school/grab-child-sort', 'LearningMS\Lessons\SchoolLesson::grab_child_sort', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/school/grab-parent-sort', 'LearningMS\Lessons\SchoolLesson::grab_parent_sort', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/school/update-content', 'LearningMS\Lessons\SchoolLesson::update_content', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/school/grab-all-subchap', 'LearningMS\Lessons\SchoolLesson::grab_all_subchap', ['filter' => 'auth']);
 

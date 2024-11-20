@@ -69,96 +69,53 @@ class SchoolLesson extends BaseController
         $chapter = $this->lesson_school
             ->select('
                 lesson_school_id, 
-                lesson_school_chapter, 
-                lesson_school_lesson_additional_id, 
-                lesson_school_lesson_standart_id,
-                lesson_school_lesson_shared_id
+                lesson_school_chapter chapter, 
+                lesson_school_lesson_additional_id add, 
+                lesson_school_lesson_standart_id std,
+                lesson_school_lesson_shared_id shr,
+                lesson_school_parent_id,
+                lesson_school_order_parent
             ')
             ->where('lesson_school_teacher_id', userdata()['id_profile'])
             ->where('lesson_school_status < 9')
             ->where('lesson_school_subject_id', $subject)
             ->where('lesson_school_grade', $grade)
-            ->groupBy('
-                lesson_school_chapter
-            ')
+            // ->where('lesson_school_parent_id', 0)
+            ->orderBy('lesson_school_id', 'asc')
             ->findAll();
 
-        foreach ($chapter as $k => $v) {
-            $sub_chapter = '';
-            if ($v['lesson_school_lesson_additional_id'] > 0) {
-                $chaps = $this->lesson_additional->where('lesson_additional_id', $v['lesson_school_lesson_additional_id'])->first();
-                $sub_chapter = array();
-                if (!empty($chaps)) {
-                    $sub_chapter = $this->lesson_additional
-                        ->select('
-                            lesson_additional_id,
-                            0 as lesson_standart_id,
-                            lesson_additional_subchapter as lesson_subchapter,
-                            lesson_additional_content as lesson_content,
-                            lesson_additional_content_path as lesson_content_path,
-                            lesson_additional_video_path as lesson_video_path,
-                            lesson_additional_attachment_path as lesson_attachment_path,
-                            lesson_additional_tasks as lesson_task,
-                            "additional" as lesson_source,
-                        ')
-                        ->join('lms_lesson_school', 'lesson_school_lesson_additional_id=lesson_additional_id')
-                        ->where('lesson_additional_chapter', $chaps['lesson_additional_chapter'])
-                        ->where('lesson_additional_status < 9')
-                        ->findAll();
-                }
-            } else if ($v['lesson_school_lesson_standart_id'] > 0) {
-                $chaps = $this->lesson_standart->where('lesson_standart_id', $v['lesson_school_lesson_standart_id'])->first();
-                $sub_chapter = array();
-                if (!empty($chaps)) {
-                    $sub_chapter = $this->lesson_standart
-                        ->select('
-                            0 as lesson_additional_id,
-                            lesson_standart_id,
-                            lesson_standart_subchapter as lesson_subchapter,
-                            lesson_standart_content as lesson_content,
-                            lesson_standart_content_path as lesson_content_path,
-                            lesson_standart_video_path as lesson_video_path,
-                            lesson_standart_attachment_path as lesson_attachment_path,
-                            lesson_standart_tasks as lesson_task,
-                            "standard" as lesson_source,
-                        ')
-                        ->join('lms_lesson_school', 'lesson_school_lesson_standart_id=lesson_standart_id')
-                        ->where('lesson_standart_chapter', $chaps['lesson_standart_chapter'])
-                        ->where('lesson_standart_status < 9')
-                        ->findAll();
-                }
-            } else {
-                $chaps = $this->lesson_additional->where('lesson_additional_id', $v['lesson_school_lesson_shared_id'])->first();
-                $sub_chapter = array();
-                if (!empty($chaps)) {
-                    $sub_chapter = $this->lesson_additional
-                        ->select('
-                            lesson_additional_id,
-                            0 as lesson_standart_id,
-                            lesson_additional_subchapter as lesson_subchapter,
-                            lesson_additional_content as lesson_content,
-                            lesson_additional_content_path as lesson_content_path,
-                            lesson_additional_video_path as lesson_video_path,
-                            lesson_additional_attachment_path as lesson_attachment_path,
-                            lesson_additional_tasks as lesson_task,
-                            "additional" as lesson_source,
-                        ')
-                        ->join('lms_lesson_school', 'lesson_school_lesson_shared_id=lesson_additional_id')
-                        ->where('lesson_additional_chapter', $chaps['lesson_additional_chapter'])
-                        ->where('lesson_additional_status < 9')
-                        ->findAll();
+        // echo '<pre>';
+        // print_r($chapter);
+        // echo '</pre>';
+        // die;
+        
+        $result = array();
+        foreach ($chapter as $val) {
+            $rr = [];
+            if ($val['add'] > 0 || $val['std'] > 0 || $val['shr'] > 0) {
+                if ($val['add'] > 0) {
+                    $rr = $this->get_add_lesson($val['add']);
+                } elseif ($val['std'] > 0) {
+                    $rr = $this->get_std_lesson($val['std']);
+                } else {
+                    $rr = $this->get_shr_lesson($val['shr']);
                 }
             }
-
-            $chapter[$k]['sub_chapter'] = $sub_chapter;
+            if(count($rr) > 0){
+                $result[$val['chapter']]['sub_chapter'][] = $rr;
+            }
+            $result[$val['chapter']]['lesson_school_chapter'] = $val['chapter'];
+            $result[$val['chapter']]['lesson_school_id'] = $val['lesson_school_id'];
+            $result[$val['chapter']]['lesson_school_parent_id'] = $val['lesson_school_parent_id'];
         }
 
-        $data['chapters'] = $chapter;
+        // dd($result);
+
+        $data['chapters'] = $result;
 
         return view("learningms/lesson_school/content", $data);
     }
-
-    
+ 
     public function grab_content()
     {
         $id = $this->request->getVar('id');
@@ -212,19 +169,57 @@ class SchoolLesson extends BaseController
                 ->where('lesson_school_id', $req['id'])
                 ->update();
         } elseif ($req['type'] == 3) {
+            $runnum = $this->lesson_school
+                ->selectMax('lesson_school_order_child')
+                ->where('lesson_school_school_id', userdata()['school_id'])
+                ->where('lesson_school_teacher_id', userdata()['id_profile'])
+                ->where('lesson_school_subject_id', $req['val'][1])
+                ->where('lesson_school_grade', $req['val'][2])
+                ->where('lesson_school_school_year_id', $req['val'][4])
+                ->where('lesson_school_parent_id', $req['id'])
+                ->where('lesson_school_status < 9')
+                ->first();
+
             $arr_ins = [
                 'lesson_school_school_id' => userdata()['school_id'],
                 'lesson_school_teacher_id' => userdata()['id_profile'],
                 'lesson_school_subject_id' => $req['val'][1],
                 'lesson_school_grade' => $req['val'][2],
-                'lesson_school_chapter' => htmlspecialchars($req['val'][0]),
-                'lesson_school_subchapter' => htmlspecialchars($req['val'][3]),
+                'lesson_school_school_year_id' => $req['val'][4],
+                'lesson_school_chapter' => htmlspecialchars($req['val'][3]),
                 'lesson_school_created_by' => userdata()['user_id'],
                 'lesson_school_status' => 1,
+                'lesson_school_parent_id' => $req['id'],
             ];
+            if ($req['val'][0] == 1) {
+                $arr_ins['lesson_school_lesson_additional_id'] = $req['val'][5];
+            } elseif ($req['val'][0] == 2) {
+                $arr_ins['lesson_school_lesson_standart_id'] = $req['val'][5];
+            } else {
+                $arr_ins['lesson_school_lesson_shared_id'] = $req['val'][5];
+            }
 
-            $update = $this->lesson_school->insert($arr_ins);
+            $chk = $this->lesson_school
+                ->where($arr_ins)
+                ->first();
+
+            if (!$chk) {
+                $arr_ins['lesson_school_order_child'] = $runnum['lesson_school_order_child'] + 1;
+                $update = $this->lesson_school->insert($arr_ins);
+            }
+
         } elseif ($req['type'] == 4) {
+            $runnum = $this->lesson_school
+                ->selectMax('lesson_school_order_parent')
+                ->where('lesson_school_school_id', userdata()['school_id'])
+                ->where('lesson_school_school_year_id', year_active()['school_year_id'])
+                ->where('lesson_school_teacher_id', userdata()['id_profile'],)
+                ->where('lesson_school_subject_id', $req['val'][1])
+                ->where('lesson_school_grade', $req['val'][2])
+                ->where('lesson_school_status < 9')
+                ->where('lesson_school_parent_id', 0)
+                ->first();
+
             $arr_ins = [
                 'lesson_school_school_id' => userdata()['school_id'],
                 'lesson_school_school_year_id' => year_active()['school_year_id'],
@@ -234,9 +229,38 @@ class SchoolLesson extends BaseController
                 'lesson_school_chapter' => htmlspecialchars($req['val'][0]),
                 'lesson_school_created_by' => userdata()['user_id'],
                 'lesson_school_status' => 1,
+                'lesson_school_order_parent' => $runnum['lesson_school_order_parent'] + 1
             ];
 
             $update = $this->lesson_school->insert($arr_ins);
+        } else if ($req['type'] == -1) {
+            $ids = $req['val'][1];
+            $sort = $req['val'][0];
+            
+            $upp = [];
+            for ($i=0; $i < count($ids); $i++) { 
+                $up = $this->lesson_school
+                    ->set('lesson_school_order_parent', $sort[$i])
+                    ->where('lesson_school_id', $ids[$i])
+                    ->update();       
+                $upp[] = false;
+            }
+
+            $update = in_array("", $upp) ? false : true;
+        } else if ($req['type'] == -2) {
+            $ids = $req['val'][1];
+            $sort = $req['val'][0];
+            
+            $upp = [];
+            for ($i=0; $i < count($ids); $i++) { 
+                $up = $this->lesson_school
+                    ->set('lesson_school_order_child', $sort[$i])
+                    ->where('lesson_school_id', $ids[$i])
+                    ->update();       
+                $upp[] = false;
+            }
+
+            $update = in_array("", $upp) ? false : true;
         }
 
 
@@ -266,8 +290,11 @@ class SchoolLesson extends BaseController
             $sub_chapter = '';
             $sub_chapter = $this->lesson_additional
                 ->select('
-                    lesson_additional_id,
-                    lesson_additional_subchapter as text
+                    lesson_additional_id lesson_id,
+                    lesson_additional_chapter as chapter,
+                    lesson_additional_subchapter as text,
+                    lesson_additional_subject_id as subject,
+                    lesson_additional_grade as grade,
                 ')
                 ->where('lesson_additional_chapter', $v['text'])
                 ->where('lesson_additional_subchapter != ""')
@@ -290,8 +317,11 @@ class SchoolLesson extends BaseController
             $sub_chapter = '';
             $sub_chapter = $this->lesson_standart
                 ->select('
-                    lesson_standart_id,
-                    lesson_standart_subchapter as text
+                    lesson_standart_id lesson_id,
+                    lesson_standart_chapter as chapter,
+                    lesson_standart_subchapter as text,
+                    lesson_standart_subject_id as subject,
+                    lesson_standart_grade as grade,
                 ')
                 ->where('lesson_standart_chapter', $v['text'])
                 ->where('lesson_standart_subchapter != ""')
@@ -308,8 +338,11 @@ class SchoolLesson extends BaseController
             $sub_chapter = '';
             $sub_chapter = $this->lesson_additional
                 ->select('
-                    lesson_additional_id,
-                    lesson_additional_subchapter as text
+                    lesson_additional_id lesson_id,
+                    lesson_additional_chapter as chapter,
+                    lesson_additional_subchapter as text,
+                    lesson_additional_subject_id as subject,
+                    lesson_additional_grade as grade,
                 ')
                 ->where('lesson_additional_chapter', $v['text'])
                 ->where('lesson_additional_subchapter != ""')
@@ -319,11 +352,101 @@ class SchoolLesson extends BaseController
             $public[$k]['nodes'] = $sub_chapter;
         }
         $result = array(
-            array('nodes' => $private, 'text' => 'Materi Saya'),
-            array('nodes' => $standard, 'text' => 'Materi Standar'),
-            array('nodes' => $public, 'text' => 'Materi Publik'),
+            array('nodes' => $private, 'text' => 'Materi Saya', 'ind' => 1),
+            array('nodes' => $standard, 'text' => 'Materi Standar', 'ind' => 2),
+            array('nodes' => $public, 'text' => 'Materi Publik', 'ind' => 3),
         );
 
         echo json_encode($result);
+    }
+
+    public function grab_child_sort()
+    {
+        $req = $this->request->getVar();
+        $sort = $this->lesson_school
+            ->select('
+                lesson_school_id,
+                lesson_school_chapter, 
+                lesson_additional_subchapter, 
+                lesson_standart_subchapter, 
+                lesson_school_order_child
+            ')
+            ->join('lms_lesson_additional', 'lesson_additional_id=lesson_school_lesson_additional_id or lesson_additional_id=lesson_school_lesson_shared_id ', 'left')
+            ->join('lms_lesson_standart', 'lesson_standart_id=lesson_school_lesson_standart_id', 'left')
+            ->where('lesson_school_parent_id', $req['id'])
+            ->where('lesson_school_status < 9')
+            ->findAll();
+        echo json_encode($sort);
+    }
+
+    public function grab_parent_sort()
+    {
+        $data = $this->lesson_school
+            ->select('lesson_school_id, lesson_school_chapter, lesson_school_order_parent')
+            ->where('lesson_school_teacher_id', userdata()['id_profile'])
+            ->where('lesson_school_parent_id', 0)
+            ->findAll();
+
+        echo json_encode($data);
+    }
+
+    private function get_std_lesson($param)
+    {
+        return $this->lesson_standart
+            ->select('
+                0 as lesson_additional_id,
+                lesson_standart_id,
+                lesson_standart_subchapter as lesson_subchapter,
+                lesson_standart_content as lesson_content,
+                lesson_standart_content_path as lesson_content_path,
+                lesson_standart_video_path as lesson_video_path,
+                lesson_standart_attachment_path as lesson_attachment_path,
+                lesson_standart_tasks as lesson_task,
+                "standard" as lesson_source,
+            ')
+            ->join('lms_lesson_school', 'lesson_school_lesson_standart_id=lesson_standart_id')
+            ->where('lesson_standart_id', $param)
+            ->where('lesson_standart_status < 9')
+            ->first();
+    }
+
+    private function get_add_lesson($param)
+    {
+        return $this->lesson_additional
+            ->select('
+                lesson_additional_id,
+                0 as lesson_standart_id,
+                lesson_additional_subchapter as lesson_subchapter,
+                lesson_additional_content as lesson_content,
+                lesson_additional_content_path as lesson_content_path,
+                lesson_additional_video_path as lesson_video_path,
+                lesson_additional_attachment_path as lesson_attachment_path,
+                lesson_additional_tasks as lesson_task,
+                "additional" as lesson_source,
+            ')
+            ->join('lms_lesson_school', 'lesson_school_lesson_additional_id=lesson_additional_id')
+            ->where('lesson_additional_id', $param)
+            ->where('lesson_additional_status < 9')
+            ->first();
+    }
+
+    private function get_shr_lesson($param)
+    {
+        return $this->lesson_additional
+            ->select('
+                lesson_additional_id,
+                0 as lesson_standart_id,
+                lesson_additional_subchapter as lesson_subchapter,
+                lesson_additional_content as lesson_content,
+                lesson_additional_content_path as lesson_content_path,
+                lesson_additional_video_path as lesson_video_path,
+                lesson_additional_attachment_path as lesson_attachment_path,
+                lesson_additional_tasks as lesson_task,
+                "additional" as lesson_source,
+            ')
+            ->join('lms_lesson_school', 'lesson_school_lesson_shared_id=lesson_additional_id')
+            ->where('lesson_additional_id', $param)
+            ->where('lesson_additional_status < 9')
+            ->first();
     }
 }
