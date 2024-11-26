@@ -277,7 +277,7 @@ function form_chapter(e, chap = null, subchap = null, id = null) {
                     <label for="chapter" class="form-label">Judul Bab</label>
                     <input type="text" class="form-control form-control-md" name="chapter" value="" />
                     <br>
-                    <span class="text-primary">NOTE: Materi ini tersimpan hanya pada T.P '<?= year_active()['school_year_period'] ?>'}</span>
+                    <span class="text-primary">NOTE: Materi ini tersimpan hanya pada T.P ${active_year}</span>
                 `;
 
             $('#head_content_modal').html('<h3 class="modal-title">Tambah BAB Pelajaran</h3>')
@@ -459,8 +459,27 @@ function save_content() {
         grad = $('input[name=grade]').val();
         store_content(type, '', [chap, subj, grad])
     } else if (type == -1) {
-        let sort = $('.nsort').map((_,el) => el.value).get()
+        let sort = $('.nsort').map((_,el) => parseInt(el.value)).get()
         let ids = $('.idd').map((_,el) => el.value).get()
+        console.log(sort);
+        
+        for (let i = 1; i <= sort.length; i++) {
+            
+            if(!sort.includes(i)) {
+                Swal.fire({
+                    text: "No urut harus berurutan dari 1,2,3 dst!",
+                    icon: "error",
+                    buttonsStyling: false,
+                    confirmButtonText: "OK",
+                    customClass: {
+                        confirmButton: "btn btn-danger"
+                    }
+                });
+                return false;
+            }
+            
+        }
+
         let same = findDuplicates(sort)
         if (same.length > 0) {
             Swal.fire({
@@ -477,9 +496,28 @@ function save_content() {
 
         store_content(type, '', [sort, ids])
     } else if (type == -2) {
-        let sort = $('.nsort').map((_,el) => el.value).get()
+        let sort = $('.nsort').map((_,el) => parseInt(el.value)).get()
         let ids = $('.idd').map((_,el) => el.value).get()
+        
+        for (let i = 1; i <= sort.length; i++) {
+            
+            if(!sort.includes(i)) {
+                Swal.fire({
+                    text: "No urut harus berurutan dari 1,2,3 dst!",
+                    icon: "error",
+                    buttonsStyling: false,
+                    confirmButtonText: "OK",
+                    customClass: {
+                        confirmButton: "btn btn-danger"
+                    }
+                });
+                return false;
+            }
+            
+        }
+        
         let same = findDuplicates(sort)
+        
         if (same.length > 0) {
             Swal.fire({
                 text: "No urut tidak boleh sama!",
@@ -510,6 +548,8 @@ function store_content(type, id, val) {
         method: 'post',
         dataType: 'json',
         success: function (e) {
+            console.log(e);
+            
             if (type == 5) {
                 view_content(id)
             } else if (type == 6) {
@@ -544,40 +584,43 @@ function toggle_collapse(e) {
 
 }
 
-function act_remove(id, type, file) {
+function remove_content_ss(id, type) {
+    let msg = '';
+
+    if (type == 1) {
+        msg = 'hapus bab materi'
+    } else if (type == 2) {
+        msg = 'hapus topik materi'
+    }
+    Swal.fire({
+        html: `Apakah anda yakin menghapus ${msg}?`,
+        icon: "info",
+        buttonsStyling: false,
+        showCancelButton: true,
+        confirmButtonText: "Ya",
+        cancelButtonText: 'Tidak',
+        customClass: {
+            confirmButton: "btn btn-sm btn-primary",
+            cancelButton: 'btn btn-sm btn-danger'
+        }
+    }).then(function (confirm) {
+        if (confirm.isConfirmed) {
+            act_remove_ss(id, type)
+        }
+    });
+}
+
+function act_remove_ss(id, type) {
     $.ajax({
         url: base_url + '/teacher/lesson/school/remove-content',
         data: {
             id,
-            type,
-            file
+            type
         },
         method: 'post',
         dataType: 'json',
         success: function (e) {
-            if (type == 5) {
-                view_content(id)
-            } else if (type == 6) {
-                view_content(id)
-                $('.tab_topic').removeClass('active')
-                $('.content_topic').removeClass('active')
-                $('.content_topic').removeClass('show')
-
-                $('#tab_video').addClass('show')
-                $('#tab_video').addClass('active')
-                $('#tab_topic_video').addClass('active')
-            } else if (type == 7) {
-                view_content(id)
-                $('.tab_topic').removeClass('active')
-                $('.content_topic').removeClass('active')
-                $('.content_topic').removeClass('show')
-
-                $('#tab_attachment').addClass('show')
-                $('#tab_attachment').addClass('active')
-                $('#tab_topic_attachment').addClass('active')
-            } else {
-                location.reload()
-            }
+            location.reload()
         }
     })
 }

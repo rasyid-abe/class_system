@@ -8,36 +8,42 @@ use App\Models\Lessons\StandartLessonModel;
 use App\Models\Lessons\AdditionalLessonModel;
 use App\Models\Lessons\PublicLessonModel;
 use App\Models\Systems\TeacherAssignModel;
+use App\Models\Masters\SubjectModel;
 
 class SchoolLesson extends BaseController
 {
 
     protected $title;
+    protected $page;
     protected $sidebar;
     protected $lesson_school;
     protected $lesson_standart;
     protected $lesson_additional;
     protected $lesson_public;
     protected $teacher_subject;
+    protected $subject;
 
     public function __construct()
     {
         $this->title = "Materi Pelajaran";
         $this->sidebar = "School";
+        $this->page = "Lesson";
         $this->lesson_school = new SchoolLessonModel();
         $this->lesson_standart = new StandartLessonModel();
         $this->lesson_additional = new AdditionalLessonModel();
         $this->lesson_public = new PublicLessonModel();
         $this->teacher_subject = new TeacherAssignModel();
+        $this->subject = new SubjectModel();
     }
 
     public function index()
     {
-        $data["title"] = "Materi Sekolah";
+        $data["title"] = 'Materi Sekolah';
+        $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '##' => 'Materi Tambahan',
+            '##' => 'Materi Sekolah',
         ];
 
         $data['subjects'] = $this->teacher_subject
@@ -55,12 +61,15 @@ class SchoolLesson extends BaseController
 
     public function view_content($subject, $grade)
     {
-        $data["title"] = 'Materi Belajar';
+        $subs = $this->subject->where('subject_id', $subject)->first();
+
+        $data["title"] = $subs['subject_name'] . ' - Kelas ' . $grade;
+        $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '/teacher/lesson/school' => 'Materi Tambahan',
-            '##' => 'Materi Belajar',
+            '/teacher/lesson/school' => 'Materi Sekolah',
+            '##' => $subs['subject_name'] . ' - Kelas ' . $grade,
         ];
 
         $data['subject'] = $subject;
@@ -74,23 +83,19 @@ class SchoolLesson extends BaseController
                 lesson_school_lesson_standart_id std,
                 lesson_school_lesson_shared_id shr,
                 lesson_school_parent_id,
+                lesson_school_order_child,
                 lesson_school_order_parent
             ')
             ->where('lesson_school_teacher_id', userdata()['id_profile'])
             ->where('lesson_school_status < 9')
             ->where('lesson_school_subject_id', $subject)
             ->where('lesson_school_grade', $grade)
-            // ->where('lesson_school_parent_id', 0)
-            ->orderBy('lesson_school_id', 'asc')
+            ->orderBy('lesson_school_order_parent', 'desc')
             ->findAll();
-
-        // echo '<pre>';
-        // print_r($chapter);
-        // echo '</pre>';
-        // die;
         
         $result = array();
         foreach ($chapter as $val) {
+            
             $rr = [];
             if ($val['add'] > 0 || $val['std'] > 0 || $val['shr'] > 0) {
                 if ($val['add'] > 0) {
@@ -101,17 +106,44 @@ class SchoolLesson extends BaseController
                     $rr = $this->get_shr_lesson($val['shr']);
                 }
             }
+
             if(count($rr) > 0){
-                $result[$val['chapter']]['sub_chapter'][] = $rr;
+                $rr['order'] = $val['lesson_school_order_child'];
+                $rr['parent_id'] = $val['lesson_school_parent_id'];
+                $rr['lesson_id'] = $val['lesson_school_id'];
+                $result[$val['chapter']]['sub_chapter'][$val['lesson_school_order_child']] = $rr;
             }
             $result[$val['chapter']]['lesson_school_chapter'] = $val['chapter'];
             $result[$val['chapter']]['lesson_school_id'] = $val['lesson_school_id'];
             $result[$val['chapter']]['lesson_school_parent_id'] = $val['lesson_school_parent_id'];
+            $result[$val['chapter']]['lesson_school_order_parent'] = $val['lesson_school_order_parent'];
+        }
+        
+        $chp = [];
+        foreach ($result as $k => $v) {
+            if (isset($v['sub_chapter'])) {
+                $sc = $v['sub_chapter'];
+                ksort($sc);
+
+                $ii = 0;
+                foreach ($v['sub_chapter'] as $key => $val) {
+                    if ($ii < 1) {
+                        $pid = $val['parent_id'];
+                        $odr = $this->lesson_school
+                            ->where('lesson_school_id', $pid)
+                            ->first();
+                    }
+                    $ii++;
+                }
+                $v['sub_chapter'] = $sc;
+                $chp[$odr['lesson_school_order_parent']] = $v;
+            } else {
+                $chp[$v['lesson_school_order_parent']] = $v;
+            }
         }
 
-        // dd($result);
-
-        $data['chapters'] = $result;
+        ksort($chp);
+        $data['chapters'] = $chp;
 
         return view("learningms/lesson_school/content", $data);
     }
@@ -153,7 +185,6 @@ class SchoolLesson extends BaseController
     public function update_content()
     {
         $req = $this->request->getVar();
-
         $update = false;
         if ($req['type'] == 1) {
             $update = $this->lesson_school
@@ -210,6 +241,7 @@ class SchoolLesson extends BaseController
 
         } elseif ($req['type'] == 4) {
             $runnum = $this->lesson_school
+                ->select('lesson_school_chapter')
                 ->selectMax('lesson_school_order_parent')
                 ->where('lesson_school_school_id', userdata()['school_id'])
                 ->where('lesson_school_school_year_id', year_active()['school_year_id'])
@@ -232,7 +264,10 @@ class SchoolLesson extends BaseController
                 'lesson_school_order_parent' => $runnum['lesson_school_order_parent'] + 1
             ];
 
-            $update = $this->lesson_school->insert($arr_ins);
+            if ($runnum['lesson_school_chapter'] != htmlspecialchars($req['val'][0])) {
+                $update = $this->lesson_school->insert($arr_ins);
+            }
+
         } else if ($req['type'] == -1) {
             $ids = $req['val'][1];
             $sort = $req['val'][0];
@@ -375,6 +410,7 @@ class SchoolLesson extends BaseController
             ->join('lms_lesson_standart', 'lesson_standart_id=lesson_school_lesson_standart_id', 'left')
             ->where('lesson_school_parent_id', $req['id'])
             ->where('lesson_school_status < 9')
+            ->orderBy('lesson_school_order_child')
             ->findAll();
         echo json_encode($sort);
     }
@@ -385,6 +421,8 @@ class SchoolLesson extends BaseController
             ->select('lesson_school_id, lesson_school_chapter, lesson_school_order_parent')
             ->where('lesson_school_teacher_id', userdata()['id_profile'])
             ->where('lesson_school_parent_id', 0)
+            ->where('lesson_school_status < 9')
+            ->orderBy('lesson_school_order_parent')
             ->findAll();
 
         echo json_encode($data);
@@ -448,5 +486,24 @@ class SchoolLesson extends BaseController
             ->where('lesson_additional_id', $param)
             ->where('lesson_additional_status < 9')
             ->first();
+    }
+
+    public function remove_content()
+    {
+        $req = $this->request->getVar();
+
+        $update = false;
+        if ($req['type'] == 1) {
+            $update = $this->lesson_school
+                ->where('lesson_school_id', $req['id'])
+                ->orWhere('lesson_school_parent_id', $req['id'])
+                ->delete();
+        } elseif ($req['type'] == 2) {
+            $update = $this->lesson_school
+                ->where('lesson_school_id', $req['id'])
+                ->delete();
+        }
+
+        echo json_encode($update);
     }
 }

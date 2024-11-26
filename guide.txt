@@ -1,3 +1,8 @@
 admin hanya configurasi dan registrasi sekolah
 
 yang membuat akun siswa dan guru harus admin sekolah
+
+
+teknis check:
+- sort lesson school
+- prevent duplicate insert chapter

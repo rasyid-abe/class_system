@@ -85,7 +85,7 @@
                                                 </span>
                                             </div>
                                             <div class="menu-item px-3">
-                                                <a href="#" class="menu-link px-3" onclick="remove_content_ss(<?= $parent ?>, 1)" data-kt-users-table-filter="delete_row">
+                                                <a href="#" class="menu-link px-3" onclick="remove_content(<?= $v['lesson_school_id'] ?>, 1, '<?= $v['lesson_school_chapter'] ?>')" data-kt-users-table-filter="delete_row">
                                                     Hapus BAB
                                                 </a>
                                             </div>
@@ -97,7 +97,7 @@
                                 <div class="accordion-body bg-secondary">
                                     <?php if(isset($v['sub_chapter'])): ?>
                                         <?php foreach ($v['sub_chapter'] as $key => $val): ?>
-                                            <?php $lesson_id = $val['lesson_additional_id'] > 0 ? $val['lesson_additional_id'] : $val['lesson_standart_id']; ?>
+                                            <?php $lesson_id = isset($val['lesson_additional_id']) ? $val['lesson_additional_id'] : $val['lesson_standart_id']; ?>
                                             <div class="d-flex justify-content-between">
                                                 <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold" onclick="view_content(<?= $lesson_id ?>, '<?= $val['lesson_source'] ?>');"><?= $val['lesson_subchapter'] ?></a>
                                                 <div class="">
@@ -106,7 +106,7 @@
                                                     </a>
                                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);" data-popper-placement="bottom-end">
                                                         <div class="menu-item px-3">
-                                                            <a href="#" class="menu-link px-3" onclick="remove_content_ss(<?= $val['lesson_id'] ?>, 2)" data-kt-users-table-filter="delete_row">
+                                                            <a href="#" class="menu-link px-3" onclick="remove_content(<?= $lesson_id ?>, 2)" data-kt-users-table-filter="delete_row">
                                                                 Hapus Topik
                                                             </a>
                                                         </div>
@@ -120,7 +120,6 @@
                             </div>
                         </div>
                     <?php endforeach ?>
-                    
                 <?php else : ?>
                     <div class="d-grid mb-2">
                         <a href="#" onclick="form_chapter(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran</a>
@@ -173,5 +172,8 @@
 
 </div>
 
+<script>
+    
+</script>
 
 <?php $this->endSection(); ?>

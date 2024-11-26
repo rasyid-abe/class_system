@@ -1,7 +1,7 @@
 <div class="tab-content">
     <?php if(session()->get('c_role') == 11): ?>
         <!--begin::Tab pane-->
-        <div class="tab-pane fade active show" id="subjects_menu" role="tabpanel">
+        <div class="tab-pane fade <?= $page == "Lesson" ? 'active show' : '' ?>" id="subjects_menu" role="tabpanel">
             <!--begin::Tasks-->
             <div class="mx-5">
                 <!--begin::Header-->
@@ -96,7 +96,7 @@
         </div>
         <!--end::Tab pane-->
         <!--begin::Tab pane-->
-        <div class="tab-pane fade" id="question_bank_menu" role="tabpanel">
+        <div class="tab-pane fade <?= $page == "Question" ? 'active show' : '' ?>" id="question_bank_menu" role="tabpanel">
             <!--begin::Tasks-->
             <div class="mx-5">
                 <!--begin::Header-->
@@ -118,8 +118,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-primary fs-6 fw-bold">Standar</a>
+                            <a href="<?= base_url('/teacher/question-bank/standart') ?>"
+                                class="<?= $sidebar != 'QB_Standart' ? 'text-gray-800' : 'text-primary' ?> text-hover-primary fs-6 fw-bold">Standar</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -138,8 +138,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-success fs-6 fw-bold">Saya</a>
+                            <a href="<?= base_url('/teacher/question-bank/additional') ?>"
+                                class="<?= $sidebar != 'QB_Additional' ? 'text-gray-800' : 'text-success' ?> text-hover-success fs-6 fw-bold">Saya</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -158,8 +158,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-danger fs-6 fw-bold">Publik</a>
+                            <a href="<?= base_url('/teacher/question-bank/public') ?>"
+                                class="<?= $sidebar != 'QB_Public' ? 'text-gray-800' : 'text-danger' ?> text-hover-danger fs-6 fw-bold">Publik</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -172,7 +172,7 @@
         </div>
         <!--end::Tab pane-->
         <!--begin::Tab pane-->
-        <div class="tab-pane fade" id="evaluation_menu" role="tabpanel">
+        <div class="tab-pane fade <?= $page == "Evaluate" ? 'active show' : '' ?>" id="evaluation_menu" role="tabpanel">
             <!--begin::Tasks-->
             <div class="mx-5">
                 <!--begin::Header-->
@@ -287,7 +287,7 @@
         </div>
         <!--end::Tab pane-->
         <!--begin::Tab pane-->
-        <div class="tab-pane fade" id="task_menu" role="tabpanel">
+        <div class="tab-pane fade <?= $page == "Task" ? 'active show' : '' ?>" id="task_menu" role="tabpanel">
             <!--begin::Tasks-->
             <div class="mx-5">
                 <!--begin::Header-->
@@ -382,7 +382,7 @@
         </div>
         <!--end::Tab pane-->
         <!--begin::Tab pane-->
-        <div class="tab-pane fade" id="group_menu" role="tabpanel">
+        <div class="tab-pane fade <?= $page == "Group" ? 'active show' : '' ?>" id="group_menu" role="tabpanel">
             <!--begin::Tasks-->
             <div class="mx-5">
                 <!--begin::Header-->

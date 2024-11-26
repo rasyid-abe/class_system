@@ -1232,6 +1232,7 @@
 		let att_id = '<?= session()->getFlashdata('att_id') ?>'
 		let file_id = '<?= session()->getFlashdata('file_id') ?>'
 		let hostUrl = "<?= base_url() ?>assets/";
+		let active_year = '<?= year_active() != null ? year_active()['school_year_period'] : '' ?>'
 	</script>
 	<!--begin::Javascript-->
 	<!--begin::Global Javascript Bundle(used by all pages)-->
@@ -1241,22 +1242,21 @@
 	
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-	<!-- <script>$.noConflict(true)</script> -->
-
-	<!-- <script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script> -->
 	<script src="<?= base_url() ?>assets/js/scripts.bundle.js"></script>
 
 	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
 	<script src="<?= base_url() ?>assets/js/common.js"></script>
 	<script src="<?= base_url() ?>assets/tinymce/tinymce.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/tinymce_conf.js"></script>
-	<!-- <script src="<?= base_url() ?>assets/js/bstreeview.js"></script>  -->
 	
 	<script src="<?= base_url() ?>assets/js/script/lesson_school.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/lesson_additional.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/lesson_standard.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/lesson_public.js"></script>
-	
+	<script src="<?= base_url() ?>assets/js/script/question_bank.js"></script>
+	<script src="<?= base_url() ?>assets/js/form.repeater.js"></script>
+
+
 	<script>
 		
 		function set_year(e) {

@@ -13,7 +13,8 @@ class PublicLesson extends BaseController
 {
 
     protected $title;
-    protected $subtitle;
+    protected $page;
+    protected $sidebar;
     protected $standart_lesson;
     protected $lesson_additional;
     protected $lesson_public;
@@ -22,7 +23,8 @@ class PublicLesson extends BaseController
     public function __construct()
     {
         $this->title = "Materi Pelajaran";
-        $this->subtitle = "Materi Publik";
+        $this->page = "Lesson";
+        $this->sidebar = "Public";
         $this->standart_lesson = new StandartLessonModel();
         $this->lesson_additional = new AdditionalLessonModel();
         $this->lesson_public = new PublicLessonModel();
@@ -31,11 +33,12 @@ class PublicLesson extends BaseController
 
     public function index()
     {
-        $data["title"] = $this->subtitle;
-        $data["sidebar"] = 'Public';
+        $data["title"] = $this->title;
+        $data["page"] = $this->page;
+        $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '##' => $this->subtitle,
+            '##' => 'Materi Publik',
         ];
 
         $teacher_id = userdata()['id_profile'];
@@ -49,27 +52,23 @@ class PublicLesson extends BaseController
 
     public function view_content($id)
     {
-        $data["title"] = 'Materi Belajar';
-        $data["sidebar"] = 'Public';
+        $data["title"] = $this->title;
+        $data["page"] = $this->page;
+        $data["sidebar"] = $this->sidebar;
+
+        $dt = $this->lesson_additional
+            ->where('lesson_additional_id', $id)
+            ->first();
+
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '/teacher/lesson/additional' => 'Materi Tambahan',
-            '##' => 'Materi Belajar',
+            '/teacher/lesson/public' => 'Materi Publik',
+            '###' => $dt['lesson_additional_chapter'],
+            '####' => $dt['lesson_additional_subchapter']
         ];
 
+       
         session()->setFlashdata('id_content', $id);
-
-        // $chapter = $this->lesson_additional
-        //     ->where('lesson_additional_status < 9')
-        //     ->where('lesson_additional_id', $id)
-        //     ->groupBy('lesson_additional_chapter')
-        //     ->findAll();
-            
-
-        // $data['teachers'] = $this->teacher
-        //     ->select('teacher_id, teacher_first_name, teacher_last_name, teacher_degree')
-        //     ->where('teacher_school_id', userdata()['school_id'])
-        //     ->findAll();
 
         return view("learningms/lesson_public/content", $data);
     }
