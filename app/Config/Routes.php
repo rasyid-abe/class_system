@@ -48,7 +48,6 @@ $routes->get('/teacher/lesson/standart/view-subject/(:num)', 'LearningMS\Lessons
 $routes->get('/teacher/lesson/standart/view-content/(:num)/(:num)', 'LearningMS\Lessons\StandartLesson::view_content/$1/$2', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/standart/grab-content', 'LearningMS\Lessons\StandartLesson::grab_content', ['filter' => 'auth']);
 
-
 $routes->get('/teacher/lesson/school', 'LearningMS\Lessons\SchoolLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/school/view-content/(:num)/(:num)', 'LearningMS\Lessons\SchoolLesson::view_content/$1/$2', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/school/grab-content', 'LearningMS\Lessons\SchoolLesson::grab_content', ['filter' => 'auth']);
@@ -56,6 +55,7 @@ $routes->post('/teacher/lesson/school/grab-child-sort', 'LearningMS\Lessons\Scho
 $routes->post('/teacher/lesson/school/grab-parent-sort', 'LearningMS\Lessons\SchoolLesson::grab_parent_sort', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/school/update-content', 'LearningMS\Lessons\SchoolLesson::update_content', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/school/grab-all-subchap', 'LearningMS\Lessons\SchoolLesson::grab_all_subchap', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/school/remove-content', 'LearningMS\Lessons\SchoolLesson::remove_content', ['filter' => 'auth']);
 
 $routes->get('/teacher/lesson/additional', 'LearningMS\Lessons\AdditionalLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/additional/view-content/(:num)/(:num)', 'LearningMS\Lessons\AdditionalLesson::view_content/$1/$2', ['filter' => 'auth']);
@@ -77,18 +77,11 @@ $routes->get('/teacher/lesson/public', 'LearningMS\Lessons\PublicLesson::index',
 $routes->get('/teacher/lesson/public/view-content/(:num)', 'LearningMS\Lessons\PublicLesson::view_content/$1', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/public/get-content', 'LearningMS\Lessons\PublicLesson::get_content', ['filter' => 'auth']);
 
-$routes->get('/sms/user/teacher', 'SchoolMS\Users\Teacher::index', ['filter' => 'auth']); #done
-$routes->get('/sms/user/teacher/show/(:num)', 'SchoolMS\Users\Teacher::show/$1', ['filter' => 'auth']); #done
-$routes->get('/sms/user/teacher/create', 'SchoolMS\Users\Teacher::create', ['filter' => 'auth']); #done
-$routes->post('/sms/user/teacher/list_area', 'SchoolMS\Users\Teacher::list_area', ['filter' => 'auth']); #done
-$routes->post('/sms/user/teacher/store', 'SchoolMS\Users\Teacher::store', ['filter' => 'auth']); #done
-$routes->get('/sms/user/teacher/edit/(:num)', 'SchoolMS\Users\Teacher::edit/$1', ['filter' => 'auth']); #done
-$routes->post('/sms/user/teacher/update', 'SchoolMS\Users\Teacher::update', ['filter' => 'auth']); #done
-$routes->post('/sms/user/teacher/export', 'SchoolMS\Users\Teacher::export', ['filter' => 'auth']); #done
-$routes->post('/sms/user/teacher/import-insert', 'SchoolMS\Users\Teacher::import_insert', ['filter' => 'auth']); #done
-$routes->post('/sms/user/teacher/import-update', 'SchoolMS\Users\Teacher::import_update', ['filter' => 'auth']); #done
-$routes->get('/sms/user/teacher/download', 'SchoolMS\Users\Teacher::download', ['filter' => 'auth']); #done
-$routes->post('/sms/user/teacher/reset-password', 'SchoolMS\Users\Teacher::reset_password', ['filter' => 'auth']); #done
-$routes->post('/sms/user/teacher/view-credential', 'SchoolMS\Users\Teacher::view_credential', ['filter' => 'auth']); #done
-$routes->post('/sms/user/teacher/status', 'SchoolMS\Users\Teacher::status', ['filter' => 'auth']); #done
-$routes->delete('/sms/user/teacher/destroy', 'SchoolMS\Users\Teacher::destroy', ['filter' => 'auth']); #done
+$routes->get('/teacher/question-bank/additional', 'LearningMS\QuestionBank\AdditionalQuestionBank::index', ['filter' => 'auth']);
+$routes->get('/teacher/question-bank/additional/view-content/(:num)/(:num)', 'LearningMS\QuestionBank\AdditionalQuestionBank::view_content/$1/$2', ['filter' => 'auth']);
+$routes->post('/teacher/question-bank/additional/update-content', 'LearningMS\QuestionBank\AdditionalQuestionBank::update_content', ['filter' => 'auth']);
+$routes->post('/teacher/question-bank/additional/remove-content', 'LearningMS\QuestionBank\AdditionalQuestionBank::remove_content', ['filter' => 'auth']);
+
+$routes->get('/teacher/question-bank/standart', 'LearningMS\QuestionBank\StandartQuestionBank::index', ['filter' => 'auth']);
+
+$routes->get('/teacher/question-bank/public', 'LearningMS\QuestionBank\PublicQuestionBank::index', ['filter' => 'auth']);

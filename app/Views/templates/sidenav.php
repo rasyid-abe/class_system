@@ -8,13 +8,13 @@
             <ul class="nav flex-column">
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"
                 data-bs-dismiss="click" title="Dashboard">
-                    <a class="nav-link btn btn-custom btn-icon" href="#"><i class="bi bi-bar-chart-fill fs-2x"></i></a>
+                    <a class="nav-link btn btn-custom btn-icon <?= $page == "Dashboard" ? 'active' : '' ?>" href="#"><i class="bi bi-bar-chart-fill fs-2x"></i></a>
                 </li>
                 <!--begin::Nav item-->
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"
                     data-bs-dismiss="click" title="Materi Pelajaran">
                     <!--begin::Nav link-->
-                    <a class="nav-link btn btn-custom btn-icon active" data-bs-toggle="tab" href="#subjects_menu">
+                    <a class="nav-link btn btn-custom btn-icon <?= $page == "Lesson" ? 'active' : '' ?>" data-bs-toggle="tab" href="#subjects_menu">
                     <i class="bi bi-collection-fill fs-2x"></i>
                     </a>
                     <!--end::Nav link-->
@@ -24,7 +24,7 @@
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"
                     data-bs-dismiss="click" title="Bank Soal">
                     <!--begin::Nav link-->
-                    <a class="nav-link btn btn-custom btn-icon" data-bs-toggle="tab" href="#question_bank_menu">
+                    <a class="nav-link btn btn-custom btn-icon <?= $page == "Question" ? 'active' : '' ?>" data-bs-toggle="tab" href="#question_bank_menu">
                         <i class="bi bi-hdd-stack-fill fs-2x"></i>
                     </a>
                     <!--end::Nav link-->

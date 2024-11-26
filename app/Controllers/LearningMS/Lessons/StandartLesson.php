@@ -11,6 +11,7 @@ class StandartLesson extends BaseController
 {
 
     protected $title;
+    protected $page;
     protected $sidebar;
     protected $subject;
     protected $lesson_standart;
@@ -19,6 +20,7 @@ class StandartLesson extends BaseController
     public function __construct()
     {
         $this->title = "Materi Pelajaran";
+        $this->page = "Lesson";
         $this->sidebar = "Standart";
         $this->subject = new SubjectModel();
         $this->lesson_standart = new StandartLessonModel();
@@ -28,6 +30,7 @@ class StandartLesson extends BaseController
     public function index()
     {
         $data["title"] = 'Materi Standar';
+        $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
@@ -48,11 +51,13 @@ class StandartLesson extends BaseController
 
     public function view_subject($grade)
     {
-        $data["title"] = 'Materi Standar';
+        $data["title"] = 'Materi Standar Kelas ' . $grade;
+        $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '##' => 'Materi Standar',
+            '/teacher/lesson/standart/' => 'Materi Standar',
+            '##' => 'Kelas ' . $grade,
         ];
 
         $subs = $this->lesson_standart->list_subject($grade);
@@ -64,12 +69,17 @@ class StandartLesson extends BaseController
 
     public function view_content($subject, $grade)
     {
-        $data["title"] = 'Materi Belajar';
+        $subs = $this->subject->where('subject_id', $subject)->first();
+
+        $data["title"] = $subs['subject_name'] . ' - Kelas ' . $grade;
+        $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
+
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '/teacher/lesson/additional' => 'Materi Tambahan',
-            '##' => 'Materi Belajar',
+            '/teacher/lesson/standart' => 'Materi Standard',
+            '##' => 'Kelas ' . $grade,
+            '###' => $subs['subject_name']
         ];
 
         $data['subject'] = $subject;

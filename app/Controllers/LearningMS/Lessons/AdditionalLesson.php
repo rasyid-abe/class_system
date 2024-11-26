@@ -6,29 +6,34 @@ use App\Controllers\BaseController;
 use App\Models\Lessons\AdditionalLessonModel;
 use App\Models\Systems\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
+use App\Models\Masters\SubjectModel;
 
 class AdditionalLesson extends BaseController
 {
 
     protected $title;
     protected $sidebar;
+    protected $page;
     protected $teacher_subject;
     protected $lesson_additional;
     protected $teacher;
-    // protected $subject;
+    protected $subject;
 
     public function __construct()
     {
         $this->title = "Materi Pelajaran";
+        $this->page = "Lesson";
         $this->sidebar = "Additional";
         $this->lesson_additional = new AdditionalLessonModel();
         $this->teacher_subject = new TeacherAssignModel();
         $this->teacher = new TeacherModel();
+        $this->subject = new SubjectModel();
     }
 
     public function index()
     {
         $data["title"] = 'Materi Tambahan';
+        $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
@@ -49,12 +54,15 @@ class AdditionalLesson extends BaseController
 
     public function view_content($subject, $grade)
     {
-        $data["title"] = 'Materi Belajar';
+        $subs = $this->subject->where('subject_id', $subject)->first();
+
+        $data["title"] = $subs['subject_name'] . ' - Kelas ' . $grade;
+        $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
             '/teacher/lesson/additional' => 'Materi Tambahan',
-            '##' => 'Materi Belajar',
+            '##' => $subs['subject_name'] . ' - Kelas ' . $grade,
         ];
 
         $data['subject'] = $subject;
@@ -90,6 +98,7 @@ class AdditionalLesson extends BaseController
     public function create($subject, $grade)
     {
         $data["title"] = 'Tambah Materi';
+        $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
@@ -453,12 +462,6 @@ class AdditionalLesson extends BaseController
 
     public function share_topic()
     {
-        // teacher_id or
-        // type all or
-        // certain teacher contain id teacher or
-        // type 2 and subject = subject teacher or
-        // type 3 and subject = subject teacher and class = class teacher
-
         $req = $this->request->getVar();
         $shared_to = '';
         if ($req['val'] == 4) {
@@ -476,7 +479,8 @@ class AdditionalLesson extends BaseController
 
     public function edit($id)
     {
-        $data["title"] = 'Tambah Materi';
+        $data["title"] = 'Ubah Materi';
+        $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
