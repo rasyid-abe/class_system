@@ -1239,7 +1239,7 @@
 	<script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
 	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
 	<!-- <script src="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.js"></script> -->
-	
+
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/scripts.bundle.js"></script>
@@ -1248,17 +1248,29 @@
 	<script src="<?= base_url() ?>assets/js/common.js"></script>
 	<script src="<?= base_url() ?>assets/tinymce/tinymce.min.js"></script>
 	<script src="<?= base_url() ?>assets/js/tinymce_conf.js"></script>
-	
+
 	<script src="<?= base_url() ?>assets/js/script/lesson_school.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/lesson_additional.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/lesson_standard.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/lesson_public.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/question_bank.js"></script>
 	<script src="<?= base_url() ?>assets/js/form.repeater.js"></script>
+	<!-- <script src="<?= base_url() ?>assets/js/quill.editor.js"></script> -->
 
 
 	<script>
-		
+		function al_swal(msg, type) {
+			Swal.fire({
+				text: msg,
+				icon: type,
+				buttonsStyling: false,
+				confirmButtonText: "Ok",
+				customClass: {
+					confirmButton: "btn btn-primary"
+				}
+			});
+		}
+
 		function set_year(e) {
 			$.ajax({
 				url: "<?= base_url('/config-teacher-student/active-year/set-year') ?>",

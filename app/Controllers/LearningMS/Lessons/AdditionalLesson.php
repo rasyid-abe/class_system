@@ -90,6 +90,7 @@ class AdditionalLesson extends BaseController
         $data['teachers'] = $this->teacher
             ->select('teacher_id, teacher_first_name, teacher_last_name, teacher_degree')
             ->where('teacher_school_id', userdata()['school_id'])
+            ->where('teacher_id <> '. userdata()['id_profile'])
             ->findAll();
 
         return view("learningms/lesson_additional/content", $data);

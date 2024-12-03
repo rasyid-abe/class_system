@@ -76,11 +76,75 @@ class AdditionalQuestionBank extends BaseController
             ->where('question_bank_grade', $grade)
             ->where('question_bank_parent_id', 0)
             ->findAll();
+        
+        foreach ($question as $k => $v) {
+            $child = $this->question_bank
+                ->select('question_bank_id, question_bank_parent_id')
+                ->where('question_bank_parent_id', $v['question_bank_id'])
+                ->where('question_bank_status < 9')
+                ->findAll();
+            $question[$k]['child'] = array_chunk($child, 5);
+        }
 
         $data['questions'] = $question;
         $data['quest_type'] = get_list('question_type');
 
+        $data['teachers'] = $this->teacher
+            ->select('teacher_id, teacher_first_name, teacher_last_name, teacher_degree')
+            ->where('teacher_school_id', userdata()['school_id'])
+            ->where('teacher_id <> '. userdata()['id_profile'])
+            ->findAll();
+
         return view("learningms/question_bank_additional/content", $data);
+    }
+
+    public function share_task()
+    {
+        $req = $this->request->getVar();
+        $shared_to = '';
+        if ($req['val'] == 4) {
+            $shared_to = isset($req['thc']) != '' ? json_encode($req['thc']) : '';
+        } 
+
+        $share = $this->question_bank
+            ->where('question_bank_id', $req['idd'])
+            ->set('question_bank_shared_type', $req['val'])
+            ->set('question_bank_shared_to', $shared_to)
+            ->update();
+
+        echo json_encode($share);
+    }
+
+    public function get_question()
+    {
+        $req = $this->request->getVar();
+        $d = $this->question_bank
+            ->where('question_bank_id', $req['id'])
+            ->first();
+
+        $opt = json_decode($d['question_bank_option']);
+        $ans = $d['question_bank_answer'];
+        $key = array_search($ans, $opt);
+
+        $opt['right'] = $opt[$key];
+        unset($opt[$key]);
+
+        $res = [
+            'id' => $d['question_bank_id'],
+            'parent' => $d['question_bank_parent_id'],
+            'subj' => $d['question_bank_subject_id'],
+            'grad' => $d['question_bank_grade'],
+            'title' => $d['question_bank_title'],
+            'poin' => $d['question_bank_poin'],
+            'type' => $d['question_bank_type'],
+            'question' => $d['question_bank_question'],
+            'option' => $opt,
+            'explain' => $d['question_bank_explain'],
+            'hint' => $d['question_bank_hint'],
+            'list_quest' => get_list('question_type'),
+        ];
+        
+        echo json_encode($res);
     }
 
     public function update_content() 
@@ -106,9 +170,87 @@ class AdditionalQuestionBank extends BaseController
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
                 ->update();
+        } else if ($req['type'] == -1) {
+            $option = $req['val'][4];
+            shuffle($option);
+            
+            $ins = [
+                'question_bank_school_id' => userdata()['school_id'],
+                'question_bank_teacher_id' => userdata()['id_profile'],
+                'question_bank_subject_id' => $req['val'][0],
+                'question_bank_grade' => $req['val'][1],
+                'question_bank_type' => $req['val'][2],
+                'question_bank_question' => $req['val'][3],
+                'question_bank_option' => json_encode($option),
+                'question_bank_answer' => $req['val'][5],
+                'question_bank_poin' => $req['val'][6],
+                'question_bank_hint' => $req['val'][7],
+                'question_bank_explain' => $req['val'][8],
+                'question_bank_parent_id' => $req['id'],
+                'question_bank_status' => 1
+            ];
+
+            $update = $this->question_bank->insert($ins);
+        } else if ($req['type'] == -11) {
+            $option = $req['val'][4];
+            shuffle($option);
+
+            $update = $this->question_bank
+                ->set('question_bank_type', $req['val'][2])
+                ->set('question_bank_question', $req['val'][3])
+                ->set('question_bank_option', json_encode($option))
+                ->set('question_bank_answer', $req['val'][5])
+                ->set('question_bank_poin', $req['val'][6])
+                ->set('question_bank_updated_by', userdata()['user_id'])
+                ->where('question_bank_id', $req['id'])
+                ->update();
+
+        } else if ($req['type'] == -12) {
+            $update = $this->question_bank
+                ->set('question_bank_hint', $req['val'][0])
+                ->set('question_bank_updated_by', userdata()['user_id'])
+                ->where('question_bank_id', $req['id'])
+                ->update();
+
+        } else if ($req['type'] == -13) {
+            $update = $this->question_bank
+                ->set('question_bank_explain', $req['val'][0])
+                ->set('question_bank_updated_by', userdata()['user_id'])
+                ->where('question_bank_id', $req['id'])
+                ->update();
+
+        } else if ($req['type'] == -14) {
+            $update = $this->question_bank
+                ->set('question_bank_parent_id', $req['val'][0])
+                ->set('question_bank_updated_by', userdata()['user_id'])
+                ->where('question_bank_id', $req['id'])
+                ->update();
+
+        } else if ($req['type'] == -15) {
+            $d = $this->question_bank->where('question_bank_id', $req['id'])->first();
+
+            $ins = [
+                'question_bank_school_id' => userdata()['school_id'],
+                'question_bank_teacher_id' => userdata()['id_profile'],
+                'question_bank_subject_id' => $d['question_bank_subject_id'],
+                'question_bank_grade' => $d['question_bank_grade'],
+                'question_bank_type' => $d['question_bank_type'],
+                'question_bank_question' => $d['question_bank_question'],
+                'question_bank_option' => $d['question_bank_option'],
+                'question_bank_answer' => $d['question_bank_answer'],
+                'question_bank_poin' => $d['question_bank_poin'],
+                'question_bank_hint' => $d['question_bank_hint'],
+                'question_bank_explain' => $d['question_bank_explain'],
+                'question_bank_parent_id' => $req['val'][0],
+                'question_bank_status' => 1
+            ];
+
+            $update = $this->question_bank->insert($ins);
         }
         
         echo json_encode($update);
+    
+
     }
 
     public function remove_content()
@@ -122,9 +264,43 @@ class AdditionalQuestionBank extends BaseController
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
                 ->update();
+        } else if ($req['type'] == 2) {
+            $remove = $this->question_bank
+                ->set('question_bank_status', 9)
+                ->set('question_bank_updated_by', userdata()['user_id'])
+                ->where('question_bank_id', $req['id'])
+                ->update();
+        } else if ($req['type'] == 3) {
+            $remove = $this->question_bank
+                ->set('question_bank_hint', '<p><br></p>')
+                ->set('question_bank_updated_by', userdata()['user_id'])
+                ->where('question_bank_id', $req['id'])
+                ->update();
+        } else if ($req['type'] == 4) {
+            $remove = $this->question_bank
+                ->set('question_bank_explain', '<p><br></p>')
+                ->set('question_bank_updated_by', userdata()['user_id'])
+                ->where('question_bank_id', $req['id'])
+                ->update();
         }
         
         echo json_encode($remove);
+    }
+
+    public function get_title_list()
+    {
+        $req = $this->request->getVar();
+        $question = $this->question_bank
+            ->select('question_bank_id, question_bank_title')
+            ->where('question_bank_teacher_id', userdata()['id_profile'])
+            ->where('question_bank_status < 9')
+            ->where('question_bank_subject_id', $req['subj'])
+            ->where('question_bank_grade', $req['grad'])
+            ->where('question_bank_parent_id', 0)
+            ->where('question_bank_id <> '. $req['parent'])
+            ->findAll();
+
+        echo json_encode($question);
     }
 
 }

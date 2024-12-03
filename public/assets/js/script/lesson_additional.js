@@ -22,14 +22,11 @@ $(document).ready(function () {
 jQuery('.input_share_a').on('click', function (e) {
     const chks = $(this).val();
     if (chks == 4) {
-        $('#multiple-select-field-a').removeAttr('disabled')
+        $('#shared_less_to').removeClass('hide')
     } else {
-        $('#multiple-select-field-a').attr('data-placeholder', 'Pilih Guru').attr('disabled', true)
-        $('#select2-multiple-select-field-a-container').html('')
+        $('#shared_less_to').addClass('hide')
     }
 })
-
-
 
 
 function close_modal_content_a() {
@@ -48,31 +45,28 @@ function act_share_a() {
     let val = $('.input_share_a:checked').val()
     let thc = $('#multiple-select-field-a').val()
     let idd = $('input[name=less_id]').val()
-    $('#modal_share_a').modal('hide')
-    $.ajax({
-        url: base_url + '/teacher/lesson/additional/share-topic',
-        data: { idd, val, thc },
-        method: 'post',
-        dataType: 'json',
-        success: function (e) {
-            $.toast({
-                heading: 'Success',
-                text: 'Data berhasil di' + e.msg,
-                showHideTransition: 'fade',
-                position: 'top-right',
-                icon: 'success'
-            })
-
-        }
-    })
+    if (val == 4 && thc.length < 1) {
+        al_swal('Guru belum dipilih!', 'error')
+    } else {
+        $('#modal_share_a').modal('hide')
+        $.ajax({
+            url: base_url + '/teacher/lesson/additional/share-topic',
+            data: { idd, val, thc },
+            method: 'post',
+            dataType: 'json',
+            success: function (e) {
+                al_swal('Soal berhasil di bagikan.', 'success')
+            }
+        })
+    }
 }
 
-$('#multiple-select-field-a').select2({
-    theme: "bootstrap-5",
-    width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-    placeholder: $(this).data('placeholder'),
-    closeOnSelect: false,
-});
+// $('#multiple-select-field-a').select2({
+//     theme: "bootstrap-5",
+//     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+//     placeholder: $(this).data('placeholder'),
+//     closeOnSelect: false,
+// });
 
 $(document.body).on('click', '#btn_update_content_file', function () {
     let id = $('#btn_update_attach').data('id');
