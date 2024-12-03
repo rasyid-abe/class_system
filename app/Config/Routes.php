@@ -81,6 +81,9 @@ $routes->get('/teacher/question-bank/additional', 'LearningMS\QuestionBank\Addit
 $routes->get('/teacher/question-bank/additional/view-content/(:num)/(:num)', 'LearningMS\QuestionBank\AdditionalQuestionBank::view_content/$1/$2', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/additional/update-content', 'LearningMS\QuestionBank\AdditionalQuestionBank::update_content', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/additional/remove-content', 'LearningMS\QuestionBank\AdditionalQuestionBank::remove_content', ['filter' => 'auth']);
+$routes->post('/teacher/question-bank/additional/get-question', 'LearningMS\QuestionBank\AdditionalQuestionBank::get_question', ['filter' => 'auth']);
+$routes->post('/teacher/question-bank/additional/get-title-list', 'LearningMS\QuestionBank\AdditionalQuestionBank::get_title_list', ['filter' => 'auth']);
+$routes->post('/teacher/question-bank/additional/share-task', 'LearningMS\QuestionBank\AdditionalQuestionBank::share_task', ['filter' => 'auth']);
 
 $routes->get('/teacher/question-bank/standart', 'LearningMS\QuestionBank\StandartQuestionBank::index', ['filter' => 'auth']);
 

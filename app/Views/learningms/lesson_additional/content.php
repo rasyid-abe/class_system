@@ -85,12 +85,14 @@
                     </label>
                 </div>
 
-                <select class="form-select hide" id="multiple-select-field-a" data-placeholder="Pilih Guru" multiple disabled>
+                <div class="hide" id="shared_less_to">
+                    <select class="form-select form-select-sm form-select-solid" id="multiple-select-field-a" data-control="select2" data-close-on-select="false" data-placeholder="Pilih Guru" data-allow-clear="true" multiple="multiple">
                     <?php foreach ($teachers as $k => $v): ?>
-                        <?php $degr = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : ''  ?>
-                        <option value="<?= $v['teacher_id'] ?>"><?= $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $degr ?></option>
-                    <?php endforeach; ?>
-                </select>
+                            <?php $degr = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : ''  ?>
+                            <option value="<?= $v['teacher_id'] ?>"><?= $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $degr ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
             </div>
 
             <div class="modal-footer">
