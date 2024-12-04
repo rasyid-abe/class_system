@@ -435,8 +435,7 @@
                     </div>
                     <div id="coll_body_<?= $v['question_bank_id'] ?>" class="hide body_collapse">
                         <div class="accordion-body bg-light">
-                            <?php $i = 0;
-                            foreach ($v['child'] as $x): ?>
+                            <?php $i = 0; foreach ($v['child'] as $x): ?>
                                 <div class="d-flex justify-content-start">
                                     <?php foreach ($x as $y): ?>
                                         <a href="#" onclick="view_question(<?= $y['question_bank_id'] ?>)" class="m-1 btn btn-icon btn-outline btn-outline-primary btn-active-primary"><?= $i + 1 ?></a>

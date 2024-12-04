@@ -22,12 +22,30 @@ function view_content($url)
     }
 }
 
+function view_task($url)
+{
+
+    $role = session()->get('role');
+    if ($role < 4) {
+        return '<a href="'.base_url() . $url .'" class="btn btn-success me-3 btn-sm"><i class="fa fa-list"></i> Lihat Soal</a>';
+    }
+}
+
 function view_subject_content($url)
 {
 
     $role = session()->get('role');
     if ($role < 4) {
         return '<a href="'.base_url() . $url .'" class="btn btn-success me-3 btn-sm"><i class="fa fa-list"></i> Lihat Mata Pelajaran</a>';
+    }
+}
+
+function view_subject_task($url)
+{
+
+    $role = session()->get('role');
+    if ($role < 4) {
+        return '<a href="'.base_url() . $url .'" class="btn btn-success me-3 btn-sm"><i class="fa fa-list"></i> Lihat Soal</a>';
     }
 }
 

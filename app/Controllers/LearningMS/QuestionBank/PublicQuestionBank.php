@@ -3,7 +3,8 @@
 namespace App\Controllers\LearningMS\QuestionBank;
 
 use App\Controllers\BaseController;
-use App\Models\QuestionBank\AdditionalQuestionBankModel;
+use App\Models\QuestionBank\PublicQuestionBankModel;
+use App\Models\QuestionBank\QuestionBankModel;
 use App\Models\Systems\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
 
@@ -11,9 +12,11 @@ class PublicQuestionBank extends BaseController
 {
 
     protected $title;
+    protected $page;
     protected $sidebar;
     protected $teacher_subject;
-    protected $question_bank_additional;
+    protected $public_question_bank;
+    protected $question_bank;
     protected $teacher;
 
     public function __construct()
@@ -21,7 +24,8 @@ class PublicQuestionBank extends BaseController
         $this->title = "Bank Soal";
         $this->page = "Question";
         $this->sidebar = "QB_Public";
-        $this->question_bank_additional = new AdditionalQuestionBankModel();
+        $this->public_question_bank = new PublicQuestionBankModel();
+        $this->question_bank = new QuestionBankModel();
         $this->teacher_subject = new TeacherAssignModel();
         $this->teacher = new TeacherModel();
     }
@@ -36,16 +40,35 @@ class PublicQuestionBank extends BaseController
             '##' => 'Bank Soal Publik',
         ];
 
-        $data['subjects'] = $this->teacher_subject
-            ->select('teacher_assign_id, subject_id, student_group_grade, student_group_name, subject_name')
-            ->join('master_student_group', 'student_group_id=teacher_assign_student_group_id')
-            ->join('master_subject', 'subject_id=teacher_assign_subject_id')
-            ->where('teacher_assign_teacher_id', userdata()['id_profile'])
-            ->where('teacher_assign_status < 9')
-            ->groupBy('student_group_grade')
-            ->findAll();
+        $teacher_id = userdata()['id_profile'];
+        $subject_id = teacher_subjects($teacher_id);
+        $grade = teacher_grades($teacher_id);
+
+        $data['shared'] = $this->public_question_bank->get_shared($teacher_id, $subject_id, $grade);
 
         return view("learningms/question_bank_public/index", $data);
+    }
+
+    public function view_task($id,$title) 
+    {
+        $data["title"] = 'Soal ' .$title;
+        $data["page"] = $this->page;
+        $data["sidebar"] = $this->sidebar;
+
+        $dt = $this->question_bank
+            ->select('question_bank_id')
+            ->where('question_bank_parent_id', $id)
+            ->findAll();
+        
+        $data["breadcrumb"] = [
+            '#' => $this->title,
+            '/teacher/question-bank/public' => 'Bank Soal Publik',
+            '###' => 'Soal ' .$title,
+        ];
+
+        $data['quest'] = array_chunk($dt, 5);
+
+        return view("learningms/question_bank_public/content", $data);
     }
 
 }
