@@ -69,6 +69,21 @@ function view_question(id) {
   });
 }
 
+function view_question_std(id) {
+  $('#quest_cont').removeClass('hide')
+  $.ajax({
+    url: base_url + "/teacher/question-bank/standart/get-question",
+    data: {id,},
+    method: "post",
+    dataType: "json",
+    success: function (e) {
+      generate_task(e)
+      generate_hint(e)
+      generate_explain(e)
+    },
+  });
+}
+
 function generate_task(e) {
   let opt = ``
   let num = 1
@@ -86,15 +101,36 @@ function generate_task(e) {
     num++
   })
 
+  let btnn = ''
+  let url = window.location.href
+  if (url.includes("question-bank/additional")){
+    btnn = `
+      <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-15, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+      </svg> Salin</button>
+      <button type="button" class="btn btn-sm btn-info" onclick="show_form_edit(-14, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><i class="bi bi-arrows-move"></i> Pindah</button>
+      <button type="button" class="btn btn-sm btn-warning mx-2" onclick="show_form_edit(-11, ${e.id})"><i class="bi bi-pencil fs-5"></i> Ubah</button>
+      <button type="button" class="btn btn-sm btn-danger" onclick="remove_content_quest(${e.id}, '${e.tilte}', 2)"><i class="bi bi-trash fs-5"></i> Hapus</button>
+    `
+  } else if (url.includes("question-bank/public")){
+    btnn = `
+      <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-16, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+      </svg> Salin</button>
+    `
+
+  } else {
+    btnn = `
+      <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-15, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+      </svg> Salin</button>
+    `
+  }
+
   let html = `
      <div class="card">
         <div class="card-header p-5 d-flex justify-content-end">
-            <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-15, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-            </svg> Salin</button>
-            <button type="button" class="btn btn-sm btn-info" onclick="show_form_edit(-14, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><i class="bi bi-arrows-move"></i> Pindah</button>
-            <button type="button" class="btn btn-sm btn-warning mx-2" onclick="show_form_edit(-11, ${e.id})"><i class="bi bi-pencil fs-5"></i> Ubah</button>
-            <button type="button" class="btn btn-sm btn-danger" onclick="remove_content_quest(${e.id}, '${e.tilte}', 2)"><i class="bi bi-trash fs-5"></i> Hapus</button>
+            ${btnn}
         </div>
         <div class="card-body">
             <div class="alert alert-dismissible bg-light-primary border border-primary d-flex flex-column flex-sm-row p-5 mb-5">
@@ -155,34 +191,40 @@ function generate_explain(e) {
 }
 
 function show_form_edit(type, id, subj = null, grad = null, parent = null) {
-  if (type == -14 || type == -15) {
+  if (type == -14 || type == -15 || type == -16) {
+
+    let urls = type == -16 ? "/teacher/question-bank/public/get-title-list" : "/teacher/question-bank/additional/get-title-list"
+
     $.ajax({
-      url: base_url + "/teacher/question-bank/additional/get-title-list",
+      url: base_url + urls,
       data: {subj, grad, parent},
       method: "post",
       dataType: "json",
       success: function (e) {
-        console.log(e);
           let form = ''
-          $.each(e, function(i,v) {
-            form += `
-                <div data-kt-buttons="true">
-                    <label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-stack text-start p-6 mb-5">
-                        <div class="d-flex align-items-center me-2">
-                            <div class="form-check form-check-custom form-check-solid form-check-primary me-6">
-                                <input class="form-check-input move_task" type="radio" name="move_task" value="${v.question_bank_id}"/>
-                            </div>
-  
-                            <div class="flex-grow-1">
-                                <div class="fw-semibold">
-                                    ${v.question_bank_title}
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-                </div>
-            `
-          })
+          if (e.length > 0) {
+            $.each(e, function(i,v) {
+              form += `
+                  <div data-kt-buttons="true">
+                      <label class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-stack text-start p-6 mb-5">
+                          <div class="d-flex align-items-center me-2">
+                              <div class="form-check form-check-custom form-check-solid form-check-primary me-6">
+                                  <input class="form-check-input move_task" type="radio" name="move_task" value="${v.question_bank_id}"/>
+                              </div>
+    
+                              <div class="flex-grow-1">
+                                  <div class="fw-semibold">
+                                      ${v.question_bank_title}
+                                  </div>
+                              </div>
+                          </div>
+                      </label>
+                  </div>
+              `
+            })
+          } else {
+            form = '<p>Tidak ada judul soal lain</p>'
+          }
 
           $("#head_content_modal_std").html(`
               <input type="hidden" name="form_type" value="${type}" />
