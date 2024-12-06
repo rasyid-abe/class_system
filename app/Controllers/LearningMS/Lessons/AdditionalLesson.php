@@ -32,12 +32,12 @@ class AdditionalLesson extends BaseController
 
     public function index()
     {
-        $data["title"] = 'Materi Tambahan';
+        $data["title"] = 'Materi Saya';
         $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '##' => 'Materi Tambahan',
+            '##' => 'Materi Saya',
         ];
 
         $data['subjects'] = $this->teacher_subject
@@ -61,7 +61,7 @@ class AdditionalLesson extends BaseController
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '/teacher/lesson/additional' => 'Materi Tambahan',
+            '/teacher/lesson/additional' => 'Materi Saya',
             '##' => $subs['subject_name'] . ' - Kelas ' . $grade,
         ];
 
@@ -103,7 +103,7 @@ class AdditionalLesson extends BaseController
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '/teacher/lesson/additional' => 'Materi Tambahan',
+            '/teacher/lesson/additional' => 'Materi Saya',
             '##' => 'Tambah Materi',
         ];
 
@@ -485,7 +485,7 @@ class AdditionalLesson extends BaseController
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '/teacher/lesson/additional' => 'Materi Tambahan',
+            '/teacher/lesson/additional' => 'Materi Saya',
             '##' => 'Ubah Materi',
         ];
 

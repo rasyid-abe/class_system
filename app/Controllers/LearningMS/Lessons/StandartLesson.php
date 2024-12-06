@@ -78,7 +78,7 @@ class StandartLesson extends BaseController
         $data["breadcrumb"] = [
             '#' => $this->title,
             '/teacher/lesson/standart' => 'Materi Standard',
-            '##' => 'Kelas ' . $grade,
+            '/teacher/lesson/standart/view-subject/' . $grade => 'Kelas ' . $grade,
             '###' => $subs['subject_name']
         ];
 

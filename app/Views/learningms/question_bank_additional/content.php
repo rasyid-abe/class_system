@@ -136,53 +136,66 @@
                                 <label for="exampleFormControlInput1" class="form-label">Pilihan</label>
                                 <div class="position-relative">
                                     <div class="butt ml-3" style="min-width: 200px">
-                                        <div class="form-check m-2">
-                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                                            <label class="form-check-label" for="flexCheckDefault">
+                                        <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
+                                            <input class="form-check-input mcx_option" type="checkbox" value="" id="" />
+                                            <label class="form-check-label" for="">
                                                 Jawaban Benar
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmcx0" name="optmcx0" class="optmc_n"></div>
+                                    <div id="quilleditor_optmcx0" name="optmcx0" class="optmcx_n"></div>
                                 </div>
                             </div>
                             <div class="mt-1">
                                 <div class="position-relative">
                                     <div class="butt ml-3" style="min-width: 200px">
-                                        <div class="form-check m-2">
-                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                                            <label class="form-check-label" for="flexCheckDefault">
+                                        <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
+                                            <input class="form-check-input mcx_option" type="checkbox" value="" id="" />
+                                            <label class="form-check-label" for="">
                                                 Jawaban Benar
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmcx1" name="optmcx1 class=" optmc_n""></div>
+                                    <div id="quilleditor_optmcx1" name="optmcx1" class="optmcx_n"></div>
                                 </div>
                             </div>
                             <div class="mt-1">
                                 <div class="position-relative">
                                     <div class="butt ml-3" style="min-width: 200px">
-                                        <div class="form-check m-2">
-                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                                            <label class="form-check-label" for="flexCheckDefault">
+                                        <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
+                                            <input class="form-check-input mcx_option" type="checkbox" value="" id="" />
+                                            <label class="form-check-label" for="">
                                                 Jawaban Benar
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmcx2" name="optmcx2 class=" optmc_n""></div>
+                                    <div id="quilleditor_optmcx2" name="optmcx2" class="optmcx_n"></div>
                                 </div>
                             </div>
                             <div class="mt-1">
                                 <div class="position-relative">
                                     <div class="butt ml-3" style="min-width: 200px">
-                                        <div class="form-check m-2">
-                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                                            <label class="form-check-label" for="flexCheckDefault">
+                                        <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
+                                            <input class="form-check-input mcx_option" type="checkbox" value="" id="" />
+                                            <label class="form-check-label" for="">
                                                 Jawaban Benar
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmcx3" name="optmcx3 class=" optmc_n""></div>
+                                    <div id="quilleditor_optmcx3" name="optmcx3" class="optmcx_n"></div>
+                                </div>
+                            </div>
+                            <div class="mt-1">
+                                <div class="position-relative">
+                                    <div class="butt ml-3" style="min-width: 200px">
+                                        <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
+                                            <input class="form-check-input mcx_option" type="checkbox" value="" id="" />
+                                            <label class="form-check-label" for="">
+                                                Jawaban Benar
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div id="quilleditor_optmcx4" name="optmcx4" class="optmcx_n"></div>
                                 </div>
                             </div>
                             <div class="repeater">
@@ -191,16 +204,16 @@
                                         <div data-repeater-item>
                                             <div class="butt ml-3" style="min-width: 200px">
                                                 <div class="d-flex justify-content-left">
-                                                    <div class="form-check m-2 pt-2">
-                                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                                                        <label class="form-check-label" for="flexCheckDefault">
+                                                    <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2 pt-2">
+                                                        <input class="form-check-input mcx_option" type="checkbox" value="" id="" />
+                                                        <label class="form-check-label" for="">
                                                             Jawaban Benar
                                                         </label>
                                                     </div>
                                                     <button data-repeater-delete type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
                                                 </div>
                                             </div>
-                                            <div id="quilleditor_optmcx_n" name="optmcx" class="optmc_n"></div>
+                                            <div id="quilleditor_optmcx_n" name="optmcx" class="optmcx_n"></div>
                                         </div>
                                     </div>
                                     <input data-repeater-create type="button" class="btn btn-info btn-sm mt-2" value="Tambah Pilihan" />
@@ -211,13 +224,13 @@
                         <div class="hide mt-10" id="truefalse">
                             <label for="exampleFormControlInput1" class="form-label">Jawaban</label>
                             <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
-                                <input class="form-check-input" type="radio" name="tfopt" value="" id="ctrue" />
+                                <input class="form-check-input tf_option" type="radio" name="tfopt" value=1 id="ctrue" />
                                 <label class="form-check-label" for="ctrue">
                                     Benar
                                 </label>
                             </div>
-                            <div class="form-check form-check-custom form-check-solid m-2">
-                                <input class="form-check-input" type="radio" name="tfopt" value="" id="cfalse" />
+                            <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
+                                <input class="form-check-input tf_option" type="radio" name="tfopt" value=2 id="cfalse" />
                                 <label class="form-check-label" for="cfalse">
                                     Salah
                                 </label>
@@ -251,6 +264,48 @@
                                 <div id="explain_quest" name="textarea"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-light-danger" onclick="close_modal_content_quest();">Tutup</button>
+                <button type="sumbit" class="btn btn-sm btn-primary" onclick="save_content_quest();">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_update_task_mcx">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="content_modal">
+            <div class="modal-header">
+                <label for="chapter" class="form-label">Ubah Petunjuk Soal</label>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="subject" value="<?= $subject ?>">
+                <input type="hidden" name="grade" value="<?= $grade ?>">
+                <div id="edit_form_type_mcx"></div>
+
+                <div id="task_edit_mcx" name="task_edit_mcx"></div>
+                <div class="repeater px-5" id="repeater_edit">
+                    <div class="mt-5">
+                        <div data-repeater-list="group-mcx">
+                            <div data-repeater-item>
+                                <div class="butt" style="min-width: 200px">
+                                    <div class="d-flex justify-content-left">
+                                        <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2 pt-2">
+                                            <input class="form-check-input mcx_option_edit" type="checkbox" value="" />
+                                            <label class="form-check-label">
+                                                Jawaban Benar
+                                            </label>
+                                        </div>
+                                        <button data-repeater-delete type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
+                                    </div>
+                                </div>
+                                <div id="quilleditor_optmcx_edit" name="optmc" class="mb-2 optmcx_n_edit"></div>
+                            </div>
+                        </div>
+                        <input data-repeater-create type="button" class="btn btn-info btn-sm mt-2" value="Tambah Pilihan" />
                     </div>
                 </div>
             </div>
@@ -438,7 +493,7 @@
                             <?php $i = 0; foreach ($v['child'] as $x): ?>
                                 <div class="d-flex justify-content-start">
                                     <?php foreach ($x as $y): ?>
-                                        <a href="#" onclick="view_question(<?= $y['question_bank_id'] ?>)" class="m-1 btn btn-icon btn-outline btn-outline-primary btn-active-primary"><?= $i + 1 ?></a>
+                                        <a href="#" onclick="view_question(<?= $y['question_bank_id'] ?>)" class="m-1 btn btn-icon btn-outline btn-outline-primary qtact"><?= $i + 1 ?></a>
                                     <?php $i++;
                                     endforeach ?>
                                 </div>

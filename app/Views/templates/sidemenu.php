@@ -43,7 +43,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/lesson/additional') ?>"
-                                class="<?= $sidebar != 'Additional' ? 'text-gray-800' : 'text-success' ?> text-hover-success fs-6 fw-bold">Tambahan</a>
+                                class="<?= $sidebar != 'Additional' ? 'text-gray-800' : 'text-success' ?> text-hover-success fs-6 fw-bold">Saya</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->

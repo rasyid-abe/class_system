@@ -90,7 +90,7 @@ function generate_task(e) {
   $.each(e.option, function(i,v) {
     opt += `
         <div class="col-sm-6">
-            <div class="alert alert-dismissible bg-light-${i.includes('r_') ? 'success border border-success' : 'secondary border border-dark'} d-flex flex-column flex-sm-row p-5 mb-5">
+            <div class="alert alert-dismissible bg-light-${i == 'right' ? 'success border border-success' : 'secondary border border-dark'} d-flex flex-column flex-sm-row p-5 mb-5">
                 <div class="d-flex flex-column pe-0 pe-sm-10">
                     <h4 class="fw-semibold">Pilihan Jawaban ${num}</h4>
                     ${v}
@@ -274,52 +274,24 @@ function show_edit_task(e, type, id) {
     })
   
     let choose = ''
-    let iddx = 0    
+    let iddx = 0
     $.each(e.option, function(i,v) {
-      if (e.type == 1) {
-        choose += `
-          <div class="mt-5" id="opt_mc_rem${iddx}">
-              <div class="position-relative">
-                  <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
-                      <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
-                          <input class="form-check-input mc_option_edit ${i.includes('r_') ? 'checked_mc' : ''}" type="radio" value="" ${i.includes('r_') ? 'checked' : ''} />
-                          <label class="form-check-label">
-                              Jawaban Benar
-                          </label>
-                      </div>
-                      <button onclick="rem_elem_id('opt_mc_rem${iddx}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
-                  </div>
-                  <div id="edit_optmc${iddx}" name="optmc${iddx}" class="optmc_n_edit"></div>
-              </div>
-          </div>
-        `
-      } else if (e.type == 2) {
-        choose += `
-          <div class="mt-5" id="opt_mcx_rem${iddx}">
-              <div class="position-relative">
-                  <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
-                      <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
-                          <input class="form-check-input mcx_option_edit ${i.includes('r_') ? 'checked_mcx' : ''}" type="checkbox" value="" ${i.includes('r_') ? 'checked' : ''} />
-                          <label class="form-check-label">
-                              Jawaban Benar
-                          </label>
-                      </div>
-                      <button onclick="rem_elem_id('opt_mcx_rem${iddx}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
-                  </div>
-                  <div id="edit_optmcx${iddx}" name="optmcx${iddx}" class="optmcx_n_edit"></div>
-              </div>
-          </div>
-        `
-      } else if (e.type == 3) {
-        choose += `
-          <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
-              <input class="form-check-input tf_option" type="radio" name="tfopt_edit" value="${v}" id="ctrue_edit" ${iddx == v ? 'checked' : ''} />
-              <label class="form-check-label" for="ctrue">
-                  ${v == 1 ? 'Benar' : 'Salah'}
-              </label>
-          </div>
-        `
-      }
+      choose += `
+        <div class="mt-5" id="opt_mc_rem${iddx}">
+            <div class="position-relative">
+                <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
+                    <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
+                        <input class="form-check-input mc_option_edit ${i == 'right' ? 'checked_mc' : ''}" type="radio" value="" ${i == 'right' ? 'checked' : ''} />
+                        <label class="form-check-label">
+                            Jawaban Benar
+                        </label>
+                    </div>
+                    <button onclick="rem_elem_id('opt_mc_rem${iddx}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
+                </div>
+                <div id="edit_optmc${iddx}" name="optmc${iddx}" class="optmc_n_edit"></div>
+            </div>
+        </div>
+      `
       iddx++
     })
   
@@ -354,17 +326,8 @@ function show_edit_task(e, type, id) {
             </div>
         </div>
     `
-    if (e.type == 1) {
-      $('#task_edit').html(task)
-      $('#modal_update_task').modal('show')
-    } else if (e.type == 2) {
-      $('#task_edit_mcx').html(task)
-      $('#modal_update_task_mcx').modal('show')
-    } else if (e.type == 3) {
-      $('#repeater_edit').addClass('hide')
-      $('#task_edit').html(task)
-      $('#modal_update_task').modal('show')
-    }
+    $('#task_edit').html(task)
+    $('#modal_update_task').modal('show')
   
     var task_quest_edit = new Quill("#task_quest_edit", {
       modules: {
@@ -375,32 +338,17 @@ function show_edit_task(e, type, id) {
     $('#task_quest_edit > .ql-editor').html(e.question)
   
     let iddy = 0
-    if (e.type == 1) {
-      $.each(e.option, function(i,v) {
-        var edit_optmc0 = new Quill("#edit_optmc" + iddy, {
-          modules: {
-            toolbar: toolbarOptions,
-          },
-          theme: "snow", // or 'bubble'
-        });
-        $('#edit_optmc' + iddy + ' > .ql-editor').html(v)
-    
-        iddy++
-      })
-    } else if (e.type == 2) {
-      $.each(e.option, function(i,v) {
-        var edit_optmcx0 = new Quill("#edit_optmcx" + iddy, {
-          modules: {
-            toolbar: toolbarOptions,
-          },
-          theme: "snow", // or 'bubble'
-        });
-        $('#edit_optmcx' + iddy + ' > .ql-editor').html(v)
-    
-        iddy++
-      })
-    }
-
+    $.each(e.option, function(i,v) {
+      var edit_optmc0 = new Quill("#edit_optmc" + iddy, {
+        modules: {
+          toolbar: toolbarOptions,
+        },
+        theme: "snow", // or 'bubble'
+      });
+      $('#edit_optmc' + iddy + ' > .ql-editor').html(v)
+  
+      iddy++
+    })
   } else if (type == -12) {
     $('#repeater_edit').addClass("hide")
     let hint = `
@@ -511,7 +459,6 @@ function close_modal_content_quest() {
   $("#body_content_modal_quest").html("");
   $("#modal_update_question_quest").modal("hide");
   $("#modal_update_task").modal("hide");
-  $("#modal_update_task_mcx").modal("hide");
 }
 
 function save_content_quest() {
@@ -553,27 +500,46 @@ function save_content_quest() {
 
 function pre_question(type) {
   let qtype = $("#quest_type").find(":selected").val();
+  let idx = 0;
   let idx_a = [];
+  let ii = 0;
+  let chk = [];
   let option = [];
-  let answer = [];
-  let right_ans = true;
-  let c_option = ''
-  let c_check = ''
-  let c_editor = ''
+  let answer_ = '';
+  let ann = true;
 
   if (qtype == 1) {
-    c_option = '.mc_option'
-    c_check = 'checked_mc'
-    c_editor = '.optmc_n'
-  } else if (qtype == 2) {
-    c_option = '.mcx_option'
-    c_check = 'checked_mcx'
-    c_editor = '.optmcx_n'
-  } 
+    $(".mc_option").each(function () {
+      if ($(this).hasClass("checked_mc")) {
+        idx = ii;
+        chk.push(true);
+      } else {
+        chk.push(false);
+      }
+      ii++;
+    });
+  
+    $(".optmc_n > .ql-editor").each(function () {
+      if ($(this).html() != '<p><br></p>') {
+        option.push($(this).html()); //or $(this).text();
+      }
+    });
 
-  if (qtype == 1 || qtype == 2) {
+    answer_ = option[idx];
+
+  } else if (qtype == 2) {
+    $(".mcx_option").each(function () {
+      if ($(this).hasClass("checked_mcx")) {
+        idx = ii;
+        chk.push(true);
+      } else {
+        chk.push(false);
+      }
+      ii++;
+    });
+
     let ch_opt = []
-    $(`${c_editor} > .ql-editor`).each(function () {
+    $(".optmcx_n > .ql-editor").each(function () {
       if ($(this).html() != '<p><br></p>') {
         ch_opt.push($(this).html()); //or $(this).text();
       } else {
@@ -581,19 +547,8 @@ function pre_question(type) {
       }
     });
 
-    let ii = 0;
-    let chk = [];
-    $(`${c_option}`).each(function () {
-      if ($(this).hasClass(c_check)) {
-        chk.push(ch_opt[ii]);
-      } else {
-        chk.push(false);
-      }
-      ii++;
-    });  
-
     for (let i = 0; i < ch_opt.length; i++) {
-      if(chk[i] != false) {
+      if(chk[i] == true) {
         if(ch_opt[i] != null) {
           idx_a.push(true)
         } else {
@@ -602,50 +557,43 @@ function pre_question(type) {
       }
     }
     
+    answer_ = JSON.stringify(idx_a)  
+    
     if(idx_a.includes(false)) {
-      right_ans = false;
+      ann = false;
     }
 
     option = ch_opt.filter(function (el) {
       return el != null;
     })
-    
-    answer = chk.filter(function (el) {
-      return el != false;
-    })
 
-  } else if (qtype == 3) {
-    let tf_c = $('input[name="tfopt"]:checked').val();
-    if (tf_c) {
-      idx_a.push(tf_c)
-    }
-    answer.push(tf_c)
-    option.push(1)
-    option.push(2)
-  }
-  
+  }  
+
+  console.log(option);
+
   id = $("input[name=id_quest]").val();
   subj = $("input[name=subject]").val();
   grad = $("input[name=grade]").val();
   poin = $("input[name=poin]").val();
   quest_type = qtype;
   question = $("#quilleditor_question > .ql-editor").html();
+  answer = answer_;
   hint = $("#hint_quest > .ql-editor").html();
   explain = $("#explain_quest > .ql-editor").html();
   
   if (quest_type != 0) {
     if (question != '<p><br></p>') {
       if (option.length > 0) {
-        if (right_ans) {
-          if (!idx_a.includes(false) && idx_a.length > 0) {
+        if (answer != undefined && ann) {
+          if (chk.includes(true)) {
             // al_swal("Jawaban ok", "success")
             store_content_quest(type, id, [
               subj,
               grad,
               quest_type,
               question,
-              JSON.stringify(option),
-              JSON.stringify(answer),
+              option,
+              answer,
               poin,
               hint,
               explain,
@@ -668,96 +616,46 @@ function pre_question(type) {
 }
 
 function pre_question_edit(type) {
-  let qtype = $("#quest_type_edit").find(":selected").val();
-  let idx_a = [];
-  let option = [];
-  let answer = [];
-  let right_ans = true;
-  let c_option = ''
-  let c_check = ''
-  let c_editor = ''
-
-  if (qtype == 1) {
-    c_option = '.mc_option_edit'
-    c_check = 'checked_mc'
-    c_editor = '.optmc_n_edit'
-  } else if (qtype == 2) {
-    c_option = '.mcx_option_edit'
-    c_check = 'checked_mcx'
-    c_editor = '.optmcx_n_edit'
-  }
-
-  if (qtype == 1 || qtype == 2) {
-    let ch_opt = []
-    $(`${c_editor} > .ql-editor`).each(function () {
-      if ($(this).html() != '<p><br></p>') {
-        ch_opt.push($(this).html()); //or $(this).text();
-      } else {
-        ch_opt.push(null)
-      }
-    });
-
-    let ii = 0;
-    let chk = [];
-    $(`${c_option}`).each(function () {
-      if ($(this).hasClass(c_check)) {
-        chk.push(ch_opt[ii]);
-      } else {
-        chk.push(false);
-      }
-      ii++;
-    });  
-
-    for (let i = 0; i < ch_opt.length; i++) {
-      if(chk[i] != false) {
-        if(ch_opt[i] != null) {
-          idx_a.push(true)
-        } else {
-          idx_a.push(false)
-        }
-      }
+  idx = 0;
+  ii = 0;
+  chk = [];
+  $(".mc_option_edit").each(function () {
+    if ($(this).hasClass("checked_mc")) {
+      idx = ii;
+      chk.push(true);
+    } else {
+      chk.push(false);
     }
-    
-    if(idx_a.includes(false)) {
-      right_ans = false;
+    ii++;
+  });
+
+  option = [];
+  $(".optmc_n_edit > .ql-editor").each(function () {
+    if ($(this).html() != '<p><br></p>') {
+      option.push($(this).html()); //or $(this).text();
     }
-    
-    option = ch_opt.filter(function (el) {
-      return el != null;
-    })
-    
-    answer = chk.filter(function (el) {
-      return el != false;
-    })  
-  } else if (qtype == 3) {
-    let tf_c = $('input[name="tfopt_edit"]:checked').val();
-    if (tf_c) {
-      idx_a.push(tf_c)
-    }
-    answer.push(tf_c)
-    option.push(1)
-    option.push(2)
-  }
+  });
 
   id = $("input[name=id_quest_edit]").val();
   subj = $("input[name=subject]").val();
   grad = $("input[name=grade]").val();
   poin = $("input[name=poin_edit]").val();
-  quest_type = qtype;
+  quest_type = $("#quest_type_edit").find(":selected").val();
   question = $("#task_quest_edit > .ql-editor").html();
-
+  answer = option[idx];
+  
   if (quest_type != 0) {
     if (question != '<p><br></p>') {
       if (option.length > 0) {
-        if (right_ans) {
-          if (!idx_a.includes(false) && idx_a.length > 0) {
+        if (answer != undefined) {
+          if (chk.includes(true)) {
             store_content_quest(type, id, [
               subj,
               grad,
               quest_type,
               question,
-              JSON.stringify(option),
-              JSON.stringify(answer),
+              option,
+              answer,
               poin
             ]);
           } else {
@@ -818,10 +716,6 @@ $(document).on("click", ".checked_mc", function () {
 });
 
 $(document).on("click", ".mcx_option", function () {
-  $(this).toggleClass('checked_mcx')
-});
-
-$(document).on("click", ".mcx_option_edit", function () {
   $(this).toggleClass('checked_mcx')
 });
 
@@ -913,12 +807,6 @@ function tog_form(id) {
 
 function generate_richtext() {
   var quilleditor_question = new Quill("#quilleditor_question", {
-    modules: {
-      toolbar: toolbarOptions,
-    },
-    theme: "snow", // or 'bubble'
-  });
-  var quilleditor_optmcx_edit = new Quill("#quilleditor_optmcx_edit", {
     modules: {
       toolbar: toolbarOptions,
     },
@@ -1054,15 +942,3 @@ $(document).ready(function () {
     act_repeater()
   }
 });
-
-$(document).on('click', '.qtact', function (e) {
-  e.preventDefault()
-  $('.qtact').each(function () {
-    if ($(this).hasClass('btn-primary')) {
-      $(this).removeClass('btn-primary')
-      $(this).addClass('btn-outline btn-outline-primary')
-    }
-  })
-  $(this).addClass('btn-primary')
-  $(this).removeClass('btn-outline btn-outline-primary')
-})

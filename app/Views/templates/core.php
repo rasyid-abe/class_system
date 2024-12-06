@@ -1246,8 +1246,6 @@
 
 	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
 	<script src="<?= base_url() ?>assets/js/common.js"></script>
-	<script src="<?= base_url() ?>assets/tinymce/tinymce.min.js"></script>
-	<script src="<?= base_url() ?>assets/js/tinymce_conf.js"></script>
 
 	<script src="<?= base_url() ?>assets/js/script/lesson_school.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/lesson_additional.js"></script>

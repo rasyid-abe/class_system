@@ -87,47 +87,11 @@
 <div class="row">
     <div class="col-sm-3">
         <div class="rounded-border">
-            <div class="d-grid mb-3">
-                <a href="#" onclick="form_chapter_quest(1)" class="btn btn-primary btn-md" type="button"><i
-                        class="mb-1 fa fa-plus"></i> Judul Soal</a>
-            </div>
             <div class="accordion-item rounded-border">
                 <?php foreach ($questions as $k => $v): ?>
                     <div class="accordion-body bg-secondary">
                         <div class="d-flex justify-content-between">
                             <a href="#" class="d-grid" style="font-weight: 500;" onclick="toggle_collapse('<?= $v['question_bank_standart_id'] ?>');"><?= $v['question_bank_standart_title'] ?></a>
-                            <div class="btnleft">
-                                <a href="#" class="fw-bold" onclick="form_chapter_quest(-1, '<?= $v['question_bank_standart_title'] ?>', '<?= $v['question_bank_standart_id'] ?>')">
-                                    <i class="bi bi-arrow-up-square fs-2 text-primary"></i>
-                                </a>
-                                <a href="#" class="fw-bold" onclick="form_chapter_quest(-1, '<?= $v['question_bank_standart_title'] ?>', '<?= $v['question_bank_standart_id'] ?>')">
-                                    <i class="bi bi-plus-square fs-2 text-primary"></i>
-                                </a>
-                                <a href="#" class="menu-dropdown" data-kt-menu-trigger="click"
-                                    data-kt-menu-placement="bottom-end">
-                                    <i class="bi bi-arrow-down-right-square-fill fs-2 text-primary"></i>
-                                </a>
-                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                                    data-kt-menu="true" data-popper-placement="bottom-end"
-                                    style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);">
-                                    <div class="menu-item px-3">
-                                        <span onclick="share_task(<?= $v['question_bank_standart_id'] ?>, '<?= $v['question_bank_standart_title'] ?>');" class="menu-link px-3">
-                                            Bagikan
-                                        </span>
-                                    </div>
-                                    <div class="menu-item px-3">
-                                        <span onclick="form_chapter_quest(2, '<?= $v['question_bank_standart_title'] ?>', <?= $v['question_bank_standart_id'] ?>);" class="menu-link px-3">
-                                            Ubah
-                                        </span>
-                                    </div>
-                                    <div class="menu-item px-3">
-                                        <a href="#" class="menu-link px-3" onclick="remove_content_quest(<?= $v['question_bank_standart_id'] ?>, '<?= $v['question_bank_standart_title'] ?>', 2)"
-                                            data-kt-users-table-filter="delete_row">
-                                            Hapus
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div id="coll_body_<?= $v['question_bank_standart_id'] ?>" class="hide body_collapse">

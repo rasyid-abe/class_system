@@ -4,10 +4,10 @@ namespace App\Controllers\LearningMS\QuestionBank;
 
 use App\Controllers\BaseController;
 use App\Models\QuestionBank\StandartQuestionBankModel;
+use App\Models\QuestionBank\QuestionBankModel;
 use App\Models\Systems\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
-use Faker\Provider\ar_EG\Person;
 
 class StandartQuestionBank extends BaseController
 {
@@ -17,6 +17,7 @@ class StandartQuestionBank extends BaseController
     protected $sidebar;
     protected $teacher_subject;
     protected $question_bank_standart;
+    protected $question_bank;
     protected $teacher;
     protected $subject;
 
@@ -26,6 +27,7 @@ class StandartQuestionBank extends BaseController
         $this->page = "Question";
         $this->sidebar = "QB_Standart";
         $this->question_bank_standart = new StandartQuestionBankModel();
+        $this->question_bank = new QuestionBankModel();
         $this->teacher_subject = new TeacherAssignModel();
         $this->teacher = new TeacherModel();
         $this->subject = new SubjectModel();
@@ -75,13 +77,14 @@ class StandartQuestionBank extends BaseController
     {
         $subs = $this->subject->where('subject_id', $subject)->first();
 
-        $data["title"] = $subs['subject_name'] . ' - Kelas ' . $grade;
+        $data["title"] = $subs['subject_name'];
         $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '/teacher/question-bank/additional' => 'Bank Soal Saya',
-            '##' => $subs['subject_name'] . ' - Kelas ' . $grade,
+            '/teacher/question-bank/standart' => 'Bank Soal Standar',
+            '/teacher/question-bank/standart/view-subject/' . $grade => 'Kelas ' . $grade,
+            '###' => $subs['subject_name'] ,
         ];
 
         $data['subject'] = $subject;
@@ -146,5 +149,47 @@ class StandartQuestionBank extends BaseController
         ];
         
         echo json_encode($res);
+    }
+
+    public function get_title_list()
+    {
+        $req = $this->request->getVar();
+        $question = $this->question_bank
+            ->select('question_bank_id, question_bank_title')
+            ->where('question_bank_teacher_id', userdata()['id_profile'])
+            ->where('question_bank_status < 9')
+            ->where('question_bank_subject_id', $req['subj'])
+            ->where('question_bank_grade', $req['grad'])
+            ->where('question_bank_parent_id', 0)
+            ->findAll();
+
+        echo json_encode($question);
+    }
+
+    public function update_content()
+    {
+        $req = $this->request->getVar();
+        
+        $d = $this->question_bank_standart->where('question_bank_standart_id', $req['id'])->first();
+
+        $ins = [
+            'question_bank_school_id' => userdata()['school_id'],
+            'question_bank_teacher_id' => userdata()['id_profile'],
+            'question_bank_subject_id' => $d['question_bank_standart_subject_id'],
+            'question_bank_grade' => $d['question_bank_standart_grade'],
+            'question_bank_type' => $d['question_bank_standart_type'],
+            'question_bank_question' => $d['question_bank_standart_question'],
+            'question_bank_option' => $d['question_bank_standart_option'],
+            'question_bank_answer' => $d['question_bank_standart_answer'],
+            'question_bank_poin' => $d['question_bank_standart_poin'],
+            'question_bank_hint' => $d['question_bank_standart_hint'],
+            'question_bank_explain' => $d['question_bank_standart_explain'],
+            'question_bank_parent_id' => $req['val'][0],
+            'question_bank_status' => 1
+        ];
+
+        $update = $this->question_bank->insert($ins);
+
+        echo json_encode($update);
     }
 }
