@@ -10,8 +10,6 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <input type="hidden" name="subject" value="<?= $subject ?>">
-                        <input type="hidden" name="grade" value="<?= $grade ?>">
                         <div id="body_content_modal_quest"></div>
                     </div>
                 </div>

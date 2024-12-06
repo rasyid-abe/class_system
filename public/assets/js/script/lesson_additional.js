@@ -110,13 +110,22 @@ $(document.body).on('click', '#btn_update_content', function () {
             let form = `
                     <input type="hidden" name="lesson_id" value="${id}" />
                     <input type="hidden" name="form_type" value="5" />
-                    <textarea id="content" name="content" class="tinymce-editor">${e.lesson_additional_content}</textarea>
-                `;
-
+                    <div id="editor_content"></div>
+                    `;
+                    
+                    // <textarea id="content" name="content" class="tinymce-editor">${e.lesson_additional_content}</textarea>
             $('#body_content_modal_a').html(form)
             $('#head_content_modal').html('<h3 class="modal-title">Update Materi Pembelajaran</h3>')
             $('#modal_update_content_a').modal('show')
-            conf_tinymce()
+            // conf_tinymce()
+
+            var editor_content = new Quill("#editor_content", {
+                modules: {
+                  toolbar: toolbarOptions,
+                },
+                theme: "snow", // or 'bubble'
+              });
+              $('#editor_content > .ql-editor').html(e.lesson_additional_content)
         }
     })
 
@@ -570,7 +579,7 @@ function save_content_a() {
         store_content_a(type, '', [chap, subj, grad])
     } else if (type == 5) {
         id = $('input[name=lesson_id]').val();
-        topic = tinymce.activeEditor.getContent();
+        topic = $("#editor_content > .ql-editor").html();
         store_content_a(type, id, [topic])
     } else if (type == 6) {
         id = $('input[name=lesson_id]').val();

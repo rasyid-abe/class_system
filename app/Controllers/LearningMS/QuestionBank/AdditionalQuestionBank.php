@@ -123,11 +123,13 @@ class AdditionalQuestionBank extends BaseController
             ->first();
 
         $opt = json_decode($d['question_bank_option']);
-        $ans = $d['question_bank_answer'];
-        $key = array_search($ans, $opt);
+        $ans = json_decode($d['question_bank_answer']);
 
-        $opt['right'] = $opt[$key];
-        unset($opt[$key]);
+        foreach ($ans as $k => $v) {
+            $key = array_search($v, $opt);
+            $opt['r_' . $k] = $opt[$key];
+            unset($opt[$key]);
+        }
 
         $res = [
             'id' => $d['question_bank_id'],
@@ -143,7 +145,7 @@ class AdditionalQuestionBank extends BaseController
             'hint' => $d['question_bank_hint'],
             'list_quest' => get_list('question_type'),
         ];
-        
+
         echo json_encode($res);
     }
 
@@ -171,9 +173,7 @@ class AdditionalQuestionBank extends BaseController
                 ->where('question_bank_id', $req['id'])
                 ->update();
         } else if ($req['type'] == -1) {
-            $option = $req['val'][4];
-            shuffle($option);
-            
+
             $ins = [
                 'question_bank_school_id' => userdata()['school_id'],
                 'question_bank_teacher_id' => userdata()['id_profile'],
@@ -181,7 +181,7 @@ class AdditionalQuestionBank extends BaseController
                 'question_bank_grade' => $req['val'][1],
                 'question_bank_type' => $req['val'][2],
                 'question_bank_question' => $req['val'][3],
-                'question_bank_option' => json_encode($option),
+                'question_bank_option' => $req['val'][4],
                 'question_bank_answer' => $req['val'][5],
                 'question_bank_poin' => $req['val'][6],
                 'question_bank_hint' => $req['val'][7],
@@ -192,13 +192,11 @@ class AdditionalQuestionBank extends BaseController
 
             $update = $this->question_bank->insert($ins);
         } else if ($req['type'] == -11) {
-            $option = $req['val'][4];
-            shuffle($option);
 
             $update = $this->question_bank
                 ->set('question_bank_type', $req['val'][2])
                 ->set('question_bank_question', $req['val'][3])
-                ->set('question_bank_option', json_encode($option))
+                ->set('question_bank_option', $req['val'][4])
                 ->set('question_bank_answer', $req['val'][5])
                 ->set('question_bank_poin', $req['val'][6])
                 ->set('question_bank_updated_by', userdata()['user_id'])
