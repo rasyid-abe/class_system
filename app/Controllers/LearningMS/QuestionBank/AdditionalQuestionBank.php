@@ -194,7 +194,7 @@ class AdditionalQuestionBank extends BaseController
         } else if ($req['type'] == -11) {
 
             $update = $this->question_bank
-                ->set('question_bank_type', $req['val'][2])
+                // ->set('question_bank_type', $req['val'][2])
                 ->set('question_bank_question', $req['val'][3])
                 ->set('question_bank_option', $req['val'][4])
                 ->set('question_bank_answer', $req['val'][5])

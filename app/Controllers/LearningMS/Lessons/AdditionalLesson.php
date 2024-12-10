@@ -4,6 +4,9 @@ namespace App\Controllers\LearningMS\Lessons;
 
 use App\Controllers\BaseController;
 use App\Models\Lessons\AdditionalLessonModel;
+use App\Models\QuestionBank\QuestionBankModel;
+use App\Models\QuestionBank\StandartQuestionBankModel;
+use App\Models\QuestionBank\PublicQuestionBankModel;
 use App\Models\Systems\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
@@ -18,6 +21,9 @@ class AdditionalLesson extends BaseController
     protected $lesson_additional;
     protected $teacher;
     protected $subject;
+    protected $qb;
+    protected $qb_s;
+    protected $qb_p;
 
     public function __construct()
     {
@@ -28,6 +34,9 @@ class AdditionalLesson extends BaseController
         $this->teacher_subject = new TeacherAssignModel();
         $this->teacher = new TeacherModel();
         $this->subject = new SubjectModel();
+        $this->qb = new QuestionBankModel();
+        $this->qb_s = new StandartQuestionBankModel();
+        $this->qb_p = new PublicQuestionBankModel();
     }
 
     public function index()
@@ -239,7 +248,53 @@ class AdditionalLesson extends BaseController
             ->where('lesson_additional_status < 9')
             ->first();
 
+        $tasks = json_decode($data['lesson_additional_tasks']);
+        // $arr_task = [];
+        // if ($tasks) {
+        //     $i = 0;
+        //     foreach ($tasks as $k => $v) {
+        //         if ($v != 'empty') {
+        //             if ($i > 0) {
+        //                 foreach ($v as $key => $val) {
+        //                     $arr_task[] = $this->qb
+        //                         ->select('
+        //                             question_bank_id as id,
+        //                             question_bank_question as question,
+        //                             question_bank_option as option,
+        //                             question_bank_answer as answer,
+        //                             question_bank_poin as poin,
+        //                             question_bank_explain as explain,
+        //                             question_bank_hint as hint
+        //                         ')
+        //                         ->where('question_bank_id', $val)
+        //                         ->first();
+        //                 }
+        //             } else {
+        //                 foreach ($v as $key => $val) {
+        //                     $arr_task[] = $this->qb_s
+        //                         ->select('
+        //                             question_bank_standart_id as id,
+        //                             question_bank_standart_question as question,
+        //                             question_bank_standart_option as option,
+        //                             question_bank_standart_answer as answer,
+        //                             question_bank_standart_poin as poin,
+        //                             question_bank_standart_explain as explain,
+        //                             question_bank_standart_hint as hint
+        //                         ')
+        //                         ->where('question_bank_standart_id', $val)
+        //                         ->first();
+        //                 }
+        //             }
+        //         }
+        //         $i++;
+        //     }
+        // }
+
+
+        
+        $data['tasks'] = $tasks ? (array)$tasks : [];
         $data['attach_arr'] = $data['lesson_additional_attachment_path'] != '' ? array_values(json_decode($data['lesson_additional_attachment_path'], true)) : [];
+ 
         echo json_encode($data);
     }
     
@@ -307,6 +362,17 @@ class AdditionalLesson extends BaseController
         } elseif ($req['type'] == 6) {
             $update = $this->lesson_additional
                 ->set('lesson_additional_video_path', $req['val'][0])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
+                ->where('lesson_additional_id', $req['id'])
+                ->update();
+        } elseif ($req['type'] == 7) {
+            $tasks = [];
+            $tasks['std'] = $req['val'][0];
+            $tasks['me'] = $req['val'][1];
+            $tasks['pub'] = $req['val'][2];
+
+            $update = $this->lesson_additional
+                ->set('lesson_additional_tasks', json_encode($tasks))
                 ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
@@ -456,6 +522,11 @@ class AdditionalLesson extends BaseController
                 ->update();
 
             // session()->setFlashdata('file_id', $req['lesson_id']);
+        } elseif ($req['type'] == 9) {
+            $update = $this->lesson_additional
+                ->where('lesson_additional_id', $req['id'])
+                ->set('lesson_additional_tasks', null)
+                ->update();
         }
 
         echo json_encode($update);
@@ -600,5 +671,101 @@ class AdditionalLesson extends BaseController
             ->update();
 
         echo json_encode(['msg' => $msg, 'sts' => true]);
+    }
+
+    public function question_bank() 
+    {
+        $req = $this->request->getVar();
+
+        $std = $this->qb_s
+            ->select('question_bank_standart_id as id, question_bank_standart_title as title, "std" as source')
+            ->where('question_bank_standart_subject_id', $req['subj'])
+            ->where('question_bank_standart_grade', $req['grad'])
+            ->where('question_bank_standart_parent_id', 0)
+            ->where('question_bank_standart_status < 9')
+            ->findAll();
+
+        $me = $this->qb->select('question_bank_id as id, question_bank_title as title, "me" as source')
+            ->where('question_bank_subject_id', $req['subj'])
+            ->where('question_bank_grade', $req['grad'])
+            ->where('question_bank_teacher_id', userdata()['id_profile'])
+            ->where('question_bank_parent_id', 0)
+            ->where('question_bank_status < 9')
+            ->findAll();
+
+        $pub = $this->qb_p->get_list_title(userdata()['id_profile'], [$req['subj']], [$req['grad']]);
+
+        foreach ($std as $k => $v) {
+            $ch_std = $this->qb_s
+                ->select('question_bank_standart_id as id')
+                ->where('question_bank_standart_parent_id', $v['id'])
+                ->where('question_bank_standart_status < 9')
+                ->findAll();
+
+            $std[$k]['child'] = $ch_std;
+        }
+
+        foreach ($me as $k => $v) {
+            $ch_me = $this->qb->select('question_bank_id as id')
+                ->where('question_bank_parent_id', $v['id'])
+                ->where('question_bank_status < 9')
+                ->findAll();
+
+            $me[$k]['child'] = $ch_me;
+        }
+
+        foreach ($pub as $k => $v) {
+            $ch_pub = $this->qb->select('question_bank_id as id')
+                ->where('question_bank_parent_id', $v['id'])
+                ->where('question_bank_status < 9')
+                ->findAll();
+
+            $pub[$k]['child'] = $ch_pub;
+        }
+
+        $res = [
+            'std' => ['head' => 'Bank Soal Standart', 'content' => $std],
+            'me' => ['head' => 'Bank Soal Saya', 'content' => $me],
+            'pub' => ['head' => 'Bank Soal Publik', 'content' => $pub],
+        ];
+
+        echo json_encode($res);
+    }
+
+    public function get_question()
+    {
+        $req = $this->request->getVar();
+
+        $res = [];
+        if ($req['type'] == 1) {
+            $res = $this->qb_s
+                ->select('
+                    question_bank_standart_question as question,
+                    question_bank_standart_option as option,
+                    question_bank_standart_answer as answer,
+                    question_bank_standart_explain as explain,
+                    question_bank_standart_hint as hint,
+                    question_bank_standart_hint as hint,
+                    question_bank_standart_type as type,
+                    question_bank_standart_id as id
+                ')
+                ->where('question_bank_standart_id', $req['id'])
+                ->first();
+        } else {
+            $res = $this->qb
+                ->select('
+                    question_bank_question as question,
+                    question_bank_option as option,
+                    question_bank_answer as answer,
+                    question_bank_explain as explain,
+                    question_bank_hint as hint,
+                    question_bank_type as type,
+                    question_bank_id as id
+                ')
+                ->where('question_bank_id', $req['id'])
+                ->first();
+        }
+
+        echo json_encode($res);
     }
 }

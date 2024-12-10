@@ -45,7 +45,6 @@
     </div>
 </div>
 
-
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_share_a">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -98,6 +97,32 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-light-danger" data-bs-dismiss="modal">Tutup</button>
                 <button type="button" class="btn btn-primary" onclick="act_share_a();">Kirim</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_task_a">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><div id="task_title_a">Tambah Latihan</div></h3>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="less_id" val="">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="task" id="view_select_task"></div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="task" id="preview_task"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-danger" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" onclick="act_tasks_a();">Kirim</button>
             </div>
         </div>
     </div>
@@ -220,6 +245,7 @@
                     <div id="attachment_lesson"></div>
                 </div>
                 <div class="tab-pane fade content_topic_a" id="tab_task" role="tabpanel">
+                    <div id="btn_conf_task_"></div>
                     <div id="task_lesson"></div>
                 </div>
             </div>

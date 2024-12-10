@@ -72,6 +72,8 @@ $routes->post('/teacher/lesson/additional/update', 'LearningMS\Lessons\Additiona
 $routes->post('/teacher/lesson/additional/status', 'LearningMS\Lessons\AdditionalLesson::status', ['filter' => 'auth']); #done
 $routes->delete('/teacher/lesson/additional/destroy', 'LearningMS\Lessons\AdditionalLesson::destroy', ['filter' => 'auth']); #done
 $routes->post('/teacher/lesson/additional/share-topic', 'LearningMS\Lessons\AdditionalLesson::share_topic', ['filter' => 'auth']); #done
+$routes->post('/teacher/lesson/additional/question-bank', 'LearningMS\Lessons\AdditionalLesson::question_bank', ['filter' => 'auth']); #done
+$routes->post('/teacher/lesson/additional/get-question', 'LearningMS\Lessons\AdditionalLesson::get_question', ['filter' => 'auth']); #done
 
 $routes->get('/teacher/lesson/public', 'LearningMS\Lessons\PublicLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/public/view-content/(:num)', 'LearningMS\Lessons\PublicLesson::view_content/$1', ['filter' => 'auth']);

@@ -39,5 +39,37 @@ class PublicQuestionBankModel extends Model
 
         return $this->db->query($query)->getResultArray();
     }
+
+    public function get_list_title($teacher_id, $subject_id, $grade)
+    {
+        $t_id = '"'. $teacher_id .'"';
+        $or_subject = count($subject_id) < 1 ? -1 : implode(",",$subject_id);
+        $or_grade = count($grade) < 0 ? -1 : implode("','",$grade);
+
+        $query = "
+            SELECT
+                lla.question_bank_id as id, lla.question_bank_title as title, 'pub' as source
+            FROM
+                lms_question_bank lla
+            WHERE
+                lla.question_bank_teacher_id <> ".$teacher_id."
+                and
+                lla.question_bank_parent_id = 0
+                and
+                lla.question_bank_status < 9 
+                and 
+                (
+                    (lla.question_bank_shared_type = 4 and JSON_CONTAINS(lla.question_bank_shared_to, '".$t_id."'))
+                    or
+                    (lla.question_bank_shared_type = 3 and lla.question_bank_subject_id in ('".$or_subject."') and lla.question_bank_grade in ('".$or_grade."'))
+                    or
+                    (lla.question_bank_shared_type = 2 and lla.question_bank_subject_id in ('".$or_subject."'))
+                    or	
+                    lla.question_bank_shared_type = 1
+                )
+        ";
+
+        return $this->db->query($query)->getResultArray();
+    }
 }
 
