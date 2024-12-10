@@ -28,7 +28,6 @@ jQuery('.input_share_a').on('click', function (e) {
     }
 })
 
-
 function close_modal_content_a() {
     $('#modal_update_content_a').modal('hide')
     $('#body_content_modal_a').html('')
@@ -401,7 +400,7 @@ function generate_view_attachment_a(e) {
     let btn_conf = `
             <div class="d-flex justify-content-begin btn_conf_attach mb-3">
                 <div class="btn_attach_content">
-                    <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_attach" data-url="${e.attach_arr}" data-id="${e.lesson_additional_id}"><i class="fa fa-plus"></i> Tambah</button>
+                    <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_attach" data-url="${e.attach_arr}" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
                 </div>&nbsp;
                 <div class="btn_attach_content">
                     <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 7);" ><i class="fa fa-trash"></i> Hapus</button>
@@ -411,17 +410,84 @@ function generate_view_attachment_a(e) {
     $('#btn_conf_attach_').html(btn_conf)
 }
 
-function generate_view_task_a(e) {
-    $('.btn_task_content').html('');
-    // $('#task_lesson').html(e.lesson_additional_video_path)
-    if (e.lesson_additional_tasks != '') {
-        $('#task_lesson').before('<div class="btn_task_content"><button type="button" class="btn btn-sm btn-primary">Ubah Video</button></div>')
+function generate_view_task_a(e, id) {
+    console.log(e);
+    
+    let btn_conf = `
+            <div class="d-flex justify-content-begin mb-5">
+                <div class="btn_task_content">
+                    <button type="button" id="view_quest_bank" data-id="${id}" data-grade="${e.lesson_additional_grade}" data-subject="${e.lesson_additional_subject_id}" class="btn btn-sm btn-light-dark"><i class="fa fa-pen"></i> Update</button>
+                </div>&nbsp;
+                <div class="btn_video_content">
+                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${id}, 9)"><i class="fa fa-trash"></i> Hapus</button>
+                </div>
+            </div>
+        `;
+    $('#btn_conf_task_').html(btn_conf)
+
+    let cont = ''
+    let list = ''
+    if (e.length == 0) {
+        cont = 'Latihan tidak tersedia'
     } else {
-        $('#task_lesson').before('<div class="btn_task_content"><button type="button" class="btn btn-sm btn-primary">Tambah Video</button></div>')
+        let ii = 1
+        $.each(e, function(i, v) {
+            
+            if (v != 'empty') {
+                if (i == 'std') {
+                    for (let idx = 0; idx < v.length; idx++) {
+                        list += `<a href="#" class="list-group-item list-group-item-action ltv" id="ltv${ii}" data-c="${ii}" data-type="std" data-idd="${v[idx]}">Soal ${ii}</a>`
+                        ii++
+                    }
+                } else {
+                    for (let idx = 0; idx < v.length; idx++) {
+                        list += `<a href="#" class="list-group-item list-group-item-action ltv" id="ltv${ii}" data-c="${ii}" data-type="me" data-idd="${v[idx]}">Soal ${ii}</a>`
+                        ii++
+                    }
+                }
+            }
+        })
+
+        
+        cont = `
+            <div class="row">
+                <div class="col-sm-3">
+                    <ul class="list-group">${list}</ul>
+                </div>
+                <div class="col-sm-9">
+                    <div class="task" id="preview_task_act"></div>
+                </div>
+            </div>
+        `
     }
+    
+    $('#task_lesson').html(cont)
+    // $('.btn_task_content').html('');
 }
 
+$(document.body).on('click', '.ltv', function(e) {
+    e.preventDefault()
+
+    let id = $(this).data('idd')
+    let type = $(this).data('type') == 'std' ? 1 : 2
+    let idd = $(this).data('c')
+
+    $('.ltv').each(function() {
+        if ($(this).hasClass('active')) {
+            $(this).removeClass('active')
+        }
+    })
+
+    $('#ltv'+idd).addClass('active')
+
+    view_tasks(type, id, 'ltv')
+
+    
+})
+
 function remove_content_a(id, type, file = null) {
+    console.log(id);
+    
     let msg = '';
 
     if (type == 1) {
@@ -442,6 +508,8 @@ function remove_content_a(id, type, file = null) {
         }
     } else if (type == 8) {
         msg = 'file materi'
+    } else if (type == 9) {
+        msg = 'soal latihan'
     }
     Swal.fire({
         html: `Apakah anda yakin menghapus ${msg}?`,
@@ -473,7 +541,7 @@ function view_content_a(id) {
             generate_view_lesson_a(e)
             generate_view_video_a(e)
             generate_view_attachment_a(e)
-            generate_view_task_a(e)
+            generate_view_task_a(e.tasks, e.lesson_additional_id)
         }
     })
 
@@ -726,3 +794,192 @@ $('.delete').on('click', function (e) {
         }
     });
 })
+
+$(document.body).on('click', '#view_quest_bank', function() {
+    let subj = $(this).data('subject')
+    let grad = $(this).data('grade')
+    let id = $(this).data('id')
+
+    $.ajax({
+        url: base_url + '/teacher/lesson/additional/question-bank',
+        data: {subj, grad},
+        method: 'post',
+        dataType: 'json',
+        success: function (e) {
+            treeview_task(e, id)
+            $('#modal_task_a').modal('show')
+        }
+    })
+    
+})
+
+function treeview_task(e, id) {
+    let content = ''
+    let i1 = 1
+    $.each(e, function(i,v) {
+        let ch1 = ''
+        let i2 = 1
+        $.each(v.content, function(idx, val) {
+            let child = ''
+            let ii = 1
+            $.each(val['child'], function(index, value) {
+                child += `
+                <div class="form-check my-2">
+                    <input class="form-check-input" type="checkbox" name="task_${i1}" value="${value.id}" />
+                    <label class="form-check-label" onclick="view_tasks(${i1}, ${value.id})">
+                        Soal ${ii}
+                    </label>
+                </div>
+                `
+                ii++
+                // <li class="list-group-item">Soal ${ii}</li>
+            })
+
+            let child_body = `
+                 <ul class="list-group list-group-flush hide task_child" id="i${i1}${i2}" style="padding-left: 10px">
+                    ${child}
+                </ul>
+            `
+            
+            ch1 += `
+                <li class="list-group-item parent2" data-source="${i1}${i2}">${val.title}</li>
+                ${val.child.length > 0 ? child_body : ''}    
+            `
+
+            i2++ 
+        })
+
+        let ch1_body = `
+            <ul class="list-group list-group-flush hide head_parent2" id="i${i1}">
+                ${ch1}
+            </ul>
+        `
+        content += `
+            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${v.head}</h6></li>
+            ${v.content.length > 0 ? ch1_body : ''}
+        `
+
+        i1++
+    })
+
+    let page = `
+        <input type="hidden" name="lesson_id" value="${id}" />
+        <ul class="list-group list-group-flush head_parent1">
+            ${content}
+        </ul>
+    `
+
+    $('#view_select_task').html(page)
+}
+
+$(document.body).on('click', '.parent1', function() {
+    id = $(this).data('source')
+
+    if ($('#i' + id).hasClass('hide')) {
+        $('#i' + id).removeClass('hide')
+    } else {
+        // $(`.head_parent2`).each(function () {
+        //     if (!$(this).hasClass('hide')) {
+        //         $(this).addClass('hide') 
+        //     }
+        // });
+
+        $('#i' + id).addClass('hide')
+    }
+})
+
+$(document.body).on('click', '.parent2', function() {
+    id = $(this).data('source')
+    if ($('#i' + id).hasClass('hide')) {
+        $('#i' + id).removeClass('hide')
+    } else {
+        // $(`.task_child`).each(function () {
+        //     if (!$(this).hasClass('hide')) {
+        //         $(this).addClass('hide') 
+        //     }
+        // });
+    
+        $('#i' + id).addClass('hide')
+    }
+})
+
+function view_tasks(type, id, act = null){
+    $.ajax({
+        url: base_url + '/teacher/lesson/additional/get-question',
+        data: {type, id},
+        method: 'post',
+        dataType: 'json',
+        success: function (e) {
+            generate_preview(e, act)
+        }
+    })
+    
+}
+
+function generate_preview(e, act){
+    let opt = ``
+    let num = 1
+
+    $.each(JSON.parse(e.option), function(i,v) {
+        let lab = v
+        if (e.type == 3) {
+            lab = v == 1 ? 'Benar' : 'Salah'
+        }
+        opt += `
+            <div class="col-sm-6">
+                <div class="alert alert-dismissible bg-light-secondary border border-dark d-flex flex-column flex-sm-row p-5 mb-5">
+                    <div class="d-flex flex-column pe-0 pe-sm-10">
+                        <h4 class="fw-semibold">Pilihan Jawaban ${num}</h4>
+                        ${lab}
+                    </div>
+                </div>
+            </div>
+        `
+        num++
+    })
+
+    let html = `
+        <div class="card">
+            <div class="alert alert-dismissible bg-light-primary border border-primary d-flex flex-column flex-sm-row p-5 mb-5">
+                <div class="d-flex flex-column pe-0 pe-sm-10">
+                    <h4 class="fw-semibold">Pertanyaan</h4>
+                    ${e.question}
+                </div>
+            </div>
+            <div class="row">
+                ${opt}
+            </div>
+        </div>
+    `
+    if (act) {
+        $('#preview_task_act').html(html)
+    } else {
+        $('#preview_task').html(html)
+    }
+}
+
+function act_tasks_a(){
+    let std_task = []
+    $('input[name="task_1"]:checked').each(function() {
+        std_task.push(this.value)
+    });
+    
+    let me_task = []
+    $('input[name="task_2"]:checked').each(function() {
+        me_task.push(this.value)
+    });
+    
+    let pub_task = []
+    $('input[name="task_3"]:checked').each(function() {
+        pub_task.push(this.value)
+    });
+
+    let less_id = $('input[name=lesson_id]').val()
+
+    let send_std = std_task.length > 0 ? std_task : 'empty'
+    let send_me = me_task.length > 0 ? me_task : 'empty'
+    let send_pub = pub_task.length > 0 ? pub_task : 'empty'
+
+    store_content_a(7, less_id, [send_std, send_me, send_pub])
+    
+}

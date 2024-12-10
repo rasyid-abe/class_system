@@ -337,7 +337,7 @@ function show_edit_task(e, type, id) {
                 <div class="mb-3 row">
                     <label for="staticEmail" class="col-sm-1 col-form-label">Tipe</label>
                     <div class="col-sm-6">
-                        <select name="quest_type" id="quest_type_edit" class="form-control" onchange="chk_type()">
+                        <select name="quest_type" id="quest_type_edit" class="form-control" disabled="true">
                             ${opt}
                         </select>
                     </div>
