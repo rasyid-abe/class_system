@@ -7,6 +7,10 @@ use App\Models\QuestionBank\QuestionBankModel;
 use App\Models\Systems\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
+use PhpOffice\PhpSpreadsheet\Style\Protection;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
 
 class AdditionalQuestionBank extends BaseController
 {
@@ -120,6 +124,7 @@ class AdditionalQuestionBank extends BaseController
         $req = $this->request->getVar();
         $d = $this->question_bank
             ->where('question_bank_id', $req['id'])
+            ->where('question_bank_status < 9')
             ->first();
 
         $opt = json_decode($d['question_bank_option']);
@@ -301,4 +306,137 @@ class AdditionalQuestionBank extends BaseController
         echo json_encode($question);
     }
 
+    public function upload_tasks()
+    {
+        $req = $this->request->getVar();
+        $file = $_FILES['tasks_upload']['tmp_name'];
+
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file);
+        $spreadsheet = $reader->load($file);
+
+        $success = true;
+
+        $total_sheet = $spreadsheet->getSheetCount();
+        $all_tasks = [];
+        for ($i=0; $i < $total_sheet; $i++) { 
+            $sheetData = $spreadsheet->setActiveSheetIndex($i)->toArray();
+            $xlsObj = $spreadsheet->setActiveSheetIndex($i);
+    
+            $arrImages = [];
+            foreach ($xlsObj->getDrawingCollection() as $key => $drawing) {
+                $imagePath = $drawing->getPath();
+                $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+                $imageName = 'image_' . uniqid() . '.' . $extension;
+                $imageCoor = $drawing->getCoordinates2();
+                copy($imagePath, 'images/temp_upload/' . $imageName);
+                $imagedata = file_get_contents('images/temp_upload/' . $imageName);
+                $arrImages[$imageCoor] = base64_encode($imagedata);
+                unlink('images/temp_upload/' . $imageName);
+            }
+
+            $this->question_bank->db->transBegin();
+            
+            try {
+                $arr_task = [];
+                $ii = 1;
+                foreach ($sheetData as $k => $v) {
+                    if ($v[0] != 'No') {
+                        $arr_task[$i.$ii]['question_bank_school_id'] = userdata()['school_id'];
+                        $arr_task[$i.$ii]['question_bank_teacher_id'] = userdata()['id_profile'];
+                        $arr_task[$i.$ii]['question_bank_subject_id'] = $req['subject'];
+                        $arr_task[$i.$ii]['question_bank_grade'] = $req['grade'];
+                        $arr_task[$i.$ii]['question_bank_parent_id'] = $req['id_quest'];
+                        $arr_task[$i.$ii]['question_bank_status'] = $v[1];
+                        $arr_task[$i.$ii]['question_bank_hint'] = '<p><br></p>';
+                        $arr_task[$i.$ii]['question_bank_explain'] = '<p><br></p>';
+    
+                        $img_q = array_key_exists("C".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["C".$ii].'"></p>' : '';
+                        $arr_task[$i.$ii]['question_bank_question'] = '<p>'.$v[2] .'</p>' . $img_q;
+                        
+    
+                        if ($i == 0) {
+                            $arr_task[$i.$ii]['question_bank_type'] = 1;
+    
+                            $img_a = array_key_exists("D".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["D".$ii].'"></p>' : '';
+                            $arr_task[$i.$ii]['question_bank_answer'] = json_encode(['<p>'.$v[3] .'</p>' . $img_a]);
+                            
+                            $img_opt_a = array_key_exists("E".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["E".$ii].'"></p>' : '';
+                            $img_opt_b = array_key_exists("F".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["F".$ii].'"></p>' : '';
+                            $img_opt_c = array_key_exists("G".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["G".$ii].'"></p>' : '';
+                            $img_opt_d = array_key_exists("H".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["H".$ii].'"></p>' : '';
+                            $opt = [
+                                array_key_exists(3,$v) ? '<p>'.$v[3] .'</p>' . $img_a : '<p></p>',
+                                array_key_exists(4,$v) ? '<p>'.$v[4] .'</p>' . $img_opt_a : '<p></p>',
+                                array_key_exists(5,$v) ? '<p>'.$v[5] .'</p>' . $img_opt_b : '<p></p>',
+                                array_key_exists(6,$v) ? '<p>'.$v[6] .'</p>' . $img_opt_c : '<p></p>',
+                                array_key_exists(7,$v) ? '<p>'.$v[7] .'</p>' . $img_opt_d : '<p></p>',
+                            ];
+    
+                            $clean_opt = array_diff($opt, ['<p></p>']);
+                            $arr_task[$i.$ii]['question_bank_option'] = json_encode($clean_opt);
+                            
+                        } else if ($i == 1) {
+                            $arr_task[$i.$ii]['question_bank_type'] = 2;
+    
+                            $omcx = explode("&", $v[3]);
+                            $arr_ans = [];
+                            foreach ($omcx as $x) {
+                                if (isset($v[$x + 2])) {
+                                    $arr_ans[] = '<p>'.$v[$x + 2].'</p>';
+                                } else {
+                                    throw new \Exception('index tidak ada');
+                                }
+                            }
+                            
+                            $arr_task[$i.$ii]['question_bank_answer'] = json_encode($arr_ans);
+                            
+                            $img_opt_a = array_key_exists("E".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["E".$ii].'"></p>' : '';
+                            $img_opt_b = array_key_exists("F".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["F".$ii].'"></p>' : '';
+                            $img_opt_c = array_key_exists("G".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["G".$ii].'"></p>' : '';
+                            $img_opt_d = array_key_exists("H".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["H".$ii].'"></p>' : '';
+                            $img_opt_e = array_key_exists("I".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["I".$ii].'"></p>' : '';
+                            $opt = [
+                                array_key_exists(4,$v) ? '<p>'.$v[4] .'</p>' . $img_opt_a : '<p></p>',
+                                array_key_exists(5,$v) ? '<p>'.$v[5] .'</p>' . $img_opt_b : '<p></p>',
+                                array_key_exists(6,$v) ? '<p>'.$v[6] .'</p>' . $img_opt_c : '<p></p>',
+                                array_key_exists(7,$v) ? '<p>'.$v[7] .'</p>' . $img_opt_d : '<p></p>',
+                                array_key_exists(8,$v) ? '<p>'.$v[8] .'</p>' . $img_opt_e : '<p></p>',
+                            ];
+    
+                            $clean_opt = array_diff($opt, ['<p></p>']);
+                            $arr_task[$i.$ii]['question_bank_option'] = json_encode($clean_opt);
+    
+                        } else if ($i == 2) {
+                            $arr_task[$i.$ii]['question_bank_type'] = 3;
+    
+                            $tf = $v[3] == 'Benar' ? 1 : 2;
+                            $arr_task[$i.$ii]['question_bank_answer'] = json_encode([$tf]);
+                            $arr_task[$i.$ii]['question_bank_option'] = json_encode([1,2]);
+                        }
+                    }
+                    $ii++;
+                }
+                $this->question_bank->insertBatch($arr_task);
+                $this->question_bank->db->transCommit();
+            } catch (\Throwable $th) {
+                $success = false;
+                // dd($th);
+                $this->question_bank->db->transRollback();
+            }
+        }
+
+        session()->setFlashdata('head', 'Sukses!');
+        session()->setFlashdata('icon', 'success');
+        if ($success) {
+            session()->setFlashdata('msg', 'Soal berhasil di unggah');
+        } else {
+            session()->setFlashdata('msg', 'Soal gagal di unggah');
+        }
+        session()->setFlashdata('hide', 3000);
+
+        return redirect()->to('/teacher/question-bank/additional/view-content/' . $req['subject'] .'/'. $req['grade']);
+
+    }
+
 }
+

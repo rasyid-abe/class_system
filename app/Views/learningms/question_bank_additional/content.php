@@ -1,6 +1,23 @@
 <?php $this->extend('templates/core') ?>
 <?php $this->section('content'); ?>
 
+<style>
+#tasks_upload::file-selector-button {
+    background-color: #2884EF;
+    color : white;
+}
+
+#tasks_upload::file-selector-button:hover {
+    background-color: red;
+    color : white;
+}
+
+/* input[type="file"]::file-selector-button:active {
+    background-color: #e5e7eb;
+} */
+</style>
+
+
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_update_question_quest">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" id="content_modal">
@@ -442,6 +459,41 @@
     </div>
 </div>
 
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_upload_tasks">
+    <div class="modal-dialog">
+        <div class="modal-content" id="content_modal">
+            <div class="modal-header">
+                <div id="head_content_modal_upl"></div>
+            </div>
+            <form action="<?= base_url('/teacher/question-bank/additional/upload-tasks') ?>" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div id="body_content_modal_upl"></div>
+                    <div class="mb-3">
+                        <input type="hidden" name="subject" value="<?= $subject ?>">
+                        <input type="hidden" name="grade" value="<?= $grade ?>">
+                        <p class="d-inline" style="font-size: 9pt">
+                            <b>Catatan :</b>
+                            <br>
+                            Download
+                            <a href="<?= base_url() . 'example/Template_Question_Bank_Import.xlsx'; ?>" download="Template Import Bank Soal.xlsx" class="btn btn-link btn-sm mb-1 btn-color-primary btn-active-color-warning">template </a> file excel
+                            berikut untuk import soal.
+                        </p>
+                        <br>
+                        <br>
+                        <label for="tasks_upload" class="form-label">Pilih File Excel</label>
+                        <input class="form-control form-control-sm" id="tasks_upload" name="tasks_upload" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" >
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-light-danger" data-bs-dismiss="modal">Tutup</button>
+                    <button type="sumbit" class="btn btn-sm btn-primary">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-sm-3">
         <div class="rounded-border">
@@ -455,7 +507,7 @@
                         <div class="d-flex justify-content-between">
                             <a href="#" class="d-grid" style="font-weight: 500;" onclick="toggle_collapse('<?= $v['question_bank_id'] ?>');"><?= $v['question_bank_title'] ?></a>
                             <div class="btnleft">
-                                <a href="#" class="fw-bold" onclick="form_chapter_quest(-1, '<?= $v['question_bank_title'] ?>', '<?= $v['question_bank_id'] ?>')">
+                                <a href="#" class="fw-bold" onclick="form_chapter_quest(-2, '<?= $v['question_bank_title'] ?>', '<?= $v['question_bank_id'] ?>')">
                                     <i class="bi bi-arrow-up-square fs-2 text-primary"></i>
                                 </a>
                                 <a href="#" class="fw-bold" onclick="form_chapter_quest(-1, '<?= $v['question_bank_title'] ?>', '<?= $v['question_bank_id'] ?>')">

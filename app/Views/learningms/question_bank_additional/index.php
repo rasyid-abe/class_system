@@ -18,7 +18,7 @@
         <td><?= $v['subject_name'] ?></td>
         <td class="text-center"><?= $v['student_group_grade'] ?></td>
         <td class="text-center">
-          <?= view_content('teacher/question-bank/additional/view-content/' . $v['subject_id'] . '/' . $v['student_group_grade']) ?>
+          <?= view_task('teacher/question-bank/additional/view-content/' . $v['subject_id'] . '/' . $v['student_group_grade']) ?>
         </td>
       </tr>
     <?php endforeach; ?>
