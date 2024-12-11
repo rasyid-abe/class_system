@@ -88,12 +88,18 @@ function generate_task(e) {
   let opt = ``
   let num = 1
   $.each(e.option, function(i,v) {
+    let val = ''
+    if (e.type == 3) {
+      val = v == 1 ? 'Benar' : 'Salah'      
+    } else {
+      val = v
+    }
     opt += `
         <div class="col-sm-6">
             <div class="alert alert-dismissible bg-light-${i.includes('r_') ? 'success border border-success' : 'secondary border border-dark'} d-flex flex-column flex-sm-row p-5 mb-5">
                 <div class="d-flex flex-column pe-0 pe-sm-10">
                     <h4 class="fw-semibold">Pilihan Jawaban ${num}</h4>
-                    ${v}
+                    ${val}
                 </div>
             </div>
         </div>
@@ -474,6 +480,16 @@ function form_chapter_quest(e, chap = null, id = null) {
       <h3 class="modal-title">Tambah Soal ${chap}</h3>
     `);
     $("#modal_update_question_quest").modal("show");
+  } else if (e == -2) {
+    form = `
+              <input type="hidden" name="form_type" value="${e}" />
+              <input type="hidden" name="id_quest" value="${id}" />
+          `;
+
+      $("#head_content_modal_upl").html(`<h3 class="modal-title">Upload Soal ke ${chap}</h3>`);
+      $("#body_content_modal_upl").html(form);
+      $("#modal_upload_tasks").modal('show');
+
   } else {
     let form = "";
 
@@ -500,6 +516,7 @@ function form_chapter_quest(e, chap = null, id = null) {
         '<h3 class="modal-title">Ubah Judul Soal</h3>'
       );
       $("#body_content_modal_quest").html(form);
+      
     }
 
     $("#modal_update_content_quest").modal("show");

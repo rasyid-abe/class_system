@@ -37,6 +37,10 @@
 
 
 	<style>
+		.alert img {
+			max-width: 70%;
+		}
+
 		.hide {
 			display: none;
 		}

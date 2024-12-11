@@ -410,13 +410,13 @@ function generate_view_attachment_a(e) {
     $('#btn_conf_attach_').html(btn_conf)
 }
 
-function generate_view_task_a(e, id) {
+function generate_view_task_a(e, id, subj, grad) {
     console.log(e);
     
     let btn_conf = `
             <div class="d-flex justify-content-begin mb-5">
                 <div class="btn_task_content">
-                    <button type="button" id="view_quest_bank" data-id="${id}" data-grade="${e.lesson_additional_grade}" data-subject="${e.lesson_additional_subject_id}" class="btn btn-sm btn-light-dark"><i class="fa fa-pen"></i> Update</button>
+                    <button type="button" id="view_quest_bank" data-id="${id}" data-grade="${grad}" data-subject="${subj}" class="btn btn-sm btn-light-dark"><i class="fa fa-pen"></i> Update</button>
                 </div>&nbsp;
                 <div class="btn_video_content">
                     <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${id}, 9)"><i class="fa fa-trash"></i> Hapus</button>
@@ -541,7 +541,7 @@ function view_content_a(id) {
             generate_view_lesson_a(e)
             generate_view_video_a(e)
             generate_view_attachment_a(e)
-            generate_view_task_a(e.tasks, e.lesson_additional_id)
+            generate_view_task_a(e.tasks, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade)
         }
     })
 
@@ -807,6 +807,8 @@ $(document.body).on('click', '#view_quest_bank', function() {
         dataType: 'json',
         success: function (e) {
             treeview_task(e, id)
+            console.log(e);
+            
             $('#modal_task_a').modal('show')
         }
     })
