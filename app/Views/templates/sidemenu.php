@@ -172,7 +172,7 @@
         </div>
         <!--end::Tab pane-->
         <!--begin::Tab pane-->
-        <div class="tab-pane fade <?= $page == "Evaluate" ? 'active show' : '' ?>" id="evaluation_menu" role="tabpanel">
+        <div class="tab-pane fade <?= $page == "Assessment" ? 'active show' : '' ?>" id="evaluation_menu" role="tabpanel">
             <!--begin::Tasks-->
             <div class="mx-5">
                 <!--begin::Header-->
@@ -193,8 +193,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-primary fs-6 fw-bold">Tambah Penilaian</a>
+                            <a href="<?= base_url('/teacher/assessment') ?>"
+                                class="<?= $sidebar != 'Draft_Assessment' ? 'text-gray-800' : 'text-primary' ?>  text-hover-primary fs-6 fw-bold">Tambah Penilaian</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->

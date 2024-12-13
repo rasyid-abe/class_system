@@ -34,5 +34,16 @@ class TeacherAssignModel extends Model
         return $this->where($where)->first();
     }
 
+    public function get_teacher_duty($id)
+    {
+        return $this->select('teacher_assign_id, subject_id, student_group_grade, student_group_name, subject_name, student_group_id')
+        ->join('master_student_group', 'student_group_id=teacher_assign_student_group_id')
+        ->join('master_subject', 'subject_id=teacher_assign_subject_id')
+        ->where('teacher_assign_teacher_id', $id)
+        ->where('teacher_assign_status < 9')
+        ->groupBy('student_group_grade')
+        ->findAll();
+    }
+
 }
 

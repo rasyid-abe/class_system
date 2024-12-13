@@ -34,7 +34,7 @@
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"
                     data-bs-dismiss="click" title="Penilaian">
                     <!--begin::Nav link-->
-                    <a class="nav-link btn btn-custom btn-icon" data-bs-toggle="tab" href="#evaluation_menu">
+                    <a class="nav-link btn btn-custom btn-icon <?= $page == "Assessment" ? 'active' : '' ?>" data-bs-toggle="tab" href="#evaluation_menu">
                         <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
                         <i class="bi bi-shield-fill-check fs-2x"></i>
                         <!--end::Svg Icon-->

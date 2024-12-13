@@ -27,14 +27,14 @@
 	<link href="<?= base_url() ?>assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
-	<link href="<?= base_url() ?>assets/css/bstreeview.css" rel="stylesheet">
+	<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
+	<link href="<?= base_url() ?>assets/css/tabulator_bootstrap4.css" rel="stylesheet">
 
 	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" /> -->
-	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" /> -->
-	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" /> -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
-	<!--end::Global Stylesheets Bundle-->
-
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 	<style>
 		.alert img {
@@ -1246,8 +1246,10 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-	<script src="<?= base_url() ?>assets/js/scripts.bundle.js"></script>
+	<script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+	<script src="<?= base_url() ?>assets/js/scripts.bundle.js"></script>
 	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
 	<script src="<?= base_url() ?>assets/js/common.js"></script>
 
@@ -1256,9 +1258,9 @@
 	<script src="<?= base_url() ?>assets/js/script/lesson_standard.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/lesson_public.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/question_bank.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/assessment.js"></script>
 	<script src="<?= base_url() ?>assets/js/form.repeater.js"></script>
 	<!-- <script src="<?= base_url() ?>assets/js/quill.editor.js"></script> -->
-
 
 	<script>
 		function al_swal(msg, type) {

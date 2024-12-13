@@ -1,3 +1,9 @@
+library :
+select2 = https://select2.org/selections
+view    = https://tabulator.info/examples/6.3
+toast   = jquery toast
+richtext= quill
+
 admin hanya configurasi dan registrasi sekolah
 
 yang membuat akun siswa dan guru harus admin sekolah

@@ -1083,3 +1083,61 @@ $(document).on('click', '.qtact', function (e) {
   $(this).addClass('btn-primary')
   $(this).removeClass('btn-outline btn-outline-primary')
 })
+
+// var printIcon = function(cell, formatterParams){ //plain text value
+//   return `<button class="btn btn-icon btn-sm btn-primary"><i class='fa fa-print'></i></buton>`;
+// };
+
+// var tableData = [
+//   {id:1, name:"Billy Bob", age:"12", gender:"male", height:1, col:"red", dob:"", cheese:1},
+//   {id:2, name:"Mary May", age:"1", gender:"female", height:2, col:"blue", dob:"14/05/1982", cheese:true},
+//   {id:3, name:"Christine Lobowski", age:"42", height:0, col:"green", dob:"22/05/1982", cheese:"true"},
+//   {id:4, name:"Brendon Philips", age:"125", gender:"male", height:1, col:"orange", dob:"01/08/1980"},
+//   {id:5, name:"Margret Marmajuke", age:"16", gender:"female", height:5, col:"yellow", dob:"31/01/1999"},
+//   {id:6, name:"Billy Bob", age:"12", gender:"male", height:1, col:"red", dob:"", cheese:1},
+//   {id:7, name:"Mary May", age:"1", gender:"female", height:2, col:"blue", dob:"14/05/1982", cheese:true},
+//   {id:8, name:"Christine Lobowski", age:"42", height:0, col:"green", dob:"22/05/1982", cheese:"true"},
+//   {id:9, name:"Brendon Philips", age:"125", gender:"male", height:1, col:"orange", dob:"01/08/1980"},
+//   {id:10, name:"Margret Marmajuke", age:"16", gender:"female", height:5, col:"yellow", dob:"31/01/1999"},
+// ]
+
+// var table = new Tabulator("#list_subject_qb", {
+//   height:"311px",
+//   ajaxURL:base_url + "/teacher/assessment/example-tabulator",
+//   progressiveLoad:"scroll",
+//   layout:"fitDataStretch",
+//   renderHorizontal:"virtual",
+//   data:tableData, //set initial table data
+//   pagination:"local",
+//   paginationSize:6,
+//   paginationSizeSelector:[3, 6, 8, 10],
+//   movableColumns:true,
+//   paginationCounter:"rows",
+//   langs:{
+//     "default":{
+//         "pagination":{
+//             "page_size":"Jumlah Baris", 
+//             "first":"<<", 
+//             "last":">>",
+//             "prev":"<",
+//             "next":">",
+//             "counter":{
+//                 "showing": "Menampilkan",
+//                 "of": "dari total",
+//                 "rows": "data",
+//                 "pages": "halaman",
+//             },
+//         }
+//     }
+//   },
+//   columns:[
+//       {title:"#",formatter:printIcon, width:80, align:"center", cellClick:function(e, cell){alert("Printing row data for: " + cell.getRow().getData().id)}},
+//       {title:"Name", field:"name",headerFilter:"input"},
+//       {title:"Age", field:"age", width:100},
+//       {title:"Gender", field:"gender", width:100},
+//       {title:"Height", field:"height", width:100},
+//       {title:"Favourite Color", field:"col"},
+//       {title:"Date Of Birth", field:"dob"},
+//       {title:"Cheese Preference", field:"cheese"},
+//   ],
+// });
