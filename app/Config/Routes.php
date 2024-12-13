@@ -97,3 +97,7 @@ $routes->post('/teacher/question-bank/standart/update-content', 'LearningMS\Ques
 
 $routes->get('/teacher/question-bank/public', 'LearningMS\QuestionBank\PublicQuestionBank::index', ['filter' => 'auth']);
 $routes->get('/teacher/question-bank/public/view-task/(:num)/(:any)', 'LearningMS\QuestionBank\PublicQuestionBank::view_task/$1/$2', ['filter' => 'auth']);
+
+$routes->get('/teacher/assessment', 'LearningMS\Assessment\Assessment::index', ['filter' => 'auth']);
+$routes->get('/teacher/assessment/example-tabulator', 'LearningMS\Assessment\Assessment::example_tabulator', ['filter' => 'auth']);
+$routes->post('/teacher/assessment/group-exists', 'LearningMS\Assessment\Assessment::group_exists', ['filter' => 'auth']);

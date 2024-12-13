@@ -1,7 +1,7 @@
 <?php $this->extend('templates/core') ?>
 <?php $this->section('content'); ?>
 
-
+<div class="list_subject_qb" id="list_subject_qb"></div>
 <table id="tbl_additional" class="table table-striped">
   <thead>
     <tr class="text-start fw-bold fs-7 text-uppercase gs-0">
