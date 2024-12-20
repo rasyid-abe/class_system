@@ -23,20 +23,31 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 	<!--end::Fonts-->
 	<!--begin::Global Stylesheets Bundle(used by all pages)-->
-	<link href="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+	<!-- <link href="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" /> -->
 	<link href="<?= base_url() ?>assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
+
 	<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
 	<link href="<?= base_url() ?>assets/css/tabulator_bootstrap4.css" rel="stylesheet">
 
 	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" /> -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" /> -->
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" /> -->
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> -->
 
 	<style>
+        .swal2-toast {
+            background-color: rgba(54,70,93,.99) !important;
+        }
+        .swal2-title {
+            color: #fff !important;
+        }
+        .swal2-timer-progress-bar {
+            background-color: lightblue !important;
+        }
+
 		.alert img {
 			max-width: 70%;
 		}
@@ -1245,9 +1256,9 @@
 	<!-- <script src="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.js"></script> -->
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
 	<script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
 
 	<script src="<?= base_url() ?>assets/js/scripts.bundle.js"></script>
 	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
@@ -1263,6 +1274,18 @@
 	<!-- <script src="<?= base_url() ?>assets/js/quill.editor.js"></script> -->
 
 	<script>
+		const Toast = Swal.mixin({
+			toast: true,
+			position: "top-end",
+			showConfirmButton: false,
+			timer: 5000,
+			timerProgressBar: true,
+			didOpen: (toast) => {
+				toast.onmouseenter = Swal.stopTimer;
+				toast.onmouseleave = Swal.resumeTimer;
+			}
+		});
+
 		function al_swal(msg, type) {
 			Swal.fire({
 				text: msg,

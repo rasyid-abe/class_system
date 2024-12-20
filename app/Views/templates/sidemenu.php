@@ -193,8 +193,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/teacher/assessment') ?>"
-                                class="<?= $sidebar != 'Draft_Assessment' ? 'text-gray-800' : 'text-primary' ?>  text-hover-primary fs-6 fw-bold">Tambah Penilaian</a>
+                            <a href="<?= base_url('/teacher/assessment/index-add') ?>"
+                                class="<?= $sidebar != 'Add_Assessment' ? 'text-gray-800' : 'text-primary' ?>  text-hover-primary fs-6 fw-bold">Tambah Penilaian</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -206,15 +206,15 @@
                         <div class="symbol symbol-50px me-5">
                             <span class="symbol-label bg-secondary">
                                 <!--begin::Svg Icon | path: icons/duotune/abstract/abs027.svg-->
-                                <i class="bi bi-file-earmark-post text-gray-700 fs-2hx"></i>
+                                <i class="bi bi-file-earmark-post text-warning fs-2hx"></i>
                                 <!--end::Svg Icon-->
                             </span>
                         </div>
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-success fs-6 fw-bold">Draft</a>
+                            <a href="<?= base_url('/teacher/assessment/index-draft') ?>"
+                                class="<?= $sidebar != 'Draft_Assessment' ? 'text-gray-800' : 'text-warning' ?>  text-hover-warning fs-6 fw-bold">Draft</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -233,8 +233,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-success fs-6 fw-bold">Terjadwal</a>
+                            <a href="<?= base_url('/teacher/assessment/index-scheduled') ?>"
+                                class="<?= $sidebar != 'Scheduled_Assessment' ? 'text-gray-800' : 'text-success' ?> text-hover-success fs-6 fw-bold">Terjadwal</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -253,8 +253,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-info fs-6 fw-bold">Saat Ini</a>
+                            <a href="<?= base_url('/teacher/assessment/index-present') ?>"
+                                class="<?= $sidebar != 'Present_Assessment' ? 'text-gray-800' : 'text-info' ?>  text-hover-info fs-6 fw-bold">Saat Ini</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -273,8 +273,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-danger fs-6 fw-bold">Selesai</a>
+                            <a href="<?= base_url('/teacher/assessment/index-done') ?>"
+                                class="<?= $sidebar != 'Done_Assessment' ? 'text-gray-800' : 'text-danger' ?> text-hover-danger fs-6 fw-bold">Selesai</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->

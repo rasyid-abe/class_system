@@ -920,39 +920,44 @@ function view_tasks(type, id, act = null){
 
 function generate_preview(e, act){
     let opt = ``
+    let html = ``
     let num = 1
 
-    $.each(JSON.parse(e.option), function(i,v) {
-        let lab = v
-        if (e.type == 3) {
-            lab = v == 1 ? 'Benar' : 'Salah'
-        }
-        opt += `
-            <div class="col-sm-6">
-                <div class="alert alert-dismissible bg-light-secondary border border-dark d-flex flex-column flex-sm-row p-5 mb-5">
-                    <div class="d-flex flex-column pe-0 pe-sm-10">
-                        <h4 class="fw-semibold">Pilihan Jawaban ${num}</h4>
-                        ${lab}
+    if (e != null) {
+        $.each(JSON.parse(e.option), function(i,v) {
+            let lab = v
+            if (e.type == 3) {
+                lab = v == 1 ? 'Benar' : 'Salah'
+            }
+            opt += `
+                <div class="col-sm-6">
+                    <div class="alert alert-dismissible bg-light-secondary border border-dark d-flex flex-column flex-sm-row p-5 mb-5">
+                        <div class="d-flex flex-column pe-0 pe-sm-10">
+                            <h4 class="fw-semibold">Pilihan Jawaban ${num}</h4>
+                            ${lab}
+                        </div>
                     </div>
+                </div>
+            `
+            num++
+        })
+    
+        html = `
+            <div class="card">
+                <div class="alert alert-dismissible bg-light-primary border border-primary d-flex flex-column flex-sm-row p-5 mb-5">
+                    <div class="d-flex flex-column pe-0 pe-sm-10">
+                        <h4 class="fw-semibold">Pertanyaan</h4>
+                        ${e.question}
+                    </div>
+                </div>
+                <div class="row">
+                    ${opt}
                 </div>
             </div>
         `
-        num++
-    })
-
-    let html = `
-        <div class="card">
-            <div class="alert alert-dismissible bg-light-primary border border-primary d-flex flex-column flex-sm-row p-5 mb-5">
-                <div class="d-flex flex-column pe-0 pe-sm-10">
-                    <h4 class="fw-semibold">Pertanyaan</h4>
-                    ${e.question}
-                </div>
-            </div>
-            <div class="row">
-                ${opt}
-            </div>
-        </div>
-    `
+    } else {
+        html = 'Data tidak valid!'
+    }
     if (act) {
         $('#preview_task_act').html(html)
     } else {
