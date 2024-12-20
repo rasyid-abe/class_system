@@ -98,6 +98,12 @@ $routes->post('/teacher/question-bank/standart/update-content', 'LearningMS\Ques
 $routes->get('/teacher/question-bank/public', 'LearningMS\QuestionBank\PublicQuestionBank::index', ['filter' => 'auth']);
 $routes->get('/teacher/question-bank/public/view-task/(:num)/(:any)', 'LearningMS\QuestionBank\PublicQuestionBank::view_task/$1/$2', ['filter' => 'auth']);
 
-$routes->get('/teacher/assessment', 'LearningMS\Assessment\Assessment::index', ['filter' => 'auth']);
-$routes->get('/teacher/assessment/example-tabulator', 'LearningMS\Assessment\Assessment::example_tabulator', ['filter' => 'auth']);
-$routes->post('/teacher/assessment/group-exists', 'LearningMS\Assessment\Assessment::group_exists', ['filter' => 'auth']);
+$routes->get('/teacher/assessment/index-add', 'LearningMS\Assessment\Assessment::index', ['filter' => 'auth']);
+$routes->get('/teacher/assessment/index-draft', 'LearningMS\Assessment\Assessment::index_draft', ['filter' => 'auth']);
+$routes->get('/teacher/assessment/list-assessment', 'LearningMS\Assessment\Assessment::list_assessment', ['filter' => 'auth']);
+$routes->get('/teacher/assessment/index-scheduled', 'LearningMS\Assessment\Assessment::index_scheduled', ['filter' => 'auth']);
+$routes->get('/teacher/assessment/index-present', 'LearningMS\Assessment\Assessment::index_present', ['filter' => 'auth']);
+$routes->get('/teacher/assessment/index-done', 'LearningMS\Assessment\Assessment::index_done', ['filter' => 'auth']);
+$routes->post('/teacher/assessment/data-option', 'LearningMS\Assessment\Assessment::data_option', ['filter' => 'auth']);
+$routes->post('/teacher/assessment/store-data', 'LearningMS\Assessment\Assessment::store_data', ['filter' => 'auth']);
+$routes->post('/teacher/assessment/view-question-bank', 'LearningMS\Assessment\Assessment::view_question_bank', ['filter' => 'auth']);

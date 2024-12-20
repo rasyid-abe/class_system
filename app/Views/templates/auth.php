@@ -21,16 +21,17 @@
 
     <link href="<?= base_url() ?>assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
-    <link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
 
-    <script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
-	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
-	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
+    <!-- <script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script> -->
+    <script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-37564768-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
         gtag('js', new Date());
         gtag('config', 'UA-37564768-1');
     </script>
@@ -40,6 +41,17 @@
             window.top.location.replace(window.self.location.href);
         }
     </script>
+    <style>
+        .swal2-toast {
+            background-color: rgba(54,70,93,.99) !important;
+        }
+        .swal2-title {
+            color: #fff !important;
+        }
+        .swal2-timer-progress-bar {
+            background-color: lightblue !important;
+        }
+    </style>
 </head>
 
 
@@ -64,9 +76,9 @@
             }
 
             document.documentElement.setAttribute("data-bs-theme", themeMode);
-        }            
+        }
     </script>
-    
+
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5FS8GGP" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
 
@@ -96,7 +108,7 @@
         </div>
     </div>
 
-<!-- 
+    <!-- 
     <script>var hostUrl = "<?= base_url() ?>assets/";</script>
     <script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
     <script src="<?= base_url() ?>assets/js/scripts.bundle.js"></script>
@@ -105,6 +117,25 @@
 
 
 <script type="text/javascript">
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+
+    function show_toast() {
+        Toast.fire({
+            icon: "success",
+            title: "Signed in successfully"
+        });
+    }
+
     function show_loading() {
         const loadingEl = document.createElement("div");
         document.body.prepend(loadingEl);
@@ -127,26 +158,42 @@
     }
 
     function toast_act(heading, text, icon, hide) {
-        $.toast({
-            heading: heading,
-            text: text,
-            showHideTransition: 'fade',
-            position: 'top-right',
+        Toast.fire({
             icon: icon,
-            hideAfter: hide
-        })
+            title: text
+        });
+        // $.toast({
+        //     heading: heading,
+        //     text: text,
+        //     showHideTransition: 'fade',
+        //     position: 'top-right',
+        //     icon: icon,
+        //     hideAfter: hide
+        // })
     }
+
+    $(document.body).on('click', '.show_password', function() {
+        if ($(this).hasClass('bi-eye-slash-fill')) {
+            $(this).removeClass('bi-eye-slash-fill')
+            $(this).addClass('bi-eye-fill')
+            $('#pass_').attr('type', 'text')
+        } else {
+            $('#pass_').attr('type', 'password')
+            $(this).addClass('bi-eye-slash-fill')
+            $(this).removeClass('bi-eye-fill')
+        }
+    })
 </script>
 <?php if (session()->getFlashdata('msg')): ?>
     <?=
-        '<script type="text/javascript">',
-        'toast_act( 
+    '<script type="text/javascript">',
+    'toast_act( 
         "<h6>' . ucfirst(session()->getFlashdata('head')) . '</h6>",',
-        '"' . session()->getFlashdata('msg') . '",',
-        '"' . session()->getFlashdata('icon') . '",',
-        '"' . session()->getFlashdata('hide') . '",',
-        ')</script>';
-?>
+    '"' . session()->getFlashdata('msg') . '",',
+    '"' . session()->getFlashdata('icon') . '",',
+    '"' . session()->getFlashdata('hide') . '",',
+    ')</script>';
+    ?>
 <?php endif; ?>
 
 </html>

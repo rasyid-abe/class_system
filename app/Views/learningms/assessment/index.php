@@ -1,26 +1,64 @@
 <?php $this->extend('templates/core') ?>
 <?php $this->section('content'); ?>
 
+<div class="row gx-6 gx-xl-9">
+  <?php foreach ($my_duty as $k => $v): ?>
+    <div class="col-lg-6 col-xxl-4 mb-10">
+      <div class="card  h-100">
+        <div class="card-body p-9">
+          <div class="fw-bold">
+            <h3><?= $v['subjs'] ?></h3>
+          </div>
+          <div class="fs-4 fw-semibold text-gray-500 mb-7"></div>
 
-<div class="card mb-5 mb-xl-10">
-  <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_profile_details" aria-expanded="true" aria-controls="kt_account_profile_details">
-    <div class="card-title m-0">
-      <div class="d-grid">
-        <button type="button" class="btn btn-primary" onclick="show_modal()">
-          <i class="mb-1 fa fa-plus"></i> Penilaian Siswa
-        </button>
+          <?php foreach ($v['grade'] as $key => $val) : ?>
+            <div class="fs-6 d-flex justify-content-between mb-4">
+              <div class="fw-semibold"><?= $val ?></div>
+              <div class="d-flex fw-bold">
+                <badge type="button" class="badge badge-primary" onclick="show_qb(<?= $v['subjs_id'] ?>,<?= $key ?>)">Buat Penilaian</badge>
+              </div>
+            </div>
+
+            <div class="separator separator-dashed mb-4"></div>
+          <?php endforeach ?>
+
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class="card-body border-top p-9">
-    <div id="example-table"></div>
-  </div>
-
+  <?php endforeach ?>
 </div>
 
 
-<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_assessment">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="task_prev_ass">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <div id="task_title_a">Pilih Soal Penilaian</div>
+        </h3>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="less_id" val="">
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="task" id="view_select_task"></div>
+          </div>
+          <div class="col-sm-9">
+            <div class="task" id="preview_task"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light-danger btn-sm" data-bs-dismiss="modal">Tutup</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="set_task_ass();">Pilih</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_assessment" style="z-index:9999">
   <div class="modal-dialog modal-xl">
     <div class="modal-content" id="content_modal">
       <div class="modal-header">
@@ -31,39 +69,33 @@
           <div class="card-body">
 
             <div class="row mb-6">
-              <label class="col-lg-3 col-form-label required fw-semibold fs-6">Judul Penilaian</label>
+              <label class="col-lg-3 col-form-label fw-semibold fs-6">Soal</label>
 
               <div class="col-lg-9 fv-row fv-plugins-icon-container">
-                <input type="text" name="title" class="form-control form-control-lg form-control-solid">
-                <small class="hide title_ass text-danger">Judul penilaian harus diisi!</small>
+                <input type="text" name="selected_task" class="form-control form-control-lg form-control-solid" />
+                <input type="hidden" name="taskid" />
+                <input type="hidden" name="tasksrc" />
               </div>
             </div>
 
             <div class="row mb-6">
-              <label class="col-lg-3 col-form-label required fw-semibold fs-6">Mata Pelajaran</label>
+              <label class="col-lg-3 col-form-label fw-semibold fs-6">Mata Pelajaran</label>
 
               <div class="col-lg-9">
-                <div class="row">
-                  <div class="col-lg-6 fv-row fv-plugins-icon-container">
-                    <select name="subject" id="sub_ass" class="form-control" onchange="check_group()">
-                      <option value="0">Pilih Mata Pelajaran</option>
-                      <?php foreach ($subs as $k => $v): ?>
-                        <option value="<?= $k ?>"><?= $v ?></option>
-                      <?php endforeach; ?>
-                    </select>
-                    <small class="hide sub_ass text-danger">Mata Pelajaran harus dipilih!</small>
+                  <div class="fv-row fv-plugins-icon-container">
+                    <input type="text" name="selected_subj" class="form-control form-control-lg form-control-solid" />
+                    <input type="hidden" name="subjid" />
+                    <input type="hidden" name="gradid" />
                   </div>
+              </div>
+            </div>
+           
+            <div class="row mb-6">
+              <label class="col-lg-3 col-form-label required fw-semibold fs-6">Judul Penilaian</label>
 
-                  <div class="col-lg-6 fv-row fv-plugins-icon-container">
-                    <select name="grade" id="grade_ass" class="form-control" onchange="check_group()">
-                      <option value="0">Pilih Kelas</option>
-                      <?php foreach ($grade as $k => $v): ?>
-                        <option value="<?= $k ?>"><?= $v ?></option>
-                      <?php endforeach; ?>
-                    </select>
-                    <small class="hide grade_ass text-danger">Jenjang Kelas harus dipilih!</small>
-                  </div>
-                </div>
+              <div class="col-lg-9 fv-row fv-plugins-icon-container">
+                <input type="text" name="title" class="form-control form-control-lg form-control-solid" placeholder="Masukkan judul penilaian">
+                <small class="hide title_ass text-danger">Judul penilaian harus diisi!</small>
               </div>
             </div>
 
@@ -73,7 +105,7 @@
               </label>
 
               <div class="col-lg-9 fv-row fv-plugins-icon-container">
-                <select class="form-select form-select-solid hide" name=groups[] id="multiple-select-group" data-control="select2" data-close-on-select="false" data-placeholder="Pilih Kelas" data-allow-clear="true" multiple="multiple" disabled>
+                <select class="form-select form-select-solid" name=groups[] id="multiple-select-group" data-control="select2" data-close-on-select="false" data-dropdown-parent="#modal_assessment" data-placeholder="Pilih Kelompok Belajar" data-allow-clear="true" multiple="multiple" >
                 </select>
                 <small class="hide group_ass text-danger">Kelompok belajar harus dipilih!</small>
               </div>
@@ -88,21 +120,37 @@
                     <input onchange="chk_range()" class="form-control form-control-solid assessment_periode_date" placeholder="Periode Awal" id="start_assessment" name="start_assessment" />
                     <small class="hide text-danger start_ass anom_period">Periode awal harus dipilih!</small>
                   </div>
-                  
+
                   <div class="col-lg-6 fv-row fv-plugins-icon-container">
                     <input onchange="chk_range()" class="form-control form-control-solid assessment_periode_date" placeholder="Periode Akhir" id="end_assessment" name="end_assessment" />
                     <small class="hide text-danger end_ass">Periode akhir harus dipilih!</small>
                   </div>
+
                 </div>
               </div>
             </div>
 
-            <div class="row mb-6">
-              <label class="col-lg-3 col-form-label required fw-semibold fs-6">Timer (Menit)</label>
+            <div class="row mb-4">
+              <label class="col-lg-3 col-form-label fw-semibold fs-6">Timer Aktif <small class="text-danger">**</small></label>
 
-              <div class="col-lg-9 fv-row">
-                <input type="number" max="168" min="30" name="timer" class="form-control form-control-lg form-control-solid" placeholder="Waktu Pengerjaan">
-                <small class="hide timer_ass text-danger">Timer harus diisi!</small>
+              <div class="col-lg-4 fv-row">
+                <div class="d-flex">
+                <label class="form-check form-check-custom form-check-inline form-check-solid me-5 form-switch">
+                    <input class="form-check-input asscheck" name="ass_timer" id="ass_timer" type="checkbox" value="1">
+                  </label>
+                  <input type="number" max="168" min="30" name="timer" class="hide form-control form-control-lg form-control-solid" placeholder="Waktu Pengerjaan (menit)" id="c_timer">
+                </div>
+                <small class="hide timer_ass text-danger">Timer aktif membutuhkan waktu pengerjaan!</small>
+              </div>
+            </div>
+
+            <div class="row mb-6">
+              <label class="col-lg-3 col-form-label fw-semibold fs-6">Kirim Otomatis</label>
+              <div class="col-lg-9 d-flex align-items-center">
+                <div class="form-check form-check-solid form-switch form-check-custom fv-row">
+                  <input class="form-check-input asscheck checked w-45px h-30px" type="checkbox" id="autosumbit" checked="true">
+                  <label class="form-check-label" style="margin-left: 16px">Akan terkirim otomatis ketika waktu pengerjaan sudah habis</label>
+                </div>
               </div>
             </div>
 
@@ -127,17 +175,7 @@
                 </div>
               </div>
             </div>
-
-            <div class="row mb-0">
-              <label class="col-lg-3 col-form-label fw-semibold fs-6">Kirim Otomatis</label>
-              <div class="col-lg-9 d-flex align-items-center">
-                <div class="form-check form-check-solid form-switch form-check-custom fv-row">
-                  <input class="form-check-input asscheck checked w-45px h-30px" type="checkbox" id="autosumbit" checked="true">
-                  <label class="form-check-label">Akan terkirim otomatis ketika waktu pengerjaan sudah habis</label>
-                </div>
-              </div>
-            </div>
-
+            
             <div class="row my-5 mt-10">
               <label for="instruction_assessment" class="form-label">Instruksi Pengerjaan</label>
               <div id="instruction_assessment"></div>

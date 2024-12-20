@@ -41,7 +41,7 @@ class TeacherAssignModel extends Model
         ->join('master_subject', 'subject_id=teacher_assign_subject_id')
         ->where('teacher_assign_teacher_id', $id)
         ->where('teacher_assign_status < 9')
-        ->groupBy('student_group_grade')
+        // ->groupBy('student_group_grade')
         ->findAll();
     }
 

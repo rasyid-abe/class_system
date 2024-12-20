@@ -236,4 +236,18 @@ function distinct_array($arr, $val)
     return $moreUniqueArray;
 }
 
+function subject_rowid($id) 
+{
+    $db = \Config\Database::connect();
+    
+    $sql = "
+        SELECT *
+        FROM master_subject ms
+        WHERE ms.subject_id = $id
+    ";
+
+    $row = $db->query($sql)->getRowArray();
+    return $row;
+}
+
 

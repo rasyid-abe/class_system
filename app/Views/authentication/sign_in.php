@@ -35,8 +35,13 @@
                     </a>
                 </div>
 
-                <input class="form-control form-control-lg form-control-solid" type="password" name="password"
-                    autocomplete="off" />
+                <div class="position-relative mb-3">
+                    <input class="form-control form-control-lg form-control-solid" id="pass_" type="password" name="password" autocomplete="off">
+
+                    <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2 pl-4" data-kt-password-meter-control="visibility">
+                        <i class="fs-1 mr-2 bi bi-eye-slash-fill show_password"></i>&nbsp;
+                    </span>
+                </div>
             </div>
 
             <div class="text-center">
