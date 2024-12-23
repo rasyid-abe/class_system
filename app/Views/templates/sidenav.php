@@ -7,8 +7,8 @@
             <!--begin::Nav-->
             <ul class="nav flex-column">
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"
-                data-bs-dismiss="click" title="Dashboard">
-                    <a class="nav-link btn btn-custom btn-icon <?= $page == "Dashboard" ? 'active' : '' ?>" href="#"><i class="bi bi-bar-chart-fill fs-2x"></i></a>
+                    data-bs-dismiss="click" title="Beranda">
+                    <a class="nav-link btn btn-custom btn-icon <?= $page == "Dashboard" ? 'active' : '' ?>" href="<?= base_url() ?>dashboard/teacher"><i class="bi bi-house-fill fs-2qx"></i></a>
                 </li>
                 <!--begin::Nav item-->
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"

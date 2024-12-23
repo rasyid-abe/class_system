@@ -38,6 +38,14 @@
         </h3>
       </div>
       <div class="modal-body">
+        <div class="hide" id="select_qb_alert">
+          <div class="alert alert-danger d-flex align-items-center p-2 mb-5">
+            <i class="bi bi-shield-fill-x fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i>
+            <div class="d-flex flex-column">
+              <h6 class="mb-1 text-danger">Soal belum dipilih!</h6>
+            </div>
+          </div>
+        </div>
         <input type="hidden" name="less_id" val="">
         <div class="row">
           <div class="col-sm-3">
@@ -75,6 +83,7 @@
                 <input type="text" name="selected_task" class="form-control form-control-lg form-control-solid" />
                 <input type="hidden" name="taskid" />
                 <input type="hidden" name="tasksrc" />
+                <input type="hidden" name="assessment_id" value=0 />
               </div>
             </div>
 
@@ -82,14 +91,14 @@
               <label class="col-lg-3 col-form-label fw-semibold fs-6">Mata Pelajaran</label>
 
               <div class="col-lg-9">
-                  <div class="fv-row fv-plugins-icon-container">
-                    <input type="text" name="selected_subj" class="form-control form-control-lg form-control-solid" />
-                    <input type="hidden" name="subjid" />
-                    <input type="hidden" name="gradid" />
-                  </div>
+                <div class="fv-row fv-plugins-icon-container">
+                  <input type="text" name="selected_subj" class="form-control form-control-lg form-control-solid" />
+                  <input type="hidden" name="subjid" />
+                  <input type="hidden" name="gradid" />
+                </div>
               </div>
             </div>
-           
+
             <div class="row mb-6">
               <label class="col-lg-3 col-form-label required fw-semibold fs-6">Judul Penilaian</label>
 
@@ -105,7 +114,7 @@
               </label>
 
               <div class="col-lg-9 fv-row fv-plugins-icon-container">
-                <select class="form-select form-select-solid" name=groups[] id="multiple-select-group" data-control="select2" data-close-on-select="false" data-dropdown-parent="#modal_assessment" data-placeholder="Pilih Kelompok Belajar" data-allow-clear="true" multiple="multiple" >
+                <select class="form-select form-select-solid" name=groups[] id="multiple-select-group" data-control="select2" data-close-on-select="false" data-dropdown-parent="#modal_assessment" data-placeholder="Pilih Kelompok Belajar" data-allow-clear="true" multiple="multiple">
                 </select>
                 <small class="hide group_ass text-danger">Kelompok belajar harus dipilih!</small>
               </div>
@@ -116,14 +125,24 @@
 
               <div class="col-lg-9">
                 <div class="row">
-                  <div class="col-lg-6 fv-row fv-plugins-icon-container">
+                  <div class="col-lg-4 fv-row fv-plugins-icon-container">
                     <input onchange="chk_range()" class="form-control form-control-solid assessment_periode_date" placeholder="Periode Awal" id="start_assessment" name="start_assessment" />
                     <small class="hide text-danger start_ass anom_period">Periode awal harus dipilih!</small>
                   </div>
 
-                  <div class="col-lg-6 fv-row fv-plugins-icon-container">
+                  <div class="col-lg-4 fv-row fv-plugins-icon-container">
                     <input onchange="chk_range()" class="form-control form-control-solid assessment_periode_date" placeholder="Periode Akhir" id="end_assessment" name="end_assessment" />
                     <small class="hide text-danger end_ass">Periode akhir harus dipilih!</small>
+                  </div>
+
+                  <div class="col-lg-4 fv-row fv-plugins-icon-container mt-2">
+                    <!-- <label class="col-lg-3 col-form-label fw-semibold fs-6">Kirim Otomatis</label> -->
+                    <div class="col-lg-9 d-flex align-items-center">
+                      <div class="form-check form-check-solid form-switch form-check-custom fv-row">
+                        <input class="form-check-input asscheck checked w-45px h-30px" type="checkbox" id="autosumbit" checked="true">
+                        <label class="form-check-label" style="margin-left: 16px">Kirim Otomatis</label>
+                      </div>
+                    </div>
                   </div>
 
                 </div>
@@ -135,7 +154,7 @@
 
               <div class="col-lg-4 fv-row">
                 <div class="d-flex">
-                <label class="form-check form-check-custom form-check-inline form-check-solid me-5 form-switch">
+                  <label class="form-check form-check-custom form-check-inline form-check-solid me-5 form-switch">
                     <input class="form-check-input asscheck" name="ass_timer" id="ass_timer" type="checkbox" value="1">
                   </label>
                   <input type="number" max="168" min="30" name="timer" class="hide form-control form-control-lg form-control-solid" placeholder="Waktu Pengerjaan (menit)" id="c_timer">
@@ -144,7 +163,7 @@
               </div>
             </div>
 
-            <div class="row mb-6">
+            <!-- <div class="row mb-6">
               <label class="col-lg-3 col-form-label fw-semibold fs-6">Kirim Otomatis</label>
               <div class="col-lg-9 d-flex align-items-center">
                 <div class="form-check form-check-solid form-switch form-check-custom fv-row">
@@ -152,7 +171,7 @@
                   <label class="form-check-label" style="margin-left: 16px">Akan terkirim otomatis ketika waktu pengerjaan sudah habis</label>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <div class="row mb-6">
               <label class="col-lg-3 col-form-label fw-semibold fs-6">Kesulitan</label>
@@ -175,7 +194,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="row my-5 mt-10">
               <label for="instruction_assessment" class="form-label">Instruksi Pengerjaan</label>
               <div id="instruction_assessment"></div>
@@ -185,8 +204,9 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-sm btn-light-danger" onclick="hide_modal()">Tutup</button>
-        <button type="sumbit" class="btn btn-sm btn-primary" onclick="save_assessment();">Simpan</button>
+        <button type="button" class="btn btn-sm btn-light-danger" onclick="hide_modal()">Batal</button>
+        <button type="sumbit" class="btn btn-sm btn-light-success" onclick="save_assessment(1, 1);">Simpan</button>
+        <button type="sumbit" class="btn btn-sm btn-primary" onclick="save_assessment(2, 1);">Kirim</button>
       </div>
     </div>
   </div>

@@ -1,6 +1,30 @@
 <div class="tab-content">
     <?php if(session()->get('c_role') == 11): ?>
         <!--begin::Tab pane-->
+        <div class="tab-pane fade <?= $page == "Dashboard" ? 'active show' : '' ?>" id="home_dashboard" role="tabpanel">
+            <!--begin::Tasks-->
+            <div class="mx-5">
+                <!--begin::Body-->
+                <div class="mb-12">
+                    <!--begin::Item-->
+                    <div class="me-7 mb-4 d-flex justify-content-center">
+                        <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
+                            <img src="<?= base_url() ?>images/default-user2.png" alt="image">
+                            <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div>
+                        </div>
+                    </div>
+                    <h3 class="fw-semibold text-gray-800 text-center lh-lg">           
+                        Nama Lengkap, S.Pd
+                    </h3>
+                    <div class="text-gray-500 fw-semibold text-center lh-lg">Users from all channels</div>
+                    <!--end::Item-->
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Tasks-->
+        </div>
+        <!--end::Tab pane-->
+        <!--begin::Tab pane-->
         <div class="tab-pane fade <?= $page == "Lesson" ? 'active show' : '' ?>" id="subjects_menu" role="tabpanel">
             <!--begin::Tasks-->
             <div class="mx-5">

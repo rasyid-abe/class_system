@@ -176,7 +176,7 @@ class Assessment extends BaseController
                 ->where('question_bank_standart_status < 9')
                 ->findAll();
 
-            $std[$k]['child'] = $ch_std;
+            $std[$k]['child'] = array_chunk(array_column($ch_std, 'id'),6);
         }
 
         foreach ($me as $k => $v) {
@@ -185,7 +185,7 @@ class Assessment extends BaseController
                 ->where('question_bank_status < 9')
                 ->findAll();
 
-            $me[$k]['child'] = $ch_me;
+            $me[$k]['child'] = array_chunk(array_column($ch_me, 'id'),6);
         }
 
         foreach ($pub as $k => $v) {
@@ -194,7 +194,7 @@ class Assessment extends BaseController
                 ->where('question_bank_status < 9')
                 ->findAll();
 
-            $pub[$k]['child'] = $ch_pub;
+            $pub[$k]['child'] = array_chunk(array_column($ch_pub, 'id'),6);
         }
 
         $res = [
@@ -210,6 +210,13 @@ class Assessment extends BaseController
         ]);
     }
 
+    public function get_edit()
+    {
+        $id = $this->request->getVar('id');
+        $row = $this->assessment->where('assessment_id', $id)->first();
+        echo json_encode($row);
+    }
+
     public function store_data()
     {
         $req = $this->request->getVar();
@@ -223,40 +230,70 @@ class Assessment extends BaseController
                 $group[$k]['group'] = $v->text; 
             }
     
-            $data = [
-                'assessment_school_id' => userdata()['school_id'],
-                'assessment_teacher_id' => userdata()['id_profile'],
-                'assessment_grade' => $d[2],
-                'assessment_subject_id' => $d[1],
-                'assessment_subject_name' => $d[13],
-                'assessment_group' => json_encode($group),
-                'assessment_title' => $d[0],
-                'assessment_question_bank_id' => $d[11],
-                'assessment_question_bank_title' => $d[12],
-                'assessment_question_bank_src' => $d[14],
-                'assessment_start' => date('Y-m-d H:i:s', strtotime($d[4].':00')),
-                'assessment_end' => date('Y-m-d H:i:s', strtotime($d[5].':00')),
-                'assessment_duration' => $d[6],
-                'assessment_is_random' => $d[7],
-                'assessment_is_autosubmit' => $d[9],
-                'assessment_is_prevent_cheat' => $d[8],
-                'assessment_instruction' => $d[10],
-                'assessment_status' => 1,
-            ];
+            
+
+            if ($req['id'] > 0) {
+                $upd = $this->assessment
+                    ->where('assessment_id', $req['id'])
+                    ->set('assessment_title', $d[0])
+                    ->set('assessment_start', date('Y-m-d H:i:s', strtotime($d[4].':00')))
+                    ->set('assessment_end', date('Y-m-d H:i:s', strtotime($d[5].':00')))
+                    ->set('assessment_duration', $d[6])
+                    ->set('assessment_is_random', $d[7])
+                    ->set('assessment_is_autosubmit', $d[9])
+                    ->set('assessment_is_prevent_cheat', $d[8])
+                    ->set('assessment_instruction', $d[10])
+                    ->set('assessment_status', $d[15])
+                    ->set('assessment_group', json_encode($group))
+                    ->update();
+
+                $res = [
+                    'typ' => $req['type'],
+                    'sts' => $upd,
+                    'msg' => $upd ? 'Penilaian berhasil diubah' : 'Penilaian gagal diubah',
+                    'icn' => $upd ? 'success' : 'error',
+                ];
+                echo json_encode($res);
+
+
+            } else {
+
+                $data = [
+                    'assessment_school_id' => userdata()['school_id'],
+                    'assessment_teacher_id' => userdata()['id_profile'],
+                    'assessment_grade' => $d[2],
+                    'assessment_subject_id' => $d[1],
+                    'assessment_subject_name' => $d[13],
+                    'assessment_group' => json_encode($group),
+                    'assessment_title' => $d[0],
+                    'assessment_question_bank_id' => $d[11],
+                    'assessment_question_bank_title' => $d[12],
+                    'assessment_question_bank_src' => $d[14],
+                    'assessment_start' => date('Y-m-d H:i:s', strtotime($d[4].':00')),
+                    'assessment_end' => date('Y-m-d H:i:s', strtotime($d[5].':00')),
+                    'assessment_duration' => $d[6],
+                    'assessment_is_random' => $d[7],
+                    'assessment_is_autosubmit' => $d[9],
+                    'assessment_is_prevent_cheat' => $d[8],
+                    'assessment_instruction' => $d[10],
+                    'assessment_status' => $d[15],
+                ];
+
+                $ins = $this->assessment->insert($data);
+                $res = [
+                    'typ' => $req['type'],
+                    'sts' => $ins,
+                    'msg' => $ins ? 'Penilaian berhasil ditambahkan' : 'Penilaian gagal ditambahkan',
+                    'icn' => $ins ? 'success' : 'error',
+                ];
+                echo json_encode($res);
+            }
     
-            $ins = $this->assessment->insert($data);
-            $res = [
-                'typ' => $req['type'],
-                'sts' => $ins,
-                'msg' => $ins ? 'Penilaian berhasil ditambahkan' : 'Penilaian gagal ditambahkan',
-                'icn' => $ins ? 'success' : 'error',
-            ];
-            echo json_encode($res);
 
         } else if ($req['type'] == 2) {
             $upd = $this->assessment
                 ->where('assessment_id', $req['id'])
-                ->set('assessment_status', 2)
+                ->set('assessment_status', $req['data'])
                 ->update();
 
             $res = [
@@ -330,25 +367,27 @@ class Assessment extends BaseController
                 ->where('assessment_status', 1)
                 ->where('assessment_school_id', userdata()['school_id'])
                 ->where('assessment_teacher_id', userdata()['id_profile'])
+                ->orderBy('assessment_id', 'desc')
                 ->findAll();
         } else if ($req['page-ass'] == 2) {
             $get = $this->assessment
                 ->where('assessment_status', 2)
-                // ->where('assessment_end <=', date('Y-m-d H:i:s'))
+                ->where('assessment_start >=', date('Y-m-d H:i:s'))
                 ->where('assessment_school_id', userdata()['school_id'])
                 ->where('assessment_teacher_id', userdata()['id_profile'])
                 ->findAll();
         } else if ($req['page-ass'] == 3) {
             $get = $this->assessment
                 ->where('assessment_status', 2)
-                ->where('assessment_start >=', date('Y-m-d H:i:s'))
-                ->where('assessment_end <=', date('Y-m-d H:i:s'))
+                ->where('assessment_start <=', date('Y-m-d H:i:s'))
+                ->where('assessment_end >=', date('Y-m-d H:i:s'))
                 ->where('assessment_school_id', userdata()['school_id'])
                 ->where('assessment_teacher_id', userdata()['id_profile'])
                 ->findAll();
-        } else if ($req['page-ass'] == 4) {
-            $get = $this->assessment
-                ->where('assessment_status', 4)
+            } else if ($req['page-ass'] == 4) {
+                $get = $this->assessment
+                ->where('assessment_status', 2)
+                ->where('assessment_end <=', date('Y-m-d H:i:s'))
                 ->where('assessment_school_id', userdata()['school_id'])
                 ->where('assessment_teacher_id', userdata()['id_profile'])
                 ->findAll();
@@ -361,6 +400,33 @@ class Assessment extends BaseController
                 $groups .= '<badge class="badge badge-info mx-1">'.$val->group.'</badge>';
             }
             
+            $acts = '';
+            if ($req['page-ass'] == 1) {
+                if ($v['assessment_end'] < date('Y-m-d H:i:s')) {
+                    $acts .= '
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus" type="button" class="btn btn-sm btn-icon btn-danger" onclick="type_assessment(2, '.$v['assessment_id'].', 1)">
+                        <i class="bi bi-trash-fill fs-1"></i>
+                        </button>
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Ubah" type="button" class="btn btn-sm btn-icon btn-warning" onclick="edit_draft('.$v['assessment_id'].')"><i class="bi bi-pencil-square fs-1"></i></button>
+                    ';
+                } else {
+                    $acts .= '
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Kirim" type="button" class="btn btn-sm btn-icon btn-primary" onclick="type_assessment(2, '.$v['assessment_id'].', 2)">
+                        <svg width="20" height="20" fill="currentColor" class="bi bi-send-check-fill" viewBox="0 0 16 16">
+                        <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 1.59 2.498C8 14 8 13 8 12.5a4.5 4.5 0 0 1 5.026-4.47zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
+                        <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686"/>
+                        </svg>
+                        </button>
+                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Ubah" type="button" class="btn btn-sm btn-icon btn-warning" onclick="edit_draft('.$v['assessment_id'].')"><i class="bi bi-pencil-square fs-1"></i></button>
+                    ';
+                }
+            } elseif ($req['page-ass'] == 2) {
+                $acts .= '
+                    <button data-bs-toggle="tooltip" data-bs-placement="top" title="Ubah ke Draft" type="button" class="btn btn-sm btn-icon btn-secondary" onclick="type_assessment(2, '.$v['assessment_id'].', 1)">
+                    <i class="bi bi-backspace-fill fs-1"></i></button>
+                ';
+            }
+            
             $data[] = [
                 'id' => $v['assessment_id'],
                 'title' => $v['assessment_title'],
@@ -368,6 +434,7 @@ class Assessment extends BaseController
                 'period' => $v['assessment_start'].' - '.$v['assessment_end'],
                 'group' => $groups,
                 'task' => $v['assessment_question_bank_title'],
+                'acts' => $acts,
             ];
         }
 

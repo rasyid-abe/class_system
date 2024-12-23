@@ -107,3 +107,4 @@ $routes->get('/teacher/assessment/index-done', 'LearningMS\Assessment\Assessment
 $routes->post('/teacher/assessment/data-option', 'LearningMS\Assessment\Assessment::data_option', ['filter' => 'auth']);
 $routes->post('/teacher/assessment/store-data', 'LearningMS\Assessment\Assessment::store_data', ['filter' => 'auth']);
 $routes->post('/teacher/assessment/view-question-bank', 'LearningMS\Assessment\Assessment::view_question_bank', ['filter' => 'auth']);
+$routes->post('/teacher/assessment/get-edit', 'LearningMS\Assessment\Assessment::get_edit', ['filter' => 'auth']);
