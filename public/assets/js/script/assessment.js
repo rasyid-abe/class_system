@@ -42,26 +42,30 @@ function preview_qb(e, subj, subjname, grad, gradname) {
     let i1 = 1
     $.each(e, function(i,v) {
       if (v.content.length > 0) {
-        console.log(v);
-        
         let ch1 = ''
         let i2 = 1
         $.each(v.content, function(idx, val) {
             let child = ''
             let ii = 1
+            let chi = 1
             $.each(val['child'], function(index, value) {
+
+                let cch = ''
+                $.each(value, function(a,b) {
+                  cch+= `<a href="#" onclick="view_tasks(${i1}, ${b})" class="m-1 btn btn-icon btn-sm btn-outline btn-outline-primary">${chi}</a>`
+                  chi++
+                })
                 child += `
-                <li class="list-group-item">
-                  <a href="#" onclick="view_tasks(${i1}, ${value.id})" style="text-decoration: none;">Soal ${ii}</a>
-                </li>
+                <div style="margin-left: 8px; margin-bottom: 10px;" class="d-flex justify-content-start">
+                    ${cch}
+                </div>
                 `
+                // child += `
+                // <li class="list-group-item">
+                //   <a href="#" onclick="view_tasks(${i1}, ${value.id})" style="text-decoration: none;">Soal ${ii}</a>
+                // </li>
+                // `
                 ii++
-                // <div class="form-check my-2">
-                //     <input class="form-check-input" type="checkbox" name="task_${i1}" value="${value.id}" />
-                //     <label class="form-check-label" onclick="view_tasks(${i1}, ${value.id})">
-                //         Soal ${ii}
-                //     </label>
-                // </div>
               })
 
             let child_body = `
@@ -134,25 +138,34 @@ function set_task_ass() {
   let subj_name = $('#idass_subj').data('subjname')
   let grad_ass = $('#idass_grad').data('grad')
   let grad_name = $('#idass_grad').data('gradname')
-
-  $('input[name=selected_task]').val(task_name).attr('readonly', true)
-  $('input[name=taskid]').val(task_ass)
-  $('input[name=tasksrc]').val(task_src)
-  $('input[name=selected_subj]').val(subj_name + ' - ' +grad_name).attr('readonly', true)
-  $('input[name=subjid]').val(subj_ass)
-  $('input[name=selected_grad]').val(grad_name).attr('readonly', true)
-  $('input[name=gradid]').val(grad_ass)
-
   
-  $("#modal_assessment").modal("show");
-  set_datepicker();
-  check_group(subj_ass, grad_ass)
+  if (task_ass == undefined) {
+    $('#select_qb_alert').removeClass('hide')
+    setTimeout(function() {
+      $('#select_qb_alert').addClass('hide')
+    }, 5000);
+  } else {
+    $('input[name=selected_task]').val(task_name).attr('readonly', true)
+    $('input[name=taskid]').val(task_ass)
+    $('input[name=tasksrc]').val(task_src)
+    $('input[name=selected_subj]').val(subj_name + ' - ' +grad_name).attr('readonly', true)
+    $('input[name=subjid]').val(subj_ass)
+    $('input[name=selected_grad]').val(grad_name).attr('readonly', true)
+    $('input[name=gradid]').val(grad_ass)
+  
+    
+    $("#modal_assessment").modal("show");
+    set_datepicker();
+    check_group(subj_ass, grad_ass)
+  }
+
 }
 
 function set_datepicker() {
   $(".assessment_periode_date").flatpickr({
     enableTime: true,
     dateFormat: "Y-m-d H:i",
+    minDate: "today"
   });
 }
 
@@ -169,6 +182,11 @@ function hide_modal() {
   // $("#autosumbit").toggleClass("checked");
   // $("#instruction_assessment").html('');
   $("#modal_assessment").modal("hide");
+  $("#task_prev_ass").modal("hide");
+}
+
+function hide_modal_edit() {
+  $('#modal_assessment_edit').modal('hide')
 }
 
 function check_group(subs, grad) {
@@ -179,19 +197,13 @@ function check_group(subs, grad) {
     method: "post",
     dataType: "json",
     success: function (e) {
-      console.log(e);
-      
       if (e) {
         let option = "";
         $.each(e, function (i, v) {
           option += `<option value="${v.id}">${v.name}</option>`;
         });
         groups.html(option);
-        console.log('aa');
-        
       } else {
-        console.log('bb');
-        
         groups.val(null).trigger("change");
         groups.attr("disabled", true);
       }
@@ -228,7 +240,8 @@ function chk_range() {
   }
 }
 
-function save_assessment() {
+function save_assessment(ass_view = null, ass_type = null) {
+  let id_ass = $('input[name=assessment_id]').val()
   let task_name = $("input[name=selected_task]").val()
   let subj_name = $("input[name=selected_subj]").val()
   let task = $("input[name=taskid]").val();
@@ -279,10 +292,10 @@ function save_assessment() {
   } else {
     if (chk_range() == 1) {
       let data = [
-        title,subj,grad,group,start,end,timer,random,cheat,submit,insass,task,task_name,subj_name,task_src
+        title,subj,grad,group,start,end,timer,random,cheat,submit,insass,task,task_name,subj_name,task_src,ass_view,ass_type
       ];
       
-      store_data(1, JSON.stringify(data));
+      store_data(1, JSON.stringify(data), id_ass);
     } else {
       let msg =
         chk_range() == 2
@@ -301,8 +314,10 @@ function store_data(type, data, id = null) {
     method: "post",
     dataType: "json",
     success: function (e) {
+      $("#modal_assessment_edit").modal("hide");
       $("#modal_assessment").modal("hide");
       $('#task_prev_ass').modal('hide');
+      reload_tabulator()
       Toast.fire({
         icon: e.icn,
         title: e.msg
@@ -311,7 +326,68 @@ function store_data(type, data, id = null) {
   });
 }
 
-let url = window.location.href
+function edit_draft(id) {
+  $.ajax({
+    url: base_url + "/teacher/assessment/get-edit",
+    data: { id },
+    method: "post",
+    dataType: "json",
+    success: function (e) {
+      check_group(e.assessment_subject_id, e.assessment_grade)
+      set_datepicker()
+      setTimeout(function() {
+        view_edit(e)
+    }, 1000);
+    },
+  }); 
+}
+
+function view_edit(e) {
+  $('input[name=assessment_id]').val(e.assessment_id)
+  $('input[name=taskid]').val(e.assessment_question_bank_id)
+  $('input[name=tasksrc]').val(e.assessment_question_bank_src)
+  $('input[name=selected_task]').val(e.assessment_question_bank_title)
+  $('input[name=selected_subj]').val(e.assessment_subject_name)
+  $('input[name=subjid]').val(e.assessment_subject_id)
+  $('input[name=gradid]').val(e.assessment_grade)
+  $('input[name=title]').val(e.assessment_title)
+  
+  let selected_group = [];
+  $.each(JSON.parse(e.assessment_group), function(i,v) {
+    selected_group.push(v.id)
+  })
+  $("#multiple-select-group").val(selected_group).trigger('change');
+
+  let start = e.assessment_start.substring(0, 16);
+  let end = e.assessment_end.substring(0, 16);
+  $('#start_assessment').val(start)
+  $('#end_assessment').val(end)
+
+  if (e.assessment_is_autosubmit == 1) {
+    $('#autosumbit').addClass('checked').prop("checked", true);
+  } else {
+    $('#autosumbit').removeClass('checked').prop("checked", false);
+  }
+
+  if (e.assessment_duration > 1) {
+    $('#ass_timer').addClass('checked').prop("checked", true);
+    $('#c_timer').removeClass('hide').val(e.assessment_duration)
+  } else {
+    $('#ass_timer').removeClass('checked').prop("checked", false);
+  }
+
+  e.assessment_is_random == 1 ? $('#ass_random').addClass('checked').prop('checked',true) : $('#ass_random').removeClass('checked').prop('checked',false)
+  e.assessment_is_prevent_cheat == 1 ? $('#ass_cheat').addClass('checked').prop('checked',true) : $('#ass_cheat').removeClass('checked').prop('checked',false)
+
+  $('#instruction_assessment_edit > .ql-editor').html(e.assessment_instruction)
+
+  $('#modal_assessment_edit').modal('show')
+  
+  
+  
+}
+
+const url = window.location.href
 const tbconf = {
   height: "600px",
   layout: "fitDataStretch",
@@ -347,40 +423,44 @@ var printIcon = function (cell, formatterParams) {
   </svg></buton>`;
 };
 
+function type_assessment(type, id, sts) {
+  Swal.fire({
+    html: sts == 2 ? `Apakah anda yakin publis penilaian ini?` : `Apakah anda yakin batalkan penilaian ini?`,
+    icon: "info",
+    buttonsStyling: false,
+    showCancelButton: true,
+    confirmButtonText: "Ya",
+    cancelButtonText: "Tidak",
+    customClass: {
+      confirmButton: "btn btn-sm btn-primary",
+      cancelButton: "btn btn-sm btn-danger",
+    },
+  }).then(function (confirm) {
+    if (confirm.isConfirmed) {
+      store_data(type, sts, id)
+      reload_tabulator()
+      // alert("Printing row data for: " + cell.getRow().getData().id);
+    }
+  });
+}
+
+function reload_tabulator() {
+  if (url.includes('index-draft')) {
+    draft.replaceData()
+  } else if (url.includes('index-scheduled')) {
+    scheduled.replaceData()
+  }
+}
+
 if (url.includes("index-draft")){
   let c = [
-    {
-      title: "#",
-      formatter: printIcon,
-      width: 80,
-      align: "center",
-      cellClick: function (e, cell) {
-        Swal.fire({
-          html: `Apakah anda yakin publis penilaian ini?`,
-          icon: "info",
-          buttonsStyling: false,
-          showCancelButton: true,
-          confirmButtonText: "Ya",
-          cancelButtonText: "Tidak",
-          customClass: {
-            confirmButton: "btn btn-sm btn-primary",
-            cancelButton: "btn btn-sm btn-danger",
-          },
-        }).then(function (confirm) {
-          if (confirm.isConfirmed) {
-            store_data(2, '', cell.getRow().getData().id)
-            draft.replaceData()
-            // alert("Printing row data for: " + cell.getRow().getData().id);
-          }
-        });
-      },
-    },
+    { title: "#Aksi", field: "acts", width: 150, formatter:"html"},
+    { title: "Periode", field: "period" },
     { title: "ID", field: "id", sorter: "string", width: 200, visible:false },
     { title: "Penilaian", field: "title"},
     { title: "Mata Pelajaran", field: "mapel" },
     { title: "Kelompok Belajar", field: "group", formatter:"html" },
     { title: "Judul Soal", field: "task" },
-    { title: "Periode", field: "period" },
 
   ]
 
@@ -389,21 +469,13 @@ if (url.includes("index-draft")){
 
 } else if (url.includes("index-scheduled")) {
   let c = [
-    {
-      title: "#",
-      formatter: printIcon,
-      width: 80,
-      align: "center",
-      cellClick: function (e, cell) {
-        alert("Printing row data for: " + cell.getRow().getData().id);
-      },
-    },
     { title: "ID", field: "id", sorter: "string", width: 200, visible:false },
+    { title: "#Aksi", field: "acts", width: 150, formatter:"html"},
+    { title: "Periode", field: "period" },
     { title: "Penilaian", field: "title", width: 250},
     { title: "Mata Pelajaran", field: "mapel" },
     { title: "Kelompok Belajar", field: "group", formatter:"html" },
     { title: "Judul Soal", field: "task" },
-    { title: "Periode", field: "period" },
   ]
 
   tbconf.columns = c 
@@ -411,21 +483,12 @@ if (url.includes("index-draft")){
 
 } else if (url.includes("index-present")) {
   let c = [
-    {
-      title: "#",
-      formatter: printIcon,
-      width: 80,
-      align: "center",
-      cellClick: function (e, cell) {
-        alert("Printing row data for: " + cell.getRow().getData().id);
-      },
-    },
     { title: "ID", field: "id", sorter: "string", width: 200, visible:false },
+    { title: "Periode", field: "period" },
     { title: "Penilaian", field: "title", width: 250},
     { title: "Mata Pelajaran", field: "mapel" },
     { title: "Kelompok Belajar", field: "group", formatter:"html" },
     { title: "Judul Soal", field: "task" },
-    { title: "Periode", field: "period" },
   ]
 
   tbconf.columns = c 
@@ -433,21 +496,12 @@ if (url.includes("index-draft")){
 
 } else if (url.includes("index-done")) {
   let c = [
-    {
-      title: "#",
-      formatter: printIcon,
-      width: 80,
-      align: "center",
-      cellClick: function (e, cell) {
-        alert("Printing row data for: " + cell.getRow().getData().id);
-      },
-    },
     { title: "ID", field: "id", sorter: "string", width: 200, visible:false },
+    { title: "Periode", field: "period" },
     { title: "Penilaian", field: "title", width: 250},
     { title: "Mata Pelajaran", field: "mapel" },
     { title: "Kelompok Belajar", field: "group", formatter:"html" },
     { title: "Judul Soal", field: "task" },
-    { title: "Periode", field: "period" },
   ]
 
   tbconf.columns = c 
@@ -464,6 +518,12 @@ $(document).ready(function () {
       theme: "snow", // or 'bubble'
     });
   } else if (url.includes('index-draft')) {
+    var instruction_assessment_edit = new Quill("#instruction_assessment_edit", {
+      modules: {
+        toolbar: toolbarOptions,
+      },
+      theme: "snow", // or 'bubble'
+    });
     draft.setData(base_url + "/teacher/assessment/list-assessment?page-ass=1");
   } else if (url.includes("index-scheduled")) {
     scheduled.setData(base_url + "/teacher/assessment/list-assessment?page-ass=2");

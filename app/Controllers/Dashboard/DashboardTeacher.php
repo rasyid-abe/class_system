@@ -14,23 +14,13 @@ class DashboardTeacher extends BaseController
     }
     public function index()
     {
-        $data = array();
-        $data["title"] = $this->title;
-        $data["page"] = "";
-        $data["sidebar"] = "Guru";
+        $data["title"] = 'Tambah Penilaian';
+        $data["page"] = 'Dashboard';
+        $data["sidebar"] = 'Dashboard';
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '##' => 'Guru',
+            '##' => 'Tambah Penilaian',
         ];
-
-        $data['user'] = userdata();
-        # filter tahun ajaran & semester
-        # total guru 
-        # total mapel
-        # total siswa
-        # total rombel
-
-
 
         return view("dashboard/teacher", $data);
     }

@@ -24,6 +24,7 @@ class AssessmentModel extends Model
         'assessment_duration', 
         'assessment_is_random', 
         'assessment_is_autosubmit', 
+        'assessment_is_prevent_cheat', 
         'assessment_instruction',
         'assessment_status', 
         'assessment_created_by', 

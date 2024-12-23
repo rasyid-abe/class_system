@@ -28,8 +28,8 @@
 	<link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
 
-	<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
-	<link href="<?= base_url() ?>assets/css/tabulator_bootstrap4.css" rel="stylesheet">
+	<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator_materialize.min.css" rel="stylesheet">
+	<!-- <link href="<?= base_url() ?>assets/css/tabulator_bootstrap4.css" rel="stylesheet"> -->
 
 	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" /> -->
 	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" /> -->

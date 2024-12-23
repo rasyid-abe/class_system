@@ -2,17 +2,17 @@
 <?php $this->section('content'); ?>
 
 <style>
-#tasks_upload::file-selector-button {
-    background-color: #2884EF;
-    color : white;
-}
+    #tasks_upload::file-selector-button {
+        background-color: #2884EF;
+        color: white;
+    }
 
-#tasks_upload::file-selector-button:hover {
-    background-color: red;
-    color : white;
-}
+    #tasks_upload::file-selector-button:hover {
+        background-color: red;
+        color: white;
+    }
 
-/* input[type="file"]::file-selector-button:active {
+    /* input[type="file"]::file-selector-button:active {
     background-color: #e5e7eb;
 } */
 </style>
@@ -442,7 +442,7 @@
 
                 <div class="hide" id="shared_task_to">
                     <select class="form-select form-select-sm form-select-solid hide" id="multiple-select-field-task" data-control="select2" data-close-on-select="false" data-placeholder="Pilih Guru" data-allow-clear="true" multiple="multiple">
-                    <?php foreach ($teachers as $k => $v): ?>
+                        <?php foreach ($teachers as $k => $v): ?>
                             <?php $degr = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : ''  ?>
                             <option value="<?= $v['teacher_id'] ?>"><?= $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $degr ?></option>
                         <?php endforeach; ?>
@@ -481,10 +481,10 @@
                         <br>
                         <br>
                         <label for="tasks_upload" class="form-label">Pilih File Excel</label>
-                        <input class="form-control form-control-sm" id="tasks_upload" name="tasks_upload" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" >
+                        <input class="form-control form-control-sm" id="tasks_upload" name="tasks_upload" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                     </div>
                 </div>
-                
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-light-danger" data-bs-dismiss="modal">Tutup</button>
                     <button type="sumbit" class="btn btn-sm btn-primary">Import</button>
@@ -542,12 +542,12 @@
                     </div>
                     <div id="coll_body_<?= $v['question_bank_id'] ?>" class="hide body_collapse">
                         <div class="accordion-body bg-light">
-                            <?php $i = 0; foreach ($v['child'] as $x): ?>
+                            <?php $i = 0;
+                            foreach ($v['child'] as $x): ?>
                                 <div class="d-flex justify-content-start">
                                     <?php foreach ($x as $y): ?>
                                         <a href="#" onclick="view_question(<?= $y['question_bank_id'] ?>)" class="m-1 btn btn-icon btn-outline btn-outline-primary qtact"><?= $i + 1 ?></a>
-                                    <?php $i++;
-                                    endforeach ?>
+                                    <?php $i++; endforeach ?>
                                 </div>
                             <?php endforeach ?>
                         </div>
