@@ -1270,6 +1270,7 @@
 	<script src="<?= base_url() ?>assets/js/script/lesson_public.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/question_bank.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/assessment.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/tasks.js"></script>
 	<script src="<?= base_url() ?>assets/js/form.repeater.js"></script>
 	<!-- <script src="<?= base_url() ?>assets/js/quill.editor.js"></script> -->
 

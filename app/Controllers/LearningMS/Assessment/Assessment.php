@@ -229,8 +229,6 @@ class Assessment extends BaseController
                 $group[$k]['id'] = $v->id; 
                 $group[$k]['group'] = $v->text; 
             }
-    
-            
 
             if ($req['id'] > 0) {
                 $upd = $this->assessment
@@ -299,7 +297,7 @@ class Assessment extends BaseController
             $res = [
                 'typ' => $req['type'],
                 'sts' => $upd,
-                'msg' => $upd ? 'Penilaian berhasil di publish' : 'Penilaian gagal di publish',
+                'msg' => $upd ? 'Penilaian berhasil di terbitkan' : 'Penilaian gagal di terbitkan',
                 'icn' => $upd ? 'success' : 'error',
             ];
             echo json_encode($res);

@@ -38,134 +38,131 @@ function show_qb(subj, grad) {
 }
 
 function preview_qb(e, subj, subjname, grad, gradname) {
-  let content = ''
-    let i1 = 1
-    $.each(e, function(i,v) {
-      if (v.content.length > 0) {
-        let ch1 = ''
-        let i2 = 1
-        $.each(v.content, function(idx, val) {
-            let child = ''
-            let ii = 1
-            let chi = 1
-            $.each(val['child'], function(index, value) {
-
-                let cch = ''
-                $.each(value, function(a,b) {
-                  cch+= `<a href="#" onclick="view_tasks(${i1}, ${b})" class="m-1 btn btn-icon btn-sm btn-outline btn-outline-primary">${chi}</a>`
-                  chi++
-                })
-                child += `
+  let content = "";
+  let i1 = 1;
+  $.each(e, function (i, v) {
+    if (v.content.length > 0) {
+      let ch1 = "";
+      let i2 = 1;
+      $.each(v.content, function (idx, val) {
+        let child = "";
+        let ii = 1;
+        let chi = 1;
+        $.each(val["child"], function (index, value) {
+          let cch = "";
+          $.each(value, function (a, b) {
+            cch += `<a href="#" onclick="view_tasks(${i1}, ${b})" class="m-1 btn btn-icon btn-sm btn-outline btn-outline-primary">${chi}</a>`;
+            chi++;
+          });
+          child += `
                 <div style="margin-left: 8px; margin-bottom: 10px;" class="d-flex justify-content-start">
                     ${cch}
                 </div>
-                `
-                // child += `
-                // <li class="list-group-item">
-                //   <a href="#" onclick="view_tasks(${i1}, ${value.id})" style="text-decoration: none;">Soal ${ii}</a>
-                // </li>
-                // `
-                ii++
-              })
+                `;
+          // child += `
+          // <li class="list-group-item">
+          //   <a href="#" onclick="view_tasks(${i1}, ${value.id})" style="text-decoration: none;">Soal ${ii}</a>
+          // </li>
+          // `
+          ii++;
+        });
 
-            let child_body = `
+        let child_body = `
                  <ul class="list-group list-group-flush hide task_child" id="i${i1}${i2}">
                     ${child}
                 </ul>
-            `
-            
-            ch1 += `
+            `;
+
+        ch1 += `
                  <div class="form-check my-2 form-switch form-check-custom form-check-solid" style="margin-left: 10px">
-                    <input class="form-check-input h-20px w-30px" type="radio" name="task_ass_check" data-tasksrc=${v.src} data-taskname="${val.title}" value="${val.id}" />
+                    <input class="form-check-input h-20px w-30px" type="radio" name="task_ass_check" data-tasksrc=${
+                      v.src
+                    } data-taskname="${val.title}" value="${val.id}" />
                     <label class="form-check-label head22" data-source="${i1}${i2}">
                       ${val.title}
                     </label>
                 </div>
-                ${val.child.length > 0 ? child_body : ''}    
-                `
-                // <li class="list-group-item head22" data-source="${i1}${i2}">${val.title}</li>
+                ${val.child.length > 0 ? child_body : ""}    
+                `;
+        // <li class="list-group-item head22" data-source="${i1}${i2}">${val.title}</li>
 
-            i2++ 
-        })
+        i2++;
+      });
 
-        let ch1_body = `
+      let ch1_body = `
             <ul class="list-group list-group-flush hide head_head22 text-bold" id="i${i1}">
                 ${ch1}
             </ul>
-        `
-        content += `
-            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${v.head}</h6></li>
-            ${v.content.length > 0 ? ch1_body : ''}
-        `
+        `;
+      content += `
+            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${
+        v.head
+      }</h6></li>
+            ${v.content.length > 0 ? ch1_body : ""}
+        `;
 
-        i1++
-      }
-    })
+      i1++;
+    }
+  });
 
-    let page = `
+  let page = `
         <div id="idass_subj" data-subj="${subj}" data-subjname="${subjname}"></div>
         <div id="idass_grad" data-grad="${grad}" data-gradname="Kelas ${gradname}"></div>
         <ul class="list-group list-group-flush head_parent1">
             ${content}
         </ul>
-    `
+    `;
 
   $("#view_select_task").html(page);
-  $("#preview_task").html('')
-  $('#task_prev_ass').modal('show')
+  $("#preview_task").html("");
+  $("#task_prev_ass").modal("show");
 }
 
-$(document.body).on('click', '.head22', function() {
-  id = $(this).data('source')
-  if ($('#i' + id).hasClass('hide')) {
-      $('#i' + id).removeClass('hide')
+$(document.body).on("click", ".head22", function () {
+  id = $(this).data("source");
+  if ($("#i" + id).hasClass("hide")) {
+    $("#i" + id).removeClass("hide");
   } else {
-      // $(`.task_child`).each(function () {
-      //     if (!$(this).hasClass('hide')) {
-      //         $(this).addClass('hide') 
-      //     }
-      // });
-  
-      $('#i' + id).addClass('hide')
+    $("#i" + id).addClass("hide");
   }
-})
+});
 
 function set_task_ass() {
-  let task_ass = $('input[name=task_ass_check]:checked').val()
-  let task_name = $('input[name=task_ass_check]:checked').data('taskname')
-  let task_src = $('input[name=task_ass_check]:checked').data('tasksrc')
-  let subj_ass = $('#idass_subj').data('subj')
-  let subj_name = $('#idass_subj').data('subjname')
-  let grad_ass = $('#idass_grad').data('grad')
-  let grad_name = $('#idass_grad').data('gradname')
-  
+  let task_ass = $("input[name=task_ass_check]:checked").val();
+  let task_name = $("input[name=task_ass_check]:checked").data("taskname");
+  let task_src = $("input[name=task_ass_check]:checked").data("tasksrc");
+  let subj_ass = $("#idass_subj").data("subj");
+  let subj_name = $("#idass_subj").data("subjname");
+  let grad_ass = $("#idass_grad").data("grad");
+  let grad_name = $("#idass_grad").data("gradname");
+
   if (task_ass == undefined) {
-    $('#select_qb_alert').removeClass('hide')
-    setTimeout(function() {
-      $('#select_qb_alert').addClass('hide')
+    $("#select_qb_alert").removeClass("hide");
+    setTimeout(function () {
+      $("#select_qb_alert").addClass("hide");
     }, 5000);
   } else {
-    $('input[name=selected_task]').val(task_name).attr('readonly', true)
-    $('input[name=taskid]').val(task_ass)
-    $('input[name=tasksrc]').val(task_src)
-    $('input[name=selected_subj]').val(subj_name + ' - ' +grad_name).attr('readonly', true)
-    $('input[name=subjid]').val(subj_ass)
-    $('input[name=selected_grad]').val(grad_name).attr('readonly', true)
-    $('input[name=gradid]').val(grad_ass)
-  
-    
+    $("input[name=selected_task]").val(task_name).attr("readonly", true);
+    $("input[name=taskid]").val(task_ass);
+    $("input[name=tasksrc]").val(task_src);
+    $("input[name=selected_subj]")
+      .val(subj_name + " - " + grad_name)
+      .attr("readonly", true);
+    $("input[name=subjid]").val(subj_ass);
+    $("input[name=selected_grad]").val(grad_name).attr("readonly", true);
+    $("input[name=gradid]").val(grad_ass);
+
     $("#modal_assessment").modal("show");
     set_datepicker();
-    check_group(subj_ass, grad_ass)
+    check_group(subj_ass, grad_ass);
   }
-
 }
 
 function set_datepicker() {
-  $(".assessment_periode_date").flatpickr({
+  $(".periode_date").flatpickr({
     enableTime: true,
     dateFormat: "Y-m-d H:i",
-    minDate: "today"
+    minDate: "today",
   });
 }
 
@@ -181,12 +178,13 @@ function hide_modal() {
   // $("#ass_cheat").toggleClass("checked");
   // $("#autosumbit").toggleClass("checked");
   // $("#instruction_assessment").html('');
+  $("#modal_tasks_ch").modal("hide");
   $("#modal_assessment").modal("hide");
   $("#task_prev_ass").modal("hide");
 }
 
 function hide_modal_edit() {
-  $('#modal_assessment_edit').modal('hide')
+  $("#modal_assessment_edit").modal("hide");
 }
 
 function check_group(subs, grad) {
@@ -215,17 +213,17 @@ $(document.body).on("click", ".asscheck", function () {
   $(this).toggleClass("checked");
 });
 
-$(document.body).on('click', '#ass_timer', function() {
-  $('#c_timer').toggleClass('hide')
-})
+$(document.body).on("click", "#ass_timer", function () {
+  $("#c_timer").toggleClass("hide");
+});
 
 function chk_range() {
   let start = $("#start_assessment").val();
   let end = $("#end_assessment").val();
 
   if (start != "" && end != "") {
-    dtstart = new Date(Date.parse(start.replace(" ", "T") + ":00Z"));
-    dtend = new Date(Date.parse(end.replace(" ", "T") + ":00Z"));
+    let dtstart = new Date(Date.parse(start.replace(" ", "T") + ":00Z"));
+    let dtend = new Date(Date.parse(end.replace(" ", "T") + ":00Z"));
 
     curr = new Date();
     if (dtstart < curr) {
@@ -241,9 +239,9 @@ function chk_range() {
 }
 
 function save_assessment(ass_view = null, ass_type = null) {
-  let id_ass = $('input[name=assessment_id]').val()
-  let task_name = $("input[name=selected_task]").val()
-  let subj_name = $("input[name=selected_subj]").val()
+  let id_ass = $("input[name=assessment_id]").val();
+  let task_name = $("input[name=selected_task]").val();
+  let subj_name = $("input[name=selected_subj]").val();
   let task = $("input[name=taskid]").val();
   let task_src = $("input[name=tasksrc]").val();
   let subj = $("input[name=subjid]").val();
@@ -253,27 +251,15 @@ function save_assessment(ass_view = null, ass_type = null) {
   let start = $("#start_assessment").val();
   let end = $("#end_assessment").val();
   let timer = $("input[name=timer]").val();
-  let istimer = $("#ass_timer").hasClass('checked');
+  let istimer = $("#ass_timer").hasClass("checked");
   let random = $("#ass_random").hasClass("checked");
   let cheat = $("#ass_cheat").hasClass("checked");
   let submit = $("#autosumbit").hasClass("checked");
   let insass = $("#instruction_assessment > .ql-editor").html();
 
   let timer_sts = istimer ? (timer != 0 ? true : false) : true;
-  let msg = [
-    "title_ass",
-    "group_ass",
-    "start_ass",
-    "end_ass",
-    "timer_ass",
-  ];
-  let chk = [
-    title != "",
-    group.length > 0,
-    start != "",
-    end != "",
-    timer_sts,
-  ];
+  let msg = ["title_ass", "group_ass", "start_ass", "end_ass", "timer_ass"];
+  let chk = [title != "", group.length > 0, start != "", end != "", timer_sts];
 
   for (let i = 0; i < chk.length; i++) {
     if (chk[i] != true) {
@@ -292,9 +278,25 @@ function save_assessment(ass_view = null, ass_type = null) {
   } else {
     if (chk_range() == 1) {
       let data = [
-        title,subj,grad,group,start,end,timer,random,cheat,submit,insass,task,task_name,subj_name,task_src,ass_view,ass_type
+        title,
+        subj,
+        grad,
+        group,
+        start,
+        end,
+        timer,
+        random,
+        cheat,
+        submit,
+        insass,
+        task,
+        task_name,
+        subj_name,
+        task_src,
+        ass_view,
+        ass_type,
       ];
-      
+
       store_data(1, JSON.stringify(data), id_ass);
     } else {
       let msg =
@@ -316,11 +318,11 @@ function store_data(type, data, id = null) {
     success: function (e) {
       $("#modal_assessment_edit").modal("hide");
       $("#modal_assessment").modal("hide");
-      $('#task_prev_ass').modal('hide');
-      reload_tabulator()
+      $("#task_prev_ass").modal("hide");
+      reload_tabulator();
       Toast.fire({
         icon: e.icn,
-        title: e.msg
+        title: e.msg,
       });
     },
   });
@@ -333,61 +335,62 @@ function edit_draft(id) {
     method: "post",
     dataType: "json",
     success: function (e) {
-      check_group(e.assessment_subject_id, e.assessment_grade)
-      set_datepicker()
-      setTimeout(function() {
-        view_edit(e)
-    }, 1000);
+      check_group(e.assessment_subject_id, e.assessment_grade);
+      set_datepicker();
+      setTimeout(function () {
+        view_edit(e);
+      }, 1000);
     },
-  }); 
+  });
 }
 
 function view_edit(e) {
-  $('input[name=assessment_id]').val(e.assessment_id)
-  $('input[name=taskid]').val(e.assessment_question_bank_id)
-  $('input[name=tasksrc]').val(e.assessment_question_bank_src)
-  $('input[name=selected_task]').val(e.assessment_question_bank_title)
-  $('input[name=selected_subj]').val(e.assessment_subject_name)
-  $('input[name=subjid]').val(e.assessment_subject_id)
-  $('input[name=gradid]').val(e.assessment_grade)
-  $('input[name=title]').val(e.assessment_title)
-  
+  $("input[name=assessment_id]").val(e.assessment_id);
+  $("input[name=taskid]").val(e.assessment_question_bank_id);
+  $("input[name=tasksrc]").val(e.assessment_question_bank_src);
+  $("input[name=selected_task]").val(e.assessment_question_bank_title);
+  $("input[name=selected_subj]").val(e.assessment_subject_name);
+  $("input[name=subjid]").val(e.assessment_subject_id);
+  $("input[name=gradid]").val(e.assessment_grade);
+  $("input[name=title]").val(e.assessment_title);
+
   let selected_group = [];
-  $.each(JSON.parse(e.assessment_group), function(i,v) {
-    selected_group.push(v.id)
-  })
-  $("#multiple-select-group").val(selected_group).trigger('change');
+  $.each(JSON.parse(e.assessment_group), function (i, v) {
+    selected_group.push(v.id);
+  });
+  $("#multiple-select-group").val(selected_group).trigger("change");
 
   let start = e.assessment_start.substring(0, 16);
   let end = e.assessment_end.substring(0, 16);
-  $('#start_assessment').val(start)
-  $('#end_assessment').val(end)
+  $("#start_assessment").val(start);
+  $("#end_assessment").val(end);
 
   if (e.assessment_is_autosubmit == 1) {
-    $('#autosumbit').addClass('checked').prop("checked", true);
+    $("#autosumbit").addClass("checked").prop("checked", true);
   } else {
-    $('#autosumbit').removeClass('checked').prop("checked", false);
+    $("#autosumbit").removeClass("checked").prop("checked", false);
   }
 
   if (e.assessment_duration > 1) {
-    $('#ass_timer').addClass('checked').prop("checked", true);
-    $('#c_timer').removeClass('hide').val(e.assessment_duration)
+    $("#ass_timer").addClass("checked").prop("checked", true);
+    $("#c_timer").removeClass("hide").val(e.assessment_duration);
   } else {
-    $('#ass_timer').removeClass('checked').prop("checked", false);
+    $("#ass_timer").removeClass("checked").prop("checked", false);
   }
 
-  e.assessment_is_random == 1 ? $('#ass_random').addClass('checked').prop('checked',true) : $('#ass_random').removeClass('checked').prop('checked',false)
-  e.assessment_is_prevent_cheat == 1 ? $('#ass_cheat').addClass('checked').prop('checked',true) : $('#ass_cheat').removeClass('checked').prop('checked',false)
+  e.assessment_is_random == 1
+    ? $("#ass_random").addClass("checked").prop("checked", true)
+    : $("#ass_random").removeClass("checked").prop("checked", false);
+  e.assessment_is_prevent_cheat == 1
+    ? $("#ass_cheat").addClass("checked").prop("checked", true)
+    : $("#ass_cheat").removeClass("checked").prop("checked", false);
 
-  $('#instruction_assessment_edit > .ql-editor').html(e.assessment_instruction)
+  $("#instruction_assessment_edit > .ql-editor").html(e.assessment_instruction);
 
-  $('#modal_assessment_edit').modal('show')
-  
-  
-  
+  $("#modal_assessment_edit").modal("show");
 }
 
-const url = window.location.href
+const url = window.location.href;
 const tbconf = {
   height: "600px",
   layout: "fitDataStretch",
@@ -414,7 +417,7 @@ const tbconf = {
       },
     },
   },
-}
+};
 
 var printIcon = function (cell, formatterParams) {
   return `<button class="btn btn-icon btn-sm btn-primary"><svg width="20" height="20" fill="currentColor" class="bi bi-send-check-fill" viewBox="0 0 16 16">
@@ -425,7 +428,10 @@ var printIcon = function (cell, formatterParams) {
 
 function type_assessment(type, id, sts) {
   Swal.fire({
-    html: sts == 2 ? `Apakah anda yakin publis penilaian ini?` : `Apakah anda yakin batalkan penilaian ini?`,
+    html:
+      sts == 2
+        ? `Apakah anda yakin terbitkan penilaian ini?`
+        : `Apakah anda yakin batalkan penilaian ini?`,
     icon: "info",
     buttonsStyling: false,
     showCancelButton: true,
@@ -437,100 +443,101 @@ function type_assessment(type, id, sts) {
     },
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
-      store_data(type, sts, id)
-      reload_tabulator()
+      store_data(type, sts, id);
+      reload_tabulator();
       // alert("Printing row data for: " + cell.getRow().getData().id);
     }
   });
 }
 
 function reload_tabulator() {
-  if (url.includes('index-draft')) {
-    draft.replaceData()
-  } else if (url.includes('index-scheduled')) {
-    scheduled.replaceData()
+  if (url.includes("assessment/index-draft")) {
+    draft.replaceData();
+  } else if (url.includes("assessment/index-scheduled")) {
+    scheduled.replaceData();
   }
 }
 
-if (url.includes("index-draft")){
+if (url.includes("assessment/index-draft")) {
   let c = [
-    { title: "#Aksi", field: "acts", width: 150, formatter:"html"},
+    { title: "#Aksi", field: "acts", width: 150, formatter: "html" },
     { title: "Periode", field: "period" },
-    { title: "ID", field: "id", sorter: "string", width: 200, visible:false },
-    { title: "Penilaian", field: "title"},
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { title: "Penilaian", field: "title" },
     { title: "Mata Pelajaran", field: "mapel" },
-    { title: "Kelompok Belajar", field: "group", formatter:"html" },
+    { title: "Kelompok Belajar", field: "group", formatter: "html" },
     { title: "Judul Soal", field: "task" },
+  ];
 
-  ]
-
-  tbconf.columns = c 
+  tbconf.columns = c;
   var draft = new Tabulator("#ass_draft_table", tbconf);
-
-} else if (url.includes("index-scheduled")) {
+} else if (url.includes("assessment/index-scheduled")) {
   let c = [
-    { title: "ID", field: "id", sorter: "string", width: 200, visible:false },
-    { title: "#Aksi", field: "acts", width: 150, formatter:"html"},
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { title: "#Aksi", field: "acts", width: 150, formatter: "html" },
     { title: "Periode", field: "period" },
-    { title: "Penilaian", field: "title", width: 250},
+    { title: "Penilaian", field: "title", width: 250 },
     { title: "Mata Pelajaran", field: "mapel" },
-    { title: "Kelompok Belajar", field: "group", formatter:"html" },
+    { title: "Kelompok Belajar", field: "group", formatter: "html" },
     { title: "Judul Soal", field: "task" },
-  ]
+  ];
 
-  tbconf.columns = c 
+  tbconf.columns = c;
   var scheduled = new Tabulator("#ass_scheduled_table", tbconf);
-
-} else if (url.includes("index-present")) {
+} else if (url.includes("assessment/index-present")) {
   let c = [
-    { title: "ID", field: "id", sorter: "string", width: 200, visible:false },
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Periode", field: "period" },
-    { title: "Penilaian", field: "title", width: 250},
+    { title: "Penilaian", field: "title", width: 250 },
     { title: "Mata Pelajaran", field: "mapel" },
-    { title: "Kelompok Belajar", field: "group", formatter:"html" },
+    { title: "Kelompok Belajar", field: "group", formatter: "html" },
     { title: "Judul Soal", field: "task" },
-  ]
+  ];
 
-  tbconf.columns = c 
+  tbconf.columns = c;
   var present = new Tabulator("#ass_present_table", tbconf);
-
-} else if (url.includes("index-done")) {
+} else if (url.includes("assessment/index-done")) {
   let c = [
-    { title: "ID", field: "id", sorter: "string", width: 200, visible:false },
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Periode", field: "period" },
-    { title: "Penilaian", field: "title", width: 250},
+    { title: "Penilaian", field: "title", width: 250 },
     { title: "Mata Pelajaran", field: "mapel" },
-    { title: "Kelompok Belajar", field: "group", formatter:"html" },
+    { title: "Kelompok Belajar", field: "group", formatter: "html" },
     { title: "Judul Soal", field: "task" },
-  ]
+  ];
 
-  tbconf.columns = c 
+  tbconf.columns = c;
   var done = new Tabulator("#ass_done_table", tbconf);
-
 }
 
 $(document).ready(function () {
-  if (url.includes("index-add")){
+  if (url.includes("assessment/index-add")) {
     var instruction_assessment = new Quill("#instruction_assessment", {
       modules: {
         toolbar: toolbarOptions,
       },
       theme: "snow", // or 'bubble'
     });
-  } else if (url.includes('index-draft')) {
-    var instruction_assessment_edit = new Quill("#instruction_assessment_edit", {
-      modules: {
-        toolbar: toolbarOptions,
-      },
-      theme: "snow", // or 'bubble'
-    });
+  } else if (url.includes("assessment/index-draft")) {
+    var instruction_assessment_edit = new Quill(
+      "#instruction_assessment_edit",
+      {
+        modules: {
+          toolbar: toolbarOptions,
+        },
+        theme: "snow", // or 'bubble'
+      }
+    );
     draft.setData(base_url + "/teacher/assessment/list-assessment?page-ass=1");
-  } else if (url.includes("index-scheduled")) {
-    scheduled.setData(base_url + "/teacher/assessment/list-assessment?page-ass=2");
-  } else if (url.includes("index-present")) {
-    present.setData(base_url + "/teacher/assessment/list-assessment?page-ass=3");
-  } else if (url.includes("index-done")) {
+  } else if (url.includes("assessment/index-scheduled")) {
+    scheduled.setData(
+      base_url + "/teacher/assessment/list-assessment?page-ass=2"
+    );
+  } else if (url.includes("assessment/index-present")) {
+    present.setData(
+      base_url + "/teacher/assessment/list-assessment?page-ass=3"
+    );
+  } else if (url.includes("assessment/index-done")) {
     done.setData(base_url + "/teacher/assessment/list-assessment?page-ass=4");
   }
 });
-

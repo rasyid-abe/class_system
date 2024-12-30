@@ -46,7 +46,7 @@
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"
                     data-bs-dismiss="click" title="Tugas">
                     <!--begin::Nav link-->
-                    <a class="nav-link btn btn-custom btn-icon" data-bs-toggle="tab" href="#task_menu">
+                    <a class="nav-link btn btn-custom btn-icon <?= $page == "Tasks" ? 'active' : '' ?>" data-bs-toggle="tab" href="#task_menu">
                         <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
                         <i class="bi bi-stack fs-2x"></i>
                         <!--end::Svg Icon-->
@@ -58,7 +58,7 @@
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"
                     data-bs-dismiss="click" title="Daftar Kelas">
                     <!--begin::Nav link-->
-                    <a class="nav-link btn btn-custom btn-icon" data-bs-toggle="tab" href="#group_menu">
+                    <a class="nav-link btn btn-custom btn-icon <?= $page == "Groups" ? 'active' : '' ?>" data-bs-toggle="tab" href="#group_menu">
                         <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
                         <i class="bi bi-grid-fill fs-2x"></i>
                         <!--end::Svg Icon-->

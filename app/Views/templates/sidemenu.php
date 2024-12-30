@@ -218,7 +218,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-add') ?>"
-                                class="<?= $sidebar != 'Add_Assessment' ? 'text-gray-800' : 'text-primary' ?>  text-hover-primary fs-6 fw-bold">Tambah Penilaian</a>
+                                class="<?= $sidebar != 'Add_Assessment' ? 'text-gray-800' : 'text-primary' ?>  text-hover-primary fs-6 fw-bold">Tambah</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -311,7 +311,7 @@
         </div>
         <!--end::Tab pane-->
         <!--begin::Tab pane-->
-        <div class="tab-pane fade <?= $page == "Task" ? 'active show' : '' ?>" id="task_menu" role="tabpanel">
+        <div class="tab-pane fade <?= $page == "Tasks" ? 'active show' : '' ?>" id="task_menu" role="tabpanel">
             <!--begin::Tasks-->
             <div class="mx-5">
                 <!--begin::Header-->
@@ -325,15 +325,36 @@
                         <div class="symbol symbol-50px me-5">
                             <span class="symbol-label bg-secondary">
                                 <!--begin::Svg Icon | path: icons/duotune/abstract/abs027.svg-->
-                                <i class="bi bi-calendar3-event-fill text-gray-700 fs-2hx"></i>
+                                <i class="bi bi-calendar-plus-fill text-primary fs-2hx"></i>
+                                <!-- <i class="bi bi-calendar3-event-fill text-gray-700 fs-2hx"></i> -->
                                 <!--end::Svg Icon-->
                             </span>
                         </div>
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-success fs-6 fw-bold">Draft</a>
+                            <a href="<?= base_url('/teacher/tasks/index-add') ?>"
+                                class="<?= $sidebar != 'Add_Tasks' ? 'text-gray-800' : 'text-primary' ?> text-hover-primary fs-6 fw-bold">Tambah</a>
+                            <!-- <span class="text-muted fw-bold">Project Manager</span> -->
+                        </div>
+                        <!--end::Text-->
+                    </div>
+                    <!--end::Item-->
+                    <!--begin::Item-->
+                    <div class="d-flex align-items-center mb-7">
+                        <!--begin::Symbol-->
+                        <div class="symbol symbol-50px me-5">
+                            <span class="symbol-label bg-secondary">
+                                <!--begin::Svg Icon | path: icons/duotune/abstract/abs027.svg-->
+                                <i class="bi bi-calendar3-event-fill text-warning fs-2hx"></i>
+                                <!--end::Svg Icon-->
+                            </span>
+                        </div>
+                        <!--end::Symbol-->
+                        <!--begin::Text-->
+                        <div class="d-flex flex-column">
+                            <a href="<?= base_url('/teacher/tasks/index-draft') ?>"
+                                class="<?= $sidebar != 'Draft_Tasks' ? 'text-gray-800' : 'text-warning' ?> text-hover-warning fs-6 fw-bold">Draft</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -352,8 +373,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-success fs-6 fw-bold">Terjadwal</a>
+                            <a href="<?= base_url('/teacher/tasks/index-scheduled') ?>"
+                                class="<?= $sidebar != 'Scheduled_Tasks' ? 'text-gray-800' : 'text-success' ?> text-hover-success fs-6 fw-bold">Terjadwal</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -372,8 +393,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-info fs-6 fw-bold">Saat Ini</a>
+                            <a href="<?= base_url('/teacher/tasks/index-present') ?>"
+                                class="<?= $sidebar != 'Present_Tasks' ? 'text-gray-800' : 'text-info' ?> text-hover-info fs-6 fw-bold">Saat Ini</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -392,8 +413,8 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
-                                class="text-gray-800 text-hover-danger fs-6 fw-bold">Selesai</a>
+                            <a href="<?= base_url('/teacher/tasks/index-done') ?>"
+                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'text-info' ?> text-hover-danger fs-6 fw-bold">Selesai</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->

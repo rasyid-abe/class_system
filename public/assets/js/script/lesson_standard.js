@@ -178,14 +178,44 @@ function generate_view_attachment_s(e) {
     $('#attachment_lesson').html(btnn)
 }
 
-function generate_view_task_s(e) {
-    $('.btn_task_content').html('');
-    // $('#task_lesson').html(e.lesson_standart_video_path)
-    if (e.lesson_standart_tasks != '') {
-        $('#task_lesson').before('<div class="btn_task_content"><button type="button" class="btn btn-sm btn-primary">Ubah Video</button></div>')
+function generate_view_task_s(e, id, subj, grad) {
+    let cont = ''
+    let list = ''
+    if (e.length == 0) {
+        cont = 'Latihan tidak tersedia'
     } else {
-        $('#task_lesson').before('<div class="btn_task_content"><button type="button" class="btn btn-sm btn-primary">Tambah Video</button></div>')
+        let ii = 1
+        $.each(e, function(i, v) {
+            
+            if (v != 'empty') {
+                if (i == 'std') {
+                    for (let idx = 0; idx < v.length; idx++) {
+                        list += `<a href="#" class="list-group-item list-group-item-action ltv" id="ltv${ii}" data-c="${ii}" data-type="std" data-idd="${v[idx]}">Soal ${ii}</a>`
+                        ii++
+                    }
+                } else {
+                    for (let idx = 0; idx < v.length; idx++) {
+                        list += `<a href="#" class="list-group-item list-group-item-action ltv" id="ltv${ii}" data-c="${ii}" data-type="me" data-idd="${v[idx]}">Soal ${ii}</a>`
+                        ii++
+                    }
+                }
+            }
+        })
+
+        
+        cont = `
+            <div class="row">
+                <div class="col-sm-3">
+                    <ul class="list-group">${list}</ul>
+                </div>
+                <div class="col-sm-9">
+                    <div class="task" id="preview_task_act"></div>
+                </div>
+            </div>
+        `
     }
+    
+    $('#task_lesson').html(cont)
 }
 
 function view_content_s(id) {
@@ -200,7 +230,7 @@ function view_content_s(id) {
             generate_view_lesson_s(e)
             generate_view_video_s(e)
             generate_view_attachment_s(e)
-            generate_view_task_s(e)
+            generate_view_task_s(e.tasks, e.lesson_standart_id, e.lesson_standart_subject_id, e.lesson_standart_grade)
         }
     })
 
