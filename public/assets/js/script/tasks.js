@@ -54,6 +54,10 @@ function chk_range_tasks() {
   }
 }
 
+function close_modal() {
+  $("#tasks_prev_less").modal("hide");
+}
+
 $(document.body).on("click", "#btnshow_lesson", function () {
   let subj = $(this).data("subjs");
   let grad = $(this).data("grade");
@@ -230,7 +234,7 @@ function store_tasks(type, id, param) {
     method: "post",
     dataType: "json",
     success: function (e) {
-    //   $("#modal_assessment_edit").modal("hide");
+      $("#modal_task_choose").modal("hide");
       $("#modal_tasks_ch").modal("hide");
       $("#tasks_prev_less").modal("hide");
       reload_tabulator();
@@ -242,6 +246,129 @@ function store_tasks(type, id, param) {
   });
 }
 
+function lesson_preview(id, src, task_id) {
+  if (id != "") {
+    $.ajax({
+      url: base_url + "/teacher/tasks/task-lesson",
+      data: { id, src, task_id },
+      method: "post",
+      dataType: "json",
+      success: function (e) {
+        generate_view_lesson_p(e.lesson);
+        generate_view_video_p(e.lesson);
+        generate_view_attachment_p(e.lesson);
+        generate_view_task_p(JSON.parse(e.task.task_task_ids), e.lesson.lesson_additional_id, e.lesson.lesson_additional_subject_id, e.lesson.lesson_additional_grade);
+        $("#tasks_prev_less").modal("show");
+      },
+    });
+  }
+}
+
+function view_quest_bank(id, subj, grad) {
+  $.ajax({
+    url: base_url + "/teacher/lesson/additional/question-bank",
+    data: { subj, grad },
+    method: "post",
+    dataType: "json",
+    success: function (e) {
+      choose_task_view(e, id);
+      $("#modal_task_choose").modal("show");
+    },
+  });
+}
+
+function choose_task_view(e, id) {
+  let content = "";
+  let i1 = 1;
+  $.each(e, function (i, v) {
+    let ch1 = "";
+    let i2 = 1;
+    $.each(v.content, function (idx, val) {
+      let child = "";
+      let ii = 1;
+      $.each(val["child"], function (index, value) {
+        child += `
+              <div class="form-check my-2">
+                  <input class="form-check-input" type="checkbox" name="task_${i1}" value="${value.id}" />
+                  <label class="form-check-label" onclick="view_tasks(${i1}, ${value.id})">
+                      Soal ${ii}
+                  </label>
+              </div>
+              `;
+        ii++;
+        // <li class="list-group-item">Soal ${ii}</li>
+      });
+
+      let child_body = `
+               <ul class="list-group list-group-flush hide task_child" id="i${i1}${i2}" style="padding-left: 10px">
+                  ${child}
+              </ul>
+          `;
+
+      ch1 += `
+              <li class="list-group-item parent2" data-source="${i1}${i2}">${
+        val.title
+      }</li>
+              ${val.child.length > 0 ? child_body : ""}    
+          `;
+
+      i2++;
+    });
+
+    let ch1_body = `
+          <ul class="list-group list-group-flush hide head_parent2" id="i${i1}">
+              ${ch1}
+          </ul>
+      `;
+    content += `
+          <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${
+      v.head
+    }</h6></li>
+          ${v.content.length > 0 ? ch1_body : ""}
+      `;
+
+    i1++;
+  });
+
+  let page = `
+    <input type="hidden" name="task_id_upd" value="${id}" />
+      <ul class="list-group list-group-flush head_parent1">
+          ${content}
+      </ul>
+  `;
+
+  $("#view_select_task").html(page);
+}
+
+function selected_tasks() {
+  let std_task = [];
+  $('input[name="task_1"]:checked').each(function () {
+    std_task.push(this.value);
+  });
+
+  let me_task = [];
+  $('input[name="task_2"]:checked').each(function () {
+    me_task.push(this.value);
+  });
+
+  let pub_task = [];
+  $('input[name="task_3"]:checked').each(function () {
+    pub_task.push(this.value);
+  });
+
+  let idt = $("input[name=task_id_upd]").val();
+
+  let send_std = std_task.length > 0 ? std_task : "empty";
+  let send_me = me_task.length > 0 ? me_task : "empty";
+  let send_pub = pub_task.length > 0 ? pub_task : "empty";
+
+  console.log(send_std);
+  console.log(send_me);
+  console.log(send_pub);
+
+  store_tasks(3, idt, [send_std, send_me, send_pub])
+}
+
 var printIcon = function (cell, formatterParams) {
   return `<button class="btn btn-icon btn-sm btn-primary"><svg width="20" height="20" fill="currentColor" class="bi bi-send-check-fill" viewBox="0 0 16 16">
     <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 1.59 2.498C8 14 8 13 8 12.5a4.5 4.5 0 0 1 5.026-4.47zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
@@ -249,12 +376,12 @@ var printIcon = function (cell, formatterParams) {
     </svg></buton>`;
 };
 
-function type_tasks(type, id, sts) {
+function type_tasks(type, ids, sts) {
   Swal.fire({
     html:
       sts == 2
-        ? `Apakah anda yakin terbitkan tugas ini?`
-        : `Apakah anda yakin batalkan tugas ini?`,
+        ? `Apakah anda yakin terbitkan ${ids.length} tugas terpilih?`
+        : `Apakah anda yakin batalkan ${ids.length} tugas terpilih?`,
     icon: "info",
     buttonsStyling: false,
     showCancelButton: true,
@@ -266,7 +393,7 @@ function type_tasks(type, id, sts) {
     },
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
-      store_tasks(type, sts, id);
+      store_tasks(type, ids, sts);
       reload_tabulator();
       // alert("Printing row data for: " + cell.getRow().getData().id);
     }
@@ -287,7 +414,7 @@ if (url.includes("tasks/index-draft")) {
     { title: "Periode", field: "period" },
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Penilaian", field: "title" },
-    { title: "Mata Pelajaran", field: "mapel" },
+    { title: "Mata Pelajaran", field: "mapel", formatter: "html" },
     { title: "Kelompok Belajar", field: "group", formatter: "html" },
   ];
 
@@ -296,10 +423,9 @@ if (url.includes("tasks/index-draft")) {
 } else if (url.includes("tasks/index-scheduled")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { title: "#Aksi", field: "acts", width: 150, formatter: "html" },
     { title: "Periode", field: "period" },
     { title: "Penilaian", field: "title", width: 250 },
-    { title: "Mata Pelajaran", field: "mapel" },
+    { title: "Mata Pelajaran", field: "mapel", formatter: "html" },
     { title: "Kelompok Belajar", field: "group", formatter: "html" },
     // { title: "Judul Soal", field: "task" },
   ];
@@ -311,7 +437,7 @@ if (url.includes("tasks/index-draft")) {
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Periode", field: "period" },
     { title: "Penilaian", field: "title", width: 250 },
-    { title: "Mata Pelajaran", field: "mapel" },
+    { title: "Mata Pelajaran", field: "mapel", formatter: "html" },
     { title: "Kelompok Belajar", field: "group", formatter: "html" },
     // { title: "Judul Soal", field: "task" },
   ];
@@ -322,8 +448,8 @@ if (url.includes("tasks/index-draft")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Periode", field: "period" },
-    { title: "Penilaian", field: "title", width: 250 },
-    { title: "Mata Pelajaran", field: "mapel" },
+    { title: "Penilaian", field: "title", width: 250},
+    { title: "Mata Pelajaran", field: "mapel", formatter: "html"},
     { title: "Kelompok Belajar", field: "group", formatter: "html" },
     // { title: "Judul Soal", field: "task" },
   ];
@@ -331,6 +457,53 @@ if (url.includes("tasks/index-draft")) {
   tbconf.columns = c;
   var task_done = new Tabulator("#task_done_table", tbconf);
 }
+
+document.getElementById("select-all").addEventListener("click", function(){
+  if (url.includes("tasks/index-draft")) {
+    task_draft.selectRow();
+  } else if (url.includes("tasks/index-scheduled")) {
+    task_scheduled.selectRow();
+  }
+});
+document.getElementById("deselect-all").addEventListener("click", function(){
+  if (url.includes("tasks/index-draft")) {
+    task_draft.deselectRow();
+  } else if (url.includes("tasks/index-scheduled")) {
+    task_scheduled.deselectRow();
+  }
+});
+
+if (url.includes("tasks/index-draft")) {
+  document.getElementById("publish-btn").addEventListener("click", function(){
+    let sel_data = task_draft.getSelectedData();
+    let ids = sel_data.map(i => i.id)
+    if (ids.length < 1) {
+      al_swal('Belum ada data terpilih', 'error')
+    } else {
+      type_tasks(2, ids, 2)
+    }
+  });
+}
+
+if (url.includes("tasks/index-scheduled")) {
+  document.getElementById("unpublish-btn").addEventListener("click", function(){
+    let sel_data = task_scheduled.getSelectedData();
+    let ids = sel_data.map(i => i.id)
+    if (ids.length < 1) {
+      al_swal('Belum ada data terpilih', 'error')
+    } else {
+      type_tasks(2, ids, 1)
+    }
+  });
+}
+// document.getElementById("delete-btn").addEventListener("click", function(){
+//   let sel_data = '';
+//   if (url.includes("tasks/index-draft")) {
+//     sel_data = task_draft.getSelectedData();
+//   } else if (url.includes("tasks/index-scheduled")) {
+//     sel_data = task_scheduled.getSelectedData();
+//   }
+// });
 
 $(document).ready(function () {
   if (url.includes("tasks/index-add")) {
@@ -347,12 +520,12 @@ $(document).ready(function () {
     //   },
     //   theme: "snow", // or 'bubble'
     // });
-    task_draft.setData(base_url + "/teacher/tasks/list-tasks?page-ass=1");
+    task_draft.setData(base_url + "/teacher/tasks/list-tasks?page-task=1");
   } else if (url.includes("tasks/index-scheduled")) {
-    task_scheduled.setData(base_url + "/teacher/tasks/list-tasks?page-ass=2");
+    task_scheduled.setData(base_url + "/teacher/tasks/list-tasks?page-task=2");
   } else if (url.includes("tasks/index-present")) {
-    task_present.setData(base_url + "/teacher/tasks/list-tasks?page-ass=3");
+    task_present.setData(base_url + "/teacher/tasks/list-tasks?page-task=3");
   } else if (url.includes("tasks/index-done")) {
-    task_done.setData(base_url + "/teacher/tasks/list-tasks?page-ass=4");
+    task_done.setData(base_url + "/teacher/tasks/list-tasks?page-task=4");
   }
 });

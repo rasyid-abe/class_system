@@ -81,7 +81,12 @@ class PublicLesson extends BaseController
             ->where('lesson_additional_status < 9')
             ->where('lesson_additional_id', $id)
             ->groupBy('lesson_additional_chapter')
-            ->findAll();
+            ->first();
+
+        $tasks = json_decode($chapter['lesson_additional_tasks']);
+
+        $chapter['tasks'] = $tasks ? (array)$tasks : [];
+        $chapter['attach_arr'] = $chapter['lesson_additional_attachment_path'] != '' ? array_values(json_decode($chapter['lesson_additional_attachment_path'], true)) : [];
 
         echo json_encode($chapter);
     }

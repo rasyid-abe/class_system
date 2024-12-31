@@ -250,4 +250,27 @@ function subject_rowid($id)
     return $row;
 }
 
+if (!function_exists("my_groups")) {
+    function my_groups() 
+    {
+        $db = \Config\Database::connect();
+        
+        $sql = "
+            SELECT teacher_assign_id, student_group_id, student_group_name
+            FROM system_teacher_assign
+            JOIN master_student_group ON teacher_assign_student_group_id = student_group_id
+            WHERE 
+                teacher_assign_teacher_id = ".userdata()['id_profile']."
+                AND teacher_assign_school_year_id = ".year_active()['school_year_id']."
+                AND teacher_assign_status < 9
+            GROUP BY student_group_id
+        ";
+
+        $row = $db->query($sql)->getResultArray();
+        return $row;
+    }
+}
+
+
+
 

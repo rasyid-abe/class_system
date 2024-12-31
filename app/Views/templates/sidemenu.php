@@ -47,7 +47,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/lesson/standart') ?>"
-                                class="<?= $sidebar != 'Standart' ? 'text-gray-800' : 'text-primary' ?> text-hover-primary fs-6 fw-bold">Standar</a>
+                                class="<?= $sidebar != 'Standart' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-6 fw-bold">Standar</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -67,7 +67,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/lesson/additional') ?>"
-                                class="<?= $sidebar != 'Additional' ? 'text-gray-800' : 'text-success' ?> text-hover-success fs-6 fw-bold">Saya</a>
+                                class="<?= $sidebar != 'Additional' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Saya</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -87,7 +87,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/lesson/school') ?>"
-                                class="<?= $sidebar != 'School' ? 'text-gray-800' : 'text-info' ?> text-hover-info fs-6 fw-bold">Sekolah</a>
+                                class="<?= $sidebar != 'School' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Sekolah</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -107,7 +107,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/lesson/public') ?>"
-                                class="<?= $sidebar != 'Public' ? 'text-gray-800' : 'text-danger' ?> text-hover-danger fs-6 fw-bold">Publik</a>
+                                class="<?= $sidebar != 'Public' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Publik</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -143,7 +143,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/question-bank/standart') ?>"
-                                class="<?= $sidebar != 'QB_Standart' ? 'text-gray-800' : 'text-primary' ?> text-hover-primary fs-6 fw-bold">Standar</a>
+                                class="<?= $sidebar != 'QB_Standart' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-6 fw-bold">Standar</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -163,7 +163,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/question-bank/additional') ?>"
-                                class="<?= $sidebar != 'QB_Additional' ? 'text-gray-800' : 'text-success' ?> text-hover-success fs-6 fw-bold">Saya</a>
+                                class="<?= $sidebar != 'QB_Additional' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Saya</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -183,7 +183,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/question-bank/public') ?>"
-                                class="<?= $sidebar != 'QB_Public' ? 'text-gray-800' : 'text-danger' ?> text-hover-danger fs-6 fw-bold">Publik</a>
+                                class="<?= $sidebar != 'QB_Public' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Publik</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -218,7 +218,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-add') ?>"
-                                class="<?= $sidebar != 'Add_Assessment' ? 'text-gray-800' : 'text-primary' ?>  text-hover-primary fs-6 fw-bold">Tambah</a>
+                                class="<?= $sidebar != 'Add_Assessment' ? 'text-gray-800' : 'fw-bolder text-primary' ?>  text-hover-primary fs-6 fw-bold">Tambah</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -238,7 +238,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-draft') ?>"
-                                class="<?= $sidebar != 'Draft_Assessment' ? 'text-gray-800' : 'text-warning' ?>  text-hover-warning fs-6 fw-bold">Draft</a>
+                                class="<?= $sidebar != 'Draft_Assessment' ? 'text-gray-800' : 'fw-bolder text-warning' ?>  text-hover-warning fs-6 fw-bold">Draft</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -258,7 +258,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-scheduled') ?>"
-                                class="<?= $sidebar != 'Scheduled_Assessment' ? 'text-gray-800' : 'text-success' ?> text-hover-success fs-6 fw-bold">Terjadwal</a>
+                                class="<?= $sidebar != 'Scheduled_Assessment' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Terjadwal</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -278,7 +278,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-present') ?>"
-                                class="<?= $sidebar != 'Present_Assessment' ? 'text-gray-800' : 'text-info' ?>  text-hover-info fs-6 fw-bold">Saat Ini</a>
+                                class="<?= $sidebar != 'Present_Assessment' ? 'text-gray-800' : 'fw-bolder text-info' ?>  text-hover-info fs-6 fw-bold">Saat Ini</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -298,7 +298,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-done') ?>"
-                                class="<?= $sidebar != 'Done_Assessment' ? 'text-gray-800' : 'text-danger' ?> text-hover-danger fs-6 fw-bold">Selesai</a>
+                                class="<?= $sidebar != 'Done_Assessment' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Selesai</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -334,7 +334,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/tasks/index-add') ?>"
-                                class="<?= $sidebar != 'Add_Tasks' ? 'text-gray-800' : 'text-primary' ?> text-hover-primary fs-6 fw-bold">Tambah</a>
+                                class="<?= $sidebar != 'Add_Tasks' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-6 fw-bold">Tambah</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -354,7 +354,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/tasks/index-draft') ?>"
-                                class="<?= $sidebar != 'Draft_Tasks' ? 'text-gray-800' : 'text-warning' ?> text-hover-warning fs-6 fw-bold">Draft</a>
+                                class="<?= $sidebar != 'Draft_Tasks' ? 'text-gray-800' : 'fw-bolder text-warning' ?> text-hover-warning fs-6 fw-bold">Draft</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -374,7 +374,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/tasks/index-scheduled') ?>"
-                                class="<?= $sidebar != 'Scheduled_Tasks' ? 'text-gray-800' : 'text-success' ?> text-hover-success fs-6 fw-bold">Terjadwal</a>
+                                class="<?= $sidebar != 'Scheduled_Tasks' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Terjadwal</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -394,7 +394,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/tasks/index-present') ?>"
-                                class="<?= $sidebar != 'Present_Tasks' ? 'text-gray-800' : 'text-info' ?> text-hover-info fs-6 fw-bold">Saat Ini</a>
+                                class="<?= $sidebar != 'Present_Tasks' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Saat Ini</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -414,7 +414,7 @@
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/tasks/index-done') ?>"
-                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'text-info' ?> text-hover-danger fs-6 fw-bold">Selesai</a>
+                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Selesai</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
                         <!--end::Text-->
@@ -427,14 +427,42 @@
         </div>
         <!--end::Tab pane-->
         <!--begin::Tab pane-->
-        <div class="tab-pane fade <?= $page == "Group" ? 'active show' : '' ?>" id="group_menu" role="tabpanel">
+        <div class="tab-pane fade <?= $page == "Groups" ? 'active show' : '' ?>" id="group_menu" role="tabpanel">
             <!--begin::Tasks-->
             <div class="mx-5">
                 <!--begin::Header-->
-                <h3 class="fw-bolder text-dark mb-10 mx-0">Daftar Kelas</h3>
+                <h3 class="fw-bolder text-dark mb-10 mx-0">Mengajar di Kelas</h3>
                 <!--end::Header-->
             
-                
+                <!--begin::Body-->
+                <div class="mb-12">
+                    <?php foreach(my_groups() as $k => $v): ?>
+                        <!--begin::Item-->
+                        <div class="d-flex align-items-center mb-7">
+                            <!--begin::Symbol-->
+                            <div class="symbol symbol-50px me-5">
+                                <span class="symbol-label bg-secondary">
+                                    <!--begin::Svg Icon | path: icons/duotune/abstract/abs027.svg-->
+                                    <!-- <i class="fa-solid fa-users-between-lines"></i> -->
+                                    <i class="bi bi-people-fill text-primary fs-2hx"></i>
+                                    <!-- <i class="bi bi-calendar-plus-fill text-primary fs-2hx"></i> -->
+                                    <!-- <i class="bi bi-calendar3-event-fill text-gray-700 fs-2hx"></i> -->
+                                    <!--end::Svg Icon-->
+                                </span>
+                            </div>
+                            <!--end::Symbol-->
+                            <!--begin::Text-->
+                            <div class="d-flex flex-column">
+                                <a href="<?= base_url('/teacher/groups/view-students/') . $v['student_group_id'] ?>"
+                                    class="<?= $sidebar == $v['student_group_name'] ? 'fw-bolder text-primary' : 'text-gray-800' ?> text-hover-primary fs-6 fw-bold"><?= $v['student_group_name'] ?></a>
+                                <!-- <span class="text-muted fw-bold">Project Manager</span> -->
+                            </div>
+                            <!--end::Text-->
+                        </div>
+                        <!--end::Item-->
+                    <?php endforeach ?>
+                </div>
+                <!--end::Body-->
             </div>
             <!--end::Tasks-->
         </div>

@@ -486,8 +486,6 @@ $(document.body).on('click', '.ltv', function(e) {
 })
 
 function remove_content_a(id, type, file = null) {
-    console.log(id);
-    
     let msg = '';
 
     if (type == 1) {
@@ -807,8 +805,6 @@ $(document.body).on('click', '#view_quest_bank', function() {
         dataType: 'json',
         success: function (e) {
             treeview_task(e, id)
-            console.log(e);
-            
             $('#modal_task_a').modal('show')
         }
     })

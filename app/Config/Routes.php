@@ -116,4 +116,8 @@ $routes->get('/teacher/tasks/index-present', 'LearningMS\Tasks\Tasks::index_pres
 $routes->get('/teacher/tasks/index-done', 'LearningMS\Tasks\Tasks::index_done', ['filter' => 'auth']);
 $routes->post('/teacher/tasks/grab-data-lesson', 'LearningMS\Tasks\Tasks::grab_data_lesson', ['filter' => 'auth']);
 $routes->post('/teacher/tasks/store-data', 'LearningMS\Tasks\Tasks::store_data', ['filter' => 'auth']);
+$routes->post('/teacher/tasks/task-lesson', 'LearningMS\Tasks\Tasks::task_lesson', ['filter' => 'auth']);
 $routes->get('/teacher/tasks/list-tasks', 'LearningMS\Tasks\Tasks::list_tasks', ['filter' => 'auth']);
+
+$routes->get('/teacher/groups/view-students/(:num)', 'LearningMS\Groups\Groups::view_students/$1', ['filter' => 'auth']);
+$routes->get('/teacher/groups/get-list-student', 'LearningMS\Groups\Groups::get_list_students', ['filter' => 'auth']);
