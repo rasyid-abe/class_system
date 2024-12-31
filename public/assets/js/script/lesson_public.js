@@ -8,10 +8,10 @@ $(document).ready(function(){
             method: 'post',
             dataType: 'json',
             success: function(e) {
-                generate_view_lesson_p(e[0])
-                generate_view_video_p(e[0])
-                generate_view_attachment_p(e[0])
-                generate_view_task_p(e[0])
+                generate_view_lesson_p(e)
+                generate_view_video_p(e)
+                generate_view_attachment_p(e)
+                generate_view_task_p(e.tasks, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade)
             }
         })
     }
@@ -95,12 +95,56 @@ function generate_view_attachment_p(e) {
     $('#attachment_lesson').html(btnn)
 }
 
-function generate_view_task_p(e) {
-    $('.btn_task_content').html('');
-    // $('#task_lesson').html(e.lesson_additional_video_path)
-    if (e.lesson_additional_tasks != '') {
-        $('#task_lesson').before('<div class="btn_task_content"><button type="button" class="btn btn-sm btn-primary">Ubah Video</button></div>')
+function generate_view_task_p(e, id, subj, grad) {
+    
+    let btn_conf = `
+            <div class="d-flex justify-content-begin mb-5">
+                <div class="btn_task_content">
+                    <button type="button" id="view_quest_bank" data-id="${id}" data-grade="${grad}" data-subject="${subj}" class="btn btn-sm btn-light-dark"><i class="fa fa-pen"></i> Update</button>
+                </div>&nbsp;
+                <div class="btn_video_content">
+                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${id}, 9)"><i class="fa fa-trash"></i> Hapus</button>
+                </div>
+            </div>
+        `;
+    $('#btn_conf_task_').html(btn_conf)
+
+    let cont = ''
+    let list = ''
+    if (e.length == 0) {
+        cont = 'Latihan tidak tersedia'
     } else {
-        $('#task_lesson').before('<div class="btn_task_content"><button type="button" class="btn btn-sm btn-primary">Tambah Video</button></div>')
+        let ii = 1
+        $.each(e, function(i, v) {
+            
+            if (v != 'empty') {
+                if (i == 'std') {
+                    for (let idx = 0; idx < v.length; idx++) {
+                        list += `<a href="#" class="list-group-item list-group-item-action ltv" id="ltv${ii}" data-c="${ii}" data-type="std" data-idd="${v[idx]}">Soal ${ii}</a>`
+                        ii++
+                    }
+                } else {
+                    for (let idx = 0; idx < v.length; idx++) {
+                        list += `<a href="#" class="list-group-item list-group-item-action ltv" id="ltv${ii}" data-c="${ii}" data-type="me" data-idd="${v[idx]}">Soal ${ii}</a>`
+                        ii++
+                    }
+                }
+            }
+        })
+
+        
+        cont = `
+            <div class="row">
+                <div class="col-sm-3">
+                    <ul class="list-group">${list}</ul>
+                </div>
+                <div class="col-sm-9">
+                    <div class="task" id="preview_task_act"></div>
+                </div>
+            </div>
+        `
     }
+    
+    $('#task_lesson').html(cont)
+    // $('.btn_task_content').html('');
 }

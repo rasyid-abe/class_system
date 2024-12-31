@@ -3,13 +3,22 @@
 namespace App\Controllers\Dashboard;
 
 use App\Controllers\BaseController;
+use App\Models\Systems\StudentInGroupModel;
+use App\Models\Systems\TeacherAssignModel;
+use App\Models\Masters\StudentGroupModel;
 
 class DashboardTeacher extends BaseController
 {
     protected $title;
+    protected $tgroup;
+    protected $tassign;
+    protected $stugroup;
+
     public function __construct()
     {
         $this->title = "Dashboard";
+        $this->tgroup = new StudentInGroupModel();
+        $this->tassign = new TeacherAssignModel();
 
     }
     public function index()

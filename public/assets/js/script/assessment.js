@@ -399,6 +399,7 @@ const tbconf = {
   paginationSize: 10,
   paginationSizeSelector: [10, 50, 100, 200],
   movableColumns: true,
+  selectableRows:true, 
   paginationCounter: "rows",
   langs: {
     default: {
@@ -508,6 +509,43 @@ if (url.includes("assessment/index-draft")) {
 
   tbconf.columns = c;
   var done = new Tabulator("#ass_done_table", tbconf);
+} else if (url.includes("groups/view-students")) {
+  let c = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { title: "NISN", field: "nisn" },
+    { title: "Nama Siswa", field: "name", width: 250 },
+    { title: "Agama", field: "religion" },
+    { title: "Jenis kelamin", field: "gender" },
+  ];
+
+  let menus = function(e, component){
+    //component - column/cell/row component that triggered the menu
+    //e - click event object
+
+    var menu = [];
+
+    if(!component.getData().approved){
+        menu.push({
+            label:"Approve User",
+            action:function(e, column){
+                component.update({"approved":true});
+            }
+        })
+    }else{
+        menu.push({
+            label:"Unapprove User",
+            action:function(e, column){
+                component.update({"approved":false});
+            }
+        })
+    }
+
+    return menu;
+}
+
+  tbconf.rowContextMenu = menus;
+  tbconf.columns = c;
+  var vstudent = new Tabulator("#student_group_view", tbconf);
 }
 
 $(document).ready(function () {
@@ -539,5 +577,8 @@ $(document).ready(function () {
     );
   } else if (url.includes("assessment/index-done")) {
     done.setData(base_url + "/teacher/assessment/list-assessment?page-ass=4");
+  } else if (url.includes("groups/view-students")) {
+    gid = $('input[name=group_id]').val()
+    vstudent.setData(base_url + "/teacher/groups/get-list-student?id=" + gid);
   }
 });

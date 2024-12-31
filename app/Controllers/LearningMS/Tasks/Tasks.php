@@ -209,7 +209,7 @@ class Tasks extends BaseController
     public function store_data()
     {
         $req = $this->request->getVar();
-        
+
         if ($req['type'] == 1) {
             $r = json_decode($req['param']);
             
@@ -262,9 +262,41 @@ class Tasks extends BaseController
             ];
             echo json_encode($res);
         } else if ($req['type'] == 2) {
+            $success = true;
+            $i = 0;
+            try {
+                foreach ($req['id'] as $k => $v) {
+                    $this->tasks
+                        ->where('task_id', $v)
+                        ->set('task_status', $req['param'])
+                        ->update();
+                    $i++;
+                }
+                $this->tasks->db->transCommit();
+            } catch (\Throwable $th) {
+                $success = false;
+                $this->tasks->db->transRollback();
+            }
+
+            $msg = $req['param'] == 2 ? 'terbitkan' : 'batalkan';
+            $res = [
+                'typ' => $req['type'],
+                'sts' => $success,
+                'msg' => $success ? $i . ' Tugas berhasil di '.$msg : $i . ' Tugas gagal di '. $msg,
+                'icn' => $success ? 'success' : 'error',
+            ];
+            echo json_encode($res);
+
+        } else if ($req['type'] == 3) {
+            $tasks = [];
+            $tasks['std'] = $req['param'][0];
+            $tasks['me'] = $req['param'][1];
+            $tasks['pub'] = $req['param'][2];
+
             $upd = $this->tasks
-                ->where('task_id', $req['param'])
-                ->set('task_status', $req['id'])
+                ->set('task_task_ids', json_encode($tasks))
+                ->set('task_updated_by', userdata()['user_id'])
+                ->where('task_id', $req['id'])
                 ->update();
 
             $res = [
@@ -333,21 +365,21 @@ class Tasks extends BaseController
     {
         $req = $this->request->getVar();
 
-        if ($req['page-ass'] == 1) {
+        if ($req['page-task'] == 1) {
             $get = $this->tasks
                 ->where('task_status', 1)
                 ->where('task_school_id', userdata()['school_id'])
                 ->where('task_teacher_id', userdata()['id_profile'])
                 ->orderBy('task_id', 'desc')
                 ->findAll();
-        } else if ($req['page-ass'] == 2) {
+        } else if ($req['page-task'] == 2) {
             $get = $this->tasks
                 ->where('task_status', 2)
                 ->where('task_start >=', date('Y-m-d H:i:s'))
                 ->where('task_school_id', userdata()['school_id'])
                 ->where('task_teacher_id', userdata()['id_profile'])
                 ->findAll();
-        } else if ($req['page-ass'] == 3) {
+        } else if ($req['page-task'] == 3) {
             $get = $this->tasks
                 ->where('task_status', 2)
                 ->where('task_start <=', date('Y-m-d H:i:s'))
@@ -355,7 +387,7 @@ class Tasks extends BaseController
                 ->where('task_school_id', userdata()['school_id'])
                 ->where('task_teacher_id', userdata()['id_profile'])
                 ->findAll();
-            } else if ($req['page-ass'] == 4) {
+        } else if ($req['page-task'] == 4) {
                 $get = $this->tasks
                 ->where('task_status', 2)
                 ->where('task_end <=', date('Y-m-d H:i:s'))
@@ -370,38 +402,22 @@ class Tasks extends BaseController
             foreach (json_decode($v['task_group']) as $key => $val) {
                 $groups .= '<badge class="badge badge-info mx-1">'.$val->group.'</badge>';
             }
-            
+
+            $mapel = '<badge class="badge badge-primary" onclick="lesson_preview('.$v['task_lesson_id'].', '.$v['task_lesson_src'].', '.$v['task_id'].')">'.$v['task_subject_name'].'</badge>';
+
             $acts = '';
-            if ($req['page-ass'] == 1) {
-                if ($v['task_end'] < date('Y-m-d H:i:s')) {
-                    $acts .= '
-                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus" type="button" class="btn btn-sm btn-icon btn-danger" onclick="type_tasks(2, '.$v['task_id'].', 1)">
-                        <i class="bi bi-trash-fill fs-1"></i>
-                        </button>
-                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Ubah" type="button" class="btn btn-sm btn-icon btn-warning" onclick="edit_draft('.$v['task_id'].')"><i class="bi bi-pencil-square fs-1"></i></button>
-                    ';
-                } else {
-                    $acts .= '
-                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Kirim" type="button" class="btn btn-sm btn-icon btn-primary" onclick="type_tasks(2, '.$v['task_id'].', 2)">
-                        <svg width="20" height="20" fill="currentColor" class="bi bi-send-check-fill" viewBox="0 0 16 16">
-                        <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 1.59 2.498C8 14 8 13 8 12.5a4.5 4.5 0 0 1 5.026-4.47zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
-                        <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686"/>
-                        </svg>
-                        </button>
-                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Ubah" type="button" class="btn btn-sm btn-icon btn-warning" onclick="edit_draft('.$v['task_id'].')"><i class="bi bi-pencil-square fs-1"></i></button>
-                    ';
-                }
-            } elseif ($req['page-ass'] == 2) {
-                $acts .= '
-                    <button data-bs-toggle="tooltip" data-bs-placement="top" title="Ubah ke Draft" type="button" class="btn btn-sm btn-icon btn-secondary" onclick="type_tasks(2, '.$v['task_id'].', 1)">
-                    <i class="bi bi-backspace-fill fs-1"></i></button>
+            if ($req['page-task'] == 1) {
+                $acts = '
+                    <badge class="badge badge-warning" onclick="view_quest_bank('.$v['task_id'].', '.$v['task_subject_id'].', '.$v['task_grade'].')">Soal</badge>
+                    <badge class="badge badge-warning" onclick="view_quest_bank('.$v['task_id'].', '.$v['task_subject_id'].', '.$v['task_grade'].')">Ubah</badge>
                 ';
             }
-            
+
             $data[] = [
+                'act' => $acts,
                 'id' => $v['task_id'],
                 'title' => $v['task_title'],
-                'mapel' => $v['task_subject_name'],
+                'mapel' => $mapel,
                 'period' => $v['task_start'].' - '.$v['task_end'],
                 'group' => $groups,
                 'acts' => $acts,
@@ -411,5 +427,35 @@ class Tasks extends BaseController
         echo (json_encode($data));
     }
 
+    public function task_lesson()
+    {
+        $req = $this->request->getVar();
 
+        if ($req['src'] == 2) {
+            $data = $this->lesson_standart
+                ->select('
+                    lesson_standart_id as lesson_additional_id,
+                    lesson_standart_content as lesson_additional_content,
+                    lesson_standart_content_path as lesson_additional_content_path,
+                    lesson_standart_video_path as lesson_additional_video_path,
+                    lesson_standart_attachment_path as lesson_additional_attachment_path,
+                    lesson_standart_tasks as lesson_additional_tasks,
+                ')
+                ->where('lesson_standart_id', $req['id'])
+                ->first();
+        } else {
+            $data = $this->lesson_additional
+                ->where('lesson_additional_id', $req['id'])
+                ->first();
+        }
+
+        $task = $this->tasks->select('task_task_ids')->where('task_id', $req['task_id'])->first();
+
+        $res = [
+            'lesson' => $data,
+            'task' => $task
+        ];
+
+        echo json_encode($res);
+    }
 }  
