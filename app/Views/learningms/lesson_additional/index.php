@@ -2,62 +2,219 @@
 <?php $this->section('content'); ?>
 
 <div class="row">
-  <div class="col-lg-4">
+  <div class="col-lg-4 mb-5">
 
-    <!--begin::Card widget 1-->
-    <div class="card card-flush border-0 h-xl-100" data-bs-theme="light" style="background-color:rgb(42, 34, 43)">
-      <!--begin::Header-->
-      <div class="card-header pt-2">
-        <!--begin::Title-->
-        <h3 class="card-title">
-          <span class="text-white fs-3 fw-bold me-2">Ringkasan Informasi</span>
-        </h3>
-        <!--end::Title-->
-
-      </div>
-      <!--end::Header-->
-
-      <!--begin::Body-->
-      <div class="card-body d-flex justify-content-between flex-column pt-1 px-0 pb-0">
-        <!--begin::Wrapper-->
-        <div class="d-flex flex-wrap px-9 mb-5">
-          <!--begin::Stat-->
-          <div class="rounded min-w-125px py-3 px-4 my-1 me-6" style="border: 1px dashed rgba(255, 255, 255, 0.15)">
-            <!--begin::Number-->
-            <div class="d-flex align-items-center">
-              <div class="text-white fs-2 fw-bold counted" data-kt-countup="true" data-kt-countup-value="4368" data-kt-countup-prefix="$" data-kt-initialized="1">4</div>
+    <div class="card card-flush border-0 h-xl-100" data-bs-theme="light" style="background-color: #192440">
+      <div class="card-header pt-4">
+        <div class="d-flex justify-content-between align-items-start flex-wrap">
+          <!--begin::User-->
+          <div class="d-flex flex-column">
+            <!--begin::Name-->
+            <div class="d-flex align-items-center mb-2">
+              <a href="#" class="text-light fs-2 fw-bold me-1">Ringkasan Informasi</a>
             </div>
-            <!--end::Number-->
+            <!--end::Name-->
 
-            <!--begin::Label-->
-            <div class="fw-semibold fs-6 text-white opacity-50">Mata Pelajaran</div>
-            <!--end::Label-->
-          </div>
-          <!--end::Stat-->
-
-          <!--begin::Stat-->
-          <div class="rounded min-w-125px py-3 px-4 my-1" style="border: 1px dashed rgba(255, 255, 255, 0.15)">
-            <!--begin::Number-->
-            <div class="d-flex align-items-center">
-              <div class="text-white fs-2 fw-bold counted" data-kt-countup="true" data-kt-countup-value="120,000" data-kt-initialized="1">120</div>
+            <!--begin::Info-->
+            <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2">
+              <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary me-5">
+                Materi Standar
+              </a>
             </div>
-            <!--end::Number-->
-
-            <!--begin::Label-->
-            <div class="fw-semibold fs-6 text-white opacity-50">BAB Materi</div>
-            <!--end::Label-->
+            <!--end::Info-->
           </div>
-          <!--end::Stat-->
+          <!--end::User-->
+
         </div>
-        <!--end::Wrapper-->
-
       </div>
-      <!--end::Body-->
+      <div class="card-body d-flex justify-content-between flex-column pt-1 px-0 pb-0">
+        <div class="d-flex flex-wrap px-9 mb-5">
+          <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+            <!--begin::Number-->
+            <div class="d-flex align-items-center">
+              <div class="fs-2 fw-bold text-light" data-kt-countup="true" data-kt-countup-value="75" data-kt-initialized="1">75</div>
+            </div>
+            <!--end::Number-->
+
+            <!--begin::Label-->
+            <div class="fw-semibold fs-6 text-gray-500">Mata Pelajaran</div>
+            <!--end::Label-->
+          </div>
+
+          <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+            <!--begin::Number-->
+            <div class="d-flex align-items-center">
+              <div class="fs-2 fw-bold text-light" data-kt-countup="true" data-kt-countup-value="75" data-kt-initialized="1">75</div>
+            </div>
+            <!--end::Number-->
+
+            <!--begin::Label-->
+            <div class="fw-semibold fs-6 text-gray-500">BAB</div>
+            <!--end::Label-->
+          </div>
+        </div>
+      </div>
     </div>
-    <!--end::Card widget 1-->
 
 
   </div>
+  <div class="col-lg-4 mb-5">
+
+    <div class="card h-100">
+      <div class="card-body p-5">
+        <div class="fw-bold">
+          <h3>Bahasa Indonesia</h3>
+        </div>
+        <div class="fs-4 fw-semibold text-gray-500 mb-7"></div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  <div class="col-lg-4 mb-5">
+
+    <div class="card h-100">
+      <div class="card-body p-5">
+        <div class="fw-bold">
+          <h3>Bahasa Indonesia</h3>
+        </div>
+        <div class="fs-4 fw-semibold text-gray-500 mb-7"></div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  <div class="col-lg-4 mb-5">
+
+    <div class="card h-100">
+      <div class="card-body p-5">
+        <div class="fw-bold">
+          <h3>Bahasa Indonesia</h3>
+        </div>
+        <div class="fs-4 fw-semibold text-gray-500 mb-7"></div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  <div class="col-lg-4 mb-5">
+
+    <div class="card h-100">
+      <div class="card-body p-5">
+        <div class="fw-bold">
+          <h3>Bahasa Indonesia</h3>
+        </div>
+        <div class="fs-4 fw-semibold text-gray-500 mb-7"></div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  <div class="col-lg-4 mb-5">
+
+    <div class="card h-100">
+      <div class="card-body p-5">
+        <div class="fw-bold">
+          <h3>Bahasa Indonesia</h3>
+        </div>
+        <div class="fs-4 fw-semibold text-gray-500 mb-7"></div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+        <div class="fs-6 d-flex justify-content-between mb-4">
+          <div class="fw-semibold">Kelas XI</div>
+          <div class="d-flex fw-bold">
+            <badge type="button" class="badge badge-primary" onclick="show_qb(1,11)">Buat Penilaian</badge>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
 </div>
 
 <table id="tbl_additional" class="table table-striped">
