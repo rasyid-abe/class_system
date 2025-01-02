@@ -15,7 +15,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title">
-          <div id="task_title_a">Pilih Materi</div>
+        <div id="task_title_a">Materi Tugas</div>
         </h3>
       </div>
       <div class="modal-body">

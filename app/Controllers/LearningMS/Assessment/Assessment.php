@@ -253,7 +253,6 @@ class Assessment extends BaseController
                 ];
                 echo json_encode($res);
 
-
             } else {
 
                 $data = [
@@ -289,16 +288,34 @@ class Assessment extends BaseController
     
 
         } else if ($req['type'] == 2) {
-            $upd = $this->assessment
-                ->where('assessment_id', $req['id'])
-                ->set('assessment_status', $req['data'])
-                ->update();
+            $success = true;
+            $i = 0;
+            try {
+                foreach ($req['id'] as $k => $v) {
+                    $this->assessment
+                        ->where('assessment_id', $v)
+                        ->set('assessment_status', $req['data'])
+                        ->update();
+                    $i++;
+                }
+                $this->assessment->db->transCommit();
+            } catch (\Throwable $th) {
+                $success = false;
+                $this->assessment->db->transRollback();
+            }
+
+            $msg = 'hapus';
+            if($req['data'] == 2) {
+                $msg = "terbitkan";
+            } else if ($req['data'] == 1) {
+                $msg = 'batalkan';
+            }
 
             $res = [
                 'typ' => $req['type'],
-                'sts' => $upd,
-                'msg' => $upd ? 'Penilaian berhasil di terbitkan' : 'Penilaian gagal di terbitkan',
-                'icn' => $upd ? 'success' : 'error',
+                'sts' => $success,
+                'msg' => $success ? $i . ' Penilaian berhasil di '.$msg : $i . ' Penilaian gagal di '. $msg,
+                'icn' => $success ? 'success' : 'error',
             ];
             echo json_encode($res);
         }
@@ -395,48 +412,50 @@ class Assessment extends BaseController
         foreach ($get as $k => $v) {
             $groups = '';
             foreach (json_decode($v['assessment_group']) as $key => $val) {
-                $groups .= '<badge class="badge badge-info mx-1">'.$val->group.'</badge>';
+                $groups .= '<a href="'. base_url('teacher/groups/view-students/' . $val->id).'" class="badge badge-info mx-1">'.$val->group.'</a>';
             }
             
-            $acts = '';
-            if ($req['page-ass'] == 1) {
-                if ($v['assessment_end'] < date('Y-m-d H:i:s')) {
-                    $acts .= '
-                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus" type="button" class="btn btn-sm btn-icon btn-danger" onclick="type_assessment(2, '.$v['assessment_id'].', 1)">
-                        <i class="bi bi-trash-fill fs-1"></i>
-                        </button>
-                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Ubah" type="button" class="btn btn-sm btn-icon btn-warning" onclick="edit_draft('.$v['assessment_id'].')"><i class="bi bi-pencil-square fs-1"></i></button>
-                    ';
-                } else {
-                    $acts .= '
-                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Kirim" type="button" class="btn btn-sm btn-icon btn-primary" onclick="type_assessment(2, '.$v['assessment_id'].', 2)">
-                        <svg width="20" height="20" fill="currentColor" class="bi bi-send-check-fill" viewBox="0 0 16 16">
-                        <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 1.59 2.498C8 14 8 13 8 12.5a4.5 4.5 0 0 1 5.026-4.47zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
-                        <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686"/>
-                        </svg>
-                        </button>
-                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Ubah" type="button" class="btn btn-sm btn-icon btn-warning" onclick="edit_draft('.$v['assessment_id'].')"><i class="bi bi-pencil-square fs-1"></i></button>
-                    ';
-                }
-            } elseif ($req['page-ass'] == 2) {
-                $acts .= '
-                    <button data-bs-toggle="tooltip" data-bs-placement="top" title="Ubah ke Draft" type="button" class="btn btn-sm btn-icon btn-secondary" onclick="type_assessment(2, '.$v['assessment_id'].', 1)">
-                    <i class="bi bi-backspace-fill fs-1"></i></button>
-                ';
-            }
-            
+            $acts = '
+                <badge class="badge badge-dark" data-bs-placement="top" title="Ubah" onclick="edit_draft('.$v['assessment_id'].')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
+            ';
+
+            $task = '
+                <badge class="badge badge-primary" data-bs-placement="top" title="Ubah" onclick="view_task_assessment('.$v['assessment_question_bank_id'].', '.$v['assessment_question_bank_src'].')">'.$v['assessment_question_bank_title'].'</badge>
+            ';
+        
             $data[] = [
+                'end_date' => $v['assessment_end'],
                 'id' => $v['assessment_id'],
                 'title' => $v['assessment_title'],
                 'mapel' => $v['assessment_subject_name'],
-                'period' => $v['assessment_start'].' - '.$v['assessment_end'],
+                'period' => datetime_indo($v['assessment_start']).' - '.datetime_indo($v['assessment_end']),
                 'group' => $groups,
-                'task' => $v['assessment_question_bank_title'],
+                'task' => $task,
                 'acts' => $acts,
             ];
         }
 
         echo (json_encode($data));
+    }
+
+    public function view_assessment_question()
+    {
+        $req = $this->request->getVar();
+        
+        $row = '';
+        if ($req['src'] == 1) {
+            $row = $this->question_bank_standart
+                ->select('question_bank_standart_id as id')
+                ->where('question_bank_standart_parent_id', $req['id'])
+                ->findAll();
+        } else {
+            $row = $this->question_bank
+                ->select('question_bank_id as id')
+                ->where('question_bank_parent_id', $req['id'])
+                ->findAll();
+        }
+
+        echo json_encode($row);
     }
 
 

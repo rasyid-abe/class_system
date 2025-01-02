@@ -3,12 +3,6 @@
 
 <div class="card mb-5 mb-xl-10">
   <div class="card-body border-top p-9">
-    <div class="btn-group mb-3" role="group" aria-label="Basic example">
-      <button type="button" id="select-all" class="btn btn-sm btn-secondary">Pilih Semua</button>
-      <button type="button" id="deselect-all" class="btn btn-sm btn-secondary">Batal Pilih</button>
-      <button type="button" id="publish-btn" class="btn btn-sm btn-secondary">Terbitkan</button>
-      <button type="button" class="btn btn-sm btn-secondary">Hapus</button>
-    </div>
     <div id="task_done_table"></div>
   </div>
 
@@ -19,7 +13,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title">
-          <div id="task_title_a">Pilih Materi</div>
+        <div id="task_title_a">Materi Tugas</div>
         </h3>
       </div>
       <div class="modal-body">
