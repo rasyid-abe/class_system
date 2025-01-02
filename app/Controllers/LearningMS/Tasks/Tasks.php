@@ -212,7 +212,7 @@ class Tasks extends BaseController
 
         if ($req['type'] == 1) {
             $r = json_decode($req['param']);
-            
+
             $group = [];
             foreach ($r[3] as $k => $v) {
                 $group[$k]['id'] = $v->id; 
@@ -234,33 +234,56 @@ class Tasks extends BaseController
                     ->first();
             }
 
-            $data = [
-                'task_school_id' => userdata()['school_id'],
-                'task_teacher_id' => userdata()['id_profile'],
-                'task_grade' => $r[2],
-                'task_subject_id' => $r[1],
-                'task_subject_name' => $r[10],
-                'task_group' => json_encode($group),
-                'task_title' => $r[0],
-                'task_lesson_id' => $r[8],
-                'task_lesson_name' => $r[9],
-                'task_lesson_src' => $r[11],
-                'task_task_ids' => $lsrc['tasks'],
-                'task_start' => date('Y-m-d H:i:s', strtotime($r[4].':00')),
-                'task_end' => date('Y-m-d H:i:s', strtotime($r[5].':00')),
-                'task_is_autosubmit' => $r[6],
-                'task_instruction' => $r[7],
-                'task_status' => $r[12],
-            ];
+            if ($req['id'] > 0) {
+                $upd = $this->tasks
+                    ->where('task_id', $req['id'])
+                    ->set('task_title', $r[0])
+                    ->set('task_start', date('Y-m-d H:i:s', strtotime($r[4].':00')))
+                    ->set('task_end', date('Y-m-d H:i:s', strtotime($r[5].':00')))
+                    ->set('task_is_autosubmit', $r[6])
+                    ->set('task_instruction', $r[7])
+                    ->set('task_status', $r[12])
+                    ->set('task_group', json_encode($group))
+                    ->update();
 
-            $ins = $this->tasks->insert($data);
-            $res = [
-                'typ' => $req['type'],
-                'sts' => $ins,
-                'msg' => $ins ? 'Tugas berhasil ditambahkan' : 'Tugas gagal ditambahkan',
-                'icn' => $ins ? 'success' : 'error',
-            ];
-            echo json_encode($res);
+                $res = [
+                    'typ' => $req['type'],
+                    'sts' => $upd,
+                    'msg' => $upd ? 'Tugas berhasil diubah' : 'Tugas gagal diubah',
+                    'icn' => $upd ? 'success' : 'error',
+                ];
+                echo json_encode($res);
+
+            } else {
+                $data = [
+                    'task_school_id' => userdata()['school_id'],
+                    'task_teacher_id' => userdata()['id_profile'],
+                    'task_grade' => $r[2],
+                    'task_subject_id' => $r[1],
+                    'task_subject_name' => $r[10],
+                    'task_group' => json_encode($group),
+                    'task_title' => $r[0],
+                    'task_lesson_id' => $r[8],
+                    'task_lesson_name' => $r[9],
+                    'task_lesson_src' => $r[11],
+                    'task_task_ids' => $lsrc['tasks'],
+                    'task_start' => date('Y-m-d H:i:s', strtotime($r[4].':00')),
+                    'task_end' => date('Y-m-d H:i:s', strtotime($r[5].':00')),
+                    'task_is_autosubmit' => $r[6],
+                    'task_instruction' => $r[7],
+                    'task_status' => $r[12],
+                ];
+    
+                $ins = $this->tasks->insert($data);
+                $res = [
+                    'typ' => $req['type'],
+                    'sts' => $ins,
+                    'msg' => $ins ? 'Tugas berhasil ditambahkan' : 'Tugas gagal ditambahkan',
+                    'icn' => $ins ? 'success' : 'error',
+                ];
+                echo json_encode($res);
+            }
+
         } else if ($req['type'] == 2) {
             $success = true;
             $i = 0;
@@ -278,7 +301,13 @@ class Tasks extends BaseController
                 $this->tasks->db->transRollback();
             }
 
-            $msg = $req['param'] == 2 ? 'terbitkan' : 'batalkan';
+            $msg = 'hapus';
+            if($req['param'] == 2) {
+                $msg = "terbitkan";
+            } else if ($req['param'] == 1) {
+                $msg = 'batalkan';
+            }
+
             $res = [
                 'typ' => $req['type'],
                 'sts' => $success,
@@ -302,7 +331,7 @@ class Tasks extends BaseController
             $res = [
                 'typ' => $req['type'],
                 'sts' => $upd,
-                'msg' => $upd ? 'Penilaian berhasil di terbitkan' : 'Penilaian gagal di terbitkan',
+                'msg' => $upd ? 'Penilaian berhasil di sesuaikan' : 'Penilaian gagal di sesuaikan',
                 'icn' => $upd ? 'success' : 'error',
             ];
             echo json_encode($res);
@@ -400,16 +429,17 @@ class Tasks extends BaseController
         foreach ($get as $k => $v) {
             $groups = '';
             foreach (json_decode($v['task_group']) as $key => $val) {
-                $groups .= '<badge class="badge badge-info mx-1">'.$val->group.'</badge>';
+                $groups .= '<a href="'. base_url('teacher/groups/view-students/' . $val->id).'" class="badge badge-info mx-1">'.$val->group.'</a>';
             }
 
-            $mapel = '<badge class="badge badge-primary" onclick="lesson_preview('.$v['task_lesson_id'].', '.$v['task_lesson_src'].', '.$v['task_id'].')">'.$v['task_subject_name'].'</badge>';
+            $lesson = '<badge class="badge badge-primary" onclick="lesson_preview('.$v['task_lesson_id'].', '.$v['task_lesson_src'].', '.$v['task_id'].')">'.$v['task_lesson_name'].'</badge>';
+
 
             $acts = '';
             if ($req['page-task'] == 1) {
                 $acts = '
-                    <badge class="badge badge-warning" onclick="view_quest_bank('.$v['task_id'].', '.$v['task_subject_id'].', '.$v['task_grade'].')">Soal</badge>
-                    <badge class="badge badge-warning" onclick="view_quest_bank('.$v['task_id'].', '.$v['task_subject_id'].', '.$v['task_grade'].')">Ubah</badge>
+                    <badge class="badge badge-success" data-bs-placement="top" title="Atur Soal" onclick="view_quest_bank('.$v['task_id'].', '.$v['task_subject_id'].', '.$v['task_grade'].')"><i class="bi bi-gear-fill fs-6 text-white"></i></badge>
+                    <badge class="badge badge-dark" data-bs-placement="top" title="Ubah" onclick="edit_task('.$v['task_id'].')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
                 ';
             }
 
@@ -417,8 +447,9 @@ class Tasks extends BaseController
                 'act' => $acts,
                 'id' => $v['task_id'],
                 'title' => $v['task_title'],
-                'mapel' => $mapel,
-                'period' => $v['task_start'].' - '.$v['task_end'],
+                'end_date' => $v['task_end'],
+                'lesson' => $lesson,
+                'period' => datetime_indo($v['task_start']).' - '.datetime_indo($v['task_end']),
                 'group' => $groups,
                 'acts' => $acts,
             ];
@@ -457,5 +488,12 @@ class Tasks extends BaseController
         ];
 
         echo json_encode($res);
+    }
+
+    public function get_edit() 
+    {
+        $id = $this->request->getVar('id');
+        $data = $this->tasks->where('task_id', $id)->first();
+        echo json_encode($data);
     }
 }  

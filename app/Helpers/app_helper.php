@@ -271,6 +271,30 @@ if (!function_exists("my_groups")) {
     }
 }
 
+if (!function_exists("datetime_indo")) {
+    function datetime_indo($datetime) 
+    {
+        $bulan = array (1 => 'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'Mei',
+			'Jun',
+			'Jul',
+			'Agu',
+			'Sep',
+			'Okt',
+			'Nov',
+			'Des'
+		);
+
+        $spl = explode(' ', $datetime);
+        $split = explode('-', $spl[0]);
+	    return $split[2] . ' ' . $bulan[ (int)$split[1] ] . ' ' . $split[0] . ' ' . substr($spl[1],0, 5) . ' WIB';
+
+    }
+}
+
 
 
 

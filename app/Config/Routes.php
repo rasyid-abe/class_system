@@ -108,6 +108,7 @@ $routes->post('/teacher/assessment/data-option', 'LearningMS\Assessment\Assessme
 $routes->post('/teacher/assessment/store-data', 'LearningMS\Assessment\Assessment::store_data', ['filter' => 'auth']);
 $routes->post('/teacher/assessment/view-question-bank', 'LearningMS\Assessment\Assessment::view_question_bank', ['filter' => 'auth']);
 $routes->post('/teacher/assessment/get-edit', 'LearningMS\Assessment\Assessment::get_edit', ['filter' => 'auth']);
+$routes->post('/teacher/assessment/view-assessment-question', 'LearningMS\Assessment\Assessment::view_assessment_question', ['filter' => 'auth']);
 
 $routes->get('/teacher/tasks/index-add', 'LearningMS\Tasks\Tasks::index', ['filter' => 'auth']);
 $routes->get('/teacher/tasks/index-draft', 'LearningMS\Tasks\Tasks::index_draft', ['filter' => 'auth']);
@@ -115,6 +116,7 @@ $routes->get('/teacher/tasks/index-scheduled', 'LearningMS\Tasks\Tasks::index_sc
 $routes->get('/teacher/tasks/index-present', 'LearningMS\Tasks\Tasks::index_present', ['filter' => 'auth']);
 $routes->get('/teacher/tasks/index-done', 'LearningMS\Tasks\Tasks::index_done', ['filter' => 'auth']);
 $routes->post('/teacher/tasks/grab-data-lesson', 'LearningMS\Tasks\Tasks::grab_data_lesson', ['filter' => 'auth']);
+$routes->post('/teacher/tasks/get-edit', 'LearningMS\Tasks\Tasks::get_edit', ['filter' => 'auth']);
 $routes->post('/teacher/tasks/store-data', 'LearningMS\Tasks\Tasks::store_data', ['filter' => 'auth']);
 $routes->post('/teacher/tasks/task-lesson', 'LearningMS\Tasks\Tasks::task_lesson', ['filter' => 'auth']);
 $routes->get('/teacher/tasks/list-tasks', 'LearningMS\Tasks\Tasks::list_tasks', ['filter' => 'auth']);

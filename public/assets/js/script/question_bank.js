@@ -62,6 +62,8 @@ function view_question(id) {
     method: "post",
     dataType: "json",
     success: function (e) {
+      console.log(e);
+      
       generate_task(e)
       generate_hint(e)
       generate_explain(e)
@@ -108,7 +110,6 @@ function generate_task(e) {
   })
 
   let btnn = ''
-  let url = window.location.href
   if (url.includes("question-bank/additional")){
     btnn = `
       <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-15, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
@@ -126,20 +127,19 @@ function generate_task(e) {
     `
 
   } else {
-    btnn = `
-      <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-15, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-      </svg> Salin</button>
-    `
+      btnn = `
+        <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-15, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+        </svg> Salin</button>
+      `
   }
 
-  let html = `
-     <div class="card">
-        <div class="card-header p-5 d-flex justify-content-end">
-            ${btnn}
-        </div>
+  let html = ''
+  if (url.includes('teacher/assessment/')) {
+    html = `
+    <div class="card" style="background-color: #F1F4F7;">
         <div class="card-body">
-            <div class="alert alert-dismissible bg-light-primary border border-primary d-flex flex-column flex-sm-row p-5 mb-5">
+            <div class="alert alert-dismissible bg-light-primary border border-primary d-flex flex-column flex-sm-row mb-5">
                 <div class="d-flex flex-column pe-0 pe-sm-10">
                     <h4 class="fw-semibold">Pertanyaan</h4>
                     ${e.question}
@@ -151,6 +151,26 @@ function generate_task(e) {
         </div>
     </div>
   `
+  } else {
+    html = `
+      <div class="card">
+          <div class="card-header p-5 d-flex justify-content-end">
+              ${btnn}
+          </div>
+          <div class="card-body">
+              <div class="alert alert-dismissible bg-light-primary border border-primary d-flex flex-column flex-sm-row p-5 mb-5">
+                  <div class="d-flex flex-column pe-0 pe-sm-10">
+                      <h4 class="fw-semibold">Pertanyaan</h4>
+                      ${e.question}
+                  </div>
+              </div>
+              <div class="row">
+                  ${opt}
+              </div>
+          </div>
+      </div>
+    `
+  }
   $('#tab_task').html(html)
 }
 
@@ -164,8 +184,23 @@ function generate_hint(e) {
     `
   }
 
-  let html = `
-  <div class="card">
+  let html = ''
+  if (url.includes('teacher/assessment/')) {
+    html = `
+      <div class="card" style="background-color: #F1F4F7;">
+        <div class="card-body">
+          <div class="alert alert-dismissible bg-light-info border border-info d-flex flex-column flex-sm-row mb-5">
+              <div class="d-flex flex-column pe-0 pe-sm-10">
+                  <h4 class="fw-semibold">Petunjuk Penyelesaian</h4>
+                  ${e.hint == '<p><br></p>' ? '<p>Tidak ada data</p>' : e.hint}
+              </div>
+          </div>
+        </div>
+    </div>
+  `
+  } else {
+    html = `
+      <div class="card">
         <div class="card-header p-5 d-flex justify-content-end">
             ${btnn}
         </div>
@@ -179,12 +214,12 @@ function generate_hint(e) {
         </div>
     </div>
   `
+  }
 
   $('#tab_hint').html(html)
 }
 
 function generate_explain(e) {
-  let url = window.location.href
   let btnn = ''
   if (url.includes("question-bank/additional")){
     btnn = `
@@ -193,21 +228,36 @@ function generate_explain(e) {
     `
   }
 
-  let html = `
-  <div class="card">
-        <div class="card-header p-5 d-flex justify-content-end">
-            ${btnn}
-        </div>
-        <div class="card-body">
-    <div class="alert alert-dismissible bg-light-info border border-info d-flex flex-column flex-sm-row p-5 mb-5">
-        <div class="d-flex flex-column pe-0 pe-sm-10">
-            <h4 class="fw-semibold">Penjelasan Penyelesaian</h4>
-            ${e.explain == '<p><br></p>' ? '<p>Tidak ada data</p>' : e.explain}
-        </div>
-    </div>
-    </div>
-    </div>
-  `
+  if (url.includes('teacher/assessment/')) {
+    html = `
+    <div class="card" style="background-color: #F1F4F7;">
+          <div class="card-body">
+      <div class="alert alert-dismissible bg-light-info border border-info d-flex flex-column flex-sm-row p-5 mb-5">
+          <div class="d-flex flex-column pe-0 pe-sm-10">
+              <h4 class="fw-semibold">Penjelasan Penyelesaian</h4>
+              ${e.explain == '<p><br></p>' ? '<p>Tidak ada data</p>' : e.explain}
+          </div>
+      </div>
+      </div>
+      </div>
+    `
+  } else {
+    html = `
+    <div class="card">
+          <div class="card-header p-5 d-flex justify-content-end">
+              ${btnn}
+          </div>
+          <div class="card-body">
+      <div class="alert alert-dismissible bg-light-info border border-info d-flex flex-column flex-sm-row p-5 mb-5">
+          <div class="d-flex flex-column pe-0 pe-sm-10">
+              <h4 class="fw-semibold">Penjelasan Penyelesaian</h4>
+              ${e.explain == '<p><br></p>' ? '<p>Tidak ada data</p>' : e.explain}
+          </div>
+      </div>
+      </div>
+      </div>
+    `
+  }
 
   $('#tab_explain').html(html)
 }

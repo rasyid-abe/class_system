@@ -126,12 +126,12 @@
               <div class="col-lg-9">
                 <div class="row">
                   <div class="col-lg-4 fv-row fv-plugins-icon-container">
-                    <input onchange="chk_range()" class="form-control form-control-solid assessment_periode_date" placeholder="Periode Awal" id="start_assessment" name="start_assessment" />
+                    <input onchange="chk_range()" class="form-control form-control-solid periode_date" placeholder="Periode Awal" id="start_assessment" name="start_assessment" />
                     <small class="hide text-danger start_ass anom_period">Periode awal harus dipilih!</small>
                   </div>
 
                   <div class="col-lg-4 fv-row fv-plugins-icon-container">
-                    <input onchange="chk_range()" class="form-control form-control-solid assessment_periode_date" placeholder="Periode Akhir" id="end_assessment" name="end_assessment" />
+                    <input onchange="chk_range()" class="form-control form-control-solid periode_date" placeholder="Periode Akhir" id="end_assessment" name="end_assessment" />
                     <small class="hide text-danger end_ass">Periode akhir harus dipilih!</small>
                   </div>
 

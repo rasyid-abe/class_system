@@ -164,8 +164,8 @@ function choose_tasks() {
   }
 }
 
-function save_tasks(status = null, source = null) {
-  let id_ass = $("input[name=tasks_id]").val();
+function save_tasks(status = null, save_type = null) {
+  let id_task_ = $("input[name=tasks_id]").val();
   let lesson_name = $("input[name=selected_task]").val();
   let subj_name = $("input[name=selected_subj]").val();
   let lesson = $("input[name=lessonid]").val();
@@ -177,7 +177,12 @@ function save_tasks(status = null, source = null) {
   let start = $("#start_tasks").val();
   let end = $("#end_tasks").val();
   let submit = $("#autosumbit").hasClass("checked");
-  let instask = $("#instruction_tasks > .ql-editor").html();
+  let instask = ''
+  if (save_type == 2) {
+    instask = $("#instruction_tasks_upd > .ql-editor").html();
+  } else {
+    instask = $("#instruction_tasks > .ql-editor").html();
+  }
 
   let msg = ["title_ass", "group_ass", "start_ass", "end_ass"];
   let chk = [title != "", group.length > 0, start != "", end != ""];
@@ -212,10 +217,10 @@ function save_tasks(status = null, source = null) {
         subj_name,
         lessonsrc,
         status,
-        source, //belum di gunakan
+        save_type,
       ];
 
-      store_tasks(1, "", JSON.stringify(data));
+      store_tasks(1, id_task_, JSON.stringify(data));
     } else {
       let msg =
         chk_range_tasks() == 2
@@ -235,6 +240,7 @@ function store_tasks(type, id, param) {
     dataType: "json",
     success: function (e) {
       $("#modal_task_choose").modal("hide");
+      $("#modal_tasks_upd").modal("hide");
       $("#modal_tasks_ch").modal("hide");
       $("#tasks_prev_less").modal("hide");
       reload_tabulator();
@@ -244,6 +250,54 @@ function store_tasks(type, id, param) {
       });
     },
   });
+}
+
+function edit_task(id) {
+  $.ajax({
+    url: base_url + "/teacher/tasks/get-edit",
+    data: { id },
+    method: "post",
+    dataType: "json",
+    success: function (e) {
+      check_group(e.task_subject_id, e.task_grade);
+      set_datepicker();
+      setTimeout(function () {
+        view_edit_task(e);
+      }, 1000);
+    },
+  });
+}
+
+function view_edit_task(e) {
+  $("input[name=tasks_id]").val(e.task_id);
+  $("input[name=subjid]").val(e.task_subject_id);
+  $("input[name=gradid]").val(e.task_grade);
+  $("input[name=lessonid]").val(e.task_lesson_id);
+  $("input[name=lessonsrc]").val(e.task_lesson_src);
+  $("input[name=selected_task]").val(e.task_lesson_name);
+  $("input[name=selected_subj]").val(e.task_subject_name);
+  $("input[name=title]").val(e.task_title);
+
+  let start = e.task_start.substring(0, 16);
+  let end = e.task_end.substring(0, 16);
+  $("#start_tasks").val(start);
+  $("#end_tasks").val(end);
+
+  if (e.task_is_autosubmit == 1) {
+    $("#autosumbit").addClass("checked").prop("checked", true);
+  } else {
+    $("#autosumbit").removeClass("checked").prop("checked", false);
+  }
+
+  let selected_group = [];
+  $.each(JSON.parse(e.task_group), function (i, v) {
+    selected_group.push(v.id);
+  });
+  $("#multiple-select-group").val(selected_group).trigger("change");
+
+  $("#instruction_tasks_upd > .ql-editor").html(e.task_instruction);
+
+  $('#modal_tasks_upd').modal('show')
 }
 
 function lesson_preview(id, src, task_id) {
@@ -257,7 +311,12 @@ function lesson_preview(id, src, task_id) {
         generate_view_lesson_p(e.lesson);
         generate_view_video_p(e.lesson);
         generate_view_attachment_p(e.lesson);
-        generate_view_task_p(JSON.parse(e.task.task_task_ids), e.lesson.lesson_additional_id, e.lesson.lesson_additional_subject_id, e.lesson.lesson_additional_grade);
+        generate_view_task_p(
+          JSON.parse(e.task.task_task_ids),
+          e.lesson.lesson_additional_id,
+          e.lesson.lesson_additional_subject_id,
+          e.lesson.lesson_additional_grade
+        );
         $("#tasks_prev_less").modal("show");
       },
     });
@@ -362,26 +421,17 @@ function selected_tasks() {
   let send_me = me_task.length > 0 ? me_task : "empty";
   let send_pub = pub_task.length > 0 ? pub_task : "empty";
 
-  console.log(send_std);
-  console.log(send_me);
-  console.log(send_pub);
-
-  store_tasks(3, idt, [send_std, send_me, send_pub])
+  store_tasks(3, idt, [send_std, send_me, send_pub]);
 }
 
-var printIcon = function (cell, formatterParams) {
-  return `<button class="btn btn-icon btn-sm btn-primary"><svg width="20" height="20" fill="currentColor" class="bi bi-send-check-fill" viewBox="0 0 16 16">
-    <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 1.59 2.498C8 14 8 13 8 12.5a4.5 4.5 0 0 1 5.026-4.47zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
-    <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686"/>
-    </svg></buton>`;
-};
-
 function type_tasks(type, ids, sts) {
+  let msg = sts == 9 ? "hapus" : sts == 2 ? "terbitkan" : "batalkan";
+
   Swal.fire({
     html:
       sts == 2
-        ? `Apakah anda yakin terbitkan ${ids.length} tugas terpilih?`
-        : `Apakah anda yakin batalkan ${ids.length} tugas terpilih?`,
+        ? `Apakah anda yakin ${msg} ${ids.length} tugas terpilih?`
+        : `Apakah anda yakin ${msg} ${ids.length} tugas terpilih?`,
     icon: "info",
     buttonsStyling: false,
     showCancelButton: true,
@@ -394,8 +444,6 @@ function type_tasks(type, ids, sts) {
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
       store_tasks(type, ids, sts);
-      reload_tabulator();
-      // alert("Printing row data for: " + cell.getRow().getData().id);
     }
   });
 }
@@ -411,11 +459,12 @@ function reload_tabulator() {
 if (url.includes("tasks/index-draft")) {
   let c = [
     { title: "#Aksi", field: "acts", width: 150, formatter: "html" },
-    { title: "Periode", field: "period" },
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { title: "Akhir", field: "end_date", visible: false },
     { title: "Penilaian", field: "title" },
-    { title: "Mata Pelajaran", field: "mapel", formatter: "html" },
+    { title: "Materi Tugas", field: "lesson", formatter: "html" },
     { title: "Kelompok Belajar", field: "group", formatter: "html" },
+    { title: "Periode", field: "period" },
   ];
 
   tbconf.columns = c;
@@ -423,11 +472,10 @@ if (url.includes("tasks/index-draft")) {
 } else if (url.includes("tasks/index-scheduled")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { title: "Periode", field: "period" },
     { title: "Penilaian", field: "title", width: 250 },
-    { title: "Mata Pelajaran", field: "mapel", formatter: "html" },
+    { title: "Materi Tugas", field: "lesson", formatter: "html" },
     { title: "Kelompok Belajar", field: "group", formatter: "html" },
-    // { title: "Judul Soal", field: "task" },
+    { title: "Periode", field: "period" },
   ];
 
   tbconf.columns = c;
@@ -435,11 +483,10 @@ if (url.includes("tasks/index-draft")) {
 } else if (url.includes("tasks/index-present")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { title: "Periode", field: "period" },
     { title: "Penilaian", field: "title", width: 250 },
-    { title: "Mata Pelajaran", field: "mapel", formatter: "html" },
+    { title: "Materi Tugas", field: "lesson", formatter: "html" },
     { title: "Kelompok Belajar", field: "group", formatter: "html" },
-    // { title: "Judul Soal", field: "task" },
+    { title: "Periode", field: "period" },
   ];
 
   tbconf.columns = c;
@@ -447,63 +494,103 @@ if (url.includes("tasks/index-draft")) {
 } else if (url.includes("tasks/index-done")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { title: "Periode", field: "period" },
-    { title: "Penilaian", field: "title", width: 250},
-    { title: "Mata Pelajaran", field: "mapel", formatter: "html"},
+    { title: "Penilaian", field: "title", width: 250 },
+    { title: "Materi Tugas", field: "lesson", formatter: "html" },
     { title: "Kelompok Belajar", field: "group", formatter: "html" },
-    // { title: "Judul Soal", field: "task" },
+    { title: "Periode", field: "period" },
   ];
 
   tbconf.columns = c;
   var task_done = new Tabulator("#task_done_table", tbconf);
 }
 
-document.getElementById("select-all").addEventListener("click", function(){
+if (url.includes("teacher/tasks")) {
   if (url.includes("tasks/index-draft")) {
-    task_draft.selectRow();
-  } else if (url.includes("tasks/index-scheduled")) {
-    task_scheduled.selectRow();
+    document
+      .getElementById("select-all")
+      .addEventListener("click", function () {
+        task_draft.selectRow();
+      });
   }
-});
-document.getElementById("deselect-all").addEventListener("click", function(){
+  if (url.includes("tasks/index-scheduled")) {
+    document
+      .getElementById("select-all")
+      .addEventListener("click", function () {
+        task_scheduled.selectRow();
+      });
+  }
   if (url.includes("tasks/index-draft")) {
-    task_draft.deselectRow();
-  } else if (url.includes("tasks/index-scheduled")) {
-    task_scheduled.deselectRow();
+    document
+      .getElementById("deselect-all")
+      .addEventListener("click", function () {
+        task_draft.deselectRow();
+      });
   }
-});
+  if (url.includes("tasks/index-scheduled")) {
+    document
+      .getElementById("deselect-all")
+      .addEventListener("click", function () {
+        task_scheduled.deselectRow();
+      });
+  }
 
-if (url.includes("tasks/index-draft")) {
-  document.getElementById("publish-btn").addEventListener("click", function(){
-    let sel_data = task_draft.getSelectedData();
-    let ids = sel_data.map(i => i.id)
-    if (ids.length < 1) {
-      al_swal('Belum ada data terpilih', 'error')
-    } else {
-      type_tasks(2, ids, 2)
-    }
-  });
-}
+  if (url.includes("tasks/index-draft")) {
+    document
+      .getElementById("publish-btn")
+      .addEventListener("click", function () {
+        let sel_data = task_draft.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let eds = sel_data.map((i) => i.end_date);
 
-if (url.includes("tasks/index-scheduled")) {
-  document.getElementById("unpublish-btn").addEventListener("click", function(){
-    let sel_data = task_scheduled.getSelectedData();
-    let ids = sel_data.map(i => i.id)
-    if (ids.length < 1) {
-      al_swal('Belum ada data terpilih', 'error')
-    } else {
-      type_tasks(2, ids, 1)
-    }
-  });
+        if (ids.length < 1) {
+          al_swal("Belum ada data terpilih", "error");
+        } else {
+          if (check_good_date(eds)) {
+            al_swal(
+              "Tidak bisa diterbitkan karena terdapat data kedaluarsa",
+              "error"
+            );
+          } else {
+            type_tasks(2, ids, 2);
+          }
+        }
+      });
+
+    document
+      .getElementById("delete-btn")
+      .addEventListener("click", function () {
+        let sel_data = task_draft.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        if (ids.length < 1) {
+          al_swal("Belum ada data terpilih", "error");
+        } else {
+          type_tasks(2, ids, 9);
+        }
+      });
+  }
+
+  if (url.includes("tasks/index-scheduled")) {
+    document
+      .getElementById("unpublish-btn")
+      .addEventListener("click", function () {
+        let sel_data = task_scheduled.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        if (ids.length < 1) {
+          al_swal("Belum ada data terpilih", "error");
+        } else {
+          type_tasks(2, ids, 1);
+        }
+      });
+  }
+  // document.getElementById("delete-btn").addEventListener("click", function(){
+  //   let sel_data = '';
+  //   if (url.includes("tasks/index-draft")) {
+  //     sel_data = task_draft.getSelectedData();
+  //   } else if (url.includes("tasks/index-scheduled")) {
+  //     sel_data = task_scheduled.getSelectedData();
+  //   }
+  // });
 }
-// document.getElementById("delete-btn").addEventListener("click", function(){
-//   let sel_data = '';
-//   if (url.includes("tasks/index-draft")) {
-//     sel_data = task_draft.getSelectedData();
-//   } else if (url.includes("tasks/index-scheduled")) {
-//     sel_data = task_scheduled.getSelectedData();
-//   }
-// });
 
 $(document).ready(function () {
   if (url.includes("tasks/index-add")) {
@@ -514,12 +601,12 @@ $(document).ready(function () {
       theme: "snow", // or 'bubble'
     });
   } else if (url.includes("tasks/index-draft")) {
-    // var instruction_tasks_edit = new Quill("#instruction_tasks_edit", {
-    //   modules: {
-    //     toolbar: toolbarOptions,
-    //   },
-    //   theme: "snow", // or 'bubble'
-    // });
+    var instruction_tasks_upd = new Quill("#instruction_tasks_upd", {
+      modules: {
+        toolbar: toolbarOptions,
+      },
+      theme: "snow", // or 'bubble'
+    });
     task_draft.setData(base_url + "/teacher/tasks/list-tasks?page-task=1");
   } else if (url.includes("tasks/index-scheduled")) {
     task_scheduled.setData(base_url + "/teacher/tasks/list-tasks?page-task=2");
