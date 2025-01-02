@@ -29,6 +29,14 @@
                 <div id="head_content_modal"></div>
             </div>
             <div class="modal-body">
+                <div class="hide" id="select_tk_alert">
+                    <div class="alert alert-danger d-flex align-items-center p-2 mb-5">
+                        <i class="bi bi-shield-fill-x fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i>
+                        <div class="d-flex flex-column">
+                            <div id="msgshareless"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-sm-12">
                         <input type="hidden" name="subject" value="<?= $subject ?>">
