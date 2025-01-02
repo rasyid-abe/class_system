@@ -156,7 +156,10 @@ class SchoolLesson extends BaseController
         if ($source == 'additional') {
             $data = $this->lesson_additional
                 ->select('
+                    lesson_additional_id as lesson_id,
                     lesson_additional_content as lesson_content,
+                    lesson_additional_subject_id as lesson_subject_id,
+                    lesson_additional_grade as lesson_grade,
                     lesson_additional_content_path as lesson_content_path,
                     lesson_additional_video_path as lesson_video_path,
                     lesson_additional_attachment_path as lesson_attachment_path,
@@ -168,7 +171,10 @@ class SchoolLesson extends BaseController
         } else {
             $data = $this->lesson_standart
                 ->select('
+                    lesson_standart_id as lesson_id,
                     lesson_standart_content as lesson_content,
+                    lesson_standart_subject_id as lesson_subject_id,
+                    lesson_standart_grade as lesson_grade,
                     lesson_standart_content_path as lesson_content_path,
                     lesson_standart_video_path as lesson_video_path,
                     lesson_standart_attachment_path as lesson_attachment_path,
@@ -178,6 +184,11 @@ class SchoolLesson extends BaseController
                 ->where('lesson_standart_status < 9')
                 ->first();
         }
+
+        $tasks = json_decode($data['lesson_task']);
+
+        $data['tasks'] = $tasks ? (array)$tasks : [];
+        $data['attach_arr'] = $data['lesson_attachment_path'] != '' ? array_values(json_decode($data['lesson_attachment_path'], true)) : [];
             
         echo json_encode($data);
     }

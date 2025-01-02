@@ -26,6 +26,8 @@ $(document).on('click', '.parent_list', function(e) {
 function close_modal_content() {
     $('#modal_update_content').modal('hide')
     $('#body_content_modal').html('')
+    $('#select_tk_alert').addClass('hide')
+    $('#private_tree').html('')
 
 }
 
@@ -110,7 +112,7 @@ function generate_view_lesson(e) {
                     </div>
 
                     <div id="kt_accordion_2_item_2" class="collapse fs-6 m-5" data-bs-parent="#kt_accordion_2">
-                        ${e.lesson_school_content_path != '' ? `<embed src="${file_path + e.lesson_school_content_path}" width="100%" height="500px" />` : 'File belum tersedia'}
+                        ${e.lesson_content_path != '' ? `<embed src="${file_path + e.lesson_content_path}" width="100%" height="500px" />` : 'File belum tersedia'}
                     </div>
                 </div>
 
@@ -158,14 +160,44 @@ function generate_view_attachment(e) {
     $('#attachment_lesson').html(btnn)
 }
 
-function generate_view_task(e) {
-    $('.btn_task_content').html('');
-    // $('#task_lesson').html(e.lesson_school_video_path)
-    if (e.lesson_school_tasks != '') {
-        $('#task_lesson').before('<div class="btn_task_content"><button type="button" class="btn btn-sm btn-primary">Ubah Video</button></div>')
+function generate_view_task(e, id, subj, grad) {
+    let cont = ''
+    let list = ''
+    if (e.length == 0) {
+        cont = 'Latihan tidak tersedia'
     } else {
-        $('#task_lesson').before('<div class="btn_task_content"><button type="button" class="btn btn-sm btn-primary">Tambah Video</button></div>')
+        let ii = 1
+        $.each(e, function(i, v) {
+            
+            if (v != 'empty') {
+                if (i == 'std') {
+                    for (let idx = 0; idx < v.length; idx++) {
+                        list += `<a href="#" class="list-group-item list-group-item-action ltv" id="ltv${ii}" data-c="${ii}" data-type="std" data-idd="${v[idx]}">Soal ${ii}</a>`
+                        ii++
+                    }
+                } else {
+                    for (let idx = 0; idx < v.length; idx++) {
+                        list += `<a href="#" class="list-group-item list-group-item-action ltv" id="ltv${ii}" data-c="${ii}" data-type="me" data-idd="${v[idx]}">Soal ${ii}</a>`
+                        ii++
+                    }
+                }
+            }
+        })
+
+        
+        cont = `
+            <div class="row">
+                <div class="col-sm-3">
+                    <ul class="list-group">${list}</ul>
+                </div>
+                <div class="col-sm-9">
+                    <div class="task" id="preview_task_act"></div>
+                </div>
+            </div>
+        `
     }
+    
+    $('#task_lesson').html(cont)
 }
 
 function view_content(id, source) {
@@ -181,7 +213,7 @@ function view_content(id, source) {
             generate_view_lesson(e)
             generate_view_video(e)
             generate_view_attachment(e)
-            generate_view_task(e)
+            generate_view_task(e.tasks, e.lesson_id, e.lesson_subject_id, e.lesson_grade)
         }
     })
 
@@ -201,6 +233,7 @@ function form_chapter(e, chap = null, subchap = null, id = null) {
                 <input type="hidden" name="lesson_id" value="${chap}" />
                 <label for="chapter" class="form-label">Judul BAB</label>
                 <input type="text" class="form-control form-control-md" name="chapter" value="${chap}" />
+                <small class="text-danger hide" id="rmsg"><span id="msg_err_mdl"></span></small>
             `;
 
         $('#head_content_modal').html('<h3 class="modal-title">Ubah Judul BAB</h3>')
@@ -231,6 +264,7 @@ function form_chapter(e, chap = null, subchap = null, id = null) {
                         <br>
                         <label for="sub_chapter" class="form-label">Judul Sub BAB</label>
                         <input type="text" class="form-control form-control-md" name="sub_chapter" value="${subchap}" />
+                        <small class="text-danger hide" id="rmsg"><span id="msg_err_mdl"></span></small>
                     `;
 
                 $('#head_content_modal').html('<h3 class="modal-title">Ubah Judul Topik</h3>')
@@ -276,6 +310,7 @@ function form_chapter(e, chap = null, subchap = null, id = null) {
                     <input type="hidden" name="form_type" value="${e}" />
                     <label for="chapter" class="form-label">Judul Bab</label>
                     <input type="text" class="form-control form-control-md" name="chapter" value="" />
+                    <small class="text-danger hide" id="rmsg"><span id="msg_err_mdl"></span></small>
                     <br>
                     <span class="text-primary">NOTE: Materi ini tersimpan hanya pada T.P ${active_year}</span>
                 `;
@@ -432,10 +467,19 @@ let findDuplicates = arr => arr.filter((item, index) => arr.indexOf(item) !== in
 
 function save_content() {
     let type = $('input[name=form_type]').val();
+    let form = true;
+
+    console.log(type);
+    // return false
     if (type == 1) {
         item = $('input[name=chapter]').val();
         id = $('input[name=lesson_id]').val();
-        store_content(type, id, [item])
+        if (item != '') {
+            store_content(type, id, [item])
+        } else {
+            form = false;
+            $('#msg_err_mdl').html('Judul BAB tidak boleh kosong!')
+        }
     } else if (type == 2) {
         chap = $('#sel_chapter').find(":selected").val();
         subchap = $('input[name=sub_chapter]').val();
@@ -452,12 +496,25 @@ function save_content() {
 
         id = $('input[name=lesson_id]').val();
 
-        store_content(type, id, [typ, sbj, grd, chp, yea, idl])
+        if (idl != undefined) {
+            store_content(type, id, [typ, sbj, grd, chp, yea, idl])
+        } else {
+            form = false;
+            $('#msgshareless').html('Materi belum dipilih!')
+            $('#select_tk_alert').removeClass('hide')
+        }
+        
     } else if (type == 4) {
         chap = $('input[name=chapter]').val();
         subj = $('input[name=subject]').val();
         grad = $('input[name=grade]').val();
-        store_content(type, '', [chap, subj, grad])
+        if (chap != '') {
+            store_content(type, '', [chap, subj, grad])
+        } else {
+            form = false;
+            $('#msg_err_mdl').html('Judul BAB tidak boleh kosong!')
+        }
+        
     } else if (type == -1) {
         let sort = $('.nsort').map((_,el) => parseInt(el.value)).get()
         let ids = $('.idd').map((_,el) => el.value).get()
@@ -534,7 +591,12 @@ function save_content() {
         store_content(type, '', [sort, ids])
     }
 
-    $('#modal_update_content').modal('hide')
+    if (form) {
+        $('#modal_update_content').modal('hide')
+    } else {
+        $('#rmsg').removeClass('hide')
+    }
+
 }
 
 function store_content(type, id, val) {
@@ -569,8 +631,6 @@ function store_content(type, id, val) {
 }
 
 function toggle_collapse(e) {
-    // $('.head_collapse').removeClass('collapsed')
-    // $('.body_collapse').addClass('hide')
     if ($(`#coll_body_${e}`).hasClass('hide')) {
         $(`#coll_body_${e}`).removeClass('hide')
     } else {

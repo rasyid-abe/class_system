@@ -1,4 +1,3 @@
-
 $(document).ready(function () {
     if (att_id != '') {
         
@@ -29,9 +28,14 @@ jQuery('.input_share_a').on('click', function (e) {
 })
 
 function close_modal_content_a() {
+    $('#rmsg').addClass('hide')
     $('#modal_update_content_a').modal('hide')
     $('#body_content_modal_a').html('')
+}
 
+function close_share_les(){
+    $('#modal_share_a').modal('hide')
+    $('#select_tk_alert').addClass('hide')
 }
 
 function share_topic_a(id, chap, subchap) {
@@ -44,19 +48,26 @@ function act_share_a() {
     let val = $('.input_share_a:checked').val()
     let thc = $('#multiple-select-field-a').val()
     let idd = $('input[name=less_id]').val()
-    if (val == 4 && thc.length < 1) {
-        al_swal('Guru belum dipilih!', 'error')
+    
+    if (val != undefined) {
+        if (val == 4 && thc.length < 1) {
+            $('#msgshareless').html('<h6 class="mb-1 text-danger">Guru belum dipilih!</h6>')
+            $('#select_tk_alert').removeClass('hide')
+        } else {
+            $('#modal_share_a').modal('hide')
+            $.ajax({
+                url: base_url + '/teacher/lesson/additional/share-topic',
+                data: { idd, val, thc },
+                method: 'post',
+                dataType: 'json',
+                success: function (e) {
+                    al_swal('Soal berhasil di bagikan.', 'success')
+                }
+            })
+        }
     } else {
-        $('#modal_share_a').modal('hide')
-        $.ajax({
-            url: base_url + '/teacher/lesson/additional/share-topic',
-            data: { idd, val, thc },
-            method: 'post',
-            dataType: 'json',
-            success: function (e) {
-                al_swal('Soal berhasil di bagikan.', 'success')
-            }
-        })
+        $('#msgshareless').html('<h6 class="mb-1 text-danger">Tujuan pembagian materi belum dipilih!</h6>')
+        $('#select_tk_alert').removeClass('hide')
     }
 }
 
@@ -622,27 +633,53 @@ function form_chapter_a(e, chap = null, subchap = null, id = null) {
 
 function save_content_a() {
     let type = $('input[name=form_type]').val();
+    let form = true;
+    console.log(type);
+    // return false;
+    
     if (type == 1) {
         item = $('input[name=chapter]').val();
         id = $('input[name=lesson_id]').val();
-        store_content_a(type, id, [item])
+        if (item != '') {
+            store_content_a(type, id, [item])
+        } else {
+            form = false;
+            $('#msg_err_mdl').html('Judul BAB tidak boleh kosong!')
+        }
     } else if (type == 2) {
         chap = $('#sel_chapter').find(":selected").val();
         subchap = $('input[name=sub_chapter]').val();
         id = $('input[name=lesson_id]').val();
-        store_content_a(type, id, [chap, subchap])
+        if (subchap != '') {
+            store_content_a(type, id, [chap, subchap])
+        } else {
+            form = false;
+            $('#msg_err_mdl').html('Judul Topik tidak boleh kosong!')
+        }
     } else if (type == 3) {
         id = $('input[name=lesson_id]').val();
         chap = $('input[name=chapter]').val();
         subj = $('input[name=subject]').val();
         grad = $('input[name=grade]').val();
         subchap = $('input[name=sub_chapter]').val();
-        store_content_a(type, id, [chap, subj, grad, subchap])
+        if (subchap != '') {
+            store_content_a(type, id, [chap, subj, grad, subchap])
+        } else {
+            form = false;
+            $('#msg_err_mdl').html('Judul Topik tidak boleh kosong!')
+            $('#rmsg').removeClass('hide')
+        }
     } else if (type == 4) {
         chap = $('input[name=chapter]').val();
         subj = $('input[name=subject]').val();
         grad = $('input[name=grade]').val();
-        store_content_a(type, '', [chap, subj, grad])
+        if (chap != '') {
+            store_content_a(type, '', [chap, subj, grad])
+        } else {
+            form = false;
+            $('#msg_err_mdl').html('Judul BAB tidak boleh kosong!')
+            // $('#rmsg').removeClass('hide')
+        }
     } else if (type == 5) {
         id = $('input[name=lesson_id]').val();
         topic = $("#editor_content > .ql-editor").html();
@@ -658,7 +695,11 @@ function save_content_a() {
         store_content_a(type, id, files)
     }
 
-    $('#modal_update_content_a').modal('hide')
+    if (form) {
+        $('#modal_update_content_a').modal('hide')
+    } else {
+        $('#rmsg').removeClass('hide')
+    }
 }
 
 function store_content_a(type, id, val) {

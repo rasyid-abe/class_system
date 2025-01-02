@@ -33,6 +33,7 @@
                     <div class="col-sm-12">
                         <input type="hidden" name="subject" value="<?= $subject ?>">
                         <input type="hidden" name="grade" value="<?= $grade ?>">
+                        <small class="text-danger hide" id="rmsg"><span id="msg_err_mdl"></span></small>
                         <div id="body_content_modal_a"></div>
                     </div>
                 </div>
@@ -49,7 +50,9 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title"><div id="shared_title_a"></div></h3>
+                <h3 class="modal-title">
+                    <div id="shared_title_a"></div>
+                </h3>
 
                 <!--begin::Close-->
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
@@ -57,7 +60,18 @@
                 </div>
                 <!--end::Close-->
             </div>
+
+            
             <div class="modal-body">
+                <div class="hide" id="select_tk_alert">
+                    <div class="alert alert-danger d-flex align-items-center p-2 mb-5">
+                        <i class="bi bi-shield-fill-x fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i>
+                        <div class="d-flex flex-column">
+                            <div id="msgshareless"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <input type="hidden" name="less_id" val="">
                 <div class="form-check form-check-custom form-check-solid me-10 mb-2 form-check-inline">
                     <input class="form-check-input input_share_a" type="radio" name="gender" value="1" id="opt1" />
@@ -86,7 +100,7 @@
 
                 <div class="hide" id="shared_less_to">
                     <select class="form-select form-select-sm form-select-solid" id="multiple-select-field-a" data-control="select2" data-close-on-select="false" data-placeholder="Pilih Guru" data-allow-clear="true" multiple="multiple">
-                    <?php foreach ($teachers as $k => $v): ?>
+                        <?php foreach ($teachers as $k => $v): ?>
                             <?php $degr = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : ''  ?>
                             <option value="<?= $v['teacher_id'] ?>"><?= $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $degr ?></option>
                         <?php endforeach; ?>
@@ -95,7 +109,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-light-danger" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-light-danger" onclick="close_share_les()">Tutup</button>
                 <button type="button" class="btn btn-primary" onclick="act_share_a();">Kirim</button>
             </div>
         </div>
@@ -106,7 +120,9 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title"><div id="task_title_a">Tambah Latihan</div></h3>
+                <h3 class="modal-title">
+                    <div id="task_title_a">Tambah Latihan</div>
+                </h3>
             </div>
             <div class="modal-body">
                 <input type="hidden" name="less_id" val="">
