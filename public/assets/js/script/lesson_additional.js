@@ -34,8 +34,16 @@ function close_modal_content_a() {
 }
 
 function close_share_les(){
+    $('#multiple-select-field-a').val(null).trigger('change');
+    $('.input_share_a').prop('checked', false)
     $('#modal_share_a').modal('hide')
+    $('#shared_less_to').addClass('hide')
     $('#select_tk_alert').addClass('hide')
+    let btn_footer = `
+        <button type="button" class="btn btn-sm btn-light-danger" onclick="close_share_les()">Tutup</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="act_share_a();">Kirim</button>
+    `
+    $('#btn-footer').html(btn_footer)
 }
 
 function share_topic_a(id, chap, subchap) {
@@ -44,30 +52,46 @@ function share_topic_a(id, chap, subchap) {
     $('#modal_share_a').modal('show')
 }
 
-function act_share_a() {
-    let val = $('.input_share_a:checked').val()
-    let thc = $('#multiple-select-field-a').val()
-    let idd = $('input[name=less_id]').val()
-    
-    if (val != undefined) {
-        if (val == 4 && thc.length < 1) {
-            $('#msgshareless').html('<h6 class="mb-1 text-danger">Guru belum dipilih!</h6>')
-            $('#select_tk_alert').removeClass('hide')
-        } else {
-            $('#modal_share_a').modal('hide')
+function act_share_a(clear = null) {
+    if (clear) {
+        let idd = $('input[name=less_id]').val()
+        let val = 0
+        let thc = null
+        $('#modal_share_a').modal('hide')
             $.ajax({
                 url: base_url + '/teacher/lesson/additional/share-topic',
                 data: { idd, val, thc },
                 method: 'post',
                 dataType: 'json',
                 success: function (e) {
-                    al_swal('Soal berhasil di bagikan.', 'success')
+                    al_swal('Pembatalan berhasil.', 'success')
                 }
             })
-        }
     } else {
-        $('#msgshareless').html('<h6 class="mb-1 text-danger">Tujuan pembagian materi belum dipilih!</h6>')
-        $('#select_tk_alert').removeClass('hide')
+        let val = $('.input_share_a:checked').val()
+        let thc = $('#multiple-select-field-a').val()
+        let idd = $('input[name=less_id]').val()
+        
+        if (val != undefined) {
+            if (val == 4 && thc.length < 1) {
+                $('#msgshareless').html('<h6 class="mb-1 text-danger">Guru belum dipilih!</h6>')
+                $('#select_tk_alert').removeClass('hide')
+            } else {
+                $('#modal_share_a').modal('hide')
+                $.ajax({
+                    url: base_url + '/teacher/lesson/additional/share-topic',
+                    data: { idd, val, thc },
+                    method: 'post',
+                    dataType: 'json',
+                    success: function (e) {
+                        al_swal('Soal berhasil di bagikan.', 'success')
+                    }
+                })
+            }
+        } else {
+            $('#msgshareless').html('<h6 class="mb-1 text-danger">Tujuan pembagian materi belum dipilih!</h6>')
+            $('#select_tk_alert').removeClass('hide')
+        }
     }
 }
 
@@ -538,19 +562,23 @@ function remove_content_a(id, type, file = null) {
     });
 }
 
-function view_content_a(id) {
+function view_content_a(id, type = null) {
     $.ajax({
         url: base_url + '/teacher/lesson/additional/grab-content',
         data: {
-            id
+            id, type
         },
         method: 'post',
         dataType: 'json',
         success: function (e) {
-            generate_view_lesson_a(e)
-            generate_view_video_a(e)
-            generate_view_attachment_a(e)
-            generate_view_task_a(e.tasks, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade)
+            if (type == 'shr') {
+                modal_view_shared(e)
+            } else {
+                generate_view_lesson_a(e)
+                generate_view_video_a(e)
+                generate_view_attachment_a(e)
+                generate_view_task_a(e.tasks, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade)
+            }
         }
     })
 
@@ -1026,4 +1054,38 @@ function act_tasks_a(){
 
     store_content_a(7, less_id, [send_std, send_me, send_pub])
     
+}
+
+function view_shared_lesson(id) {
+    view_content_a(id, 'shr')
+}
+
+function modal_view_shared(e){
+    if (e.lesson_additional_shared_type == 1) {
+        $('#opt1').prop('checked', true)
+    } else if (e.lesson_additional_shared_type == 2) {
+        $('#opt2').prop('checked', true)
+    } else if (e.lesson_additional_shared_type == 3) {
+        $('#opt3').prop('checked', true)
+    } else if (e.lesson_additional_shared_type == 4) {
+        $('#opt4').prop('checked', true)
+        let selected_group = [];
+        $.each(JSON.parse(e.lesson_additional_shared_to), function (i, v) {
+            selected_group.push(v);
+        });
+        $('#multiple-select-field-a').val(selected_group).trigger("change");
+        $('#shared_less_to').removeClass('hide')
+    }
+
+    $('#shared_title_a').html(`Informasi Topik Dibagikan`)
+    $('input[name=less_id]').val(e.lesson_additional_id);
+
+    let btn_footer = `
+        <button type="button" class="btn btn-sm btn-light-danger" onclick="close_share_les()">Tutup</button>
+        <button type="button" class="btn btn-sm btn-light-warning" onclick="act_share_a(1)">Batalkan Bagi</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="act_share_a();">Kirim</button>
+    `
+    $('#btn-footer').html(btn_footer)
+
+    $('#modal_share_a').modal('show')
 }
