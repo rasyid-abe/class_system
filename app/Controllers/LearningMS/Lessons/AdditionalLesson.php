@@ -242,58 +242,28 @@ class AdditionalLesson extends BaseController
 
     public function grab_content()
     {
-        $id = $this->request->getVar('id');
-        $data = $this->lesson_additional
-            ->where('lesson_additional_id', $id)
-            ->where('lesson_additional_status < 9')
-            ->first();
-
-        $tasks = json_decode($data['lesson_additional_tasks']);
-        // $arr_task = [];
-        // if ($tasks) {
-        //     $i = 0;
-        //     foreach ($tasks as $k => $v) {
-        //         if ($v != 'empty') {
-        //             if ($i > 0) {
-        //                 foreach ($v as $key => $val) {
-        //                     $arr_task[] = $this->qb
-        //                         ->select('
-        //                             question_bank_id as id,
-        //                             question_bank_question as question,
-        //                             question_bank_option as option,
-        //                             question_bank_answer as answer,
-        //                             question_bank_poin as poin,
-        //                             question_bank_explain as explain,
-        //                             question_bank_hint as hint
-        //                         ')
-        //                         ->where('question_bank_id', $val)
-        //                         ->first();
-        //                 }
-        //             } else {
-        //                 foreach ($v as $key => $val) {
-        //                     $arr_task[] = $this->qb_s
-        //                         ->select('
-        //                             question_bank_standart_id as id,
-        //                             question_bank_standart_question as question,
-        //                             question_bank_standart_option as option,
-        //                             question_bank_standart_answer as answer,
-        //                             question_bank_standart_poin as poin,
-        //                             question_bank_standart_explain as explain,
-        //                             question_bank_standart_hint as hint
-        //                         ')
-        //                         ->where('question_bank_standart_id', $val)
-        //                         ->first();
-        //                 }
-        //             }
-        //         }
-        //         $i++;
-        //     }
-        // }
-
-
-        
-        $data['tasks'] = $tasks ? (array)$tasks : [];
-        $data['attach_arr'] = $data['lesson_additional_attachment_path'] != '' ? array_values(json_decode($data['lesson_additional_attachment_path'], true)) : [];
+        $req = $this->request->getVar();
+        if ($req['type'] == 'shr') {
+            $data = $this->lesson_additional
+                ->select('
+                    lesson_additional_id,
+                    lesson_additional_shared_type,
+                    lesson_additional_shared_to
+                ')
+                ->where('lesson_additional_id', $req['id'])
+                ->where('lesson_additional_status < 9')
+                ->first();
+        } else {
+            $data = $this->lesson_additional
+                ->where('lesson_additional_id', $req['id'])
+                ->where('lesson_additional_status < 9')
+                ->first();
+    
+            $tasks = json_decode($data['lesson_additional_tasks']);
+            
+            $data['tasks'] = $tasks ? (array)$tasks : [];
+            $data['attach_arr'] = $data['lesson_additional_attachment_path'] != '' ? array_values(json_decode($data['lesson_additional_attachment_path'], true)) : [];
+        }
  
         echo json_encode($data);
     }
@@ -535,16 +505,24 @@ class AdditionalLesson extends BaseController
     public function share_topic()
     {
         $req = $this->request->getVar();
-        $shared_to = '';
-        if ($req['val'] == 4) {
-            $shared_to = isset($req['thc']) != '' ? json_encode($req['thc']) : '';
-        } 
-
-        $share = $this->lesson_additional
-            ->where('lesson_additional_id', $req['idd'])
-            ->set('lesson_additional_shared_type', $req['val'])
-            ->set('lesson_additional_shared_to', $shared_to)
-            ->update();
+        if ($req['val'] != 0) {
+            $shared_to = '';
+            if ($req['val'] == 4) {
+                $shared_to = isset($req['thc']) != '' ? json_encode($req['thc']) : '';
+            } 
+    
+            $share = $this->lesson_additional
+                ->where('lesson_additional_id', $req['idd'])
+                ->set('lesson_additional_shared_type', $req['val'])
+                ->set('lesson_additional_shared_to', $shared_to)
+                ->update();
+        } else {
+            $share = $this->lesson_additional
+                ->where('lesson_additional_id', $req['idd'])
+                ->set('lesson_additional_shared_type', $req['val'])
+                ->set('lesson_additional_shared_to', '')
+                ->update();
+        }
 
         echo json_encode($share);
     }

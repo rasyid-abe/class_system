@@ -30,15 +30,17 @@
 	<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator_simple.min.css" rel="stylesheet">
 
 	<style>
-        .swal2-toast {
-            background-color: rgba(54,70,93,.99) !important;
-        }
-        .swal2-title {
-            color: #fff !important;
-        }
-        .swal2-timer-progress-bar {
-            background-color: lightblue !important;
-        }
+		.swal2-toast {
+			background-color: rgba(54, 70, 93, .99) !important;
+		}
+
+		.swal2-title {
+			color: #fff !important;
+		}
+
+		.swal2-timer-progress-bar {
+			background-color: lightblue !important;
+		}
 
 		.alert img {
 			max-width: 70%;
@@ -105,6 +107,12 @@
 			left: 0;
 			width: 100%;
 			height: 100%;
+		}
+
+		.center {
+			margin: auto;
+			margin-right: 0;
+			padding-right: 0;
 		}
 	</style>
 </head>

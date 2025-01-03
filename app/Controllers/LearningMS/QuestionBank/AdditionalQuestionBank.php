@@ -73,7 +73,7 @@ class AdditionalQuestionBank extends BaseController
         $data['grade'] = $grade;
 
         $question = $this->question_bank
-            ->select('question_bank_id, question_bank_title')
+            ->select('question_bank_id, question_bank_title, question_bank_shared_type')
             ->where('question_bank_teacher_id', userdata()['id_profile'])
             ->where('question_bank_status < 9')
             ->where('question_bank_subject_id', $subject)
@@ -105,16 +105,24 @@ class AdditionalQuestionBank extends BaseController
     public function share_task()
     {
         $req = $this->request->getVar();
-        $shared_to = '';
-        if ($req['val'] == 4) {
-            $shared_to = isset($req['thc']) != '' ? json_encode($req['thc']) : '';
-        } 
-
-        $share = $this->question_bank
-            ->where('question_bank_id', $req['idd'])
-            ->set('question_bank_shared_type', $req['val'])
-            ->set('question_bank_shared_to', $shared_to)
-            ->update();
+        if ($req['val'] == 0) {
+            $share = $this->question_bank
+                ->where('question_bank_id', $req['idd'])
+                ->set('question_bank_shared_type', $req['val'])
+                ->set('question_bank_shared_to', '')
+                ->update();
+        } else {
+            $shared_to = '';
+            if ($req['val'] == 4) {
+                $shared_to = isset($req['thc']) != '' ? json_encode($req['thc']) : '';
+            } 
+    
+            $share = $this->question_bank
+                ->where('question_bank_id', $req['idd'])
+                ->set('question_bank_shared_type', $req['val'])
+                ->set('question_bank_shared_to', $shared_to)
+                ->update();
+        }
 
         echo json_encode($share);
     }
@@ -122,34 +130,45 @@ class AdditionalQuestionBank extends BaseController
     public function get_question()
     {
         $req = $this->request->getVar();
-        $d = $this->question_bank
-            ->where('question_bank_id', $req['id'])
-            ->where('question_bank_status < 9')
-            ->first();
-
-        $opt = json_decode($d['question_bank_option']);
-        $ans = json_decode($d['question_bank_answer']);
-
-        foreach ($ans as $k => $v) {
-            $key = array_search($v, $opt);
-            $opt['r_' . $k] = $opt[$key];
-            unset($opt[$key]);
+        if ($req['type'] == 'shr') {
+            $res = $this->question_bank
+                ->select('
+                    question_bank_id,
+                    question_bank_shared_type,
+                    question_bank_shared_to
+                ')
+                ->where('question_bank_id', $req['id'])
+                ->first();
+        } else {
+            $d = $this->question_bank
+                ->where('question_bank_id', $req['id'])
+                ->where('question_bank_status < 9')
+                ->first();
+    
+            $opt = json_decode($d['question_bank_option']);
+            $ans = json_decode($d['question_bank_answer']);
+    
+            foreach ($ans as $k => $v) {
+                $key = array_search($v, $opt);
+                $opt['r_' . $k] = $opt[$key];
+                unset($opt[$key]);
+            }
+    
+            $res = [
+                'id' => $d['question_bank_id'],
+                'parent' => $d['question_bank_parent_id'],
+                'subj' => $d['question_bank_subject_id'],
+                'grad' => $d['question_bank_grade'],
+                'title' => $d['question_bank_title'],
+                'poin' => $d['question_bank_poin'],
+                'type' => $d['question_bank_type'],
+                'question' => $d['question_bank_question'],
+                'option' => $opt,
+                'explain' => $d['question_bank_explain'],
+                'hint' => $d['question_bank_hint'],
+                'list_quest' => get_list('question_type'),
+            ];
         }
-
-        $res = [
-            'id' => $d['question_bank_id'],
-            'parent' => $d['question_bank_parent_id'],
-            'subj' => $d['question_bank_subject_id'],
-            'grad' => $d['question_bank_grade'],
-            'title' => $d['question_bank_title'],
-            'poin' => $d['question_bank_poin'],
-            'type' => $d['question_bank_type'],
-            'question' => $d['question_bank_question'],
-            'option' => $opt,
-            'explain' => $d['question_bank_explain'],
-            'hint' => $d['question_bank_hint'],
-            'list_quest' => get_list('question_type'),
-        ];
 
         echo json_encode($res);
     }

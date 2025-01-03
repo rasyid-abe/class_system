@@ -108,7 +108,7 @@
                 </div>
             </div>
 
-            <div class="modal-footer">
+            <div class="modal-footer" id="btn-footer">
                 <button type="button" class="btn btn-light-danger" onclick="close_share_les()">Tutup</button>
                 <button type="button" class="btn btn-primary" onclick="act_share_a();">Kirim</button>
             </div>
@@ -162,10 +162,10 @@
                                     <a href="#" class="d-grid" style="font-weight: 500;" onclick="toggle_collapse(<?= $k ?>);"><?= $v['lesson_additional_chapter'] ?></a>
                                     <div class="btnleft">
                                         <a href="#" class="" onclick="form_chapter_a(3, '<?= $v['lesson_additional_chapter'] ?>', '', '<?= $v['lesson_additional_id'] ?>')">
-                                            <i class="bi bi-plus fs-3 text-gray-600"></i>
+                                            <i class="bi bi-plus-square-fill fs-2 text-primary"></i>
                                         </a>
                                         <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                            <i class="bi bi-three-dots-vertical fs-3 text-gray-600"></i>
+                                            <i class="bi bi-three-dots-vertical fs-2 text-primary"></i>
                                         </a>
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" data-popper-placement="bottom-end"
                                             style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);">
@@ -188,15 +188,28 @@
                                     <?php foreach ($v['sub_chapter'] as $key => $val): ?>
                                         <?php if ($val['lesson_additional_subchapter'] != '') : ?>
                                             <div class="d-flex justify-content-between">
-                                                <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold" onclick="view_content_a(<?= $val['lesson_additional_id'] ?>);"><?= $val['lesson_additional_subchapter'] ?></a>
-                                                <div class="">
-                                                    <a href="#" class="" onclick="share_topic_a(<?= $val['lesson_additional_id'] ?>, '<?= $val['lesson_additional_chapter'] ?>', '<?= $val['lesson_additional_subchapter'] ?>');">
-                                                        <i class="bi bi-share fs-5 text-gray-600"></i>
-                                                    </a>
+                                                <div class="shared-info">
+                                                    <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold" onclick="view_content_a(<?= $val['lesson_additional_id'] ?>);"><?= $val['lesson_additional_subchapter'] ?></a>
+                                                    <?php if ($val['lesson_additional_shared_type'] > 0): ?>
+                                                        <br><small class="fw-bold text-info">Dibagikan</small>
+                                                    <?php endif ?>
+                                                </div>
+                                                <div class="center">
                                                     <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                         <i class="bi bi-three-dots-vertical fs-3 text-gray-600"></i>
                                                     </a>
                                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);" data-popper-placement="bottom-end">
+                                                    <div class="menu-item px-3">
+                                                        <?php if ($val['lesson_additional_shared_type'] < 1): ?>
+                                                            <span onclick="share_topic_a(<?= $val['lesson_additional_id'] ?>, '<?= $val['lesson_additional_chapter'] ?>', '<?= $val['lesson_additional_subchapter'] ?>');" class="menu-link px-3">
+                                                                Bagikan
+                                                            </span>
+                                                        <?php else: ?>
+                                                            <span onclick="view_shared_lesson(<?= $val['lesson_additional_id'] ?>)" class="menu-link px-3">
+                                                                Lihat Pambagian
+                                                            </span>
+                                                        <?php endif ?>
+                                                    </div>
                                                         <div class="menu-item px-3">
                                                             <span onclick="form_chapter_a(2, '<?= $val['lesson_additional_chapter'] ?>', '<?= $val['lesson_additional_subchapter'] ?>', '<?= $val['lesson_additional_id'] ?>');" class="menu-link px-3">
                                                                 Ubah

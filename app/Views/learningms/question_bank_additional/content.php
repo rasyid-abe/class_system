@@ -11,10 +11,7 @@
         background-color: red;
         color: white;
     }
-
-    /* input[type="file"]::file-selector-button:active {
-    background-color: #e5e7eb;
-} */
+    
 </style>
 
 
@@ -388,6 +385,7 @@
                         <input type="hidden" name="subject" value="<?= $subject ?>">
                         <input type="hidden" name="grade" value="<?= $grade ?>">
                         <div id="body_content_modal_quest"></div>
+                        <small class="text-danger hide" id="rmsg"><span id="msg_err_mdl"></span></small>
                     </div>
                 </div>
             </div>
@@ -414,6 +412,14 @@
                 <!--end::Close-->
             </div>
             <div class="modal-body">
+                <div class="hide" id="select_tk_alert">
+                    <div class="alert alert-danger d-flex align-items-center p-2 mb-5">
+                        <i class="bi bi-shield-fill-x fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i>
+                        <div class="d-flex flex-column">
+                            <div id="msgshareless"></div>
+                        </div>
+                    </div>
+                </div>
                 <input type="hidden" name="task_id" val="">
                 <div class="form-check form-check-custom form-check-solid me-10 mb-2 form-check-inline">
                     <input class="form-check-input input_share_task" type="radio" name="gender" value="1" id="opt1" />
@@ -451,8 +457,8 @@
 
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light-danger" data-bs-dismiss="modal">Tutup</button>
+            <div class="modal-footer" id="btn-footer">
+                <button type="button" class="btn btn-light-danger" onclick="close_share_task_modal();">Tutup</button>
                 <button type="button" class="btn btn-primary" onclick="act_share_task();">Kirim</button>
             </div>
         </div>
@@ -503,10 +509,15 @@
             </div>
             <div class="accordion-item rounded-border">
                 <?php foreach ($questions as $k => $v): ?>
-                    <div class="accordion-body bg-secondary">
+                    <div class="accordion-body bg-secondary p-5">
                         <div class="d-flex justify-content-between">
-                            <a href="#" class="d-grid" style="font-weight: 500;" onclick="toggle_collapse('<?= $v['question_bank_id'] ?>');"><?= $v['question_bank_title'] ?></a>
-                            <div class="btnleft">
+                            <div class="shared-info" style="width: 70%">
+                                <a href="#" class="d-grid fs-bold" style="font-weight: 500; padding-right: 10px;" onclick="toggle_collapse('<?= $v['question_bank_id'] ?>');"><?= $v['question_bank_title'] ?></a>
+                                <?php if ($v['question_bank_shared_type'] > 0): ?>
+                                    <small class="fw-bold text-info">Dibagikan</small>
+                                <?php endif ?>
+                            </div>
+                            <div class="btnleft center pull-right text-right" style="width: 30%;">
                                 <a href="#" class="fw-bold" onclick="form_chapter_quest(-2, '<?= $v['question_bank_title'] ?>', '<?= $v['question_bank_id'] ?>')">
                                     <i class="bi bi-arrow-up-square fs-2 text-primary"></i>
                                 </a>
@@ -521,9 +532,15 @@
                                     data-kt-menu="true" data-popper-placement="bottom-end"
                                     style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);">
                                     <div class="menu-item px-3">
-                                        <span onclick="share_task(<?= $v['question_bank_id'] ?>, '<?= $v['question_bank_title'] ?>');" class="menu-link px-3">
-                                            Bagikan
-                                        </span>
+                                        <?php if ($v['question_bank_shared_type'] < 1): ?>
+                                            <span onclick="share_task(<?= $v['question_bank_id'] ?>, '<?= $v['question_bank_title'] ?>');" class="menu-link px-3">
+                                                Bagikan
+                                            </span>
+                                        <?php else: ?>
+                                            <span onclick="view_shared_quest(<?= $v['question_bank_id'] ?>)" class="menu-link px-3">
+                                                Lihat Pambagian
+                                            </span>
+                                        <?php endif ?>
                                     </div>
                                     <div class="menu-item px-3">
                                         <span onclick="form_chapter_quest(2, '<?= $v['question_bank_title'] ?>', <?= $v['question_bank_id'] ?>);" class="menu-link px-3">
@@ -547,7 +564,8 @@
                                 <div class="d-flex justify-content-start">
                                     <?php foreach ($x as $y): ?>
                                         <a href="#" onclick="view_question(<?= $y['question_bank_id'] ?>)" class="m-1 btn btn-icon btn-outline btn-outline-primary qtact"><?= $i + 1 ?></a>
-                                    <?php $i++; endforeach ?>
+                                    <?php $i++;
+                                    endforeach ?>
                                 </div>
                             <?php endforeach ?>
                         </div>
