@@ -23,12 +23,10 @@ class DashboardTeacher extends BaseController
     }
     public function index()
     {
-        $data["title"] = 'Tambah Penilaian';
+        $data["title"] = 'Dashboard';
         $data["page"] = 'Dashboard';
         $data["sidebar"] = 'Dashboard';
         $data["breadcrumb"] = [
-            '#' => $this->title,
-            '##' => 'Tambah Penilaian',
         ];
 
         return view("dashboard/teacher", $data);

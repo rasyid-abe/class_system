@@ -4,8 +4,10 @@ namespace App\Controllers\LearningMS\Lessons;
 
 use App\Controllers\BaseController;
 use App\Models\Lessons\StandartLessonModel;
+use App\Models\Masters\StudentGroupModel;
 use App\Models\Masters\SubjectModel;
 use App\Models\Systems\TeacherAssignModel;
+use App\Models\Systems\StudentInGroupModel;
 
 class StandartLesson extends BaseController
 {
@@ -16,6 +18,7 @@ class StandartLesson extends BaseController
     protected $subject;
     protected $lesson_standart;
     protected $teacher_assign;
+    protected $student_ingroup;
 
     public function __construct()
     {
@@ -25,8 +28,11 @@ class StandartLesson extends BaseController
         $this->subject = new SubjectModel();
         $this->lesson_standart = new StandartLessonModel();
         $this->teacher_assign = new TeacherAssignModel();
+        $this->student_ingroup = new StudentGroupModel();
     }
 
+
+    // BEGIN TEACHER FUNCTION
     public function index()
     {
         $data["title"] = 'Materi Standar';
@@ -47,6 +53,55 @@ class StandartLesson extends BaseController
         $data['grades'] = $grades;
 
         return view("learningms/lesson_standart/index", $data);
+    }
+
+    public function first_page() 
+    {
+        $req = $this->request->getVar();
+        
+        if($req['type'] == 1) {
+            $total_lesson = $this->lesson_standart
+                ->select('lesson_standart_id')
+                ->where('lesson_standart_status < 9')
+                ->groupBy('lesson_standart_subject_id')
+                ->findAll();
+            $total_chapter = $this->lesson_standart
+                ->select('lesson_standart_id')
+                ->where('lesson_standart_status < 9')
+                ->groupBy('lesson_standart_chapter')
+                ->findAll();
+            
+            $grades = list_grade(userdata()['school_id']);
+            $subject = $this->lesson_standart->list_first_page(key($grades));
+            // foreach ($subject as $k => $v) {
+                
+            // }
+            // echo '<pre>';
+            // print_r($subject);
+            // echo '</pre>';
+            // die;
+            $res = [
+                't_less' => count($total_lesson),
+                't_chap' => count($total_chapter),
+                'grades' => $grades,
+                'subjects' => $subject,
+            ];
+
+            echo json_encode($res);
+
+        } else if ($req['type'] == 2) {
+            $subject = $this->lesson_standart
+                ->where('lesson_standart_grade', $req['param'])
+                ->where('lesson_standart_status < 9')
+                ->findAll();
+            
+            echo '<pre>';
+            print_r($subject);
+            echo '</pre>';
+            die;
+        }
+        die;
+
     }
 
     public function view_subject($grade)
@@ -116,5 +171,27 @@ class StandartLesson extends BaseController
             ->first();
             
         echo json_encode($data);
+    }
+
+
+    // BEGIN STUDENT FUNCTION
+    public function s_index()
+    {
+        $data["title"] = 'Materi Standar';
+        $data["page"] = $this->page;
+        $data["sidebar"] = $this->sidebar;
+        $data["breadcrumb"] = [
+            '#' => $this->title,
+            '##' => 'Materi Standar',
+        ];
+
+        $my_grade = student_group();
+
+        echo '<pre>';
+        print_r($my_grade);
+        echo '</pre>';
+        die;
+
+        return view("learningms/lesson_standart/index", $data);
     }
 }

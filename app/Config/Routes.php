@@ -42,6 +42,7 @@ $routes->get('/dashboard/student/change-password', 'Dashboard\DashboardStudent::
 $routes->post('/dashboard/student/update-password', 'Dashboard\DashboardStudent::update_password', ['filter' => 'auth']); #done
 
 $routes->get('/teacher/lesson/standart', 'LearningMS\Lessons\StandartLesson::index', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/standart/first-page', 'LearningMS\Lessons\StandartLesson::first_page', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/standart/create', 'LearningMS\Lessons\StandartLesson::create', ['filter' => 'auth']); #done
 $routes->post('/teacher/lesson/standart/ref-data', 'LearningMS\Lessons\StandartLesson::ref_data', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/standart/view-subject/(:num)', 'LearningMS\Lessons\StandartLesson::view_subject/$1', ['filter' => 'auth']);
@@ -123,3 +124,6 @@ $routes->get('/teacher/tasks/list-tasks', 'LearningMS\Tasks\Tasks::list_tasks', 
 
 $routes->get('/teacher/groups/view-students/(:num)', 'LearningMS\Groups\Groups::view_students/$1', ['filter' => 'auth']);
 $routes->get('/teacher/groups/get-list-student', 'LearningMS\Groups\Groups::get_list_students', ['filter' => 'auth']);
+
+
+$routes->get('/student/lesson/standart', 'LearningMS\Lessons\StandartLesson::s_index', ['filter' => 'auth']);

@@ -1,5 +1,5 @@
 <div class="tab-content">
-    <?php if(session()->get('c_role') == 11): ?>
+    <?php if (session()->get('c_role') == 11): ?>
         <!--begin::Tab pane-->
         <div class="tab-pane fade <?= $page == "Dashboard" ? 'active show' : '' ?>" id="home_dashboard" role="tabpanel">
             <!--begin::Tasks-->
@@ -13,7 +13,7 @@
                             <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div>
                         </div>
                     </div>
-                    <h3 class="fw-semibold text-gray-800 text-center lh-lg">           
+                    <h3 class="fw-semibold text-gray-800 text-center lh-lg">
                         Nama Lengkap, S.Pd
                     </h3>
                     <div class="text-gray-500 fw-semibold text-center lh-lg">Users from all channels</div>
@@ -433,10 +433,10 @@
                 <!--begin::Header-->
                 <h3 class="fw-bolder text-dark mb-10 mx-0">Mengajar di Kelas</h3>
                 <!--end::Header-->
-            
+
                 <!--begin::Body-->
                 <div class="mb-12">
-                    <?php foreach(my_groups() as $k => $v): ?>
+                    <?php foreach (my_groups() as $k => $v): ?>
                         <!--begin::Item-->
                         <div class="d-flex align-items-center mb-7">
                             <!--begin::Symbol-->
@@ -468,15 +468,39 @@
         </div>
         <!--end::Tab pane-->
         <!--begin::Tab pane-->
-    <?php elseif(session()->get('c_role') == 12): ?>
-        <div class="tab-pane fade active show" id="self_study" role="tabpanel">
+    <?php elseif (session()->get('c_role') == 12): ?>
+        <!--begin::Tab pane-->
+        <div class="tab-pane fade active show" id="home_dashboard" role="tabpanel">
+            <!--begin::Tasks-->
+            <div class="mx-5">
+                <!--begin::Body-->
+                <div class="mb-12">
+                    <!--begin::Item-->
+                    <div class="me-7 mb-4 d-flex justify-content-center">
+                        <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
+                            <img src="<?= base_url() ?>images/default-user2.png" alt="image">
+                            <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div>
+                        </div>
+                    </div>
+                    <h3 class="fw-semibold text-gray-800 text-center lh-lg">
+                        Nama Lengkap, S.Pd
+                    </h3>
+                    <div class="text-gray-500 fw-semibold text-center lh-lg">Users from all channels</div>
+                    <!--end::Item-->
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Tasks-->
+        </div>
+        <!--end::Tab pane-->
+        <div class="tab-pane fade" id="self_study" role="tabpanel">
             <!--begin::Tasks-->
             <div class="mx-5">
                 <!--begin::Header-->
                 <h3 class="fw-bolder text-dark mb-10 mx-0">Belajar Mandiri</h3>
                 <!--end::Header-->
-            <!--begin::Body-->
-            <div class="mb-12">
+                <!--begin::Body-->
+                <div class="mb-12">
                     <!--begin::Item-->
                     <div class="d-flex align-items-center mb-7">
                         <!--begin::Symbol-->
@@ -490,7 +514,7 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
+                            <a href="<?= base_url('/student/lesson/standart') ?>"
                                 class="text-gray-800 text-hover-primary fs-6 fw-bold">Materi Standar</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
@@ -510,7 +534,7 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
+                            <a href="<?= base_url('/student/lesson/school') ?>"
                                 class="text-gray-800 text-hover-info fs-6 fw-bold">Materi Sekolah</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
@@ -519,7 +543,7 @@
                     <!--end::Item-->
                 </div>
                 <!--end::Body-->
-                
+
             </div>
             <!--end::Tasks-->
         </div>
@@ -544,7 +568,7 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
+                            <a href="<?= base_url('/student/assessment/active') ?>"
                                 class="text-gray-800 text-hover-success fs-6 fw-bold">Tugas Aktif</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
@@ -564,7 +588,7 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
+                            <a href="<?= base_url('/student/assessment/missed') ?>"
                                 class="text-gray-800 text-hover-danger fs-6 fw-bold">Tugas Terlewat</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
@@ -584,7 +608,7 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
+                            <a href="<?= base_url('/student/assessment/done') ?>"
                                 class="text-gray-800 text-hover-info fs-6 fw-bold">Tugas Selesai</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
@@ -617,7 +641,7 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
+                            <a href="<?= base_url('/student/tasks/active') ?>"
                                 class="text-gray-800 text-hover-success fs-6 fw-bold">Tugas Aktif</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
@@ -637,7 +661,7 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
+                            <a href="<?= base_url('/student/tasks/missed') ?>"
                                 class="text-gray-800 text-hover-danger fs-6 fw-bold">Tugas Terlewat</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
@@ -657,7 +681,7 @@
                         <!--end::Symbol-->
                         <!--begin::Text-->
                         <div class="d-flex flex-column">
-                            <a href="../dist/pages/profile/overview.html"
+                            <a href="<?= base_url('/student/tasks/done') ?>"
                                 class="text-gray-800 text-hover-info fs-6 fw-bold">Tugas Selesai</a>
                             <!-- <span class="text-muted fw-bold">Project Manager</span> -->
                         </div>
@@ -670,5 +694,5 @@
             <!--end::Tasks-->
         </div>
         <!--end::Tab pane-->
-<?php endif; ?>
+    <?php endif; ?>
 </div>

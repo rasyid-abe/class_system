@@ -26,7 +26,7 @@
                         <div class="d-flex flex-wrap">
                             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="fs-2 fw-bold text-light" data-kt-countup="true" data-kt-countup-value="75" data-kt-initialized="1">75</div>
+                                    <div class="fs-2 fw-bold text-light" id="count_subj">memuat ...</div>
                                 </div>
 
                                 <div class="fw-semibold fs-6 text-gray-500">Mata Pelajaran</div>
@@ -34,7 +34,7 @@
 
                             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="fs-2 fw-bold text-light" data-kt-countup="true" data-kt-countup-value="75" data-kt-initialized="1">75</div>
+                                    <div class="fs-2 fw-bold text-light" id="count_chap">memuat ...</div>
                                 </div>
 
                                 <div class="fw-semibold fs-6 text-gray-500">BAB</div>
@@ -47,8 +47,8 @@
             </div>
         </div>
 
-        <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5">
-            <li class="nav-item mt-2">
+        <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5" id="list_class">
+            <!-- <li class="nav-item mt-2">
                 <a class="nav-link text-active-primary ms-0 me-10 py-5 " href="/seven-html-pro/account/overview.html">
                     Kelas X </a>
             </li>
@@ -59,7 +59,7 @@
             <li class="nav-item mt-2">
                 <a class="nav-link text-active-light fw-bold ms-0 me-10 py-5 active" href="#">
                     Kelas XII </a>
-            </li>
+            </li> -->
         </ul>
     </div>
 </div>

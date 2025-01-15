@@ -67,6 +67,8 @@ $(document.body).on("click", "#btnshow_lesson", function () {
 });
 
 function treeview_tasks_ch(e, subj, grad) {
+  console.log(e);
+
   let content = "";
   let bdi1 = 1;
   $.each(e.datas, function (i, v) {
@@ -267,20 +269,13 @@ function edit_task(id) {
 }
 
 function view_edit_task(e) {
-  let title_chap = ''
-  if (e.task_lesson_src == 2) {
-    title_chap = e.lesson_standart_chapter + ' - ' + e.lesson_standart_subchapter
-  } else {
-    title_chap = e.lesson_additional_chapter + ' - ' + e.lesson_additional_subchapter
-  }
-
   $("input[name=tasks_id]").val(e.task_id);
   $("input[name=subjid]").val(e.task_subject_id);
   $("input[name=gradid]").val(e.task_grade);
   $("input[name=lessonid]").val(e.task_lesson_id);
   $("input[name=lessonsrc]").val(e.task_lesson_src);
-  $("input[name=selected_task]").val(title_chap);
-  $("input[name=selected_subj]").val(e.subject_name  + ' - Kelas ' + e.task_grade );
+  $("input[name=selected_task]").val(e.task_lesson_name);
+  $("input[name=selected_subj]").val(e.task_subject_name);
   $("input[name=title]").val(e.task_title);
 
   let start = e.task_start.substring(0, 16);
@@ -463,10 +458,13 @@ function reload_tabulator() {
 
 if (url.includes("tasks/index-draft")) {
   let c = [
-    // { title: "#Aksi", field: "acts", width: 150, formatter: "html", headerVisible:false},
+    { title: "#Aksi", field: "acts", width: 150, formatter: "html", headerVisible:false},
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Akhir", field: "end_date", visible: false },
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { title: "Penilaian", field: "title" },
+    { title: "Materi Tugas", field: "lesson", formatter: "html" },
+    { title: "Kelompok Belajar", field: "group", formatter: "html" },
+    { title: "Periode", field: "period" },
   ];
 
   tbconf.columns = c;
@@ -474,22 +472,32 @@ if (url.includes("tasks/index-draft")) {
 } else if (url.includes("tasks/index-scheduled")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { title: "Akhir", field: "end_date", visible: false },
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { title: "Penilaian", field: "title", width: 250 },
+    { title: "Materi Tugas", field: "lesson", formatter: "html" },
+    { title: "Kelompok Belajar", field: "group", formatter: "html" },
+    { title: "Periode", field: "period" },
   ];
 
   tbconf.columns = c;
   var task_scheduled = new Tabulator("#task_scheduled_table", tbconf);
 } else if (url.includes("tasks/index-present")) {
   let c = [
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { title: "Penilaian", field: "title", width: 250 },
+    { title: "Materi Tugas", field: "lesson", formatter: "html" },
+    { title: "Kelompok Belajar", field: "group", formatter: "html" },
+    { title: "Periode", field: "period" },
   ];
 
   tbconf.columns = c;
   var task_present = new Tabulator("#task_present_table", tbconf);
 } else if (url.includes("tasks/index-done")) {
   let c = [
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { title: "Penilaian", field: "title", width: 250 },
+    { title: "Materi Tugas", field: "lesson", formatter: "html" },
+    { title: "Kelompok Belajar", field: "group", formatter: "html" },
+    { title: "Periode", field: "period" },
   ];
 
   tbconf.columns = c;
@@ -585,7 +593,6 @@ if (url.includes("teacher/tasks")) {
 }
 
 $(document).ready(function () {
-  $('.tabulator-header-filter input').attr('placeholder', 'Cari data ...')
   if (url.includes("tasks/index-add")) {
     var instruction_tasks = new Quill("#instruction_tasks", {
       modules: {

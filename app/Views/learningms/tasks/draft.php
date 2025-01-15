@@ -1,14 +1,18 @@
 <?php $this->extend('templates/core') ?>
 <?php $this->section('content'); ?>
 
+
 <div class="card mb-5 mb-xl-10">
 
   <div class="card-body border-top p-9">
-    <div class="btn-group mb-3" role="group" aria-label="Basic example">
-      <button type="button" id="select-all" class="btn btn-sm btn-secondary">Pilih Semua</button>
-      <button type="button" id="deselect-all" class="btn btn-sm btn-secondary">Batal Pilih</button>
-      <button type="button" id="publish-btn" class="btn btn-sm btn-secondary">Terbitkan</button>
-      <button type="button" id="delete-btn" class="btn btn-sm btn-secondary">Hapus</button>
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="btn-group btn-block mb-3 rounded" role="group" aria-label="Basic example">
+        <button type="button" id="select-all" class="btn btn-sm btn-dark">Pilih Semua</button>
+        <button type="button" id="deselect-all" class="btn btn-sm btn-dark">Batal Pilih</button>
+        <button type="button" id="publish-btn" class="btn btn-sm btn-dark">Terbitkan</button>
+        <button type="button" id="delete-btn" class="btn btn-sm btn-dark">Hapus</button>
+      </div>
+      <!-- <div class="p-5 rounded bg-dark text-light fw-bold">Total Data: 123</div> -->
     </div>
     <div id="task_draft_table"></div>
   </div>
