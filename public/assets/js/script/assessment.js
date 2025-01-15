@@ -188,8 +188,6 @@ function hide_modal_edit() {
 }
 
 function check_group(subs, grad) {
-  console.log(subs, grad);
-  
   let groups = $("#multiple-select-group").select2();
   $.ajax({
     url: base_url + "/teacher/assessment/data-option",
@@ -197,8 +195,6 @@ function check_group(subs, grad) {
     method: "post",
     dataType: "json",
     success: function (e) {
-      console.log(e);
-      
       if (e) {
         let option = "";
         $.each(e, function (i, v) {
@@ -370,11 +366,18 @@ function edit_draft(id) {
 }
 
 function view_edit(e) {
+  let task_title = ''
+  if (e.assessment_question_bank_src != 2) {
+    task_title = e.question_bank_standart_title
+  } else {
+    task_title = e.question_bank_title
+  }
+  
   $("input[name=assessment_id]").val(e.assessment_id);
   $("input[name=taskid]").val(e.assessment_question_bank_id);
   $("input[name=tasksrc]").val(e.assessment_question_bank_src);
-  $("input[name=selected_task]").val(e.assessment_question_bank_title);
-  $("input[name=selected_subj]").val(e.assessment_subject_name);
+  $("input[name=selected_task]").val(task_title);
+  $("input[name=selected_subj]").val(e.subject_name + ' - Kelas ' + e.assessment_grade);
   $("input[name=subjid]").val(e.assessment_subject_id);
   $("input[name=gradid]").val(e.assessment_grade);
   $("input[name=title]").val(e.assessment_title);
@@ -425,6 +428,7 @@ const tbconf = {
   movableColumns: true,
   selectableRows: true,
   paginationCounter: "rows",
+  // headerVisible:false,
   placeholder: '<h6>Data tidak tersedia.</h6>',
   langs: {
     default: {
@@ -471,60 +475,39 @@ function type_assessment(type, ids, sts) {
 function reload_tabulator_ass() {
   if (url.includes("assessment/index-draft")) {
     draft.replaceData();
-    console.log('reload draft');
     
   } else if (url.includes("assessment/index-scheduled")) {
     scheduled.replaceData();
-    console.log('reload scheduled');
   }
 }
 
 if (url.includes("assessment/index-draft")) {
   let c = [
-    { title: "#", field: "acts", formatter: "html" },
+    // { title: "#Aksi", field: "acts", width: 150, formatter: "html", headerVisible:false},
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Akhir", field: "end_date", visible: false },
-    { title: "Penilaian", field: "title" },
-    { title: "Mata Pelajaran", field: "mapel" },
-    { title: "Kelompok Belajar", field: "group", formatter: "html" },
-    { title: "Soal", field: "task", formatter: "html" },
-    { title: "Periode", field: "period" },
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var draft = new Tabulator("#ass_draft_table", tbconf);
 } else if (url.includes("assessment/index-scheduled")) {
   let c = [
-    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { title: "Penilaian", field: "title", width: 250 },
-    { title: "Mata Pelajaran", field: "mapel" },
-    { title: "Kelompok Belajar", field: "group", formatter: "html" },
-    { title: "Soal", field: "task", formatter: "html" },
-    { title: "Periode", field: "period" },
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var scheduled = new Tabulator("#ass_scheduled_table", tbconf);
 } else if (url.includes("assessment/index-present")) {
   let c = [
-    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { title: "Penilaian", field: "title", width: 250 },
-    { title: "Mata Pelajaran", field: "mapel" },
-    { title: "Kelompok Belajar", field: "group", formatter: "html" },
-    { title: "Soal", field: "task", formatter: "html" },
-    { title: "Periode", field: "period" },
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var present = new Tabulator("#ass_present_table", tbconf);
 } else if (url.includes("assessment/index-done")) {
   let c = [
-    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { title: "Penilaian", field: "title", width: 250 },
-    { title: "Mata Pelajaran", field: "mapel" },
-    { title: "Kelompok Belajar", field: "group", formatter: "html" },
-    { title: "Soal", field: "task", formatter: "html" },
-    { title: "Periode", field: "period" },
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;

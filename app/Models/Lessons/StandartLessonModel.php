@@ -64,5 +64,26 @@ class StandartLessonModel extends Model
 
         return $this->db->query($query)->getResultArray();
     }
+
+    public function list_first_page($grade) 
+    {
+        $query = "
+            SELECT
+                lls.lesson_standart_id,
+                lls.lesson_standart_subject_id,
+                ms.subject_name,
+                lls.lesson_standart_chapter,
+                lls.lesson_standart_subchapter
+            FROM
+                lms_lesson_standart lls
+            JOIN master_subject ms ON
+                lls.lesson_standart_subject_id = ms.subject_id
+            WHERE
+                lls.lesson_standart_grade = $grade
+        ";
+
+        return $this->db->query($query)->getResultArray();
+
+    }
 }
 

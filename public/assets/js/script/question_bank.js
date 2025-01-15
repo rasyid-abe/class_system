@@ -132,6 +132,8 @@ function view_question(id, type = null) {
     method: "post",
     dataType: "json",
     success: function (e) {
+      console.log(e);
+      
       if (type == "shr") {
         modal_shared_task_view(e);
       } else {
@@ -159,6 +161,8 @@ function view_question_std(id) {
 }
 
 function generate_task(e) {
+  console.log(e);
+  
   let opt = ``;
   let num = 1;
   $.each(e.option, function (i, v) {
@@ -171,7 +175,7 @@ function generate_task(e) {
     opt += `
         <div class="col-sm-6">
             <div class="alert alert-dismissible bg-light-${
-              i.includes("r_")
+              e.keys.includes(i)
                 ? "success border border-success"
                 : "secondary border border-dark"
             } d-flex flex-column flex-sm-row p-5 mb-5">
@@ -394,7 +398,7 @@ function show_form_edit(type, id, subj = null, grad = null, parent = null) {
   } else {
     $.ajax({
       url: base_url + "/teacher/question-bank/additional/get-question",
-      data: { id },
+      data: { id, type:null},
       method: "post",
       dataType: "json",
       success: function (e) {
@@ -424,10 +428,10 @@ function show_edit_task(e, type, id) {
                   <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
                       <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
                           <input class="form-check-input mc_option_edit ${
-                            i.includes("r_") ? "checked_mc" : ""
+                            e.keys.includes(i) ? "checked_mc" : ""
                           }" type="radio" value="" ${
-          i.includes("r_") ? "checked" : ""
-        } />
+                            e.keys.includes(i) ? "checked" : ""
+                          } />
                           <label class="form-check-label">
                               Jawaban Benar
                           </label>
@@ -445,10 +449,10 @@ function show_edit_task(e, type, id) {
                   <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
                       <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
                           <input class="form-check-input mcx_option_edit ${
-                            i.includes("r_") ? "checked_mcx" : ""
+                            e.keys.includes(i) ? "checked_mcx" : ""
                           }" type="checkbox" value="" ${
-          i.includes("r_") ? "checked" : ""
-        } />
+                            e.keys.includes(i) ? "checked" : ""
+                          } />
                           <label class="form-check-label">
                               Jawaban Benar
                           </label>

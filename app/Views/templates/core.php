@@ -4,7 +4,11 @@
 
 <head>
 	<base href="">
-	<title>Seven HTML Free - Bootstrap 5 HTML Multipurpose Light/Dark Admin Dashboard Theme by Keenthemes</title>
+	<?php 
+		end($breadcrumb);
+		$z = prev($breadcrumb);
+	?>
+	<title>Live Learn - <?= $z. ' '. $title ?></title>
 	<meta name="description"
 		content="Seven admin dashboard live demo. Check out all the features of the admin panel. Light &amp; dark skins. A large number of settings, additional services and widgets." />
 	<meta name="keywords"
@@ -27,9 +31,49 @@
 	<link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
 
-	<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator_simple.min.css" rel="stylesheet">
+	<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator_bootstrap4.min.css" rel="stylesheet">
+	<!-- <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator_simple.min.css" rel="stylesheet"> -->
 
 	<style>
+		.tabulator .tabulator-header .tabulator-col .tabulator-col-content {
+			padding: 1px !important;
+		}
+
+		.tabulator-paginator {
+			padding-bottom: 10px;
+			border-radius: 5px;
+		}
+
+		.tabulator-footer-contents {
+			overflow: auto;
+		}
+
+		.tabulator-header-filter input {
+			padding: 10px !important;
+			background-color: #E6E6E6 !important;
+			margin: 0 !important;
+		}
+
+		.tabulator-tableholder {
+			margin-top: 5px;
+		}
+
+		.tabulator-cell,
+		.tabulator-selectable {
+			margin: 1px !important;
+			border-left: 5px solid #192440;
+		}
+
+		.tabulator-row,
+		.tabulator-header {
+			border: none !important;
+		}
+
+		.tabulator-col-title-holder {
+			display: none;
+		}
+
+
 		.swal2-toast {
 			background-color: rgba(54, 70, 93, .99) !important;
 		}
@@ -111,7 +155,7 @@
 
 		.center {
 			margin: auto;
-			margin-right: 0;
+			margin-left: 0;
 			padding-right: 0;
 		}
 	</style>
@@ -1269,6 +1313,7 @@
 	<script src="<?= base_url() ?>assets/js/script/lesson_public.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/question_bank.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/assessment.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/first_page.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/tasks.js"></script>
 	<script src="<?= base_url() ?>assets/js/form.repeater.js"></script>
 

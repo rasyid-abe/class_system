@@ -130,6 +130,8 @@ class AdditionalQuestionBank extends BaseController
     public function get_question()
     {
         $req = $this->request->getVar();
+       
+        
         if ($req['type'] == 'shr') {
             $res = $this->question_bank
                 ->select('
@@ -147,12 +149,19 @@ class AdditionalQuestionBank extends BaseController
     
             $opt = json_decode($d['question_bank_option']);
             $ans = json_decode($d['question_bank_answer']);
-    
+
+            $idx_ans = [];
             foreach ($ans as $k => $v) {
-                $key = array_search($v, $opt);
-                $opt['r_' . $k] = $opt[$key];
-                unset($opt[$key]);
+                $idx_ans[] = array_search($v, $opt);
+                // $key = array_search($v, $opt);
+                // $opt['r_' . $k] = $opt[$key];
+                // unset($opt[$key]);
             }
+
+            // echo '<pre>';
+            // print_r($idx_ans);
+            // echo '</pre>';
+            // die;
     
             $res = [
                 'id' => $d['question_bank_id'],
@@ -162,6 +171,7 @@ class AdditionalQuestionBank extends BaseController
                 'title' => $d['question_bank_title'],
                 'poin' => $d['question_bank_poin'],
                 'type' => $d['question_bank_type'],
+                'keys' => $idx_ans,
                 'question' => $d['question_bank_question'],
                 'option' => $opt,
                 'explain' => $d['question_bank_explain'],
@@ -340,7 +350,7 @@ class AdditionalQuestionBank extends BaseController
         for ($i=0; $i < $total_sheet; $i++) { 
             $sheetData = $spreadsheet->setActiveSheetIndex($i)->toArray();
             $xlsObj = $spreadsheet->setActiveSheetIndex($i);
-    
+           
             $arrImages = [];
             foreach ($xlsObj->getDrawingCollection() as $key => $drawing) {
                 $imagePath = $drawing->getPath();
@@ -358,6 +368,7 @@ class AdditionalQuestionBank extends BaseController
             try {
                 $arr_task = [];
                 $ii = 1;
+                
                 foreach ($sheetData as $k => $v) {
                     if ($v[0] != 'No') {
                         $arr_task[$i.$ii]['question_bank_school_id'] = userdata()['school_id'];
@@ -365,9 +376,10 @@ class AdditionalQuestionBank extends BaseController
                         $arr_task[$i.$ii]['question_bank_subject_id'] = $req['subject'];
                         $arr_task[$i.$ii]['question_bank_grade'] = $req['grade'];
                         $arr_task[$i.$ii]['question_bank_parent_id'] = $req['id_quest'];
-                        $arr_task[$i.$ii]['question_bank_status'] = $v[1];
+                        $arr_task[$i.$ii]['question_bank_status'] = 1;
                         $arr_task[$i.$ii]['question_bank_hint'] = '<p><br></p>';
                         $arr_task[$i.$ii]['question_bank_explain'] = '<p><br></p>';
+                        $arr_task[$i.$ii]['question_bank_poin'] = $v[1];
     
                         $img_q = array_key_exists("C".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["C".$ii].'"></p>' : '';
                         $arr_task[$i.$ii]['question_bank_question'] = '<p>'.$v[2] .'</p>' . $img_q;
@@ -376,38 +388,16 @@ class AdditionalQuestionBank extends BaseController
                         if ($i == 0) {
                             $arr_task[$i.$ii]['question_bank_type'] = 1;
     
-                            $img_a = array_key_exists("D".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["D".$ii].'"></p>' : '';
-                            $arr_task[$i.$ii]['question_bank_answer'] = json_encode(['<p>'.$v[3] .'</p>' . $img_a]);
+                            // $omcx = explode("&", $v[3]);
+                            // foreach ($omcx as $x) {
+                                //     if (isset($v[$x + 2])) {
+                                    //         $arr_ans[] = '<p>'.$v[$x + 2].'</p>';
+                                    //     } else {
+                                        //         throw new \Exception('index tidak ada');
+                                        //     }
+                                        // }
+                                        
                             
-                            $img_opt_a = array_key_exists("E".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["E".$ii].'"></p>' : '';
-                            $img_opt_b = array_key_exists("F".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["F".$ii].'"></p>' : '';
-                            $img_opt_c = array_key_exists("G".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["G".$ii].'"></p>' : '';
-                            $img_opt_d = array_key_exists("H".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["H".$ii].'"></p>' : '';
-                            $opt = [
-                                array_key_exists(3,$v) ? '<p>'.$v[3] .'</p>' . $img_a : '<p></p>',
-                                array_key_exists(4,$v) ? '<p>'.$v[4] .'</p>' . $img_opt_a : '<p></p>',
-                                array_key_exists(5,$v) ? '<p>'.$v[5] .'</p>' . $img_opt_b : '<p></p>',
-                                array_key_exists(6,$v) ? '<p>'.$v[6] .'</p>' . $img_opt_c : '<p></p>',
-                                array_key_exists(7,$v) ? '<p>'.$v[7] .'</p>' . $img_opt_d : '<p></p>',
-                            ];
-    
-                            $clean_opt = array_diff($opt, ['<p></p>']);
-                            $arr_task[$i.$ii]['question_bank_option'] = json_encode($clean_opt);
-                            
-                        } else if ($i == 1) {
-                            $arr_task[$i.$ii]['question_bank_type'] = 2;
-    
-                            $omcx = explode("&", $v[3]);
-                            $arr_ans = [];
-                            foreach ($omcx as $x) {
-                                if (isset($v[$x + 2])) {
-                                    $arr_ans[] = '<p>'.$v[$x + 2].'</p>';
-                                } else {
-                                    throw new \Exception('index tidak ada');
-                                }
-                            }
-                            
-                            $arr_task[$i.$ii]['question_bank_answer'] = json_encode($arr_ans);
                             
                             $img_opt_a = array_key_exists("E".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["E".$ii].'"></p>' : '';
                             $img_opt_b = array_key_exists("F".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["F".$ii].'"></p>' : '';
@@ -421,6 +411,40 @@ class AdditionalQuestionBank extends BaseController
                                 array_key_exists(7,$v) ? '<p>'.$v[7] .'</p>' . $img_opt_d : '<p></p>',
                                 array_key_exists(8,$v) ? '<p>'.$v[8] .'</p>' . $img_opt_e : '<p></p>',
                             ];
+
+                            $arr_ans[0] = $opt[$v[3] - 1];
+                            $arr_task[$i.$ii]['question_bank_answer'] = json_encode($arr_ans);
+    
+                            $clean_opt = array_diff($opt, ['<p></p>']);
+                            $arr_task[$i.$ii]['question_bank_option'] = json_encode($clean_opt);
+                            
+                        } else if ($i == 1) {
+                            $arr_task[$i.$ii]['question_bank_type'] = 2;
+    
+                            $img_opt_a = array_key_exists("E".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["E".$ii].'"></p>' : '';
+                            $img_opt_b = array_key_exists("F".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["F".$ii].'"></p>' : '';
+                            $img_opt_c = array_key_exists("G".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["G".$ii].'"></p>' : '';
+                            $img_opt_d = array_key_exists("H".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["H".$ii].'"></p>' : '';
+                            $img_opt_e = array_key_exists("I".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["I".$ii].'"></p>' : '';
+                            $opt = [
+                                array_key_exists(4,$v) ? '<p>'.$v[4] .'</p>' . $img_opt_a : '<p></p>',
+                                array_key_exists(5,$v) ? '<p>'.$v[5] .'</p>' . $img_opt_b : '<p></p>',
+                                array_key_exists(6,$v) ? '<p>'.$v[6] .'</p>' . $img_opt_c : '<p></p>',
+                                array_key_exists(7,$v) ? '<p>'.$v[7] .'</p>' . $img_opt_d : '<p></p>',
+                                array_key_exists(8,$v) ? '<p>'.$v[8] .'</p>' . $img_opt_e : '<p></p>',
+                            ];
+
+                            $omcx = explode("&", $v[3]);
+                            $arr_ans = [];
+                            foreach ($omcx as $x) {
+                                if (isset($v[$x + 2])) {
+                                    $arr_ans[] = $opt[$x - 1];
+                                } else {
+                                    throw new \Exception('index tidak ada');
+                                }
+                            }
+                            
+                            $arr_task[$i.$ii]['question_bank_answer'] = json_encode($arr_ans);
     
                             $clean_opt = array_diff($opt, ['<p></p>']);
                             $arr_task[$i.$ii]['question_bank_option'] = json_encode($clean_opt);
@@ -435,6 +459,7 @@ class AdditionalQuestionBank extends BaseController
                     }
                     $ii++;
                 }
+                
                 $this->question_bank->insertBatch($arr_task);
                 $this->question_bank->db->transCommit();
             } catch (\Throwable $th) {

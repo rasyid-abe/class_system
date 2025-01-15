@@ -213,29 +213,7 @@ class Assessment extends BaseController
     public function get_edit()
     {
         $id = $this->request->getVar('id');
-
-        $select = '
-                    assessment_id,
-                    assessment_title,
-                    assessment_start,
-                    assessment_end,
-                    assessment_grade,
-                    assessment_subject_id,
-                    assessment_group,
-                    assessment_question_bank_src,
-                    assessment_question_bank_id,
-                    subject_name,
-                    question_bank_title,
-                    question_bank_standart_title,
-                ';
-
-        $row = $this->assessment
-            ->select($select)
-            ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
-            ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
-            ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
-            ->where('assessment_id', $id)->first();
-            
+        $row = $this->assessment->where('assessment_id', $id)->first();
         echo json_encode($row);
     }
 
@@ -282,11 +260,11 @@ class Assessment extends BaseController
                     'assessment_teacher_id' => userdata()['id_profile'],
                     'assessment_grade' => $d[2],
                     'assessment_subject_id' => $d[1],
-                    // 'assessment_subject_name' => $d[13],
+                    'assessment_subject_name' => $d[13],
                     'assessment_group' => json_encode($group),
                     'assessment_title' => $d[0],
                     'assessment_question_bank_id' => $d[11],
-                    // 'assessment_question_bank_title' => $d[12],
+                    'assessment_question_bank_title' => $d[12],
                     'assessment_question_bank_src' => $d[14],
                     'assessment_start' => date('Y-m-d H:i:s', strtotime($d[4].':00')),
                     'assessment_end' => date('Y-m-d H:i:s', strtotime($d[5].':00')),
@@ -399,27 +377,8 @@ class Assessment extends BaseController
     {
         $req = $this->request->getVar();
 
-        $select = '
-                    assessment_id,
-                    assessment_title,
-                    assessment_start,
-                    assessment_end,
-                    assessment_grade,
-                    assessment_subject_id,
-                    assessment_group,
-                    assessment_question_bank_src,
-                    assessment_question_bank_id,
-                    subject_name,
-                    question_bank_title,
-                    question_bank_standart_title,
-                ';
-
         if ($req['page-ass'] == 1) {
             $get = $this->assessment
-                ->select($select)
-                ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
-                ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
-                ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
                 ->where('assessment_status', 1)
                 ->where('assessment_school_id', userdata()['school_id'])
                 ->where('assessment_teacher_id', userdata()['id_profile'])
@@ -427,10 +386,6 @@ class Assessment extends BaseController
                 ->findAll();
         } else if ($req['page-ass'] == 2) {
             $get = $this->assessment
-                ->select($select)
-                ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
-                ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
-                ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
                 ->where('assessment_status', 2)
                 ->where('assessment_start >=', date('Y-m-d H:i:s'))
                 ->where('assessment_school_id', userdata()['school_id'])
@@ -438,10 +393,6 @@ class Assessment extends BaseController
                 ->findAll();
         } else if ($req['page-ass'] == 3) {
             $get = $this->assessment
-                ->select($select)
-                ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
-                ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
-                ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
                 ->where('assessment_status', 2)
                 ->where('assessment_start <=', date('Y-m-d H:i:s'))
                 ->where('assessment_end >=', date('Y-m-d H:i:s'))
@@ -449,11 +400,7 @@ class Assessment extends BaseController
                 ->where('assessment_teacher_id', userdata()['id_profile'])
                 ->findAll();
             } else if ($req['page-ass'] == 4) {
-            $get = $this->assessment
-                ->select($select)
-                ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
-                ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
-                ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
+                $get = $this->assessment
                 ->where('assessment_status', 2)
                 ->where('assessment_end <=', date('Y-m-d H:i:s'))
                 ->where('assessment_school_id', userdata()['school_id'])
@@ -467,109 +414,24 @@ class Assessment extends BaseController
             foreach (json_decode($v['assessment_group']) as $key => $val) {
                 $groups .= '<a href="'. base_url('teacher/groups/view-students/' . $val->id).'" class="badge badge-info mx-1">'.$val->group.'</a>';
             }
-
-            $task_title = '';
-            if ($v['assessment_question_bank_src'] != 2) {
-                $task_title = $v['question_bank_standart_title'];
-            } else {
-                $task_title = $v['question_bank_title'];
-            }
-
-            $task = '
-                <badge class="badge badge-primary" data-bs-placement="top" title="Ubah" onclick="view_task_assessment('.$v['assessment_question_bank_id'].', '.$v['assessment_question_bank_src'].')">'.$task_title.'</badge>
+            
+            $acts = '
+                <badge class="badge badge-dark" data-bs-placement="top" title="Ubah" onclick="edit_draft('.$v['assessment_id'].')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
             ';
 
-
-            $lists = '';
-            if ($req['page-ass'] == 1) {
-                $acts = '
-                    <badge class="badge badge-dark mt-2" data-bs-placement="top" title="Ubah" onclick="edit_draft('.$v['assessment_id'].')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
-                ';
-
-
-                $lists = '
-                    <div class="row bigrow-tabulator">
-                        <div class="col-lg-4 mx-auto">
-                            <div class="d-flex justify-content-between">
-                                <div class="d-flex align-items-start">
-                                    
-                                    <div class="d-flex center">
-                                        '.$acts.'
-                                    </div>
-                    
-                                    <div class="flex-grow-1 me-2 mx-5 center">
-                                        <h6 class="mb-1">'.$v['assessment_title'].'</h6>
-                                        <span class="text-gray-700 d-block">'.$task.'</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 mx-auto">
-                            <div class="additional-info">
-                                <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                    <span class="text-gray-800 fw-semibold">'.$v['subject_name'].'</span>
-                                    <div class="bdg-group">
-                                    '.$groups.'&nbsp;
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 mx-auto">
-                            <div class="additional-info">
-                                <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                    <span class="text-gray-700 fw-semibold">'.datetime_indo($v['assessment_start']).'</span>
-                                    <span class="text-gray-700 fw-semibold">'.datetime_indo($v['assessment_end']).'</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ';
-
-            } else {
-
-                $lists = '
-                    <div class="row bigrow-tabulator">
-                        <div class="col-lg-4 mx-auto">
-                            <div class="d-flex justify-content-between">
-                                <div class="d-flex align-items-start">
-                                    <div class="flex-grow-1 me-2 center">
-                                        <h6 class="mb-1">'.$v['assessment_title'].'</h6>
-                                        <span class="text-gray-700 d-block">'.$task.'</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 mx-auto">
-                            <div class="additional-info">
-                                <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                    <span class="text-gray-800 fw-semibold">'.$v['subject_name'].'</span>
-                                    <div class="bdg-group">
-                                    '.$groups.'&nbsp;
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 mx-auto">
-                            <div class="additional-info">
-                                <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                    <span class="text-gray-700 fw-semibold">'.datetime_indo($v['assessment_start']).'</span>
-                                    <span class="text-gray-700 fw-semibold">'.datetime_indo($v['assessment_end']).'</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ';
-            }
+            $task = '
+                <badge class="badge badge-primary" data-bs-placement="top" title="Ubah" onclick="view_task_assessment('.$v['assessment_question_bank_id'].', '.$v['assessment_question_bank_src'].')">'.$v['assessment_question_bank_title'].'</badge>
+            ';
         
             $data[] = [
                 'end_date' => $v['assessment_end'],
                 'id' => $v['assessment_id'],
                 'title' => $v['assessment_title'],
-                'mapel' => $v['subject_name'],
+                'mapel' => $v['assessment_subject_name'],
                 'period' => datetime_indo($v['assessment_start']).' - '.datetime_indo($v['assessment_end']),
                 'group' => $groups,
                 'task' => $task,
-                'lists' => $lists
+                'acts' => $acts,
             ];
         }
 

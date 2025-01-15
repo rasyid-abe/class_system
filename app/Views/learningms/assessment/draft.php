@@ -5,10 +5,10 @@
 
   <div class="card-body border-top p-9">
   <div class="btn-group mb-3" role="group" aria-label="Basic example">
-      <button type="button" id="select-all" class="btn btn-sm btn-secondary">Pilih Semua</button>
-      <button type="button" id="deselect-all" class="btn btn-sm btn-secondary">Batal Pilih</button>
-      <button type="button" id="publish-btn" class="btn btn-sm btn-secondary">Terbitkan</button>
-      <button type="button" id="delete-btn" class="btn btn-sm btn-secondary">Hapus</button>
+      <button type="button" id="select-all" class="btn btn-sm btn-dark">Pilih Semua</button>
+      <button type="button" id="deselect-all" class="btn btn-sm btn-dark">Batal Pilih</button>
+      <button type="button" id="publish-btn" class="btn btn-sm btn-dark">Terbitkan</button>
+      <button type="button" id="delete-btn" class="btn btn-sm btn-dark">Hapus</button>
     </div>
     <div id="ass_draft_table"></div>
   </div>

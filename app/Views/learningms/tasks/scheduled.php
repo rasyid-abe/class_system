@@ -5,9 +5,9 @@
 
   <div class="card-body border-top p-9">
     <div class="btn-group mb-3" role="group" aria-label="Basic example">
-      <button type="button" id="select-all" class="btn btn-sm btn-secondary">Pilih Semua</button>
-      <button type="button" id="deselect-all" class="btn btn-sm btn-secondary">Batal Pilih</button>
-      <button type="button" id="unpublish-btn" class="btn btn-sm btn-secondary">Batalkan</button>
+      <button type="button" id="select-all" class="btn btn-sm btn-dark">Pilih Semua</button>
+      <button type="button" id="deselect-all" class="btn btn-sm btn-dark">Batal Pilih</button>
+      <button type="button" id="unpublish-btn" class="btn btn-sm btn-dark">Batalkan</button>
     </div>
     <div id="task_scheduled_table"></div>
   </div>

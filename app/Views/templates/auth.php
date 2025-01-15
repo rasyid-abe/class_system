@@ -2,8 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Seven HTML Pro - Bootstrap 5 HTML Multipurpose Light/Dark Admin Dashboard Theme - Seven HTML Free by
-        KeenThemes</title>
+    <title>Live Learn - Login</title>
     <meta charset="utf-8" />
     <meta name="description"
         content="Seven admin dashboard live demo. Check out all the features of the admin panel. Light & dark skins. A large number of settings, additional services and widgets." />

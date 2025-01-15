@@ -81,13 +81,13 @@
             <ul class="nav flex-column">
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"
                 data-bs-dismiss="click" title="Dashboard">
-                    <a class="nav-link btn btn-custom btn-icon" href="#"><i class="bi bi-bar-chart-fill fs-2x"></i></a>
+                    <a class="nav-link btn btn-custom btn-icon active" href="#"><i class="bi bi-bar-chart-fill fs-2x"></i></a>
                 </li>
                 <!--begin::Nav item-->
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"
                     data-bs-dismiss="click" title="Belajar Mandiri">
                     <!--begin::Nav link-->
-                    <a class="nav-link btn btn-custom btn-icon active" data-bs-toggle="tab" href="#self_study">
+                    <a class="nav-link btn btn-custom btn-icon" data-bs-toggle="tab" href="#self_study">
                         <i class="fas fa-pencil-ruler fs-2x"></i>
                     </a>
                     <!--end::Nav link-->

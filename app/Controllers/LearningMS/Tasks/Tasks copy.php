@@ -260,11 +260,11 @@ class Tasks extends BaseController
                     'task_teacher_id' => userdata()['id_profile'],
                     'task_grade' => $r[2],
                     'task_subject_id' => $r[1],
-                    // 'task_subject_name' => $r[10],
+                    'task_subject_name' => $r[10],
                     'task_group' => json_encode($group),
                     'task_title' => $r[0],
                     'task_lesson_id' => $r[8],
-                    // 'task_lesson_name' => $r[9],
+                    'task_lesson_name' => $r[9],
                     'task_lesson_src' => $r[11],
                     'task_task_ids' => $lsrc['tasks'],
                     'task_start' => date('Y-m-d H:i:s', strtotime($r[4].':00')),
@@ -393,31 +393,9 @@ class Tasks extends BaseController
     public function list_tasks()
     {
         $req = $this->request->getVar();
-        
-        $select = '
-                task_id, 
-                task_group,
-                task_grade,
-                task_title,
-                task_start,
-                task_end,
-                task_lesson_id,
-                task_lesson_src,
-                task_task_ids,
-                task_subject_id,
-                subject_name,
-                lesson_additional_chapter,
-                lesson_additional_subchapter,
-                lesson_standart_chapter,
-                lesson_standart_subchapter
-            ';
-            
+
         if ($req['page-task'] == 1) {
             $get = $this->tasks
-                ->select($select)
-                ->join('master_subject', 'subject_id=task_subject_id', 'left')
-                ->join('lms_lesson_additional', 'task_lesson_id=lesson_additional_id', 'left')
-                ->join('lms_lesson_standart', 'task_lesson_id=lesson_standart_id', 'left')
                 ->where('task_status', 1)
                 ->where('task_school_id', userdata()['school_id'])
                 ->where('task_teacher_id', userdata()['id_profile'])
@@ -425,10 +403,6 @@ class Tasks extends BaseController
                 ->findAll();
         } else if ($req['page-task'] == 2) {
             $get = $this->tasks
-                ->select($select)
-                ->join('master_subject', 'subject_id=task_subject_id', 'left')
-                ->join('lms_lesson_additional', 'task_lesson_id=lesson_additional_id', 'left')
-                ->join('lms_lesson_standart', 'task_lesson_id=lesson_standart_id', 'left')
                 ->where('task_status', 2)
                 ->where('task_start >=', date('Y-m-d H:i:s'))
                 ->where('task_school_id', userdata()['school_id'])
@@ -436,10 +410,6 @@ class Tasks extends BaseController
                 ->findAll();
         } else if ($req['page-task'] == 3) {
             $get = $this->tasks
-                ->select($select)
-                ->join('master_subject', 'subject_id=task_subject_id', 'left')
-                ->join('lms_lesson_additional', 'task_lesson_id=lesson_additional_id', 'left')
-                ->join('lms_lesson_standart', 'task_lesson_id=lesson_standart_id', 'left')
                 ->where('task_status', 2)
                 ->where('task_start <=', date('Y-m-d H:i:s'))
                 ->where('task_end >=', date('Y-m-d H:i:s'))
@@ -447,11 +417,7 @@ class Tasks extends BaseController
                 ->where('task_teacher_id', userdata()['id_profile'])
                 ->findAll();
         } else if ($req['page-task'] == 4) {
-            $get = $this->tasks
-                ->select($select)
-                ->join('master_subject', 'subject_id=task_subject_id', 'left')
-                ->join('lms_lesson_additional', 'task_lesson_id=lesson_additional_id', 'left')
-                ->join('lms_lesson_standart', 'task_lesson_id=lesson_standart_id', 'left')
+                $get = $this->tasks
                 ->where('task_status', 2)
                 ->where('task_end <=', date('Y-m-d H:i:s'))
                 ->where('task_school_id', userdata()['school_id'])
@@ -463,104 +429,29 @@ class Tasks extends BaseController
         foreach ($get as $k => $v) {
             $groups = '';
             foreach (json_decode($v['task_group']) as $key => $val) {
-                $groups .= '<a href="'. base_url('teacher/groups/view-students/' . $val->id).'" class="badge badge-info">'.$val->group.'</a>&nbsp;';
+                $groups .= '<a href="'. base_url('teacher/groups/view-students/' . $val->id).'" class="badge badge-info mx-1">'.$val->group.'</a>';
             }
 
-            $chap_title = '';
-            if ($v['task_lesson_src'] == 2) {
-                $chap_title = $v['lesson_standart_chapter'] .' - '. $v['lesson_standart_subchapter'];
-            } else {
-                $chap_title = $v['lesson_additional_chapter'] .' - '. $v['lesson_additional_subchapter'];
-            }
-
-            $lesson = '<badge class="badge badge-primary" onclick="lesson_preview('.$v['task_lesson_id'].', '.$v['task_lesson_src'].', '.$v['task_id'].')">'.$chap_title.'</badge>';
+            $lesson = '<badge class="badge badge-primary" onclick="lesson_preview('.$v['task_lesson_id'].', '.$v['task_lesson_src'].', '.$v['task_id'].')">'.$v['task_lesson_name'].'</badge>';
 
 
-            $lists = '';
+            $acts = '';
             if ($req['page-task'] == 1) {
                 $acts = '
-                    <div class="d-flex flex-column">
-                    <badge class="badge badge-success mb-1" data-bs-placement="top" title="Atur Soal" onclick="view_quest_bank('.$v['task_id'].', '.$v['task_subject_id'].', '.$v['task_grade'].')"><i class="bi bi-gear-fill fs-6 text-white"></i></badge>
+                    <badge class="badge badge-success" data-bs-placement="top" title="Atur Soal" onclick="view_quest_bank('.$v['task_id'].', '.$v['task_subject_id'].', '.$v['task_grade'].')"><i class="bi bi-gear-fill fs-6 text-white"></i></badge>
                     <badge class="badge badge-dark" data-bs-placement="top" title="Ubah" onclick="edit_task('.$v['task_id'].')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
-                    </div>
-                ';
-
-                $lists = '
-                <div class="row bigrow-tabulator">
-                    <div class="col-lg-4 mx-auto">
-                        <div class="d-flex justify-content-between">
-                            <div class="d-flex align-items-start">
-                                '.$acts.'
-                                <div class="flex-grow-1 me-2 mx-5 center">
-                                    <h6 class="mb-1">'.$v['task_title'].'</h6>
-                                    <span class="text-gray-700 d-block">'.$lesson.'</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mx-auto">
-                        <div class="additional-info">
-                            <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                <span class="text-gray-800 fw-semibold">'.$v['subject_name'].'</span>
-                                <div class="bdg-group">
-                                '.$groups.'
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mx-auto">
-                        <div class="additional-info">
-                            <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_start']).'</span>
-                                <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_end']).'</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                ';
-            } else {
-                $lists = '
-                <div class="row bigrow-tabulator">
-                    <div class="col-lg-4 mx-auto">
-                        <div class="d-flex justify-content-between">
-                            <div class="d-flex align-items-start">
-                                <div class="flex-grow-1 me-2 center">
-                                    <h6 class="mb-1">'.$v['task_title'].'</h6>
-                                    <span class="text-gray-700 d-block">'.$lesson.'</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mx-auto">
-                        <div class="additional-info">
-                            <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                <span class="text-gray-800 fw-semibold">'.$v['subject_name'].'</span>
-                                <div class="bdg-group">
-                                '.$groups.'
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mx-auto">
-                        <div class="additional-info">
-                            <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_start']).'</span>
-                                <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_end']).'</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 ';
             }
 
             $data[] = [
+                'act' => $acts,
                 'id' => $v['task_id'],
                 'title' => $v['task_title'],
                 'end_date' => $v['task_end'],
                 'lesson' => $lesson,
                 'period' => datetime_indo($v['task_start']).' - '.datetime_indo($v['task_end']),
                 'group' => $groups,
-                'lists' => $lists
+                'acts' => $acts,
             ];
         }
 
@@ -602,32 +493,7 @@ class Tasks extends BaseController
     public function get_edit() 
     {
         $id = $this->request->getVar('id');
-        
-        $select = '
-            task_id, 
-            task_group,
-            task_grade,
-            task_title,
-            task_start,
-            task_end,
-            task_lesson_id,
-            task_lesson_src,
-            task_task_ids,
-            task_subject_id,
-            subject_name,
-            lesson_additional_chapter,
-            lesson_additional_subchapter,
-            lesson_standart_chapter,
-            lesson_standart_subchapter
-        ';
-
-        $data = $this->tasks
-            ->select($select)
-            ->join('master_subject', 'subject_id=task_subject_id', 'left')
-            ->join('lms_lesson_additional', 'task_lesson_id=lesson_additional_id', 'left')
-            ->join('lms_lesson_standart', 'task_lesson_id=lesson_standart_id', 'left')
-            ->where('task_id', $id)->first();
-
+        $data = $this->tasks->where('task_id', $id)->first();
         echo json_encode($data);
     }
 }  

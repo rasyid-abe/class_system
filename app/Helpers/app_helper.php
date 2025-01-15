@@ -92,6 +92,11 @@ function school_level($id)
     return $query['school_level'];
 }
 
+function list_grade($id) 
+{
+    return get_list('grade')[school_level($id)];
+}
+
 
 function school_alias($id)
 {
@@ -255,18 +260,22 @@ if (!function_exists("my_groups")) {
     {
         $db = \Config\Database::connect();
         
-        $sql = "
-            SELECT teacher_assign_id, student_group_id, student_group_name
-            FROM system_teacher_assign
-            JOIN master_student_group ON teacher_assign_student_group_id = student_group_id
-            WHERE 
-                teacher_assign_teacher_id = ".userdata()['id_profile']."
-                AND teacher_assign_school_year_id = ".year_active()['school_year_id']."
-                AND teacher_assign_status < 9
-            GROUP BY student_group_id
-        ";
-
-        $row = $db->query($sql)->getResultArray();
+        if (isset(year_active()['school_year_id'])) {
+            $sql = "
+                SELECT teacher_assign_id, student_group_id, student_group_name
+                FROM system_teacher_assign
+                JOIN master_student_group ON teacher_assign_student_group_id = student_group_id
+                WHERE 
+                    teacher_assign_teacher_id = ".userdata()['id_profile']."
+                    AND teacher_assign_school_year_id = ".year_active()['school_year_id']."
+                    AND teacher_assign_status < 9
+                GROUP BY student_group_id
+            ";
+    
+            $row = $db->query($sql)->getResultArray();
+        } else {
+            $row = [];
+        }
         return $row;
     }
 }
@@ -292,6 +301,39 @@ if (!function_exists("datetime_indo")) {
         $split = explode('-', $spl[0]);
 	    return $split[2] . ' ' . $bulan[ (int)$split[1] ] . ' ' . $split[0] . ' ' . substr($spl[1],0, 5) . ' WIB';
 
+    }
+}
+
+if (!function_exists("student_grade")) {
+    function student_grade() 
+    {
+        $db = \Config\Database::connect();
+        $sql = "
+            SELECT student_in_group_grade as grade
+            FROM system_student_in_group
+            WHERE student_in_group_student_id = ".userdata()['id_profile']."
+                AND student_in_group_status < 8
+        ";
+
+        $row = $db->query($sql)->getRow('grade');
+        return $row;
+    }
+}
+
+if (!function_exists("student_group")) {
+    function student_group() 
+    {
+        $db = \Config\Database::connect();
+        $sql = "
+            SELECT student_in_group_student_group_id as student_group, student_group_name as group_name
+            FROM system_student_in_group 
+            JOIN master_student_group ON student_in_group_student_group_id = student_group_id
+            WHERE student_in_group_student_id = ".userdata()['id_profile']."
+                AND student_in_group_status < 8
+        ";
+
+        $row = $db->query($sql)->getRowArray();
+        return $row;
     }
 }
 
