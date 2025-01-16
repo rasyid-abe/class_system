@@ -63,45 +63,63 @@ class StandartLesson extends BaseController
             $total_lesson = $this->lesson_standart
                 ->select('lesson_standart_id')
                 ->where('lesson_standart_status < 9')
-                ->groupBy('lesson_standart_subject_id')
+                ->groupBy('lesson_standart_subject_id, lesson_standart_grade')
                 ->findAll();
             $total_chapter = $this->lesson_standart
                 ->select('lesson_standart_id')
                 ->where('lesson_standart_status < 9')
-                ->groupBy('lesson_standart_chapter')
+                ->groupBy('lesson_standart_chapter, lesson_standart_grade')
                 ->findAll();
             
             $grades = list_grade(userdata()['school_id']);
-            $subject = $this->lesson_standart->list_first_page(key($grades));
-            // foreach ($subject as $k => $v) {
-                
-            // }
-            // echo '<pre>';
-            // print_r($subject);
-            // echo '</pre>';
-            // die;
+            
             $res = [
                 't_less' => count($total_lesson),
                 't_chap' => count($total_chapter),
                 'grades' => $grades,
-                'subjects' => $subject,
             ];
 
             echo json_encode($res);
-
-        } else if ($req['type'] == 2) {
-            $subject = $this->lesson_standart
-                ->where('lesson_standart_grade', $req['param'])
-                ->where('lesson_standart_status < 9')
-                ->findAll();
             
-            echo '<pre>';
-            print_r($subject);
-            echo '</pre>';
-            die;
         }
-        die;
+    }
 
+    public function lesson_list()
+    {
+        $req = $this->request->getVar();
+        $subject = $this->lesson_standart->list_first_page($req['grade']);
+
+        $sub_list = [];
+        foreach ($subject as $k => $v) {
+            $sub_list[$v['subject_id']]['subj_id'] = $v['subject_id'];
+            $sub_list[$v['subject_id']]['grade'] = $req['grade'];
+            $sub_list[$v['subject_id']]['subj'] = $v['subject_name'];
+            $sub_list[$v['subject_id']]['chapter'][$v['lesson_standart_chapter']] = $v['lesson_standart_chapter'];
+            $sub_list[$v['subject_id']]['subchapter'][$v['lesson_standart_subchapter']] = $v['lesson_standart_subchapter'];
+        }
+
+        $data = [];
+        foreach ($sub_list as $k => $v) {
+            $tchap = count($v['chapter']);
+            $tsubchap = count($v['subchapter']);
+            $lists = '
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 me-2">
+                        <h3 class="mb-2">'.$v['subj'].'</h3>
+                        <span class="text-gray-700 fw-semibold d-block">Total BAB: '.$tchap.' | Total Topik: '.$tsubchap.' </span>
+                    </div>
+
+                    <a href="'.base_url('teacher/lesson/standart/view-content/' . $v['subj_id'] .'/'.$v['grade']).'"class="btn btn-primary">Lihat Materi</a>
+                </div>
+            ';
+
+            $data[] = [
+                'id' => $v['subj_id'],
+                'lists' => $lists
+            ];
+        }
+
+        echo (json_encode($data));
     }
 
     public function view_subject($grade)
@@ -151,6 +169,7 @@ class StandartLesson extends BaseController
         foreach ($chapter as $k => $v) {
             $sub_chapter = $this->lesson_standart
                 ->where('lesson_standart_chapter', $v['lesson_standart_chapter'])
+                ->where('lesson_standart_grade', $grade)
                 ->where('lesson_standart_status < 9')
                 ->findAll();
 

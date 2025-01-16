@@ -52,10 +52,9 @@
         <div class="rounded border">
             <div class="" id="kt_accordion_1">
 
-
                     <?php foreach ($chapters as $k => $v) : ?>
-                        <div class="accordion-item">
-                            <div class="accordion-body bg-light">
+                        <div class="accordion-item" style="background-color: red">
+                            <div class="accordion-body bg-white">
                                 <div class="d-flex justify-content-between">
                                     <a href="#" class="d-grid" style="font-weight: 500;" onclick="toggle_collapse(<?= $k ?>);"><?= $v['lesson_standart_chapter'] ?></a>
                                 </div>

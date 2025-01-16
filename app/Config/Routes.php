@@ -43,6 +43,7 @@ $routes->post('/dashboard/student/update-password', 'Dashboard\DashboardStudent:
 
 $routes->get('/teacher/lesson/standart', 'LearningMS\Lessons\StandartLesson::index', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/standart/first-page', 'LearningMS\Lessons\StandartLesson::first_page', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/standart/lesson-list', 'LearningMS\Lessons\StandartLesson::lesson_list', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/standart/create', 'LearningMS\Lessons\StandartLesson::create', ['filter' => 'auth']); #done
 $routes->post('/teacher/lesson/standart/ref-data', 'LearningMS\Lessons\StandartLesson::ref_data', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/standart/view-subject/(:num)', 'LearningMS\Lessons\StandartLesson::view_subject/$1', ['filter' => 'auth']);

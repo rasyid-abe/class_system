@@ -72,6 +72,7 @@ class StandartLessonModel extends Model
                 lls.lesson_standart_id,
                 lls.lesson_standart_subject_id,
                 ms.subject_name,
+                ms.subject_id,
                 lls.lesson_standart_chapter,
                 lls.lesson_standart_subchapter
             FROM
