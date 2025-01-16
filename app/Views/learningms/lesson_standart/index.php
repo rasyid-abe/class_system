@@ -64,26 +64,15 @@
     </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
-        <div class="d-flex align-items-center bg-light-primary rounded p-5 mb-7">
+<div class="card mb-5 mb-xl-10">
 
-                <!--begin::Title-->
-                <div class="flex-grow-1 me-2">
-                    <h3 class="mb-2">Bahasa Indonesia</h3>
-                    <span class="text-gray-700 fw-semibold d-block">Total Materi: 90 | Total Topik: 135 </span>
-                </div>
-                <!--end::Title-->
-
-                <!--begin::Lable-->
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_upgrade_plan">Lihat Materi</button>
-                <!--end::Lable-->
-            </div>
-    </div>
+  <div class="card-body border-top p-9 hide" id="body_tbl_list_standart">
+    <div id="tbl_list_standard"></div>
+  </div>
 
 </div>
 
-<div class="card">
+<div class="card hide">
     <div class="card-body py-4">
         <table id="tbl_standard" class="table table-striped">
             <thead>

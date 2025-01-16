@@ -418,37 +418,6 @@ function view_edit(e) {
   $("#modal_assessment_edit").modal("show");
 }
 
-const tbconf = {
-  height: "600px",
-  layout: "fitDataStretch",
-  renderHorizontal: "virtual",
-  pagination: "local",
-  paginationSize: 10,
-  paginationSizeSelector: [10, 50, 100, 200],
-  movableColumns: true,
-  selectableRows: true,
-  paginationCounter: "rows",
-  // headerVisible:false,
-  placeholder: '<h6>Data tidak tersedia.</h6>',
-  langs: {
-    default: {
-      pagination: {
-        page_size: "Jumlah Baris",
-        first: "<<",
-        last: ">>",
-        prev: "<",
-        next: ">",
-        counter: {
-          showing: "Menampilkan",
-          of: "dari total",
-          rows: "data",
-          pages: "halaman",
-        },
-      },
-    },
-  },
-};
-
 function type_assessment(type, ids, sts) {
   let msg = sts == 9 ? 'hapus' : sts == 2 ? 'terbitkan' : 'batalkan' 
   Swal.fire({

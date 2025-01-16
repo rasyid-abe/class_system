@@ -4,11 +4,11 @@
 
 <head>
 	<base href="">
-	<?php 
-		end($breadcrumb);
-		$z = prev($breadcrumb);
+	<?php
+	end($breadcrumb);
+	$z = prev($breadcrumb);
 	?>
-	<title>Live Learn - <?= $z. ' '. $title ?></title>
+	<title>Live Learn - <?= $z . ' ' . $title ?></title>
 	<meta name="description"
 		content="Seven admin dashboard live demo. Check out all the features of the admin panel. Light &amp; dark skins. A large number of settings, additional services and widgets." />
 	<meta name="keywords"
@@ -1307,17 +1307,38 @@
 	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
 	<script src="<?= base_url() ?>assets/js/common.js"></script>
 
-	<script src="<?= base_url() ?>assets/js/script/lesson_school.js"></script>
-	<script src="<?= base_url() ?>assets/js/script/lesson_additional.js"></script>
-	<script src="<?= base_url() ?>assets/js/script/lesson_standard.js"></script>
-	<script src="<?= base_url() ?>assets/js/script/lesson_public.js"></script>
-	<script src="<?= base_url() ?>assets/js/script/question_bank.js"></script>
-	<script src="<?= base_url() ?>assets/js/script/assessment.js"></script>
-	<script src="<?= base_url() ?>assets/js/script/first_page.js"></script>
-	<script src="<?= base_url() ?>assets/js/script/tasks.js"></script>
-	<script src="<?= base_url() ?>assets/js/form.repeater.js"></script>
-
 	<script>
+		const tbconf = {
+			height: "600px",
+			layout: "fitDataStretch",
+			renderHorizontal: "virtual",
+			pagination: "local",
+			paginationSize: 10,
+			paginationSizeSelector: [10, 50, 100, 200],
+			movableColumns: true,
+			selectableRows: true,
+			paginationCounter: "rows",
+			// headerVisible:false,
+			placeholder: '<h6>Data tidak tersedia.</h6>',
+			langs: {
+				default: {
+					pagination: {
+						page_size: "Jumlah Baris",
+						first: "<<",
+						last: ">>",
+						prev: "<",
+						next: ">",
+						counter: {
+							showing: "Menampilkan",
+							of: "dari total",
+							rows: "data",
+							pages: "halaman",
+						},
+					},
+				},
+			},
+		};
+
 		const Toast = Swal.mixin({
 			toast: true,
 			position: "top-end",
@@ -1398,6 +1419,17 @@
 			})
 		}
 	</script>
+
+	<script src="<?= base_url() ?>assets/js/script/lesson_school.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/lesson_additional.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/lesson_standard.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/lesson_public.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/question_bank.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/assessment.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/first_page.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/tasks.js"></script>
+	<script src="<?= base_url() ?>assets/js/form.repeater.js"></script>
+
 	<?php if (session()->getFlashdata('msg')): ?>
 		<?=
 		'<script type="text/javascript">',
