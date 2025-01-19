@@ -304,6 +304,27 @@ if (!function_exists("datetime_indo")) {
     }
 }
 
+if (!function_exists("grade_label")) {
+    function grade_label($grade) 
+    {
+        $label = array (1 => 'Kelas I',
+			'Kelas II',
+			'Kelas III',
+			'Kelas IV',
+			'Kelas V',
+			'Kelas VI',
+			'Kelas VII',
+			'Kelas VIII',
+			'Kelas IX',
+			'Kelas X',
+			'Kelas XI',
+			'Kelas XII'
+		);
+	    return $label[$grade];
+
+    }
+}
+
 if (!function_exists("student_grade")) {
     function student_grade() 
     {

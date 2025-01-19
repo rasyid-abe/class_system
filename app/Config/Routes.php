@@ -62,6 +62,7 @@ $routes->post('/teacher/lesson/school/remove-content', 'LearningMS\Lessons\Schoo
 $routes->get('/teacher/lesson/additional', 'LearningMS\Lessons\AdditionalLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/additional/view-content/(:num)/(:num)', 'LearningMS\Lessons\AdditionalLesson::view_content/$1/$2', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/additional/create/(:num)/(:num)', 'LearningMS\Lessons\AdditionalLesson::create/$1/$2', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/additional/first-page', 'LearningMS\Lessons\AdditionalLesson::first_page', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/store', 'LearningMS\Lessons\AdditionalLesson::store', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/grab-chaps', 'LearningMS\Lessons\AdditionalLesson::grab_chaps', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/additional/grab-content', 'LearningMS\Lessons\AdditionalLesson::grab_content', ['filter' => 'auth']);
