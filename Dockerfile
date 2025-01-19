@@ -1,6 +1,7 @@
 FROM dunglas/frankenphp
 
-COPY . /app/public
+COPY . /app
+COPY . /public /app/public
 
 RUN install-php-extensions \
 	pdo_mysql \

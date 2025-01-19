@@ -57,8 +57,54 @@ class AdditionalLesson extends BaseController
             ->where('teacher_assign_status < 9')
             ->groupBy('student_group_grade')
             ->findAll();
+            
+        $mysubs = $this->teacher_subject
+            ->select('teacher_assign_id, teacher_assign_grade, subject_id, subject_name')
+            ->join('master_subject', 'teacher_assign_subject_id=subject_id', 'left')
+            ->where('teacher_assign_school_id', userdata()['school_id'])
+            ->where('teacher_assign_teacher_id', userdata()['id_profile'])
+            ->where('teacher_assign_status < 9')
+            // ->where('teacher_assign_school_year_id', year_active()['school_year_id'])
+            ->orderBy('teacher_assign_grade')
+            ->findAll();
 
+        $subs = [];
+        foreach ($mysubs as $k => $v) {
+            $subs[$v['subject_id']]['subj_id'] = $v['subject_id'];
+            $subs[$v['subject_id']]['subj_name'] = $v['subject_name'];
+            $subs[$v['subject_id']]['grade'][$v['teacher_assign_grade']] = $v['teacher_assign_grade'];
+        }
+
+        $data['mysubs'] = $subs;
         return view("learningms/lesson_additional/index", $data);
+    }
+
+    public function first_page()
+    {
+        $req = $this->request->getVar();
+
+        $total_subchap = $this->lesson_additional
+            ->select('count(*)')
+            ->where('lesson_additional_status < 9')
+            ->where('lesson_additional_school_id', userdata()['school_id'])
+            ->where('lesson_additional_teacher_id', userdata()['id_profile'])
+            ->where('lesson_additional_subchapter != ""')
+            ->groupBy('lesson_additional_chapter, lesson_additional_subchapter, lesson_additional_grade')
+            ->findAll();
+        $total_chapter = $this->lesson_additional
+            ->select('count(*)')
+            ->where('lesson_additional_status < 9')
+            ->where('lesson_additional_school_id', userdata()['school_id'])
+            ->where('lesson_additional_teacher_id', userdata()['id_profile'])
+            ->groupBy('lesson_additional_chapter')
+            ->findAll();
+
+        $res = [
+            't_chap' => count($total_chapter),
+            't_subchap' => count($total_subchap),
+        ];
+        
+        echo json_encode($res);
     }
 
     public function view_content($subject, $grade)
