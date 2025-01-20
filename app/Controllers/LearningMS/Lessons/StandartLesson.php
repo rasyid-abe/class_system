@@ -43,15 +43,6 @@ class StandartLesson extends BaseController
             '##' => 'Materi Standar',
         ];
 
-        $grades = $this->teacher_assign
-            ->select('teacher_assign_grade, count(teacher_assign_subject_id) as total_subject')
-            ->where('teacher_assign_status < 9')
-            ->where('teacher_assign_teacher_id', userdata()['id_profile'])
-            ->groupBy('teacher_assign_grade')
-            ->findAll();
-
-        $data['grades'] = $grades;
-
         return view("learningms/lesson_standart/index", $data);
     }
 
@@ -144,15 +135,15 @@ class StandartLesson extends BaseController
     {
         $subs = $this->subject->where('subject_id', $subject)->first();
 
-        $data["title"] = $subs['subject_name'] . ' - Kelas ' . $grade;
+        $data["title"] = $subs['subject_name'] . ' - ' . grade_label($grade);
         $data["page"] = $this->page;
         $data["sidebar"] = $this->sidebar;
 
         $data["breadcrumb"] = [
             '#' => $this->title,
             '/teacher/lesson/standart' => 'Materi Standard',
-            '/teacher/lesson/standart/view-subject/' . $grade => 'Kelas ' . $grade,
-            '###' => $subs['subject_name']
+            // '/teacher/lesson/standart/view-subject/' . $grade => 'Kelas ' . $grade,
+            '###' => $subs['subject_name'] . ' - ' . grade_label($grade)
         ];
 
         $data['subject'] = $subject;

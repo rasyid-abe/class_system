@@ -72,13 +72,13 @@
                         <div class="accordion-item">
                             <div class="accordion-body bg-light">
                                 <div class="d-flex justify-content-between">
-                                    <a href="#" class="d-grid" style="font-weight: 500;" onclick="toggle_collapse('<?= $v['lesson_school_id'] ?>');"><?= $v['lesson_school_chapter'] ?></a>
-                                    <div class="btnleft">
+                                    <a href="#" class="d-grid text-wrap" style="font-weight: 500;width: 80%" onclick="toggle_collapse('<?= $v['lesson_school_id'] ?>');"><?= $v['lesson_school_chapter'] ?></a>
+                                    <div class="d-flex align-items-center">
                                         <a href="#" class="" onclick="form_chapter(3, '<?= $v['lesson_school_chapter'] ?>', '', '<?= $parent ?>')">
-                                            <i class="bi bi-plus fs-3 text-gray-600"></i>
+                                            <i class="bi bi-plus-square-fill fs-3 text-primary"></i>
                                         </a>
                                         <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                            <i class="bi bi-three-dots-vertical fs-3 text-gray-600"></i>
+                                            <i class="bi bi-three-dots-vertical fs-3 text-primary"></i>
                                         </a>
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" data-popper-placement="bottom-end"
                                             style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);">
@@ -107,8 +107,8 @@
                                         <?php foreach ($v['sub_chapter'] as $key => $val): ?>
                                             <?php $lesson_id = $val['lesson_additional_id'] > 0 ? $val['lesson_additional_id'] : $val['lesson_standart_id']; ?>
                                             <div class="d-flex justify-content-between">
-                                                <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold" onclick="view_content(<?= $lesson_id ?>, '<?= $val['lesson_source'] ?>');"><?= $val['lesson_subchapter'] ?></a>
-                                                <div class="">
+                                                <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold text-wrap" style="width: 80%" onclick="view_content(<?= $lesson_id ?>, '<?= $val['lesson_source'] ?>');"><?= $val['lesson_subchapter'] ?></a>
+                                                <div class="d-flex align-items-center">
                                                     <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                         <i class="bi bi-three-dots-vertical fs-3 text-gray-600"></i>
                                                     </a>

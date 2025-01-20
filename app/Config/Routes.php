@@ -53,6 +53,7 @@ $routes->post('/teacher/lesson/standart/grab-content', 'LearningMS\Lessons\Stand
 $routes->get('/teacher/lesson/school', 'LearningMS\Lessons\SchoolLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/school/view-content/(:num)/(:num)', 'LearningMS\Lessons\SchoolLesson::view_content/$1/$2', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/school/grab-content', 'LearningMS\Lessons\SchoolLesson::grab_content', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/school/first-page', 'LearningMS\Lessons\SchoolLesson::first_page', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/school/grab-child-sort', 'LearningMS\Lessons\SchoolLesson::grab_child_sort', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/school/grab-parent-sort', 'LearningMS\Lessons\SchoolLesson::grab_parent_sort', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/school/update-content', 'LearningMS\Lessons\SchoolLesson::update_content', ['filter' => 'auth']);
@@ -80,7 +81,9 @@ $routes->post('/teacher/lesson/additional/get-question', 'LearningMS\Lessons\Add
 
 $routes->get('/teacher/lesson/public', 'LearningMS\Lessons\PublicLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/public/view-content/(:num)', 'LearningMS\Lessons\PublicLesson::view_content/$1', ['filter' => 'auth']);
+$routes->get('/teacher/lesson/public/lesson-list', 'LearningMS\Lessons\PublicLesson::lesson_list', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/public/get-content', 'LearningMS\Lessons\PublicLesson::get_content', ['filter' => 'auth']);
+$routes->post('/teacher/lesson/public/first-page', 'LearningMS\Lessons\PublicLesson::first_page', ['filter' => 'auth']);
 
 $routes->get('/teacher/question-bank/additional', 'LearningMS\QuestionBank\AdditionalQuestionBank::index', ['filter' => 'auth']);
 $routes->get('/teacher/question-bank/additional/view-content/(:num)/(:num)', 'LearningMS\QuestionBank\AdditionalQuestionBank::view_content/$1/$2', ['filter' => 'auth']);
