@@ -48,15 +48,6 @@ class AdditionalLesson extends BaseController
             '#' => $this->title,
             '##' => 'Materi Saya',
         ];
-
-        $data['subjects'] = $this->teacher_subject
-            ->select('teacher_assign_id, subject_id, student_group_grade, student_group_name, subject_name')
-            ->join('master_student_group', 'student_group_id=teacher_assign_student_group_id')
-            ->join('master_subject', 'subject_id=teacher_assign_subject_id')
-            ->where('teacher_assign_teacher_id', userdata()['id_profile'])
-            ->where('teacher_assign_status < 9')
-            ->groupBy('student_group_grade')
-            ->findAll();
             
         $mysubs = $this->teacher_subject
             ->select('teacher_assign_id, teacher_assign_grade, subject_id, subject_name')
