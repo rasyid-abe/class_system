@@ -41,12 +41,6 @@ class PublicLesson extends BaseController
             '##' => 'Materi Publik',
         ];
 
-        // $teacher_id = userdata()['id_profile'];
-        // $subject_id = teacher_subjects($teacher_id);
-        // $grade = teacher_grades($teacher_id);
-
-        // $data['shared'] = $this->lesson_public->get_shared($teacher_id, $subject_id, $grade);
-
         return view("learningms/lesson_public/index", $data);
     }
 
@@ -62,17 +56,18 @@ class PublicLesson extends BaseController
             $data = $this->lesson_public->get_shared($teacher_id, $subject_id, $grade);
             
             $pub = [];
+            $tch = [];
             foreach ($data as $k => $v) {
-                // $deg = $v['teacher_degree'] != '' ? ' ,' . $v['teacher_degree'] : '';
-                // $pub[$v['lesson_additional_subject_id']]['teacher_name'] = $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $deg;
-
+                if(!in_array($v['teacher_id'], $tch)){
+                    $tch[] = $v['teacher_id'];
+                }
                 $pub[$v['lesson_additional_subject_id']]['subject_name'] = $v['subject_name'];
                 $pub[$v['lesson_additional_subject_id']]['subject_id'] = $v['lesson_additional_subject_id'];
                 $pub[$v['lesson_additional_subject_id']]['chapter'][$v['lesson_additional_chapter']] = $v['lesson_additional_chapter'];
                 $pub[$v['lesson_additional_subject_id']]['subchapter'][$v['lesson_additional_subchapter']] = $v['lesson_additional_subchapter'];
             }
 
-            echo json_encode($pub);
+            echo json_encode([$pub, count($tch)]);
         }
     }
 
@@ -113,11 +108,6 @@ class PublicLesson extends BaseController
                 'lists' => $lists
             ];
         }
-
-        // echo '<pre>';
-        // print_r($list);
-        // echo '</pre>';
-        // die;
 
         echo (json_encode($list));
     }

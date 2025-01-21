@@ -517,11 +517,11 @@
                                     <small class="fw-bold text-info">Dibagikan</small>
                                 <?php endif ?>
                             </div>
-                            <div class="btnleft center pull-right text-right" style="width: 30%;">
+                            <div class="d-flex align-items-center">
                                 <a href="#" class="fw-bold" onclick="form_chapter_quest(-2, '<?= $v['question_bank_title'] ?>', '<?= $v['question_bank_id'] ?>')">
                                     <i class="bi bi-arrow-up-square fs-2 text-primary"></i>
                                 </a>
-                                <a href="#" class="fw-bold" onclick="form_chapter_quest(-1, '<?= $v['question_bank_title'] ?>', '<?= $v['question_bank_id'] ?>')">
+                                <a href="#" class="fw-bold p-1" onclick="form_chapter_quest(-1, '<?= $v['question_bank_title'] ?>', '<?= $v['question_bank_id'] ?>')">
                                     <i class="bi bi-plus-square fs-2 text-primary"></i>
                                 </a>
                                 <a href="#" class="menu-dropdown" data-kt-menu-trigger="click"

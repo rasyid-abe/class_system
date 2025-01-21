@@ -64,5 +64,27 @@ class StandartQuestionBankModel extends Model
 
         return $this->db->query($query)->getResultArray();
     }
+
+    public function list_first_page($grade) 
+    {
+        $query = "
+            SELECT
+                qbs.question_bank_standart_id,
+                ms.subject_name,
+                ms.subject_id,
+                qbs.question_bank_standart_title as title,
+                qbs.question_bank_standart_parent_id as parent,
+                LEFT(qbs.question_bank_standart_question, 20) as question
+            FROM
+                lms_question_bank_standart qbs
+            JOIN master_subject ms ON
+                qbs.question_bank_standart_subject_id = ms.subject_id
+            WHERE
+                qbs.question_bank_standart_grade = $grade
+        ";
+
+        return $this->db->query($query)->getResultArray();
+
+    }
 }
 

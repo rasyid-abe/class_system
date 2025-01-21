@@ -27,6 +27,14 @@
 
                             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                 <div class="d-flex align-items-center">
+                                    <div class="fs-2 fw-bold text-light" id="tpub_teacher">memuat...</div>
+                                </div>
+
+                                <div class="fw-semibold fs-6 text-gray-500">Guru Berbagi</div>
+                            </div>
+                            
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <div class="d-flex align-items-center">
                                     <div class="fs-2 fw-bold text-light" id="tpub_chapter">memuat...</div>
                                 </div>
 
@@ -48,20 +56,7 @@
             </div>
         </div>
 
-        <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5" id="list_class">
-            <!-- <li class="nav-item mt-2">
-                <a class="nav-link text-active-primary ms-0 me-10 py-5 " href="/seven-html-pro/account/overview.html">
-                    Bahasa Indonesia </a>
-            </li>
-            <li class="nav-item mt-2">
-                <a class="nav-link text-active-primary ms-0 me-10 py-5 " href="/seven-html-pro/account/settings.html">
-                    Bahasa Inggris</a>
-            </li>
-            <li class="nav-item mt-2">
-                <a class="nav-link text-active-light fw-bold ms-0 me-10 py-5 active" href="#">
-                    Matematika </a>
-            </li> -->
-        </ul>
+        <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5" id="list_class"></ul>
     </div>
 </div>
 

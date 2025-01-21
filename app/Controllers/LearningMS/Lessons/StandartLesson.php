@@ -59,7 +59,7 @@ class StandartLesson extends BaseController
             $total_chapter = $this->lesson_standart
                 ->select('lesson_standart_id')
                 ->where('lesson_standart_status < 9')
-                ->groupBy('lesson_standart_chapter, lesson_standart_grade')
+                ->groupBy('lesson_standart_subject_id,lesson_standart_chapter, lesson_standart_grade')
                 ->findAll();
             
             $grades = list_grade(userdata()['school_id']);

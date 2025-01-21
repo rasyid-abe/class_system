@@ -87,6 +87,7 @@ $routes->post('/teacher/lesson/public/first-page', 'LearningMS\Lessons\PublicLes
 
 $routes->get('/teacher/question-bank/additional', 'LearningMS\QuestionBank\AdditionalQuestionBank::index', ['filter' => 'auth']);
 $routes->get('/teacher/question-bank/additional/view-content/(:num)/(:num)', 'LearningMS\QuestionBank\AdditionalQuestionBank::view_content/$1/$2', ['filter' => 'auth']);
+$routes->post('/teacher/question-bank/additional/first-page', 'LearningMS\QuestionBank\AdditionalQuestionBank::first_page', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/additional/update-content', 'LearningMS\QuestionBank\AdditionalQuestionBank::update_content', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/additional/remove-content', 'LearningMS\QuestionBank\AdditionalQuestionBank::remove_content', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/additional/get-question', 'LearningMS\QuestionBank\AdditionalQuestionBank::get_question', ['filter' => 'auth']);
@@ -97,12 +98,16 @@ $routes->post('/teacher/question-bank/additional/upload-tasks', 'LearningMS\Ques
 $routes->get('/teacher/question-bank/standart', 'LearningMS\QuestionBank\StandartQuestionBank::index', ['filter' => 'auth']);
 $routes->get('/teacher/question-bank/standart/view-subject/(:num)', 'LearningMS\QuestionBank\StandartQuestionBank::view_subject/$1', ['filter' => 'auth']);
 $routes->get('/teacher/question-bank/standart/view-content/(:num)/(:num)', 'LearningMS\QuestionBank\StandartQuestionBank::view_content/$1/$2', ['filter' => 'auth']);
+$routes->get('/teacher/question-bank/standart/qb-list', 'LearningMS\QuestionBank\StandartQuestionBank::qb_list', ['filter' => 'auth']);
+$routes->post('/teacher/question-bank/standart/first-page', 'LearningMS\QuestionBank\StandartQuestionBank::first_page', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/standart/get-question', 'LearningMS\QuestionBank\StandartQuestionBank::get_question', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/standart/get-title-list', 'LearningMS\QuestionBank\StandartQuestionBank::get_title_list', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/standart/update-content', 'LearningMS\QuestionBank\StandartQuestionBank::update_content', ['filter' => 'auth']);
 
 $routes->get('/teacher/question-bank/public', 'LearningMS\QuestionBank\PublicQuestionBank::index', ['filter' => 'auth']);
 $routes->get('/teacher/question-bank/public/view-task/(:num)/(:any)', 'LearningMS\QuestionBank\PublicQuestionBank::view_task/$1/$2', ['filter' => 'auth']);
+$routes->get('/teacher/question-bank/public/quest-list', 'LearningMS\QuestionBank\PublicQuestionBank::quest_list', ['filter' => 'auth']);
+$routes->post('/teacher/question-bank/public/first-page', 'LearningMS\QuestionBank\PublicQuestionBank::first_page', ['filter' => 'auth']);
 
 $routes->get('/teacher/assessment/index-add', 'LearningMS\Assessment\Assessment::index', ['filter' => 'auth']);
 $routes->get('/teacher/assessment/index-draft', 'LearningMS\Assessment\Assessment::index_draft', ['filter' => 'auth']);
