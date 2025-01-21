@@ -1,36 +1,63 @@
 <?php $this->extend('templates/core') ?>
 <?php $this->section('content'); ?>
 
-<div class="card">
-    <div class="card-body py-4">
-        <table id="kt_datatable_dom_positioning" class="table table-striped">
-            <thead>
-                <tr class="text-start fw-bold fs-7 text-uppercase gs-0">
-                    <th class="text-center">#</th>
-                    <th>Mata Pelajaran</th>
-                    <th class="text-center">Kelas</th>
-                    <th>Judul Soal</th>
-                    <th>Dibagikan Oleh</th>
-                    <th class="text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($shared as $k => $v): ?>
-                    <?php $degr = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : ''  ?>
-                    <tr>
-                        <td class="text-center"><?= $k+1 ?></td>
-                        <td><?= $v['subject_name'] ?></td>
-                        <td class="text-center"><?= $v['question_bank_grade'] ?></td>
-                        <td><?= $v['question_bank_title'] ?></td>
-                        <td><?= $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $degr ?></td>
-                        <td class="text-center">
-                            <?= view_task('teacher/question-bank/public/view-task/' . $v['question_bank_id'] .'/'. $v['question_bank_title']) ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+<div class="card mb-5 mb-xl-10" style="background-color: #192440">
+    <div class="card-body pt-9 pb-9">
+        <div class="d-flex flex-wrap flex-sm-nowrap mb-3">
+
+            <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex align-items-center mb-2">
+                            <a href="#" class="text-light fs-2 fw-bold me-1">Ringkasan Informasi</a>
+                        </div>
+
+                        <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2">
+                            <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
+                                Bak Soal Publik
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="d-flex flex-wrap flex-stack">
+                    <div class="d-flex flex-column flex-grow-1 pe-8">
+                        <div class="d-flex flex-wrap">
+
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="fs-2 fw-bold text-light" id="tpub_teacher">memuat...</div>
+                                </div>
+
+                                <div class="fw-semibold fs-6 text-gray-500">Guru Berbagi</div>
+                            </div>
+
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="fs-2 fw-bold text-light" id="tpub_quest">memuat...</div>
+                                </div>
+
+                                <div class="fw-semibold fs-6 text-gray-500">Total Soal Dibagikan</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5" id="list_class"></ul>
     </div>
+</div>
+
+<div class="card mb-5 mb-xl-10">
+
+  <div class="card-body border-top p-9 hide" id="body_tbl_list_standart">
+    <div id="tbl_list_qbpublic"></div>
+  </div>
+
 </div>
 
 

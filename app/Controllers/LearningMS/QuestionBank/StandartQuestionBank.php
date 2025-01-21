@@ -43,17 +43,85 @@ class StandartQuestionBank extends BaseController
             '##' => 'Bank Soal Standart',
         ];
 
-        $grades = $this->teacher_subject
-            ->select('teacher_assign_grade, count(teacher_assign_subject_id) as total_subject')
-            ->where('teacher_assign_status < 9')
-            ->where('teacher_assign_teacher_id', userdata()['id_profile'])
-            ->groupBy('teacher_assign_grade')
-            ->findAll();
-
-        $data['grades'] = $grades;
-
         return view("learningms/question_bank_standart/index", $data);
-    } 
+    }
+
+    public function first_page()
+    {
+        $req = $this->request->getVar();
+        
+        if($req['type'] == 1) {
+            $total_title = $this->question_bank_standart
+                ->select('question_bank_standart_id')
+                ->where('question_bank_standart_status < 9')
+                ->groupBy('question_bank_standart_subject_id, question_bank_standart_grade')
+                ->findAll();
+            $total_question = $this->question_bank_standart
+                ->select('question_bank_standart_id')
+                ->where('question_bank_standart_status < 9')
+                ->groupBy('question_bank_standart_subject_id, question_bank_standart_title, question_bank_standart_grade')
+                ->findAll();
+            
+            $grades = list_grade(userdata()['school_id']);
+            
+            $res = [
+                't_title' => count($total_title),
+                't_quest' => count($total_question),
+                'grades' => $grades,
+            ];
+
+            echo json_encode($res);
+            
+        }
+    }
+
+    public function qb_list()
+    {
+        $req = $this->request->getVar();
+        $subject = $this->question_bank_standart->list_first_page($req['grade']);
+
+        $sub_list = [];
+        foreach ($subject as $k => $v) {
+            if ($v['parent'] < 1) {
+                $sub_list[$v['subject_id']]['title'] = $v['title'];
+            }
+            $sub_list[$v['subject_id']]['subj_id'] = $v['subject_id'];
+            $sub_list[$v['subject_id']]['grade'] = $req['grade'];
+            $sub_list[$v['subject_id']]['subj'] = $v['subject_name'];
+            $sub_list[$v['subject_id']]['qbid'] = $v['question_bank_standart_id'];
+            $sub_list[$v['subject_id']]['quest_id'][$v['question_bank_standart_id']] = $v['question_bank_standart_id'];
+        }
+
+        $data = [];
+        foreach ($sub_list as $k => $v) {
+            $tquest = count($v['quest_id']) - 1;
+            $lists = '
+                <div class="d-flex justify-content-between rounded">
+                    <div class="d-flex align-items-start">
+                        <a href="'.base_url('teacher/question-bank/standart/view-content/'. $v['subj_id'] .'/'. $v['grade']).'" class="btn btn-primary pl-10">Lihat Soal</a>
+                        <div class="flex-grow-1 me-2 mx-10">
+                            <h3 class="mb-1">'.$v['title'].'</h3>
+                            <span class="text-gray-700 fw-semibold d-block">Total Soal: '.$tquest.'</span>
+                        </div>
+                    </div>
+
+                    <div class="additional-info">
+                        <div class="d-flex align-items-end flex-column">
+                            <badge class="badge badge-info badge-block mb-1">'.grade_label($v['grade']).'</badge>
+                            <span class="text-gray-700 fw-semibold d-block">'.$v['subj'].'</span>
+                        </div>
+                    </div>
+                </div>
+            ';
+
+            $data[] = [
+                'id' => $v['subj_id'],
+                'lists' => $lists
+            ];
+        }
+
+        echo (json_encode($data));
+    }
 
     public function view_subject($grade)
     {

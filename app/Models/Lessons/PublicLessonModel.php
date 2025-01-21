@@ -14,7 +14,7 @@ class PublicLessonModel extends Model
 
         $query = "
             SELECT
-                ms.subject_name, pt.teacher_first_name, pt.teacher_last_name, pt.teacher_degree, lla.lesson_additional_chapter as text, lla.*
+                ms.subject_name, pt.teacher_id, pt.teacher_first_name, pt.teacher_last_name, pt.teacher_degree, lla.lesson_additional_chapter as text, lla.*
             FROM
                 lms_lesson_additional lla
             LEFT JOIN 
@@ -48,7 +48,7 @@ class PublicLessonModel extends Model
 
         $query = "
             SELECT
-                ms.subject_name, pt.teacher_first_name, pt.teacher_last_name, pt.teacher_degree, lla.lesson_additional_chapter as text, lla.*
+                ms.subject_name, pt.teacher_id, pt.teacher_first_name, pt.teacher_last_name, pt.teacher_degree, lla.lesson_additional_chapter as text, lla.*
             FROM
                 lms_lesson_additional lla
             LEFT JOIN 

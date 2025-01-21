@@ -44,16 +44,54 @@ class AdditionalQuestionBank extends BaseController
             '##' => 'Bank Soal Saya',
         ];
 
-        $data['subjects'] = $this->teacher_subject
-            ->select('teacher_assign_id, subject_id, student_group_grade, student_group_name, subject_name')
-            ->join('master_student_group', 'student_group_id=teacher_assign_student_group_id')
-            ->join('master_subject', 'subject_id=teacher_assign_subject_id')
+        $mysubs = $this->teacher_subject
+            ->select('teacher_assign_id, teacher_assign_grade, subject_id, subject_name')
+            ->join('master_subject', 'teacher_assign_subject_id=subject_id', 'left')
+            ->where('teacher_assign_school_id', userdata()['school_id'])
             ->where('teacher_assign_teacher_id', userdata()['id_profile'])
             ->where('teacher_assign_status < 9')
-            ->groupBy('student_group_grade')
+            ->orderBy('teacher_assign_grade')
             ->findAll();
 
+        $subs = [];
+        foreach ($mysubs as $k => $v) {
+            $subs[$v['subject_id']]['subj_id'] = $v['subject_id'];
+            $subs[$v['subject_id']]['subj_name'] = $v['subject_name'];
+            $subs[$v['subject_id']]['grade'][$v['teacher_assign_grade']] = $v['teacher_assign_grade'];
+        }
+
+        $data['mysubs'] = $subs;
+
         return view("learningms/question_bank_additional/index", $data);
+    }
+
+    public function first_page()
+    {
+        $req = $this->request->getVar();
+
+        $total_title = $this->question_bank
+            ->select('count(*) as total')
+            ->where('question_bank_status < 9')
+            ->where('question_bank_school_id', userdata()['school_id'])
+            ->where('question_bank_teacher_id', userdata()['id_profile'])
+            ->where('question_bank_parent_id', 0)
+            // ->groupBy('question_bank_title, question_bank_grade')
+            ->first();
+        $total_quest = $this->question_bank
+            ->select('count(*) as total')
+            ->where('question_bank_status < 9')
+            ->where('question_bank_school_id', userdata()['school_id'])
+            ->where('question_bank_teacher_id', userdata()['id_profile'])
+            ->where('question_bank_parent_id > 1')
+            // ->groupBy('question_bank_title')
+            ->first();
+
+        $res = [
+            't_title' => $total_title['total'],
+            't_quest' => $total_quest['total'],
+        ];
+        
+        echo json_encode($res);
     }
 
     public function view_content($subject, $grade)
