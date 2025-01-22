@@ -41,6 +41,7 @@ $routes->get('/dashboard/student', 'Dashboard\DashboardStudent::index', ['filter
 $routes->get('/dashboard/student/change-password', 'Dashboard\DashboardStudent::change_password', ['filter' => 'auth']); #done
 $routes->post('/dashboard/student/update-password', 'Dashboard\DashboardStudent::update_password', ['filter' => 'auth']); #done
 
+## BEGIN TEACHER ROUTE
 $routes->get('/teacher/lesson/standart', 'LearningMS\Lessons\StandartLesson::index', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/standart/first-page', 'LearningMS\Lessons\StandartLesson::first_page', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/standart/lesson-list', 'LearningMS\Lessons\StandartLesson::lesson_list', ['filter' => 'auth']);
@@ -135,5 +136,22 @@ $routes->get('/teacher/tasks/list-tasks', 'LearningMS\Tasks\Tasks::list_tasks', 
 $routes->get('/teacher/groups/view-students/(:num)', 'LearningMS\Groups\Groups::view_students/$1', ['filter' => 'auth']);
 $routes->get('/teacher/groups/get-list-student', 'LearningMS\Groups\Groups::get_list_students', ['filter' => 'auth']);
 
-
+## BEGIN STUDENT ROUTE
 $routes->get('/student/lesson/standart', 'LearningMS\Lessons\StandartLesson::s_index', ['filter' => 'auth']);
+$routes->get('/student/lesson/standart/subject-list', 'LearningMS\Lessons\StandartLesson::s_list_subject', ['filter' => 'auth']);
+$routes->post('/student/lesson/standart/first-page', 'LearningMS\Lessons\StandartLesson::s_first_page', ['filter' => 'auth']);
+$routes->get('/student/lesson/standart/view-content/(:num)/(:num)', 'LearningMS\Lessons\StandartLesson::s_view_content/$1/$2', ['filter' => 'auth']);
+$routes->post('/student/lesson/standart/grab-content', 'LearningMS\Lessons\StandartLesson::grab_content', ['filter' => 'auth']);
+
+$routes->get('/student/lesson/school', 'LearningMS\Lessons\SchoolLesson::s_index', ['filter' => 'auth']);
+$routes->get('/student/lesson/school/subject-list', 'LearningMS\Lessons\SchoolLesson::s_list_subject', ['filter' => 'auth']);
+$routes->post('/student/lesson/school/first-page', 'LearningMS\Lessons\SchoolLesson::s_first_page', ['filter' => 'auth']);
+$routes->get('/student/lesson/school/view-content/(:num)/(:num)', 'LearningMS\Lessons\SchoolLesson::s_view_content/$1/$2', ['filter' => 'auth']);
+$routes->post('/student/lesson/school/grab-content', 'LearningMS\Lessons\SchoolLesson::grab_content', ['filter' => 'auth']);
+
+$routes->post('/student/lesson/additional/get-question', 'LearningMS\Lessons\AdditionalLesson::get_question', ['filter' => 'auth']);
+
+$routes->get('/student/assessment/present', 'LearningMS\Assessment\Assessment::s_index_present', ['filter' => 'auth']);
+$routes->get('/student/assessment/missed', 'LearningMS\Assessment\Assessment::s_index_missed', ['filter' => 'auth']);
+$routes->get('/student/assessment/done', 'LearningMS\Assessment\Assessment::s_index_done', ['filter' => 'auth']);
+$routes->get('/student/assessment/list-assessment', 'LearningMS\Assessment\Assessment::s_list_assessment', ['filter' => 'auth']);

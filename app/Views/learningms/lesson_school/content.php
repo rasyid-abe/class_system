@@ -60,19 +60,21 @@
             <div class="" id="kt_accordion_1">
 
                 <?php if (count($chapters) > 0) : ?>
-                    
+                    <?php if(session()->get('c_role') == 11): ?>
                     <div class="d-grid mb-2">
                         <div class="btn-group" role="group" aria-label="Basic outlined example">
                             <a href="#" onclick="form_chapter(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran &nbsp;</a>
                             <a href="#" onclick="form_chapter(-1, '', '', '')"class="btn btn-icon btn-active-primary" type="button"><i class="mb-1 fs-2 fa fa-sort"></i></a>
                         </div>
                     </div>
+                    <?php endif ?>
                     <?php foreach ($chapters as $k => $v) : ?>
                         <?php $parent = $v['lesson_school_parent_id'] != 0 ? $v['lesson_school_parent_id'] : $v['lesson_school_id'] ?>
                         <div class="accordion-item">
                             <div class="accordion-body bg-light">
                                 <div class="d-flex justify-content-between">
                                     <a href="#" class="d-grid text-wrap" style="font-weight: 500;width: 80%" onclick="toggle_collapse('<?= $v['lesson_school_id'] ?>');"><?= $v['lesson_school_chapter'] ?></a>
+                                    <?php if(session()->get('c_role') == 11): ?>
                                     <div class="d-flex align-items-center">
                                         <a href="#" class="" onclick="form_chapter(3, '<?= $v['lesson_school_chapter'] ?>', '', '<?= $parent ?>')">
                                             <i class="bi bi-plus-square-fill fs-3 text-primary"></i>
@@ -99,6 +101,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <?php endif ?>
                                 </div>
                             </div>
                             <div id="coll_body_<?= $v['lesson_school_id'] ?>" class="hide body_collapse">
@@ -108,6 +111,7 @@
                                             <?php $lesson_id = $val['lesson_additional_id'] > 0 ? $val['lesson_additional_id'] : $val['lesson_standart_id']; ?>
                                             <div class="d-flex justify-content-between">
                                                 <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold text-wrap" style="width: 80%" onclick="view_content(<?= $lesson_id ?>, '<?= $val['lesson_source'] ?>');"><?= $val['lesson_subchapter'] ?></a>
+                                                <?php if(session()->get('c_role') == 11): ?>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                         <i class="bi bi-three-dots-vertical fs-3 text-gray-600"></i>
@@ -120,6 +124,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <?php endif ?>
                                             </div>
                                             <?= count($v['sub_chapter']) > 1 ? '<div class="separator separator-dashed my-3"></div>' : '' ?>
                                         <?php endforeach ?>

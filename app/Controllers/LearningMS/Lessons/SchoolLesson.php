@@ -9,6 +9,7 @@ use App\Models\Lessons\AdditionalLessonModel;
 use App\Models\Lessons\PublicLessonModel;
 use App\Models\Systems\TeacherAssignModel;
 use App\Models\Masters\SubjectModel;
+use PhpParser\Node\Expr\FuncCall;
 
 class SchoolLesson extends BaseController
 {
@@ -36,6 +37,7 @@ class SchoolLesson extends BaseController
         $this->subject = new SubjectModel();
     }
 
+    // BEGIN TEACHER FUNCTION
     public function index()
     {
         $data["title"] = 'Materi Sekolah';
@@ -45,6 +47,7 @@ class SchoolLesson extends BaseController
             '#' => $this->title,
             '##' => 'Materi Sekolah',
         ];
+
 
         $subs = [];
         if (isset(year_active()['school_year_id'])) {
@@ -568,5 +571,237 @@ class SchoolLesson extends BaseController
         }
 
         echo json_encode($update);
+    }
+
+
+    // BEGIN STUDENT FUNCTION
+    public function s_index()
+    {
+        $data["title"] = 'Materi Sekolah';
+        $data["page"] = 'Self Study';
+        $data["sidebar"] = $this->sidebar;
+        $data["breadcrumb"] = [
+            '#' => $this->title,
+            '##' => 'Materi Sekolah',
+        ];
+
+
+        $subs = [];
+        if (isset(year_active()['school_year_id'])) {
+            $mysubs = $this->teacher_subject
+                ->select('teacher_assign_id, teacher_assign_grade, subject_id, subject_name')
+                ->join('master_subject', 'teacher_assign_subject_id=subject_id', 'left')
+                ->where('teacher_assign_school_id', userdata()['school_id'])
+                ->where('teacher_assign_teacher_id', userdata()['id_profile'])
+                ->where('teacher_assign_status < 9')
+                ->where('teacher_assign_school_year_id', year_active()['school_year_id'])
+                ->orderBy('teacher_assign_grade')
+                ->findAll();
+       
+            foreach ($mysubs as $k => $v) {
+                $subs[$v['subject_id']]['subj_id'] = $v['subject_id'];
+                $subs[$v['subject_id']]['subj_name'] = $v['subject_name'];
+                $subs[$v['subject_id']]['grade'][$v['teacher_assign_grade']] = $v['teacher_assign_grade'];
+            }
+        }
+
+
+        $data['mysubs'] = $subs;
+        return view("learningms/lesson_school/index_s", $data);
+    }
+
+    public Function s_first_page()
+    {
+       
+        if (isset(year_active()['school_year_id'])) {
+            $my_group = student_group();
+            $total_chapter = $this->lesson_school
+                ->select('count(*)')
+                ->where('lesson_school_status < 9')
+                ->where('lesson_school_grade', $my_group['grade'])
+                ->where('lesson_school_school_id', userdata()['school_id'])
+                ->where('lesson_school_school_year_id', year_active()['school_year_id'])
+                ->groupBy('lesson_school_chapter, lesson_school_grade')
+                ->findAll();
+            $total_subchapter = $this->lesson_school
+                ->select('lesson_school_lesson_standart_id, lesson_school_lesson_additional_id, lesson_school_lesson_shared_id')
+                ->where('lesson_school_status < 9')
+                ->where('lesson_school_grade', $my_group['grade'])
+                ->where('lesson_school_school_id', userdata()['school_id'])
+                ->where('lesson_school_school_year_id', year_active()['school_year_id'])
+                ->findAll();
+    
+            $c = 0;
+            foreach ($total_subchapter as $v) {
+                if ($v['lesson_school_lesson_standart_id'] > 0 || $v['lesson_school_lesson_additional_id'] > 0 || $v['lesson_school_lesson_shared_id'] > 0) {
+                    $c++;
+                }
+            }
+
+            $res = [
+                't_chap' => count($total_chapter),
+                't_subchap' => $c,
+            ];
+        } else {
+            $res = [
+                't_chap' => 0,
+                't_subchap' => 0,
+            ];
+        }
+
+        echo json_encode($res);
+    }
+
+    public function s_list_subject()
+    {
+        $my_group = student_group();
+        $sub_list = $this->lesson_school
+        ->select('
+            lesson_school_id,
+            lesson_school_subject_id, lesson_school_grade, 
+            COUNT(distinct lesson_school_chapter) total_chapter,
+            SUM(
+                CASE
+                    WHEN lesson_school_lesson_standart_id > 0 THEN 1
+                    WHEN lesson_school_lesson_additional_id > 0 THEN 1
+                    WHEN lesson_school_lesson_shared_id > 0 THEN 1
+                    ELSE 0
+                END
+            ) total_subchapter,
+            lesson_school_grade,
+            teacher_first_name,
+            teacher_last_name,
+            teacher_degree,
+            subject_name,
+            subject_id,
+            teacher_degree,')
+        ->join('master_subject', 'subject_id=lesson_school_subject_id', 'left')
+        ->join('profile_teacher', 'teacher_id=lesson_school_teacher_id', 'left')
+        ->join('system_teacher_assign', 'teacher_assign_teacher_id=teacher_id', 'right')
+        ->where('lesson_school_status < 9')
+        ->where('lesson_school_school_id', userdata()['school_id'])
+        ->where('lesson_school_grade', $my_group['grade'])
+        ->where('lesson_school_school_year_id', year_active()['school_year_id'])
+        ->where('teacher_assign_student_group_id', $my_group['group_id'])
+        ->groupBy('lesson_school_subject_id')
+        ->findAll();
+
+        $data = [];
+        foreach ($sub_list as $k => $v) {
+            $deg = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : '';
+            $lists = '
+                <div class="d-flex justify-content-between rounded">
+                    <div class="d-flex align-items-start">
+                        <a href="http://localhost:8080/student/lesson/school/view-content/'.$v['subject_id'].'/'.$v['lesson_school_grade'].'" class="btn btn-primary pl-10">Lihat Materi</a>
+                        <div class="flex-grow-1 me-2 mx-10">
+                            <h3 class="mb-1">'.$v['subject_name'].'</h3>
+                            <span class="text-gray-700 fw-semibold d-block">BAB: '.$v['total_chapter'].' | Topik: '.$v['total_subchapter'].'</span>
+                        </div>
+                    </div>
+
+                    <div class="additional-info d-flex align-items-center">
+                        <div class="d-flex align-items-end flex-column">
+                            <span class="text-gray-700 fw-semibold">Guru: '.$v['teacher_first_name'].' '.$v['teacher_last_name'] . $deg . '</span>
+                        </div>
+                    </div>
+                </div>
+            ';
+
+            $data[] = [
+                'id' => $v['lesson_school_id'],
+                'lists' => $lists
+            ];
+        }
+
+        echo (json_encode($data));
+    }
+
+    public function s_view_content($subject, $grade)
+    {
+        $subs = $this->subject->where('subject_id', $subject)->first();
+
+        $data["title"] = $subs['subject_name'] . ' - Kelas ' . $grade;
+        $data["page"] = 'Self Study';
+        $data["sidebar"] = $this->sidebar;
+        $data["breadcrumb"] = [
+            '#' => 'Belajar Mandiri',
+            '/student/lesson/school' => 'Materi Sekolah',
+            '##' => $subs['subject_name'] . ' - Kelas ' . $grade,
+        ];
+
+        $data['subject'] = $subject;
+        $data['grade'] = $grade;
+
+        $chapter = $this->lesson_school
+            ->select('
+                lesson_school_id, 
+                lesson_school_chapter chapter, 
+                lesson_school_lesson_additional_id add, 
+                lesson_school_lesson_standart_id std,
+                lesson_school_lesson_shared_id shr,
+                lesson_school_parent_id,
+                lesson_school_order_child,
+                lesson_school_order_parent
+            ')
+            // ->where('lesson_school_teacher_id', userdata()['id_profile'])
+            ->where('lesson_school_status < 9')
+            ->where('lesson_school_subject_id', $subject)
+            ->where('lesson_school_grade', $grade)
+            ->orderBy('lesson_school_order_parent', 'desc')
+            ->findAll();
+        
+        $result = array();
+        foreach ($chapter as $val) {
+            
+            $rr = [];
+            if ($val['add'] > 0 || $val['std'] > 0 || $val['shr'] > 0) {
+                if ($val['add'] > 0) {
+                    $rr = $this->get_add_lesson($val['add']);
+                } elseif ($val['std'] > 0) {
+                    $rr = $this->get_std_lesson($val['std']);
+                } else {
+                    $rr = $this->get_shr_lesson($val['shr']);
+                }
+            }
+
+            if(count($rr) > 0){
+                $rr['order'] = $val['lesson_school_order_child'];
+                $rr['parent_id'] = $val['lesson_school_parent_id'];
+                $rr['lesson_id'] = $val['lesson_school_id'];
+                $result[$val['chapter']]['sub_chapter'][$val['lesson_school_order_child']] = $rr;
+            }
+            $result[$val['chapter']]['lesson_school_chapter'] = $val['chapter'];
+            $result[$val['chapter']]['lesson_school_id'] = $val['lesson_school_id'];
+            $result[$val['chapter']]['lesson_school_parent_id'] = $val['lesson_school_parent_id'];
+            $result[$val['chapter']]['lesson_school_order_parent'] = $val['lesson_school_order_parent'];
+        }
+        
+        $chp = [];
+        foreach ($result as $k => $v) {
+            if (isset($v['sub_chapter'])) {
+                $sc = $v['sub_chapter'];
+                ksort($sc);
+
+                $ii = 0;
+                foreach ($v['sub_chapter'] as $key => $val) {
+                    if ($ii < 1) {
+                        $pid = $val['parent_id'];
+                        $odr = $this->lesson_school
+                            ->where('lesson_school_id', $pid)
+                            ->first();
+                    }
+                    $ii++;
+                }
+                $v['sub_chapter'] = $sc;
+                $chp[$odr['lesson_school_order_parent']] = $v;
+            } else {
+                $chp[$v['lesson_school_order_parent']] = $v;
+            }
+        }
+
+        ksort($chp);
+        $data['chapters'] = $chp;
+
+        return view("learningms/lesson_school/content", $data);
     }
 }

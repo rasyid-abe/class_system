@@ -39,6 +39,7 @@ class Assessment extends BaseController
         $this->assessment = new AssessmentModel();
     }
 
+    // BEGIN TEACHER FUNCTION
     public function index()
     {
         $data["title"] = 'Tambah Penilaian';
@@ -596,6 +597,46 @@ class Assessment extends BaseController
         echo json_encode($row);
     }
 
+    // BEGIN STUDENT FUNCTION
+
+    public function s_index_present()
+    {
+        $data["title"] = 'Saat Ini';
+        $data["page"] = $this->page;
+        $data["sidebar"] = 'Present_Assessment';
+        $data["breadcrumb"] = [
+            '#' => $this->title,
+            '##' => 'Saat Ini',
+        ];
+
+        return view("learningms/assessment/present", $data);
+    }
+
+    public function s_index_missed()
+    {
+        $data["title"] = 'Selesai';
+        $data["page"] = $this->page;
+        $data["sidebar"] = 'Done_Assessment';
+        $data["breadcrumb"] = [
+            '#' => $this->title,
+            '##' => 'Selesai',
+        ];
+
+        return view("learningms/assessment/missed", $data);
+    }
+
+    public function s_index_done()
+    {
+        $data["title"] = 'Selesai';
+        $data["page"] = $this->page;
+        $data["sidebar"] = 'Done_Assessment';
+        $data["breadcrumb"] = [
+            '#' => $this->title,
+            '##' => 'Selesai',
+        ];
+
+        return view("learningms/assessment/done", $data);
+    }
 
 }
 

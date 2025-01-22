@@ -201,8 +201,9 @@ function generate_view_task(e, id, subj, grad) {
 }
 
 function view_content(id, source) {
+    let l_url = level == 11 ? 'teacher' : 'student'
     $.ajax({
-        url: base_url + '/teacher/lesson/school/grab-content',
+        url: base_url + l_url + '/lesson/school/grab-content',
         data: {
             id,
             source
