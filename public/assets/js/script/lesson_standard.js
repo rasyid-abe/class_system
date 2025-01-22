@@ -117,7 +117,7 @@ function generate_view_lesson_s(e) {
                 </div>
 
                 <div id="kt_accordion_2_item_1" class="fs-6 collapse show m-5" data-bs-parent="#kt_accordion_2" style="max-height: 500px; overflow-y: scroll;">
-                    ${e.lesson_standart_content != '' ? e.lesson_standart_content : 'Materi belum tersedia' }
+                    ${e.lesson_content != '' ? e.lesson_content : 'Materi belum tersedia' }
                 </div>
             </div>
 
@@ -130,7 +130,7 @@ function generate_view_lesson_s(e) {
                 </div>
 
                 <div id="kt_accordion_2_item_2" class="collapse fs-6 m-5" data-bs-parent="#kt_accordion_2">
-                    ${e.lesson_standart_content_path != '' ? `<embed src="${file_path + e.lesson_standart_content_path}" width="100%" height="500px" />` : 'File belum tersedia' }
+                    ${e.lesson_content_path != '' ? `<embed src="${file_path + e.lesson_content_path}" width="100%" height="500px" />` : 'File belum tersedia' }
                 </div>
             </div>
 
@@ -146,13 +146,13 @@ function generate_view_video_s(e) {
     $('.btn_video_content').html('');
     $('#btn_conf_vid_').html('');
 
-    let id_vid = youtube_parser(e.lesson_standart_video_path);
+    let id_vid = youtube_parser(e.lesson_video_path);
     let vid_view = `
     <div class="video-container">
         <iframe width="560" height="315" src="https://www.youtube.com/embed/${id_vid}?controls=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>`;
 
-    $('#video_lesson').html(e.lesson_standart_video_path != '' ? vid_view : 'Video belum tersedia')
+    $('#video_lesson').html(e.lesson_video_path != '' ? vid_view : 'Video belum tersedia')
 }
 
 function generate_view_attachment_s(e) {
@@ -160,8 +160,8 @@ function generate_view_attachment_s(e) {
     $('#btn_conf_attach_').html('');
 
     let btnn = '';
-    if (e.lesson_standart_attachment_path != '') {
-        let attach = JSON.parse(e.lesson_standart_attachment_path)
+    if (e.lesson_attachment_path != '') {
+        let attach = JSON.parse(e.lesson_attachment_path)
         for (let i = 0; i < attach.length; i++) {
             spl = attach[i].split("^");
             btnn += `
@@ -219,8 +219,9 @@ function generate_view_task_s(e, id, subj, grad) {
 }
 
 function view_content_s(id) {
+    let l_url = level == 11 ? 'teacher' : 'student'
     $.ajax({
-        url: base_url + '/teacher/lesson/standart/grab-content',
+        url: base_url + l_url + '/lesson/standart/grab-content',
         data: {
             id
         },
@@ -230,7 +231,7 @@ function view_content_s(id) {
             generate_view_lesson_s(e)
             generate_view_video_s(e)
             generate_view_attachment_s(e)
-            generate_view_task_s(e.tasks, e.lesson_standart_id, e.lesson_standart_subject_id, e.lesson_standart_grade)
+            generate_view_task_s(e.tasks, e.lesson_id, e.lesson_subject_id, e.lesson_grade)
         }
     })
 

@@ -1292,6 +1292,7 @@
 		let file_id = '<?= session()->getFlashdata('file_id') ?>'
 		let hostUrl = "<?= base_url() ?>assets/";
 		let active_year = '<?= year_active() != null ? year_active()['school_year_period'] : '' ?>'
+		let level = '<?= session()->get('c_role') ?>'
 		const url = window.location.href;
 	</script>
 	<!--begin::Javascript-->

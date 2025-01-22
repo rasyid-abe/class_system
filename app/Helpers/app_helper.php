@@ -346,7 +346,7 @@ if (!function_exists("student_group")) {
     {
         $db = \Config\Database::connect();
         $sql = "
-            SELECT student_in_group_student_group_id as student_group, student_group_name as group_name
+            SELECT student_in_group_student_group_id as group_id, student_group_name as group_name, student_in_group_grade as grade
             FROM system_student_in_group 
             JOIN master_student_group ON student_in_group_student_group_id = student_group_id
             WHERE student_in_group_student_id = ".userdata()['id_profile']."

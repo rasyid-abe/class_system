@@ -1,4 +1,4 @@
-if (url.includes("lesson/standart")) {
+if (url.includes("lesson/standart") && !url.includes("view-content")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     {
@@ -12,6 +12,20 @@ if (url.includes("lesson/standart")) {
   tbconf.columns = c;
   tbconf.selectableRows = false;
   var less_std_list = new Tabulator("#tbl_list_standard", tbconf);
+} else if (url.includes("lesson/school") && !url.includes("view-content")) {
+  let c = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    {
+      field: "lists",
+      formatter: "html",
+      headerFilter: "input",
+      headerSort: false,
+    },
+  ];
+
+  tbconf.columns = c;
+  tbconf.selectableRows = false;
+  var less_sch_list = new Tabulator("#less_sch_list", tbconf);
 } else if (url.includes("lesson/public")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
@@ -149,6 +163,32 @@ function ajax_pub_qb(type, param = null) {
   });
 }
 
+function ajax_std_less_s(type, param = null) {
+  $.ajax({
+    url: base_url + "/student/lesson/standart/first-page",
+    data: { type, param },
+    method: "post",
+    dataType: "json",
+    success: function (e) {
+      $('#count_chap').html(e.ch)
+      $('#count_schap').html(e.sch)
+    },
+  });
+}
+
+function ajax_sch_less_s(type, param = null) {
+  $.ajax({
+    url: base_url + "/student/lesson/school/first-page",
+    data: { type, param },
+    method: "post",
+    dataType: "json",
+    success: function (e) {
+      $('#count_chap').html(e.t_chap)
+      $('#count_schap').html(e.t_subchap)
+    },
+  });
+}
+
 $(document).ready(function () {
   if (url.includes("teacher/lesson/standart")) {
     ajax_std_less(1);
@@ -184,6 +224,37 @@ $(document).ready(function () {
     ajax_add_qb(1);
   } else if (url.includes("teacher/question-bank/public")) {
     ajax_pub_qb(1);
+  } else if (url.includes("student/lesson/standart") && !url.includes("view-content")) {
+    ajax_std_less_s(1);
+    less_std_list.replaceData(
+      base_url + "/student/lesson/standart/subject-list"
+    );
+  } else if (url.includes("student/lesson/school") && !url.includes("view-content")) {
+    if (active_year == '') {
+      Swal.fire({
+        html: 'Tahun Ajaran harus di aktifkan',
+        icon: "info",
+        buttonsStyling: false,
+        showCancelButton: true,
+        confirmButtonText: "AKtifkan Sekarang",
+        cancelButtonText: "Nanti Saja",
+        customClass: {
+          confirmButton: "btn btn-sm btn-primary",
+          cancelButton: "btn btn-sm btn-danger",
+        },
+      }).then(function (confirm) {
+        if (confirm.isConfirmed) {
+          show_tp()
+        } else {
+          window.history.go(-1); return false;
+        }
+      });
+    } else {
+      ajax_sch_less_s(1);
+      less_sch_list.replaceData(
+        base_url + "/student/lesson/school/subject-list"
+      );
+    }
   }
 });
 
@@ -226,7 +297,6 @@ function gen_header_qbpub(e) {
 
   $("#list_class").html(cls);
 }
-
 
 function gen_listpub_qb(e, act) {
   $(".head_tab_group").each(function () {

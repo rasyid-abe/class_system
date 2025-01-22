@@ -971,8 +971,9 @@ $(document.body).on('click', '.parent2', function() {
 })
 
 function view_tasks(type, id, act = null){
+    let l_url = level == 11 ? 'teacher' : 'student'
     $.ajax({
-        url: base_url + '/teacher/lesson/additional/get-question',
+        url: base_url + l_url + '/lesson/additional/get-question',
         data: {type, id},
         method: 'post',
         dataType: 'json',

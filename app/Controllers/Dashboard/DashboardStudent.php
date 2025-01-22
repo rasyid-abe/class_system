@@ -16,6 +16,8 @@ class DashboardStudent extends BaseController
     {
         $data = array();
         $data["title"] = $this->title;
+        $data["page"] = $this->title;
+        $data["sidebar"] = $this->title;
         $data["sidebar"] = "Siswa";
         $data["breadcrumb"] = [
             '#' => $this->title,
