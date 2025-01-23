@@ -450,7 +450,7 @@ function reload_tabulator_ass() {
   }
 }
 
-if (url.includes("assessment/index-draft")) {
+if (url.includes("teacher/assessment/index-draft")) {
   let c = [
     // { title: "#Aksi", field: "acts", width: 150, formatter: "html", headerVisible:false},
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
@@ -460,21 +460,21 @@ if (url.includes("assessment/index-draft")) {
 
   tbconf.columns = c;
   var draft = new Tabulator("#ass_draft_table", tbconf);
-} else if (url.includes("assessment/index-scheduled")) {
+} else if (url.includes("teacher/assessment/index-scheduled")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var scheduled = new Tabulator("#ass_scheduled_table", tbconf);
-} else if (url.includes("assessment/index-present")) {
+} else if (url.includes("teacher/assessment/index-present")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var present = new Tabulator("#ass_present_table", tbconf);
-} else if (url.includes("assessment/index-done")) {
+} else if (url.includes("teacher/assessment/index-done")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
@@ -492,6 +492,30 @@ if (url.includes("assessment/index-draft")) {
 
   tbconf.columns = c;
   var vstudent = new Tabulator("#student_group_view", tbconf);
+} else if (url.includes("student/assessment/missed")){
+  let c = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+  ];
+
+  tbconf.columns = c;
+  var ass_missed_table = new Tabulator("#ass_missed_table", tbconf);
+} else if (url.includes("student/assessment/present")){
+  let c = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+  ];
+
+  tbconf.columns = c;
+  var ass_present_table = new Tabulator("#ass_present_table", tbconf);
+} else if (url.includes("student/assessment/done")){
+  let c = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+  ];
+
+  tbconf.columns = c;
+  var ass_done_table = new Tabulator("#ass_done_table", tbconf);
 }
 
 if (url.includes("teacher/assessment")) {
@@ -578,7 +602,7 @@ $(document).ready(function () {
       },
       theme: "snow", // or 'bubble'
     });
-  } else if (url.includes("assessment/index-draft")) {
+  } else if (url.includes("teacher/assessment/index-draft")) {
     var instruction_assessment_edit = new Quill(
       "#instruction_assessment_edit",
       {
@@ -589,19 +613,25 @@ $(document).ready(function () {
       }
     );
     draft.setData(base_url + "/teacher/assessment/list-assessment?page-ass=1");
-  } else if (url.includes("assessment/index-scheduled")) {
+  } else if (url.includes("teacher/assessment/index-scheduled")) {
     scheduled.setData(
       base_url + "/teacher/assessment/list-assessment?page-ass=2"
     );
-  } else if (url.includes("assessment/index-present")) {
+  } else if (url.includes("teacher/assessment/index-present")) {
     present.setData(
       base_url + "/teacher/assessment/list-assessment?page-ass=3"
     );
-  } else if (url.includes("assessment/index-done")) {
+  } else if (url.includes("teacher/assessment/index-done")) {
     done.setData(base_url + "/teacher/assessment/list-assessment?page-ass=4");
   } else if (url.includes("groups/view-students")) {
     gid = $("input[name=group_id]").val();
     vstudent.setData(base_url + "/teacher/groups/get-list-student?id=" + gid);
+  } else if (url.includes("student/assessment/present")) {
+    ass_present_table.setData(base_url + "/student/assessment/list-assessment?page-ass=1")
+  } else if (url.includes("student/assessment/missed")) {
+    ass_missed_table.setData(base_url + "/student/assessment/list-assessment?page-ass=2")
+  } else if (url.includes("student/assessment/done")) {
+    ass_done_table.setData(base_url + "/student/assessment/list-assessment?page-ass=3")
   }
 });
 
