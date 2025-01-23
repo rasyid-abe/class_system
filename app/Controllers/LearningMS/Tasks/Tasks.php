@@ -36,6 +36,7 @@ class Tasks extends BaseController
         $this->tasks = new TasksModel();
     }
 
+    // BEGIN TEACHER FUNCTION
     public function index()
     {
         $data["title"] = 'Tambah Tugas';
@@ -629,5 +630,96 @@ class Tasks extends BaseController
             ->where('task_id', $id)->first();
 
         echo json_encode($data);
+    }
+
+    // BEGIN STUDENT FUNCTION
+    public function s_index_present()
+    {
+        $data["title"] = 'Aktif';
+        $data["page"] = 'Student Task';
+        $data["sidebar"] = 'Present_Tasks';
+        $data["breadcrumb"] = [
+            '#' => $this->title,
+            '##' => 'Aktif',
+        ];
+
+        return view("learningms/tasks/present_s", $data);
+    }
+
+    public function s_index_done()
+    {
+        $data["title"] = 'Selesai';
+        $data["page"] = 'Student Task';
+        $data["sidebar"] = 'Done_Tasks';
+        $data["breadcrumb"] = [
+            '#' => $this->title,
+            '##' => 'Selesai',
+        ];
+
+        return view("learningms/tasks/done_s", $data);
+    }
+
+    public function s_index_missed()
+    {
+        $data["title"] = 'Terlewat';
+        $data["page"] = 'Student Task';
+        $data["sidebar"] = 'Missed_Tasks';
+        $data["breadcrumb"] = [
+            '#' => $this->title,
+            '##' => 'Terlewat',
+        ];
+
+        return view("learningms/tasks/missed", $data);
+    }
+
+    public function s_list_tasks()
+    {
+        $req = $this->request->getVar();
+        $list = $this->tasks->get_list_task($req['page-task']);
+
+        $data = [];
+        foreach ($list as $k => $v) {
+            $deg = $v['teacher_degree'] != '' ? ', '.$v['teacher_degree'] : '';
+            $name = $v['teacher_first_name'].' '.$v['teacher_last_name'] . $deg;
+
+            $lists = '
+            <div class="row bigrow-tabulator">
+                <div class="col-lg-4 mx-auto">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-grow-1 me-2 center">
+                                <h6 class="mb-1">'.$v['task_title'].'</h6>
+                                <span class="text-gray-700 d-block">
+                                    <badge class="badge badge-primary">'.$v['subject_name'].'</badge>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mx-auto">
+                    <div class="additional-info">
+                        <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
+                            <span class="text-gray-800 fw-semibold">'.$name.'</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mx-auto">
+                    <div class="additional-info">
+                        <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
+                            <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_start']).'</span>
+                            <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_end']).'</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ';
+
+            $data[] = [
+                'id' => $v['task_id'],
+                'lists' => $lists
+            ];
+        }
+
+        echo (json_encode($data));
     }
 }  

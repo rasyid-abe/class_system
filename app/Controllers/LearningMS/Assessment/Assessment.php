@@ -601,25 +601,25 @@ class Assessment extends BaseController
 
     public function s_index_present()
     {
-        $data["title"] = 'Saat Ini';
-        $data["page"] = $this->page;
+        $data["title"] = 'Aktif';
+        $data["page"] = 'Student Assessment';
         $data["sidebar"] = 'Present_Assessment';
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '##' => 'Saat Ini',
+            '##' => 'Aktif',
         ];
 
-        return view("learningms/assessment/present", $data);
+        return view("learningms/assessment/present_s", $data);
     }
 
     public function s_index_missed()
     {
-        $data["title"] = 'Selesai';
-        $data["page"] = $this->page;
-        $data["sidebar"] = 'Done_Assessment';
+        $data["title"] = 'Terlewat';
+        $data["page"] = 'Student Assessment';
+        $data["sidebar"] = 'Missed_Assessment';
         $data["breadcrumb"] = [
             '#' => $this->title,
-            '##' => 'Selesai',
+            '##' => 'Terlewat',
         ];
 
         return view("learningms/assessment/missed", $data);
@@ -628,14 +628,66 @@ class Assessment extends BaseController
     public function s_index_done()
     {
         $data["title"] = 'Selesai';
-        $data["page"] = $this->page;
+        $data["page"] = 'Student Assessment';
         $data["sidebar"] = 'Done_Assessment';
         $data["breadcrumb"] = [
             '#' => $this->title,
             '##' => 'Selesai',
         ];
 
-        return view("learningms/assessment/done", $data);
+        return view("learningms/assessment/done_s", $data);
+    }
+
+    public function s_list_assessment()
+    {
+        $req = $this->request->getVar();
+        $list = $this->assessment->get_list_student($req['page-ass']);
+
+        $data = [];
+        foreach ($list as $k => $v) {
+            $deg = $v['teacher_degree'] != '' ? ', '.$v['teacher_degree'] : '';
+            $name = $v['teacher_first_name'].' '.$v['teacher_last_name'] . $deg;
+
+
+            $lists = '
+                <div class="row bigrow-tabulator">
+                <div class="col-lg-4 mx-auto">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-grow-1 me-2 center">
+                                <h6 class="mb-1">'.$v['assessment_title'].'</h6>
+                                <span class="text-gray-700 d-block">
+                                    <badge class="badge badge-primary">'.$v['subject_name'].'</badge>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mx-auto">
+                    <div class="additional-info">
+                        <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
+                            <span class="text-gray-800 fw-semibold">'.$name.'</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mx-auto">
+                    <div class="additional-info">
+                        <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
+                            <span class="text-gray-700 fw-semibold">'.datetime_indo($v['assessment_start']).'</span>
+                            <span class="text-gray-700 fw-semibold">'.datetime_indo($v['assessment_end']).'</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ';
+        
+            $data[] = [
+                'id' => $v['assessment_id'],
+                'lists' => $lists
+            ];
+        }
+
+        echo (json_encode($data));
     }
 
 }

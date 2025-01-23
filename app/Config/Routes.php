@@ -155,3 +155,8 @@ $routes->get('/student/assessment/present', 'LearningMS\Assessment\Assessment::s
 $routes->get('/student/assessment/missed', 'LearningMS\Assessment\Assessment::s_index_missed', ['filter' => 'auth']);
 $routes->get('/student/assessment/done', 'LearningMS\Assessment\Assessment::s_index_done', ['filter' => 'auth']);
 $routes->get('/student/assessment/list-assessment', 'LearningMS\Assessment\Assessment::s_list_assessment', ['filter' => 'auth']);
+
+$routes->get('/student/tasks/present', 'LearningMS\Tasks\Tasks::s_index_present', ['filter' => 'auth']);
+$routes->get('/student/tasks/missed', 'LearningMS\Tasks\Tasks::s_index_missed', ['filter' => 'auth']);
+$routes->get('/student/tasks/done', 'LearningMS\Tasks\Tasks::s_index_done', ['filter' => 'auth']);
+$routes->get('/student/tasks/list-tasks', 'LearningMS\Tasks\Tasks::s_list_tasks', ['filter' => 'auth']);

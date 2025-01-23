@@ -300,7 +300,7 @@
 
             </div>
         </div>
-        <div class="tab-pane fade <?= $page == "Student Result" ? 'active show' : '' ?>" id="student_result" role="tabpanel">
+        <div class="tab-pane fade <?= $page == "Student Assessment" ? 'active show' : '' ?>" id="student_result" role="tabpanel">
             <div class="mx-5">
                 <h3 class="fw-bolder text-dark mb-10 mx-0">Penilaian</h3>
                 <div class="mb-12">
@@ -311,8 +311,8 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/student/assessment/active') ?>"
-                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Tugas Aktif</a>
+                            <a href="<?= base_url('/student/assessment/present') ?>"
+                                class="<?= $sidebar != 'Present_Assessment' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Aktif</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -323,7 +323,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/assessment/missed') ?>"
-                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Tugas Terlewat</a>
+                                class="<?= $sidebar != 'Missed_Assessment' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Terlewat</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -334,7 +334,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/assessment/done') ?>"
-                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Tugas Selesai</a>
+                                class="<?= $sidebar != 'Done_Assessment' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Selesai</a>
                         </div>
                     </div>
                 </div>
@@ -351,8 +351,8 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/student/tasks/active') ?>"
-                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Tugas Aktif</a>
+                            <a href="<?= base_url('/student/tasks/present') ?>"
+                                class="<?= $sidebar != 'Present_Tasks' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Aktif</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -363,7 +363,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/tasks/missed') ?>"
-                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'fw-bolder text-daner' ?> text-hover-danger fs-6 fw-bold">Tugas Terlewat</a>
+                                class="<?= $sidebar != 'Missed_Tasks' ? 'text-gray-800' : 'fw-bolder text-daner' ?> text-hover-danger fs-6 fw-bold">Terlewat</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -374,7 +374,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/tasks/done') ?>"
-                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Tugas Selesai</a>
+                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Selesai</a>
                         </div>
                     </div>
                 </div>

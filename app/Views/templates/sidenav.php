@@ -97,7 +97,7 @@
                 <li class="nav-item mb-2" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="right"
                     data-bs-dismiss="click" title="Penilaian">
                     <!--begin::Nav link-->
-                    <a class="nav-link btn btn-custom btn-icon <?= $page == "Student Result" ? 'active' : '' ?>" data-bs-toggle="tab" href="#student_result">
+                    <a class="nav-link btn btn-custom btn-icon <?= $page == "Student Assessment" ? 'active' : '' ?>" data-bs-toggle="tab" href="#student_result">
                         <i class="fas fa-check-double fs-2x"></i>
                     </a>
                     <!--end::Nav link-->

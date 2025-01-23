@@ -461,7 +461,7 @@ function reload_tabulator() {
   }
 }
 
-if (url.includes("tasks/index-draft")) {
+if (url.includes("teacher/tasks/index-draft")) {
   let c = [
     // { title: "#Aksi", field: "acts", width: 150, formatter: "html", headerVisible:false},
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
@@ -471,7 +471,7 @@ if (url.includes("tasks/index-draft")) {
 
   tbconf.columns = c;
   var task_draft = new Tabulator("#task_draft_table", tbconf);
-} else if (url.includes("tasks/index-scheduled")) {
+} else if (url.includes("teacher/tasks/index-scheduled")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Akhir", field: "end_date", visible: false },
@@ -480,20 +480,41 @@ if (url.includes("tasks/index-draft")) {
 
   tbconf.columns = c;
   var task_scheduled = new Tabulator("#task_scheduled_table", tbconf);
-} else if (url.includes("tasks/index-present")) {
+} else if (url.includes("teacher/tasks/index-present")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var task_present = new Tabulator("#task_present_table", tbconf);
-} else if (url.includes("tasks/index-done")) {
+} else if (url.includes("teacher/tasks/index-done")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var task_done = new Tabulator("#task_done_table", tbconf);
+} else if (url.includes("student/tasks/present")) {
+  let c = [
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+  ];
+
+  tbconf.columns = c;
+  var task_presents = new Tabulator("#task_presents_table", tbconf);
+} else if (url.includes("student/tasks/done")) {
+  let c = [
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+  ];
+
+  tbconf.columns = c;
+  var task_dones = new Tabulator("#task_dones_table", tbconf);
+} else if (url.includes("student/tasks/missed")) {
+  let c = [
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+  ];
+
+  tbconf.columns = c;
+  var task_misseds = new Tabulator("#task_misseds_table", tbconf);
 }
 
 if (url.includes("teacher/tasks")) {
@@ -574,26 +595,18 @@ if (url.includes("teacher/tasks")) {
         }
       });
   }
-  // document.getElementById("delete-btn").addEventListener("click", function(){
-  //   let sel_data = '';
-  //   if (url.includes("tasks/index-draft")) {
-  //     sel_data = task_draft.getSelectedData();
-  //   } else if (url.includes("tasks/index-scheduled")) {
-  //     sel_data = task_scheduled.getSelectedData();
-  //   }
-  // });
 }
 
 $(document).ready(function () {
   $('.tabulator-header-filter input').attr('placeholder', 'Cari data ...')
-  if (url.includes("tasks/index-add")) {
+  if (url.includes("teacher/tasks/index-add")) {
     var instruction_tasks = new Quill("#instruction_tasks", {
       modules: {
         toolbar: toolbarOptions,
       },
       theme: "snow", // or 'bubble'
     });
-  } else if (url.includes("tasks/index-draft")) {
+  } else if (url.includes("teacher/tasks/index-draft")) {
     var instruction_tasks_upd = new Quill("#instruction_tasks_upd", {
       modules: {
         toolbar: toolbarOptions,
@@ -601,11 +614,17 @@ $(document).ready(function () {
       theme: "snow", // or 'bubble'
     });
     task_draft.setData(base_url + "/teacher/tasks/list-tasks?page-task=1");
-  } else if (url.includes("tasks/index-scheduled")) {
+  } else if (url.includes("teacher/tasks/index-scheduled")) {
     task_scheduled.setData(base_url + "/teacher/tasks/list-tasks?page-task=2");
-  } else if (url.includes("tasks/index-present")) {
+  } else if (url.includes("teacher/tasks/index-present")) {
     task_present.setData(base_url + "/teacher/tasks/list-tasks?page-task=3");
-  } else if (url.includes("tasks/index-done")) {
+  } else if (url.includes("teacher/tasks/index-done")) {
     task_done.setData(base_url + "/teacher/tasks/list-tasks?page-task=4");
+  } else if (url.includes("student/tasks/present")) {
+    task_presents.setData(base_url + "/student/tasks/list-tasks?page-task=1");
+  } else if (url.includes("student/tasks/missed")) {
+    task_misseds.setData(base_url + "/student/tasks/list-tasks?page-task=2");
+  } else if (url.includes("student/tasks/done")) {
+    task_dones.setData(base_url + "/student/tasks/list-tasks?page-task=3");
   }
 });
