@@ -96,6 +96,7 @@ class AssessmentModel extends Model
                 assessment_group,
                 assessment_question_bank_src,
                 assessment_question_bank_id,
+                assessment_duration,
                 subject_name,
                 question_bank_title,
                 question_bank_standart_title,

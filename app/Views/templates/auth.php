@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Live Learn - Login</title>
+    <title>eLearn - Login</title>
     <meta charset="utf-8" />
     <meta name="description"
         content="Seven admin dashboard live demo. Check out all the features of the admin panel. Light & dark skins. A large number of settings, additional services and widgets." />
