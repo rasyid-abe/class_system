@@ -647,26 +647,27 @@ class Assessment extends BaseController
         foreach ($list as $k => $v) {
             $deg = $v['teacher_degree'] != '' ? ', '.$v['teacher_degree'] : '';
             $name = $v['teacher_first_name'].' '.$v['teacher_last_name'] . $deg;
+            $duration = $v['assessment_duration'] > 0 ? $v['assessment_duration'] . " Menit" : '-';
 
 
             $lists = '
                 <div class="row bigrow-tabulator">
-                <div class="col-lg-4 mx-auto">
+                <div class="col-lg-5 mx-auto">
                     <div class="d-flex justify-content-between">
-                        <div class="d-flex align-items-start">
-                            <div class="flex-grow-1 me-2 center">
-                                <h6 class="mb-1">'.$v['assessment_title'].'</h6>
-                                <span class="text-gray-700 d-block">
-                                    <badge class="badge badge-primary">'.$v['subject_name'].'</badge>
-                                </span>
+                        <div class="d-flex align-items-center">
+                            <a href="#" class="btn btn-primary pl-10" onclick="alert_begin_assessment('.$v['assessment_id'].')">Kerjakan</a>
+                            <div class="flex-grow-1 mx-5" style="word-wrap: break-word;">
+                                <h5 class="">'.$v['assessment_title'].'</h5>
+                                <badge class="badge badge-info"><i class="bi-alarm text-white"></i> '.$duration.'</badge>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 mx-auto">
+                <div class="col-lg-3 mx-auto">
                     <div class="additional-info">
                         <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
-                            <span class="text-gray-800 fw-semibold">'.$name.'</span>
+                            <span class="text-gray-800 fw-bold d-block">'.$v['subject_name'].'</span>
+                            <span class="text-gray-700 fw-semibold">'.$name.'</span>
                         </div>
                     </div>
                 </div>
@@ -688,6 +689,51 @@ class Assessment extends BaseController
         }
 
         echo (json_encode($data));
+    }
+
+    public function s_get_assessment()
+    {
+        $req = $this->request->getVar();
+
+        if ($req['type'] == 1) {
+            $data = $this->assessment
+                ->select('
+                    assessment_id,
+                    assessment_title,
+                    assessment_start,
+                    assessment_end,
+                    assessment_duration,
+                    assessment_instruction,
+                    assessment_is_autosubmit,
+                    assessment_question_bank_id,
+                    assessment_question_bank_src,
+                    subject_name,
+                    teacher_first_name,
+                    teacher_last_name,
+                    teacher_degree,
+                ')
+                ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
+                ->join('profile_teacher', 'teacher_id=assessment_teacher_id', 'left')
+                ->where('assessment_id', $req['id'])->first();
+
+            $data['end'] = datetime_indo($data['assessment_end']);
+            $data['period'] = datetime_indo($data['assessment_start']) . ' s/d ' . datetime_indo($data['assessment_end']);
+            $data['instruction'] = $data['assessment_instruction'] != null && $data['assessment_instruction'] != '<p><br></p>' ? $data['assessment_instruction'] : '-';
+        } else if ($req['type'] == 2) {
+            if ($req['src'] != 2) {
+                $data = $this->question_bank_standart
+                    ->where('question_bank_standart_parent_id', $req['id'])
+                    ->findAll();
+            } else {
+                $data = $this->question_bank
+                    ->where('question_bank_parent_id', $req['id'])
+                    ->findAll();
+            }
+
+            
+        }
+
+        echo json_encode($data);
     }
 
 }

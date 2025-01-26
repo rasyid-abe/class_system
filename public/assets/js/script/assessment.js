@@ -484,12 +484,9 @@ if (url.includes("teacher/assessment/index-draft")) {
 } else if (url.includes("groups/view-students")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { title: "NISN", field: "nisn" },
-    { title: "Nama Siswa", field: "name", width: 250 },
-    { title: "Agama", field: "religion" },
-    { title: "Jenis kelamin", field: "gender" },
+    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
-
+  tbconf.selectableRows = false;
   tbconf.columns = c;
   var vstudent = new Tabulator("#student_group_view", tbconf);
 } else if (url.includes("student/assessment/missed")){
@@ -497,7 +494,7 @@ if (url.includes("teacher/assessment/index-draft")) {
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
-
+  tbconf.selectableRows = false;
   tbconf.columns = c;
   var ass_missed_table = new Tabulator("#ass_missed_table", tbconf);
 } else if (url.includes("student/assessment/present")){
@@ -507,13 +504,14 @@ if (url.includes("teacher/assessment/index-draft")) {
   ];
 
   tbconf.columns = c;
+  tbconf.selectableRows = false;
   var ass_present_table = new Tabulator("#ass_present_table", tbconf);
 } else if (url.includes("student/assessment/done")){
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
-
+  tbconf.selectableRows = false;
   tbconf.columns = c;
   var ass_done_table = new Tabulator("#ass_done_table", tbconf);
 }
@@ -647,4 +645,76 @@ function check_good_date(eds) {
   });
   
   return result.includes(false)
+}
+
+// Begin Action Assessment
+function alert_begin_assessment(assessment) {
+  Swal.fire({
+    html: `Apakah anda yakin ingin mulai mengerjakan?`,
+    icon: "info",
+    buttonsStyling: false,
+    showCancelButton: true,
+    confirmButtonText: "Ya",
+    cancelButtonText: "Tidak",
+    customClass: {
+      confirmButton: "btn btn-sm btn-primary",
+      cancelButton: "btn btn-sm btn-danger",
+    },
+  }).then(function (confirm) {
+    if (confirm.isConfirmed) {
+        get_assessment(1, assessment)
+    }
+  });
+}
+
+function info_begin_assessment(e) {
+  console.log(e.assessment_duration);
+  
+  let deg = e.teacher_degree != '' ? ', ' + e.teacher_degree : ''
+  let name = e.teacher_first_name + ' ' + e.teacher_last_name + deg
+  let timer = e.assessment_duration > 0 ? e.assessment_duration + ' Menit' : '-';
+  let timer_note = e.assessment_duration > 0 ? e.assessment_duration + ' Menit atau ' : '';
+  $('.title_assessment').html(e.assessment_title)
+  $('.subject_assessment').html(e.subject_name)
+  $('.teacher_assessment').html(name)
+  $('.period_assessment').html(e.period)
+  $('.duration_assessment').html(timer)
+  $('.instruction_assessment').html(e.instruction)
+
+  let auto_submit = e.assessment_is_autosubmit > 0 ? '<li>Ketika waktu mengerjakan sudah habis, maka jawaban akan terkirim secara otomatis.</li>' : '<li>Soal masih dapat dikerjakan walaupun waktu mengerjakan telah habis.</li>'
+
+  let notes = `
+    <ul>
+      <li>Setelah selesai mengerjakan harus menekan tombol Submit untuk mengirimkan jawaban.</li>
+      <li>Batas akhir mengerjakan ujian ini adalah ${timer_note}${e.end}.</li>
+      ${auto_submit}
+      <li>Ujian ini bersifat tutup buku (tidak boleh menutup atau meninggalkan halaman ujian).</li>
+    </ul>
+  `
+
+  $('#assessment_notes').html(notes)
+  $('#betin_assessment').html(`<button type="sumbit" class="btn btn-sm btn-primary ml-2" onclick="get_assessment(2, ${e.assessment_question_bank_id}, ${e.assessment_question_bank_src})">Mulai</button>`)
+  $('#modal_assessment_information').modal('show')
+}
+
+function assessment_page(e) {
+  $('#modal_assessment_information').modal('hide')
+  $('#assessment_modal_question').modal('show')
+}
+
+function get_assessment(type, id, src=null) {
+  $.ajax({
+    url: base_url + "/student/assessment/get-assessment",
+    data: { type, id, src },
+    method: "post",
+    dataType: "json",
+    success: function (e) {
+      if (type == 1) {
+        info_begin_assessment(e)
+      } else if (type == 2) {
+        $('#modal_assessment_information').modal('hide')
+        assessment_page(e)
+      }
+    },
+  });
 }

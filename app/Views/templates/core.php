@@ -8,7 +8,7 @@
 	end($breadcrumb);
 	$z = prev($breadcrumb);
 	?>
-	<title>Live Learn - <?= $z . ' ' . $title ?></title>
+	<title>eLearn - <?= $z . ' ' . $title ?></title>
 	<meta name="description"
 		content="Seven admin dashboard live demo. Check out all the features of the admin panel. Light &amp; dark skins. A large number of settings, additional services and widgets." />
 	<meta name="keywords"
