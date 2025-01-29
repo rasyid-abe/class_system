@@ -1,0 +1,9 @@
+version: '3.6'
+services:
+  web:
+    build: .
+    restart: always
+    ports:
+      - "8001:80"
+    volumes:
+      - $PWD:/var/www/html
