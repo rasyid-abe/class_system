@@ -1,4 +1,6 @@
 <?php
+use Aws\S3\S3Client;
+use Dotenv\Dotenv;
 
 function userdata()
 {
@@ -358,6 +360,123 @@ if (!function_exists("student_group")) {
     }
 }
 
+
+
+if (!function_exists("s3_uploads")) {
+    function s3_uploads($file_temp, $file_name, $file_path) 
+    {
+        $region = getenv()['S3_BUCKET_REGION'];
+        $version = getenv()['S3_BUCKET_VERSION'];
+        $access_key_id = getenv()['S3_BUCKET_ACCESS_KEY'];
+        $secret_access_key = getenv()['S3_BUCKET_SECRET_KEY'];
+        $bucket = getenv()['S3_BUCKET'];
+
+        $res = [];
+        $res['status'] = false;
+
+        $file_temp_src = $file_temp;
+
+        if (is_uploaded_file($file_temp_src)) {
+            $s3 = new S3Client([
+                'version' => $version,
+                'region' => $region,
+                'credentials' => [
+                    'key' => $access_key_id,
+                    'secret' => $secret_access_key,
+                ]
+            ]);
+
+            try {
+                $result = $s3->putObject([
+                    'Bucket' => $bucket,
+                    'Key' => $file_path . $file_name,
+                    'ACL' => 'public-read',
+                    'SourceFile' => $file_temp_src
+                ]);
+                $result_arr = $result->toArray();
+
+                if (!empty($result_arr['ObjectURL'])) {
+                    $res['status'] = true;
+                    $res['s3_link'] = $result_arr['ObjectURL'];
+                    $res['message'] = 'Upload success!';
+                } else {
+                    $res['message'] = 'Upload Failed! S3 Object URL not found!';
+                }
+            } catch (Aws\S3\Exception\S3Exception $e) {
+                $res['message'] = $e->getMessage();
+            }
+        } else {
+            $res['message'] = 'Invalid temp file';
+        }
+
+        return $res;
+    }
+}
+
+if (!function_exists("s3_listfile")) {
+    function s3_unlink($pathfile) 
+    {
+        $region = getenv()['S3_BUCKET_REGION'];
+        $version = getenv()['S3_BUCKET_VERSION'];
+        $access_key_id = getenv()['S3_BUCKET_ACCESS_KEY'];
+        $secret_access_key = getenv()['S3_BUCKET_SECRET_KEY'];
+        $bucket = getenv()['S3_BUCKET'];
+
+        $s3 = new S3Client([
+            'version' => $version,
+            'region' => $region,
+            'credentials' => [
+                'key' => $access_key_id,
+                'secret' => $secret_access_key,
+            ]
+        ]);
+
+        $result = $s3->deleteObject(array(
+            'Bucket' => $bucket,
+            'Key'    => $pathfile
+        ));
+
+        return $result->toArray();
+    }
+}
+
+if (!function_exists("s3_listfile")) {
+    function s3_listfile() 
+    {
+        $region = getenv()['S3_BUCKET_REGION'];
+        $version = getenv()['S3_BUCKET_VERSION'];
+        $access_key_id = getenv()['S3_BUCKET_ACCESS_KEY'];
+        $secret_access_key = getenv()['S3_BUCKET_SECRET_KEY'];
+        $bucket = getenv()['S3_BUCKET'];
+
+        $res = [];
+
+        $s3 = new S3Client([
+            'version' => $version,
+            'region' => $region,
+            'credentials' => [
+                'key' => $access_key_id,
+                'secret' => $secret_access_key,
+            ]
+        ]);
+
+        $objects = $s3->listObjects([
+            "Bucket" => $bucket
+        ]);
+
+        return $objects->toArray();
+    }
+}
+
+if (!function_exists("getenv")) {
+    function getenv() 
+    {
+        $dotenv = Dotenv::createImmutable(__DIR__);
+        $dotenv->load();
+
+        return $_ENV;
+    }
+}
 
 
 
