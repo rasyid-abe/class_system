@@ -327,7 +327,7 @@ function generate_view_lesson_a(e) {
     $('.btn_content_content').html('');
     $('.btn_conf_topic').html('');
 
-    let file_path = 'https://abeaws-bucket.s3.ap-southeast-1.amazonaws.com/documents/'
+    let file_path = 'https://abeaws-bucket.s3.ap-southeast-1.amazonaws.com/'
 
     let butn = `
             <div class="accordion accordion-icon-toggle" id="kt_accordion_2">

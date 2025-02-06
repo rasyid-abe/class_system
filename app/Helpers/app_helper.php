@@ -363,7 +363,7 @@ if (!function_exists("student_group")) {
 
 
 if (!function_exists("s3_uploads")) {
-    function s3_uploads($file_temp, $file_name, $file_path) 
+    function s3_uploads($file_temp, $file_name) 
     {
         $region = getenv()['S3_BUCKET_REGION'];
         $version = getenv()['S3_BUCKET_VERSION'];
@@ -389,7 +389,7 @@ if (!function_exists("s3_uploads")) {
             try {
                 $result = $s3->putObject([
                     'Bucket' => $bucket,
-                    'Key' => $file_path . $file_name,
+                    'Key' => $file_name,
                     'ACL' => 'public-read',
                     'SourceFile' => $file_temp_src
                 ]);
