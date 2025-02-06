@@ -424,22 +424,38 @@ class AdditionalLesson extends BaseController
 
             session()->setFlashdata('att_id', $req['lesson_id']);
         } else if ($req['type'] == 8) {
-            $attach = $this->request->getFile('file_attach');
+            $temp_file = $_FILES['file_attach']['tmp_name'];
+            $file_name = basename($_FILES['file_attach']['name']);
+            $file_type = explode('.', $file_name);
+            $extention = end($file_type);
 
-            if (!$attach->isValid()) {
-                return $attach->getErrorString();
+            $allowTypes = ['pdf'];
+            $path_dir = 'documents/';
+            if (in_array($extention, $allowTypes)) {
+                $upload_file_name = $req['subject'] . '^' . $req['grade'] . '^' . str_replace(' ', '_', $file_name);
+                
+                $up = s3_uploads($temp_file, $upload_file_name, $path_dir);
+                if ($up['status']) {
+                    $update = $this->lesson_additional
+                        ->set('lesson_additional_content_path', $upload_file_name)
+                        ->set('lesson_additional_updated_by', userdata()['user_id'])
+                        ->where('lesson_additional_id', $req['lesson_id'])
+                        ->update();
+
+                    session()->setFlashdata('file_id', $req['lesson_id']);
+                } else {
+                    echo '<pre>';
+                    print_r($up);
+                    echo '</pre>';
+                    die;
+                }
             } else {
-                $filename = $req['subject'] . '^' . $req['grade'] . '^' . $attach->getName();
-                $attach->move('lesson_file', $filename);
-
-                $update = $this->lesson_additional
-                    ->set('lesson_additional_content_path', $filename)
-                    ->set('lesson_additional_updated_by', userdata()['user_id'])
-                    ->where('lesson_additional_id', $req['lesson_id'])
-                    ->update();
+                echo '<pre>';
+                print_r('Invalid file type!');
+                echo '</pre>';
+                die;
             }
-
-            session()->setFlashdata('file_id', $req['lesson_id']);
+            
         }
 
         return redirect()->to('/teacher/lesson/additional/view-content/' . $req['subject'] . '/' . $req['grade']);
