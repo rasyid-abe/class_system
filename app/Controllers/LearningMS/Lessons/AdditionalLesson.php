@@ -405,15 +405,23 @@ class AdditionalLesson extends BaseController
             }
 
             $attach = $this->request->getFileMultiple('file_attach');
-            
+
             foreach ($attach as $file) {
-                if (!$file->isValid()) {
-                    return $file->getErrorString();
-                } else {
-                    $filename = $req['subject'] . '^' . $req['grade'] . '^' .$file->getName();
-                    $file->move('attachment', $filename);
-                    array_push($arr_file, $filename);
-                }
+                $path_dir = 'documents/lms/additional_lesson/attachment/';
+                $upload_file_name = $path_dir . $req['subject'] . '^' . $req['grade'] . '^' .$file->getName();
+                
+                $temp_file = $file->getPathName();
+                $up = s3_uploads($temp_file, $upload_file_name);
+ 
+                array_push($arr_file, $upload_file_name);
+                
+                // if (!$file->isValid()) {
+                //     return $file->getErrorString();
+                // } else {
+                //     $filename = $req['subject'] . '^' . $req['grade'] . '^' .$file->getName();
+                //     $file->move('attachment', $filename);
+                //     array_push($arr_file, $filename);
+                // }
             }
 
             $update = $this->lesson_additional
@@ -430,12 +438,16 @@ class AdditionalLesson extends BaseController
             $extention = end($file_type);
 
             $allowTypes = ['pdf'];
-            $path_dir = 'documents/';
+            $path_dir = 'documents/lms/additional_lessom/';
             if (in_array($extention, $allowTypes)) {
-                $upload_file_name = $req['subject'] . '^' . $req['grade'] . '^' . str_replace(' ', '_', $file_name);
+                $upload_file_name = $path_dir . $req['subject'] . '^' . $req['grade'] . '^' . str_replace(' ', '_', $file_name);
                 
-                $up = s3_uploads($temp_file, $upload_file_name, $path_dir);
+                $up = s3_uploads($temp_file, $upload_file_name);
                 if ($up['status']) {
+                    $old_file = $this->lesson_additional->select('lesson_additional_content_path')->where('lesson_additional_id', $req['lesson_id'])->first();
+                    if ($old_file) {
+                        s3_unlink($old_file['lesson_additional_content_path']);
+                    }
                     $update = $this->lesson_additional
                         ->set('lesson_additional_content_path', $upload_file_name)
                         ->set('lesson_additional_updated_by', userdata()['user_id'])
@@ -444,16 +456,12 @@ class AdditionalLesson extends BaseController
 
                     session()->setFlashdata('file_id', $req['lesson_id']);
                 } else {
-                    echo '<pre>';
-                    print_r($up);
-                    echo '</pre>';
-                    die;
+                    session()->setFlashdata('att_id', $req['lesson_id']);
+                    session()->setFlashdata('upload_msg', $up['message']);
                 }
             } else {
-                echo '<pre>';
-                print_r('Invalid file type!');
-                echo '</pre>';
-                die;
+                session()->setFlashdata('att_id', $req['lesson_id']);
+                session()->setFlashdata('upload_msg', $up['message']);
             }
             
         }
