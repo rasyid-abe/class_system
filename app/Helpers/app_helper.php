@@ -478,5 +478,21 @@ if (!function_exists("getenv")) {
     }
 }
 
+if (!function_exists("getTimeDifferenceInMinutes")) {
+    function getTimeDifferenceInMinutes($start_date, $end_date) {
+        // Convert the dates into Unix timestamps
+        $start_timestamp = strtotime($start_date);
+        $end_timestamp = strtotime($end_date);
+    
+        // Calculate the difference in seconds
+        $difference_in_seconds = abs($end_timestamp - $start_timestamp);
+    
+        // Convert the difference from seconds to minutes
+        $difference_in_minutes = $difference_in_seconds / 60;
+    
+        return $difference_in_minutes;
+    }
+}
+
 
 

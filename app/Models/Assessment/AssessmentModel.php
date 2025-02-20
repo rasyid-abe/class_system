@@ -77,7 +77,7 @@ class AssessmentModel extends Model
     {
         $add_where = "AND ";
         if ($type == 1) {
-            $add_where .= "assessment_status = 2 AND assessment_start <= '" . date('Y-m-d H:i:s') . "' AND assessment_end >= '" . date('Y-m-d H:i:s') ."'";
+            $add_where .= "assessment_status = 2 AND assessment_start <= '" . date('Y-m-d H:i:s') . "' AND assessment_end > '" . date('Y-m-d H:i:s') ."'";
         } elseif ($type == 2) {
             $add_where .= "assessment_status = 2 AND assessment_end < '" . date('Y-m-d H:i:s') . "'";
         } elseif ($type == 3) {

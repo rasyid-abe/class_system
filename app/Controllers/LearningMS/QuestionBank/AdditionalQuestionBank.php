@@ -168,7 +168,6 @@ class AdditionalQuestionBank extends BaseController
     public function get_question()
     {
         $req = $this->request->getVar();
-       
         
         if ($req['type'] == 'shr') {
             $res = $this->question_bank

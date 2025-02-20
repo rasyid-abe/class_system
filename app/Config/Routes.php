@@ -121,6 +121,7 @@ $routes->post('/teacher/assessment/store-data', 'LearningMS\Assessment\Assessmen
 $routes->post('/teacher/assessment/view-question-bank', 'LearningMS\Assessment\Assessment::view_question_bank', ['filter' => 'auth']);
 $routes->post('/teacher/assessment/get-edit', 'LearningMS\Assessment\Assessment::get_edit', ['filter' => 'auth']);
 $routes->post('/teacher/assessment/view-assessment-question', 'LearningMS\Assessment\Assessment::view_assessment_question', ['filter' => 'auth']);
+$routes->get('/teacher/assessment/get-student-assessment', 'LearningMS\Assessment\Assessment::get_student_assessment', ['filter' => 'auth']);
 
 $routes->get('/teacher/tasks/index-add', 'LearningMS\Tasks\Tasks::index', ['filter' => 'auth']);
 $routes->get('/teacher/tasks/index-draft', 'LearningMS\Tasks\Tasks::index_draft', ['filter' => 'auth']);
@@ -156,6 +157,7 @@ $routes->get('/student/assessment/missed', 'LearningMS\Assessment\Assessment::s_
 $routes->get('/student/assessment/done', 'LearningMS\Assessment\Assessment::s_index_done', ['filter' => 'auth']);
 $routes->get('/student/assessment/list-assessment', 'LearningMS\Assessment\Assessment::s_list_assessment', ['filter' => 'auth']);
 $routes->post('/student/assessment/get-assessment', 'LearningMS\Assessment\Assessment::s_get_assessment', ['filter' => 'auth']);
+$routes->post('/student/assessment/submit-assessment', 'LearningMS\Assessment\Assessment::s_submit_assessment', ['filter' => 'auth']);
 
 $routes->get('/student/tasks/present', 'LearningMS\Tasks\Tasks::s_index_present', ['filter' => 'auth']);
 $routes->get('/student/tasks/missed', 'LearningMS\Tasks\Tasks::s_index_missed', ['filter' => 'auth']);
