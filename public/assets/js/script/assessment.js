@@ -75,9 +75,8 @@ function preview_qb(e, subj, subjname, grad, gradname) {
 
         ch1 += `
                  <div class="form-check my-2 form-switch form-check-custom form-check-solid" style="margin-left: 10px">
-                    <input class="form-check-input h-20px w-30px" type="radio" name="task_ass_check" data-tasksrc=${
-                      v.src
-                    } data-taskname="${val.title}" value="${val.id}" />
+                    <input class="form-check-input h-20px w-30px" type="radio" name="task_ass_check" data-tasksrc=${v.src
+          } data-taskname="${val.title}" value="${val.id}" />
                     <label class="form-check-label head22" data-source="${i1}${i2}">
                       ${val.title}
                     </label>
@@ -95,9 +94,8 @@ function preview_qb(e, subj, subjname, grad, gradname) {
             </ul>
         `;
       content += `
-            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${
-        v.head
-      }</h6></li>
+            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${v.head
+        }</h6></li>
             ${v.content.length > 0 ? ch1_body : ""}
         `;
 
@@ -209,7 +207,8 @@ function check_group(subs, grad) {
   });
 }
 
-function view_task_assessment(id,src) {
+function view_task_assessment(id, src) {
+  // $(this).preventDefault()
   $.ajax({
     url: base_url + "/teacher/assessment/view-assessment-question",
     data: { id, src },
@@ -223,8 +222,8 @@ function view_task_assessment(id,src) {
 
 function list_ass_question(e) {
   let lists = '';
-  $.each(e, function(i,v) {
-    lists += `<a href="#" onclick="view_question(${v['id']})" class="m-1 btn btn-icon btn-outline btn-outline-primary btn-active-primary">${i+1}</a>`
+  $.each(e, function (i, v) {
+    lists += `<a href="#" onclick="view_question(${v['id']})" class="m-1 btn btn-icon btn-outline btn-outline-primary btn-active-primary">${i + 1}</a>`
   })
   $('#lists_questions').html(lists)
   $('#modal_look_question').modal('show')
@@ -372,7 +371,7 @@ function view_edit(e) {
   } else {
     task_title = e.question_bank_title
   }
-  
+
   $("input[name=assessment_id]").val(e.assessment_id);
   $("input[name=taskid]").val(e.assessment_question_bank_id);
   $("input[name=tasksrc]").val(e.assessment_question_bank_src);
@@ -419,7 +418,7 @@ function view_edit(e) {
 }
 
 function type_assessment(type, ids, sts) {
-  let msg = sts == 9 ? 'hapus' : sts == 2 ? 'terbitkan' : 'batalkan' 
+  let msg = sts == 9 ? 'hapus' : sts == 2 ? 'terbitkan' : 'batalkan'
   Swal.fire({
     html:
       sts == 2
@@ -444,7 +443,7 @@ function type_assessment(type, ids, sts) {
 function reload_tabulator_ass() {
   if (url.includes("assessment/index-draft")) {
     draft.replaceData();
-    
+
   } else if (url.includes("assessment/index-scheduled")) {
     scheduled.replaceData();
   }
@@ -455,61 +454,81 @@ if (url.includes("teacher/assessment/index-draft")) {
     // { title: "#Aksi", field: "acts", width: 150, formatter: "html", headerVisible:false},
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Akhir", field: "end_date", visible: false },
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
   var draft = new Tabulator("#ass_draft_table", tbconf);
 } else if (url.includes("teacher/assessment/index-scheduled")) {
   let c = [
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
   var scheduled = new Tabulator("#ass_scheduled_table", tbconf);
 } else if (url.includes("teacher/assessment/index-present")) {
   let c = [
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
+  tbconf.selectableRows = false;
   var present = new Tabulator("#ass_present_table", tbconf);
+
+  let cl = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
+  ]
+
+  tbconf.columns = cl
+  tbconf.selectableRows = false;
+  var student_act = new Tabulator('#ass_student_act', tbconf)
 } else if (url.includes("teacher/assessment/index-done")) {
   let c = [
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
+  tbconf.selectableRows = false;
   var done = new Tabulator("#ass_done_table", tbconf);
+
+  let cl = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
+  ]
+
+  tbconf.columns = cl;
+  tbconf.selectableRows = false;
+  var student_act = new Tabulator('#ass_student_act', tbconf)
 } else if (url.includes("groups/view-students")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
   tbconf.selectableRows = false;
   tbconf.columns = c;
   var vstudent = new Tabulator("#student_group_view", tbconf);
-} else if (url.includes("student/assessment/missed")){
+} else if (url.includes("student/assessment/missed")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
   tbconf.selectableRows = false;
   tbconf.columns = c;
   var ass_missed_table = new Tabulator("#ass_missed_table", tbconf);
-} else if (url.includes("student/assessment/present")){
+} else if (url.includes("student/assessment/present")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
   tbconf.selectableRows = false;
   var ass_present_table = new Tabulator("#ass_present_table", tbconf);
-} else if (url.includes("student/assessment/done")){
+} else if (url.includes("student/assessment/done")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
   tbconf.selectableRows = false;
   tbconf.columns = c;
@@ -563,7 +582,7 @@ if (url.includes("teacher/assessment")) {
           }
         }
       });
-    
+
     document
       .getElementById("delete-btn")
       .addEventListener("click", function () {
@@ -593,6 +612,7 @@ if (url.includes("teacher/assessment")) {
 }
 
 $(document).ready(function () {
+
   if (url.includes("assessment/index-add")) {
     var instruction_assessment = new Quill("#instruction_assessment", {
       modules: {
@@ -635,17 +655,29 @@ $(document).ready(function () {
 
 function check_good_date(eds) {
   let curr = new Date();
-  let result = [] 
-  $.each(eds, function(i, v) {
+  let result = []
+  $.each(eds, function (i, v) {
     if (new Date(v) > curr) {
       result.push(true)
     } else {
       result.push(false)
     }
   });
-  
+
   return result.includes(false)
 }
+
+$(document).on('click', '.view_student', function(e) {
+  e.preventDefault()
+  let assessment_id = $(this).data('assessment_id')
+  let group_id = $(this).data('group_id')
+
+  student_act.setData(
+    base_url + "/teacher/assessment/get-student-assessment?aid=" + assessment_id + "&gid=" + group_id
+  );
+
+  $('#modal_look_student_act_assessment').modal('show')
+})
 
 // Begin Action Assessment
 function alert_begin_assessment(assessment) {
@@ -662,47 +694,293 @@ function alert_begin_assessment(assessment) {
     },
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
-        get_assessment(1, assessment)
+      get_assessment(1, assessment)
     }
   });
 }
 
 function info_begin_assessment(e) {
-  console.log(e.assessment_duration);
-  
   let deg = e.teacher_degree != '' ? ', ' + e.teacher_degree : ''
   let name = e.teacher_first_name + ' ' + e.teacher_last_name + deg
   let timer = e.assessment_duration > 0 ? e.assessment_duration + ' Menit' : '-';
-  let timer_note = e.assessment_duration > 0 ? e.assessment_duration + ' Menit atau ' : '';
+  let timer_note = e.assessment_duration > 0 ? 'atau timer selama ' + e.assessment_duration + ' Menit' : '';
   $('.title_assessment').html(e.assessment_title)
   $('.subject_assessment').html(e.subject_name)
   $('.teacher_assessment').html(name)
   $('.period_assessment').html(e.period)
   $('.duration_assessment').html(timer)
   $('.instruction_assessment').html(e.instruction)
-
-  let auto_submit = e.assessment_is_autosubmit > 0 ? '<li>Ketika waktu mengerjakan sudah habis, maka jawaban akan terkirim secara otomatis.</li>' : '<li>Soal masih dapat dikerjakan walaupun waktu mengerjakan telah habis.</li>'
+  $('.source_question_bank').html(e.assessment_question_bank_src)
+  $('.end_time').html(e.end_time)
+  $('.timer').html(e.assessment_duration)
+  $('.autosubmit').html(e.assessment_is_autosubmit)
+  $('.random').html(e.assessment_is_random)
+  $('.no_cheat').html(e.assessment_is_prevent_cheat)
+  $('.assesst_id').html(e.assessment_id)
+  
+  let allow_cheat = e.assessment_is_prevent_cheat > 0 ? '<li>Ujian ini bersifat tutup buku (tidak boleh menutup atau meninggalkan halaman ujian)</li>' : ''
+  let auto_submit = e.assessment_is_autosubmit > 0 ? '<li>Ketika waktu mengerjakan sudah habis, maka jawaban akan terkirim secara otomatis.</li>' : ''
 
   let notes = `
     <ul>
-      <li>Setelah selesai mengerjakan harus menekan tombol Submit untuk mengirimkan jawaban.</li>
-      <li>Batas akhir mengerjakan ujian ini adalah ${timer_note}${e.end}.</li>
+      <li>Setelah selesai mengerjakan harus menekan tombol Submit untuk mengirimkan jawaban</li>
+      <li>Batas akhir mengerjakan ujian ini adalah ${e.end} ${timer_note}</li>
       ${auto_submit}
-      <li>Ujian ini bersifat tutup buku (tidak boleh menutup atau meninggalkan halaman ujian).</li>
+      ${allow_cheat}
     </ul>
   `
 
   $('#assessment_notes').html(notes)
-  $('#betin_assessment').html(`<button type="sumbit" class="btn btn-sm btn-primary ml-2" onclick="get_assessment(2, ${e.assessment_question_bank_id}, ${e.assessment_question_bank_src})">Mulai</button>`)
+  $('#betin_assessment').html(`<button type="sumbit" class="btn btn-sm btn-primary ml-2" onclick="get_assessment(2, ${e.assessment_question_bank_id})">Mulai</button>`)
   $('#modal_assessment_information').modal('show')
 }
 
-function assessment_page(e) {
-  $('#modal_assessment_information').modal('hide')
-  $('#assessment_modal_question').modal('show')
+function reload_assessment() {
+  if (url.includes("student")) {
+    let ls = Object()
+    ls.key = 'redcode_' + student_id
+    assessment_page(ls);
+  }
 }
 
-function get_assessment(type, id, src=null) {
+function assessment_page(e = null) {
+  let my_assessment = localStorage.getItem(e.key)
+  if (!my_assessment) {
+    if (e.value) {
+      localStorage.setItem(e.key, JSON.stringify(e.value))
+      
+      let timer = localStorage.getItem('tmr_' + student_id)
+      let tim = parseInt(e.value.timer)
+      if (tim > 0) {
+        if (!timer) {
+          let end = new Date(e.value.end_date)
+          let beg = new Date(e.value.begin_assign)
+          
+          Date.prototype.addMins = function (m) {
+              this.setTime(this.getTime() + (m * 60 * 1000));
+              return this;
+          }
+          
+          beg.addMins(tim);
+          if (beg > end) {
+            localStorage.setItem('tmr_' + student_id, end.getTime())
+          } else {
+            localStorage.setItem('tmr_' + student_id, beg.getTime())
+          }
+          
+        }
+      }
+      
+      my_assessment = localStorage.getItem(e.key)
+      actview_assessment(my_assessment)
+      $('#modal_assessment_information').modal('hide')
+      $('#assessment_modal_question').modal('show')
+    }
+  } else {
+    actview_assessment(my_assessment)
+    $('#assessment_modal_question').modal('show')
+  }
+
+  
+}
+
+window.onblur = function () {
+  let row = JSON.parse(localStorage.getItem('redcode_' + student_id))
+  if (row) {
+    if (parseInt(row.no_cheat) > 0) {
+      let allow_cheat = 5
+      let rcop = JSON.parse(localStorage.getItem('redcode_' + student_id))
+      if (rcop) {
+        let cheat = rcop.fault
+        change_localstorage('fault', 0, cheat + 1)
+    
+        Swal.fire({
+          icon: "error",
+          html: `<h2>Oops...</h2><br><p>Anda membuat <b>${cheat + 1} kesalahan</b> karena meinggalkan halaman penilaian!</p><br><p>Toleransi kesalahan maksimal ${allow_cheat} kali.</p>`,
+          confirmButtonText: "Ya, Saya Mengerti",
+        })
+    
+        if (allow_cheat <= cheat+1) {
+          submit_assessment_act(2, 'Melakukan kesalahan sebanyak ' + allow_cheat + ' kali.')
+        }
+      }
+    }
+  }
+};
+
+function alert_submit_assessment() {
+  Swal.fire({
+    html: `<h2>Apakah anda yakin?</h2><br><p>Jika sudah dikirimkan, maka tidak dapat mengubah atau mengulang penilaian yang sama.</p>`,
+    icon: "warning",
+    buttonsStyling: false,
+    showCancelButton: true,
+    confirmButtonText: "Ya, Kirimkan",
+    cancelButtonText: "Periksa Kembali",
+    customClass: {
+      confirmButton: "btn btn-sm btn-primary",
+      cancelButton: "btn btn-sm btn-info",
+    },
+  }).then(function (confirm) {
+    if (confirm.isConfirmed) {
+      $('.assessment_modal_act').modal('hide')
+      submit_assessment_act(1, 'Menekan tombol submit')
+    }
+  });
+}
+
+function actview_assessment(e, idx = 0, fix = false) {
+  runtimer()
+  let data = JSON.parse(e)
+  $('#mdltitle').html(data.assessment_title)
+  $('#sbtl').html(data.subject)
+
+  let number_assest = ''
+  let num = 1
+  $.each(data.assessment, function (i, v) {
+    let btnn = ''
+    if (!fix) {
+      if (num > 1) {
+        if (v.student_answer != '[]') {
+          btnn = 'btn-success iss'
+        } else {
+          btnn = 'btn-outline btn-outline-dark'
+        }
+      } else {
+        btnn = v.student_answer != '[]' ? 'btn-primary iss' : 'btn-primary'
+      }
+    } else {
+      if (idx == v.question_id) {
+        btnn = v.student_answer != '[]' ? 'btn-primary iss' : 'btn-primary'
+      } else {
+        if (v.student_answer != '[]') {
+          btnn = 'btn-success iss'
+        } else {
+          btnn = 'btn-outline btn-outline-dark'
+        }
+      }
+    }
+    number_assest += `<a href="#" onclick="view_question_act(${v.question_id})" class="m-1 btn btn-icon  ${btnn} actbtn">${num}</a>`
+    num++
+  })
+
+  if (!fix) {
+    if (idx > 0) {
+      view_question_act(Object.keys(data.assessment[idx]))
+    } else {
+      view_question_act(Object.keys(data.assessment)[0])
+    }
+  }
+  $('#list_assact').html(number_assest);
+}
+
+function view_question_act(id) {
+  let my_assessment = localStorage.getItem('redcode_' + student_id)
+  let data = JSON.parse(my_assessment)
+  let row = data.assessment[id]
+  let qtype = data.assessment[id].type
+  let student_answer = data.assessment[id].student_answer
+
+
+  let question = `
+    <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row mb-5">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-dark mb-2">Pertanyaan</span>
+        <span class="fw-semibold fs-3 text-dark">
+          ${row.question}
+        </span>
+      </span>
+    </div>
+  `;
+
+  let option = ''
+  let num = 1
+  let type = qtype == 2 ? 'checkbox' : 'radio'
+  $.each(row.option, function (i, v) {
+    let opt_val = row.type == 3 ? (v == 1 ? 'Benar' : 'Salah') : v
+    let is_choose = student_answer.includes(i) ? 'chk_act_ass' : ''
+    let is_checked = student_answer.includes(i) ? 'checked="checked"' : ''
+
+    option += `
+    <div class="col-sm-6">
+      <input type="${type}" data-question_id="${id}" data-type="${type}" class="btn-check tglchk ${is_choose}" ${is_checked} name="choose_opt" value="${i}" id="kt_choose_${num}" />
+      <label class="btn btn-outline btn-outline-primary p-7 d-flex align-items-center mb-5" for="kt_choose_${num}">
+        <span class="d-block fw-semibold text-start">
+          <span class="fw-bold d-block fs-3 mb-2">Pilihan Jawaban ${num}</span>
+          <span class="fs-3">${opt_val}</span>
+        </span>
+      </label>
+    </div>
+    `
+    num++;
+  })
+
+  $('#actass_question').html(question)
+  $('#actass_option').html(`<div class="row">${option}</div>`)
+}
+
+$(document).on('click', '.tglchk', function () {
+  let question_id = $(this).data('question_id')
+  let quest_type = $(this).data('type')
+
+  if (quest_type != 'radio') {
+    $(this).toggleClass("chk_act_ass");
+  } else {
+    if ($(this).hasClass('chk_act_ass')) {
+      $(this).removeClass('chk_act_ass')
+    } else {
+      $(".tglchk").each(function () {
+        if ($(this).hasClass("chk_act_ass")) {
+          $(this).removeClass("chk_act_ass");
+        }
+      });
+      $(this).toggleClass('chk_act_ass');
+    }
+  }
+
+  change_localstorage('option', question_id)
+})
+
+function change_localstorage(type, key, value = null) {
+  let key_storage = 'redcode_' + student_id
+  let my_data = JSON.parse(localStorage.getItem(key_storage))
+
+  if (type == 'option') {
+    let my_choose = []
+    $(".tglchk").each(function () {
+      if ($(this).hasClass('chk_act_ass')) {
+        my_choose.push($(this).val())
+      }
+    })
+    localStorage.setItem('rcop_' + student_id, JSON.stringify(my_choose))
+    let rcop = localStorage.getItem('rcop_' + student_id)
+  
+    my_data.assessment[key].student_answer = rcop
+    localStorage.setItem(key_storage, JSON.stringify(my_data))
+  
+    let res_data = localStorage.getItem(key_storage)
+    view_question_act(key)
+    actview_assessment(res_data, key, true)
+  } else if (type == 'fault') {
+    my_data.fault = value
+    localStorage.setItem(key_storage, JSON.stringify(my_data))
+  }
+}
+
+function get_assessment(type, id, src = null) {
+  if (type == 2) {
+    src = [
+      document.querySelector('.title_assessment').innerHTML,
+      document.querySelector('.subject_assessment').innerHTML,
+      document.querySelector('.end_time').innerHTML,
+      document.querySelector('.timer').innerHTML,
+      document.querySelector('.autosubmit').innerHTML,
+      document.querySelector('.random').innerHTML,
+      document.querySelector('.no_cheat').innerHTML,
+      document.querySelector('.source_question_bank').innerHTML,
+      document.querySelector('.assesst_id').innerHTML,
+    ];
+  }
+
   $.ajax({
     url: base_url + "/student/assessment/get-assessment",
     data: { type, id, src },
@@ -719,6 +997,112 @@ function get_assessment(type, id, src=null) {
   });
 }
 
+function submit_assessment_act(submit_type, submit_msg) {
+  let row = JSON.parse(localStorage.getItem('redcode_' + student_id))
+  let msg_submit = submit_msg != 1 ? submit_msg : 'Menekan tombol submit'
+
+  let send = Object()
+  send.assessment_id = row.assessment_id
+  send.subject = row.subject
+  send.assessment_title = row.assessment_title
+  send.fault = row.fault
+  send.msg_submit = msg_submit
+  send.submit_type = submit_type
+  send.source_qb = row.source_qb
+  send.qb_parent_id = row.qb_parent_id
+  send.begin_assign = row.begin_assign
+  send.end_date = row.end_date
+
+  let student_answer = []
+  $.each(row.assessment, function(i,v) {
+    let answer = []
+    $.each(JSON.parse(v.student_answer), function(idx, val) {
+      answer.push(v.option[val])
+    })
+
+    student_answer.push({
+      question_id: v.question_id,
+      answer : v.student_answer != '[]' ? answer : ''
+    })
+  })
+  send.answer = student_answer
+  
+  $.ajax({
+    url: base_url + "/student/assessment/submit-assessment",
+    data: { send },
+    method: "post",
+    dataType: "json",
+    success: function (e) {
+      if (e.sts) {
+        Swal.fire({
+          icon: e.icn,
+          html: e.msg,
+          confirmButtonText: "OK",
+        })
+        localStorage.removeItem('redcode_' + student_id)
+        localStorage.removeItem('rcop_' + student_id)
+        localStorage.removeItem('tmr_' + student_id)
+      } else {
+        Swal.fire({
+          icon: e.icn,
+          html: e.msg,
+          confirmButtonText: "Kirim Ulang",
+        })
+      }
+      
+    },
+  });
+}
+
+$(document).on("click", ".actbtn", function (e) {
+  e.preventDefault();
+  $(".actbtn").each(function () {
+    if ($(this).hasClass("btn-primary")) {
+      $(this).removeClass("btn-primary");
+      if ($(this).hasClass('iss')) {
+        $(this).addClass("btn-success");
+      } else {
+        $(this).addClass("btn-outline btn-outline-primary");
+      }
+    }
+  });
+  if ($(this).hasClass('btn-success')) {
+    $(this).addClass("btn-primary");
+    $(this).removeClass("btn-success");
+  } else {
+    $(this).addClass("btn-primary");
+    $(this).removeClass("btn-outline btn-outline-primary");
+  }
+});
+
+function runtimer() {
+  let timer = localStorage.getItem('tmr_' + student_id)
+  if (timer) {
+    let countDownDate = timer;
+    
+    let x = setInterval(function() {
+      let now = new Date().getTime();
+      let distance = countDownDate - now;
+        
+      let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+      document.getElementById("left_time_assessment").innerHTML = "Sisa Waktu : "
+      + minutes + " Menit " + seconds + " Detik";
+      
+      if (distance < 0) {
+        document.getElementById("left_time_assessment").innerHTML = "EXPIRED";
+        clearInterval(x);
+        submit_assessment_act(3, 'Waktu habis')
+      } else if (minutes < 6) {
+        $('#left_time_assessment').removeClass('hide')
+      }
+    }, 1000);
+    
+  }
+}
 
 // function toggleFullScreen() {
 //   if (!document.fullscreenElement &&    // alternative standard method

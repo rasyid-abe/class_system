@@ -58,7 +58,13 @@
             </div>
           </div>
         </div>
-
+        <div class="source_question_bank hide"></div>
+        <div class="end_time hide"></div>
+        <div class="timer hide"></div>
+        <div class="autosubmit hide"></div>
+        <div class="random hide"></div>
+        <div class="no_cheat hide"></div>
+        <div class="assesst_id hide"></div>
         <br>
 
         <div class="mb-3 bg-light-info p-3 rounded">
@@ -87,31 +93,6 @@
     </div>
   </div>
 </div>
-
-<div class="modal bg-body fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="assessment_modal_question">
-  <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content shadow-none">
-      <div class="modal-header">
-        <h5 class="modal-title">Penilaian Ujian Tengah Semester TA. 2024/2025</h5>
-
-        <!-- <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close"> -->
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
-        <!-- </div> -->
-      </div>
-
-      <div class="modal-body">
-        <p>Modal body text goes here.</p>
-      </div>
-
-      <!-- <div class="modal-footer">
-        <button type="button" class="btn btn-light" >Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div> -->
-    </div>
-  </div>
-</div>
-
-
 
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_look_question">
   <div class="modal-dialog modal-xl">

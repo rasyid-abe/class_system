@@ -17,11 +17,6 @@
 	<meta charset="utf-8" />
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:type" content="article" />
-	<meta property="og:title"
-		content="Seven HTML Free - Bootstrap 5 HTML Multipurpose Light/Dark Admin Dashboard Theme" />
-	<meta property="og:url" content="https://keenthemes.com/products/seven-html-pro" />
-	<meta property="og:site_name" content="Keenthemes | Seven HTML Free" />
-	<link rel="canonical" href="Https://preview.keenthemes.com/seven-html-free" />
 	<link rel="shortcut icon" href="<?= base_url() ?>assets/media/logos/favicon.ico" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
@@ -31,7 +26,7 @@
 	<link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="<?= base_url() ?>assets/css/jquery.toast.css" rel="stylesheet">
 
-	<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator_bootstrap4.min.css" rel="stylesheet">
+	<link href="<?= base_url() ?>assets/css/tabulator_bootstrap4.min.css" rel="stylesheet">
 	<!-- <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator_simple.min.css" rel="stylesheet"> -->
 
 	<style>
@@ -163,7 +158,45 @@
 <!--end::Head-->
 <!--begin::Body-->
 
-<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled">
+<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled" onload="reload_assessment()">
+
+	<div class="modal bg-body fade assessment_modal_act" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="assessment_modal_question">
+		<div class="modal-dialog modal-fullscreen">
+			<div class="modal-content shadow-none">
+				<div class="modal-header">
+					<div class="modal-title">
+						<h5 id="mdltitle"></h5>
+						<badge id="sbtl" class="badge badge-info mt-2"></badge>
+					</div>
+
+					<!-- <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close"> -->
+					<div class="buttonn">
+						<span class="fw-bold mx-5 fs-3"><span id="left_time_assessment" class="hide"></span></span>
+						<button type="button" class="btn btn-primary" onclick="alert_submit_assessment();">Submit</button>
+					</div>
+					<!-- </div> -->
+				</div>
+
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-3" style="overflow-y: scroll; max-height:690px;">
+							<div class="list_assact" id="list_assact"></div>
+						</div>
+						<div class="col-sm-9">
+							<div id="actass_question"></div>
+							<div id="actass_option"></div>
+
+							<!-- <div class="d-flex justify-content-between">
+								<button class="btn btn-warning">Batalkan Pilihan</button>
+								<button class="btn btn-success">Simpan Pilihan</button>
+							</div> -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<input type="hidden" id="base" value="<?php echo base_url(); ?>">
 	<div class="modal fade" id="active_tp" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 		<div class="modal-dialog">
@@ -1286,6 +1319,7 @@
 	<!--end::Scrolltop-->
 	<!--end::Main-->
 	<script>
+		const url = window.location.href;
 		const base_url = document.getElementById('base').value;
 		let idc_public = '<?= session()->getFlashdata('id_content') ?>'
 		let att_id = '<?= session()->getFlashdata('att_id') ?>'
@@ -1293,7 +1327,11 @@
 		let hostUrl = "<?= base_url() ?>assets/";
 		let active_year = '<?= year_active() != null ? year_active()['school_year_period'] : '' ?>'
 		let level = '<?= session()->get('c_role') ?>'
-		const url = window.location.href;
+
+		let student_id = 0
+		if (url.includes("student")) {
+			student_id = '<?= userdata()['id_profile'] ?>'
+		}
 	</script>
 	<!--begin::Javascript-->
 	<!--begin::Global Javascript Bundle(used by all pages)-->
@@ -1301,8 +1339,8 @@
 	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
 	<!-- <script src="<?= base_url() ?>assets/plugins/custom/datatables/datatables.bundle.js"></script> -->
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-	<script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+	<script src="<?= base_url() ?>assets/js/bootstrap.bundle.min.js"></script>
+	<script type="text/javascript" src="<?= base_url() ?>assets/js/tabulator.min.js"></script>
 
 	<script src="<?= base_url() ?>assets/js/scripts.bundle.js"></script>
 	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>

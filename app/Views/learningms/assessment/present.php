@@ -10,18 +10,36 @@
 </div>
 
 
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_look_student_act_assessment">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content" id="content_modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Dafta Siswa Mengerjakan Penilaian</h3>
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+          <i class="bi bi-x-square fs-2x"></i>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div id="ass_student_act"></div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_look_question">
   <div class="modal-dialog modal-xl">
     <div class="modal-content" id="content_modal">
       <div class="modal-header">
         <h3 class="modal-title">Soal Penilaian</h3>
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+          <i class="bi bi-x-square fs-2x"></i>
+        </div>
       </div>
       <div class="modal-body">
 
         <div class="row">
           <div class="col-sm-3">
             <div class="card">
-                <div id="lists_questions"></div>
+              <div id="lists_questions"></div>
             </div>
           </div>
 
@@ -54,9 +72,6 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-sm btn-light-danger" data-bs-dismiss="modal">Tutup</button>
       </div>
     </div>
   </div>
