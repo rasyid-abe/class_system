@@ -375,6 +375,7 @@ class AdditionalQuestionBank extends BaseController
     public function upload_tasks()
     {
         $req = $this->request->getVar();
+
         $file = $_FILES['tasks_upload']['tmp_name'];
 
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file);
@@ -407,7 +408,7 @@ class AdditionalQuestionBank extends BaseController
                 $ii = 1;
                 
                 foreach ($sheetData as $k => $v) {
-                    if ($v[0] != 'No') {
+                if ($v[0] != 'No' && ($v[2] != '' || $v[2] != null) && ($v[3] != '' || $v[3] != null) ) {
                         $arr_task[$i.$ii]['question_bank_school_id'] = userdata()['school_id'];
                         $arr_task[$i.$ii]['question_bank_teacher_id'] = userdata()['id_profile'];
                         $arr_task[$i.$ii]['question_bank_subject_id'] = $req['subject'];

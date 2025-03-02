@@ -3,6 +3,15 @@
         <div class="tab-pane fade <?= $page == "Dashboard" ? 'active show' : '' ?>" id="home_dashboard" role="tabpanel">
             <div class="mx-5">
                 <div class="mb-12">
+                    <div class="welcome_school">
+                        <h4 class="fw-semibold text-gray-700 text-center lh-lg">
+                            Selamat Datang
+                        </h4>
+                        <!-- <h2 class="fw-bolder text-center">
+                            SMA Swasta ABE Jakarta
+                        </h2> -->
+                        <br>
+                    </div>
                     <div class="me-7 mb-4 d-flex justify-content-center">
                         <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                             <img src="<?= base_url() ?>images/default-user2.png" alt="image">
@@ -10,9 +19,71 @@
                         </div>
                     </div>
                     <h3 class="fw-semibold text-gray-800 text-center lh-lg">
-                        Nama Lengkap, S.Pd
+                        <?php
+                        $loginname = '';
+                        if (session()->get('c_role') == 11) {
+                            $loginname = isset(userdata()['degree']) ? userdata()['name'] . ', ' . userdata()['degree'] : userdata()['name'];
+                            $nip = userdata()['teacher_nip'] != '' ? '<badge class="badge badge-info">NIP : ' . userdata()['teacher_nip'] . '</badge>' : '';
+                            $nuptk = userdata()['teacher_nuptk'] != '' ? '<badge class="badge badge-info">NUPTK : ' . userdata()['teacher_nuptk'] . '</badge>' : '';
+                        } else {
+                            $loginname = userdata()['name'];
+                            $nidn = '<badge class="badge badge-info">' . userdata()['student_nidn'] . '</badge>';
+                        }
+                        ?>
+                        <?= $loginname ?>
                     </h3>
-                    <div class="text-gray-500 fw-semibold text-center lh-lg">Users from all channels</div>
+                    <div class="text-gray-500 fw-semibold text-center lh-lg">
+                        <?= $nip ?>
+                        <?= $nuptk ?>
+                    </div>
+
+                    <!-- <div class="card h-lg-50 bg-secondary my-10">
+
+                        <div class="card-body pt-5">
+                            <h4 class="text-gray-700 text-center">Tugas Mengajar Saya</h4>
+                            <div class="separator separator-dashed my-3"></div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-sm btn-light-info">X MB 1</button>
+                                <button class="btn btn-sm btn-light-info">XI IPA 1</button>
+                                <button class="btn btn-sm btn-light-info">XI IPA 2</button>
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <div class="separator separator-dashed border-primary my-10"></div>
+
+                    <div class="my_duty">
+
+                        <h3 class="mb-5"><span class="card-label fw-bold text-gray-900">Tugas Mengajar Saya</span></h3>
+
+                        <div class="m-0">
+                            <div class="timeline timeline-border-dashed">
+                                <div class="timeline-item pb-5">
+
+                                    <div class="timeline-content m-0">
+                                        <span class="fs-8 fw-bolder text-primary text-uppercase">X MB 1</span>
+
+                                        <a href="#" class="fs-6 text-gray-800 fw-bold d-block text-hover-primary">Bahasa Indonesia</a>
+
+                                        <span class="fw-semibold text-gray-500">Senin, 08:00 - 09:00 WIB</span>
+                                    </div>
+                                </div>
+
+                                <div class="timeline-item">
+
+                                    <div class="timeline-content m-0">
+                                        <span class="fs-8 fw-bolder text-primary text-uppercase">X MB 2</span>
+
+                                        <a href="#" class="fs-6 text-gray-800 fw-bold d-block text-hover-primary">Bahasa Indonesia</a>
+
+                                        <span class="fw-semibold text-gray-500">Senin, 10:00 - 11:00 WIB</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -237,19 +308,32 @@
                 <h3 class="fw-bolder text-dark mb-10 mx-0">Mengajar di Kelas</h3>
 
                 <div class="mb-12">
-                    <?php foreach (my_groups() as $k => $v): ?>
+                    <?php if (count(my_groups()) > 0) : ?>
+                        <?php foreach (my_groups() as $k => $v): ?>
+                            <div class="d-flex align-items-center mb-7">
+                                <div class="symbol symbol-50px me-5">
+                                    <span class="symbol-label bg-secondary">
+                                        <i class="bi bi-people-fill text-primary fs-2hx"></i>
+                                    </span>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <a href="<?= base_url('/teacher/groups/view-students/') . $v['student_group_id'] ?>"
+                                        class="<?= $sidebar == $v['student_group_name'] ? 'fw-bolder text-primary' : 'text-gray-800' ?> text-hover-primary fs-6 fw-bold"><?= $v['student_group_name'] ?></a>
+                                </div>
+                            </div>
+                        <?php endforeach ?>
+                    <?php else: ?>
                         <div class="d-flex align-items-center mb-7">
                             <div class="symbol symbol-50px me-5">
                                 <span class="symbol-label bg-secondary">
-                                    <i class="bi bi-people-fill text-primary fs-2hx"></i>
+                                    <i class="bi bi-x-circle text-info fs-2hx"></i>
                                 </span>
                             </div>
                             <div class="d-flex flex-column">
-                                <a href="<?= base_url('/teacher/groups/view-students/') . $v['student_group_id'] ?>"
-                                    class="<?= $sidebar == $v['student_group_name'] ? 'fw-bolder text-primary' : 'text-gray-800' ?> text-hover-primary fs-6 fw-bold"><?= $v['student_group_name'] ?></a>
+                                <p class="fs-6 fw-bold">Tahun Pelajaran belum dipilih.</p>
                             </div>
                         </div>
-                    <?php endforeach ?>
+                    <?php endif ?>
                 </div>
             </div>
         </div>

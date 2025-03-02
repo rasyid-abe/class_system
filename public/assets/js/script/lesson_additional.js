@@ -972,6 +972,8 @@ $(document.body).on('click', '.parent2', function() {
 
 function view_tasks(type, id, act = null){
     let l_url = level == 11 ? 'teacher' : 'student'
+    console.log(l_url);
+    
     $.ajax({
         url: base_url + l_url + '/lesson/additional/get-question',
         data: {type, id},
@@ -988,6 +990,9 @@ function generate_preview(e, act){
     let opt = ``
     let html = ``
     let num = 1
+
+    console.log(e);
+    
 
     if (e != null) {
         $.each(JSON.parse(e.option), function(i,v) {

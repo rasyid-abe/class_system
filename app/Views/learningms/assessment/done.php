@@ -14,12 +14,14 @@
     <div class="modal-content" id="content_modal">
       <div class="modal-header">
         <h3 class="modal-title">Dafta Siswa Mengerjakan Penilaian</h3>
-        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" onclick="close_view_assess_student()">
           <i class="bi bi-x-square fs-2x"></i>
         </div>
       </div>
       <div class="modal-body">
-        <div id="ass_student_act"></div>
+        <div class="bd_list_ass_student">
+          <div id="ass_student_act"></div>
+        </div>
       </div>
     </div>
   </div>

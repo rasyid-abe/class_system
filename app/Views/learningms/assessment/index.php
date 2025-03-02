@@ -73,14 +73,23 @@
         <h3 class="modal-title">Tambah Penilaian Siswa</h3>
       </div>
       <div class="modal-body">
+        <div id="mlkl">
+          <div class="alert alert-info d-flex align-items-center p-2 mb-5">
+            <i class="bi bi-shield-exclamation fs-2hx text-info me-4"></i>
+            <div class="d-flex flex-column">
+              <h5 class="mb-1 text-info">Penilaian akan tersimpan pada T.P <?= isset(year_active()['school_year_period']) ?  year_active()['school_year_period'] : 'N/A' ?></h5>
+            </div>
+          </div>
+        </div>
         <form id="kt_account_profile_details_form" class="form fv-plugins-bootstrap5 fv-plugins-framework" novalidate="novalidate">
           <div class="card-body">
-
+            
             <div class="row mb-6">
               <label class="col-lg-3 col-form-label fw-semibold fs-6">Soal</label>
-
+              
               <div class="col-lg-9 fv-row fv-plugins-icon-container">
                 <input type="text" name="selected_task" class="form-control form-control-lg form-control-solid" />
+                <input type="hidden" name="schoolyearid" />
                 <input type="hidden" name="taskid" />
                 <input type="hidden" name="tasksrc" />
                 <input type="hidden" name="assessment_id" value=0 />
@@ -96,6 +105,26 @@
                   <input type="hidden" name="subjid" />
                   <input type="hidden" name="gradid" />
                 </div>
+              </div>
+            </div>
+
+            <div class="row mb-6">
+              <label class="col-lg-3 col-form-label fw-semibold fs-6">Penilaian Agama<small class="text-danger">**</small></label>
+
+              <div class="col-lg-4 fv-row">
+                <div class="d-flex">
+                  <label class="form-check form-check-custom form-check-inline form-check-solid me-5 form-switch">
+                    <div class="inpreli">
+                      <input class="form-check-input asscheck" name="religion_assign" id="religion_assign" type="checkbox" value="1">
+                    </div>
+                  </label>
+                  <div class="selreli hide">
+                    <select class="form-select form-select-solid" name=select_religion_test id="select_religion_test" data-close-on-select="false" data-dropdown-parent="#modal_assessment" data-placeholder="Pilih Penilaian Agama" data-allow-clear="true">
+                    </select>
+                  </div>
+                  <!-- <input type="number" max="168" min="30" name="timer" class="hide form-control form-control-lg form-control-solid" placeholder="Waktu Pengerjaan (menit)" id="c_timer"> -->
+                </div>
+                <small class="hide reli_ass text-danger">Kolom Penilaian Agama harus dipilih!</small>
               </div>
             </div>
 
@@ -139,7 +168,9 @@
                     <!-- <label class="col-lg-3 col-form-label fw-semibold fs-6">Kirim Otomatis</label> -->
                     <div class="col-lg-9 d-flex align-items-center">
                       <div class="form-check form-check-solid form-switch form-check-custom fv-row">
-                        <input class="form-check-input asscheck checked w-45px h-30px" type="checkbox" id="autosumbit" checked="true">
+                        <div class="inpsubm">
+                          <input class="form-check-input asscheck checked w-45px h-30px" type="checkbox" id="autosumbit" checked="true">
+                        </div>
                         <label class="form-check-label" style="margin-left: 16px">Kirim Otomatis</label>
                       </div>
                     </div>
@@ -155,7 +186,9 @@
               <div class="col-lg-4 fv-row">
                 <div class="d-flex">
                   <label class="form-check form-check-custom form-check-inline form-check-solid me-5 form-switch">
-                    <input class="form-check-input asscheck" name="ass_timer" id="ass_timer" type="checkbox" value="1">
+                    <div class="inptime">
+                      <input class="form-check-input asscheck" name="ass_timer" id="ass_timer" type="checkbox" value="1">
+                    </div>
                   </label>
                   <input type="number" max="168" min="30" name="timer" class="hide form-control form-control-lg form-control-solid" placeholder="Waktu Pengerjaan (menit)" id="c_timer">
                 </div>
@@ -179,14 +212,18 @@
               <div class="col-lg-9 fv-row fv-plugins-icon-container">
                 <div class="d-flex align-items-center mt-3">
                   <label class="form-check form-check-custom form-check-inline form-check-solid me-5">
-                    <input class="form-check-input asscheck" name="random" id="ass_random" type="checkbox" value="1">
+                    <div class="inprand">
+                      <input class="form-check-input asscheck" name="random" id="ass_random" type="checkbox" value="1">
+                    </div>
                     <span class="fw-semibold ps-2 fs-6">
                       Acak
                     </span>
                   </label>
 
                   <label class="form-check form-check-custom form-check-inline form-check-solid">
-                    <input class="form-check-input asscheck" name="cheat" id="ass_cheat" type="checkbox" value="2">
+                    <div class="inpchea">
+                      <input class="form-check-input asscheck" name="cheat" id="ass_cheat" type="checkbox" value="2">
+                    </div>
                     <span class="fw-semibold ps-2 fs-6">
                       Anti Curang
                     </span>

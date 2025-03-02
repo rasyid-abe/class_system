@@ -76,12 +76,16 @@ function ajax_std_less(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       if (type == 1) {
         gen_header_std(e);
       } else if (type == 2) {
         gen_list_lesson(e);
       }
+      hide_loading()
     },
   });
 }
@@ -92,10 +96,13 @@ function ajax_add_less(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
-      console.log(e);
       $("#lesadd_subchap").html(e.t_subchap);
       $("#lesadd_chap").html(e.t_chap);
+      hide_loading()
     },
   });
 }
@@ -106,9 +113,13 @@ function ajax_sch_less(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       $("#lessch_subchap").html(e.t_subchap);
       $("#lessch_chap").html(e.t_chap);
+      hide_loading()
     },
   });
 }
@@ -119,8 +130,12 @@ function ajax_pub_less(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       gen_header_pub(e);
+      hide_loading()
     },
   });
 }
@@ -131,8 +146,12 @@ function ajax_std_qb(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       gen_head_qb_std(e)
+      hide_loading()
     },
   });
 }
@@ -143,10 +162,13 @@ function ajax_add_qb(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
-      console.log(e);
       $("#lesadd_title").html(e.t_title);
       $("#lesadd_quest").html(e.t_quest);
+      hide_loading()
     },
   });
 }
@@ -157,8 +179,12 @@ function ajax_pub_qb(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       gen_header_qbpub(e);
+      hide_loading()
     },
   });
 }
@@ -169,9 +195,13 @@ function ajax_std_less_s(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       $('#count_chap').html(e.ch)
       $('#count_schap').html(e.sch)
+      hide_loading()
     },
   });
 }
@@ -182,19 +212,26 @@ function ajax_sch_less_s(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       $('#count_chap').html(e.t_chap)
       $('#count_schap').html(e.t_subchap)
+      hide_loading()
     },
   });
 }
 
 $(document).ready(function () {
-  if (url.includes("teacher/lesson/standart")) {
+  if (url.includes("dashboard/teacher")) {
+    console.log('dashboard');
+    
+  } else if (url.includes("teacher/lesson/standart")) {
     ajax_std_less(1);
   } else if (url.includes("teacher/lesson/additional")) {
     ajax_add_less(1);
-  } else if (url.includes("teacher/lesson/school")) {
+  } else if (url.includes("teacher/lesson/school") || url.includes("teacher/assessment/index-add") ||  url.includes("teacher/tasks/index-add")) {
     if (active_year == '') {
       Swal.fire({
         html: 'Tahun Ajaran harus di aktifkan',

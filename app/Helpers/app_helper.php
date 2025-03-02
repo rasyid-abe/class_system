@@ -17,6 +17,8 @@ function userdata()
             CONCAT(pt.teacher_first_name, ' ', pt.teacher_last_name) name,
             pt.teacher_degree degree,
             pt.teacher_image image,
+            pt.teacher_nip,
+            pt.teacher_nuptk,
             ar.role_name
         ";
         $join = "LEFT JOIN profile_teacher pt ON au.user_id = pt.teacher_user_id";
@@ -278,6 +280,7 @@ if (!function_exists("my_groups")) {
         } else {
             $row = [];
         }
+     
         return $row;
     }
 }
@@ -475,22 +478,6 @@ if (!function_exists("getenv")) {
         $dotenv->load();
 
         return $_ENV;
-    }
-}
-
-if (!function_exists("getTimeDifferenceInMinutes")) {
-    function getTimeDifferenceInMinutes($start_date, $end_date) {
-        // Convert the dates into Unix timestamps
-        $start_timestamp = strtotime($start_date);
-        $end_timestamp = strtotime($end_date);
-    
-        // Calculate the difference in seconds
-        $difference_in_seconds = abs($end_timestamp - $start_timestamp);
-    
-        // Convert the difference from seconds to minutes
-        $difference_in_minutes = $difference_in_seconds / 60;
-    
-        return $difference_in_minutes;
     }
 }
 

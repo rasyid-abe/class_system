@@ -10,6 +10,7 @@ class AssessmentModel extends Model
     protected $primaryKey = 'assessment_id';
     protected $allowedFields = [
         'assessment_school_id', 
+        'assessment_school_year_id',
         'assessment_teacher_id', 
         'assessment_grade', 
         'assessment_subject_id', 
@@ -22,6 +23,7 @@ class AssessmentModel extends Model
         'assessment_start', 
         'assessment_end', 
         'assessment_duration', 
+        'assessment_religion',
         'assessment_is_random', 
         'assessment_is_autosubmit', 
         'assessment_is_prevent_cheat', 
@@ -76,12 +78,15 @@ class AssessmentModel extends Model
     public function get_list_student($type)
     {
         $add_where = "AND ";
+        $add_join = "";
         if ($type == 1) {
-            $add_where .= "assessment_status = 2 AND assessment_start <= '" . date('Y-m-d H:i:s') . "' AND assessment_end > '" . date('Y-m-d H:i:s') ."'";
+            $add_join .= "left join lms_assessment_result on assessment_id = assessment_result_assessment_id AND assessment_result_student_id = " . userdata()['id_profile'];
+            $add_where .= "assessment_status = 2 AND assessment_start <= '" . date('Y-m-d H:i:s') . "' AND assessment_end > '" . date('Y-m-d H:i:s') ."' AND assessment_result_submit_datetime is null ";
         } elseif ($type == 2) {
             $add_where .= "assessment_status = 2 AND assessment_end < '" . date('Y-m-d H:i:s') . "'";
         } elseif ($type == 3) {
-            $add_where .= "assessment_status = 2 AND assessment_end < '" . date('Y-m-d H:i:s') . "'";
+            $add_join .= "left join lms_assessment_result on assessment_id = assessment_result_assessment_id";
+            $add_where .= "assessment_status = 2 AND assessment_result_student_id = ". userdata()['id_profile'] ." AND assessment_result_submit_datetime is not null ";
         }
 
         $my_group = student_group();
@@ -97,6 +102,7 @@ class AssessmentModel extends Model
                 assessment_question_bank_src,
                 assessment_question_bank_id,
                 assessment_duration,
+                assessment_religion,
                 subject_name,
                 question_bank_title,
                 question_bank_standart_title,
@@ -109,6 +115,7 @@ class AssessmentModel extends Model
             LEFT JOIN master_subject ON subject_id=assessment_subject_id
             LEFT JOIN lms_question_bank ON question_bank_id=assessment_question_bank_id
             LEFT JOIN lms_question_bank_standart ON question_bank_id=assessment_question_bank_id
+            $add_join
             WHERE 1=1 
                 $add_where
                 AND assessment_school_id = ".userdata()['school_id']."

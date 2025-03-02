@@ -774,7 +774,7 @@ class AdditionalLesson extends BaseController
     public function get_question()
     {
         $req = $this->request->getVar();
-
+        
         $res = [];
         if ($req['type'] == 1) {
             $res = $this->qb_s
