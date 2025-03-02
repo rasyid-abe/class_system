@@ -153,6 +153,79 @@
 			margin-left: 0;
 			padding-right: 0;
 		}
+
+		.animate_loader {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.3);
+			z-index: 9999;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		/* From Uiverse.io by bociKond */
+		.spinner {
+			width: 70.4px;
+			height: 70.4px;
+			--clr: rgb(57, 38, 163);
+			--clr-alpha: rgb(247, 197, 159, .1);
+			animation: spinner 1.6s infinite ease;
+			transform-style: preserve-3d;
+		}
+
+		.spinner>div {
+			background-color: var(--clr-alpha);
+			height: 100%;
+			position: absolute;
+			width: 100%;
+			border: 3.5px solid var(--clr);
+		}
+
+		.spinner div:nth-of-type(1) {
+			transform: translateZ(-35.2px) rotateY(180deg);
+		}
+
+		.spinner div:nth-of-type(2) {
+			transform: rotateY(-270deg) translateX(50%);
+			transform-origin: top right;
+		}
+
+		.spinner div:nth-of-type(3) {
+			transform: rotateY(270deg) translateX(-50%);
+			transform-origin: center left;
+		}
+
+		.spinner div:nth-of-type(4) {
+			transform: rotateX(90deg) translateY(-50%);
+			transform-origin: top center;
+		}
+
+		.spinner div:nth-of-type(5) {
+			transform: rotateX(-90deg) translateY(50%);
+			transform-origin: bottom center;
+		}
+
+		.spinner div:nth-of-type(6) {
+			transform: translateZ(35.2px);
+		}
+
+		@keyframes spinner {
+			0% {
+				transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
+			}
+
+			50% {
+				transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
+			}
+
+			100% {
+				transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
+			}
+		}
 	</style>
 </head>
 <!--end::Head-->
@@ -1318,6 +1391,18 @@
 	</div>
 	<!--end::Scrolltop-->
 	<!--end::Main-->
+
+	<div class="animate_loader" style="display:none;">
+		<div class="spinner">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+	</div>
+
 	<script>
 		const url = window.location.href;
 		const base_url = document.getElementById('base').value;
@@ -1326,6 +1411,7 @@
 		let file_id = '<?= session()->getFlashdata('file_id') ?>'
 		let hostUrl = "<?= base_url() ?>assets/";
 		let active_year = '<?= year_active() != null ? year_active()['school_year_period'] : '' ?>'
+		let active_year_id = '<?= year_active() != null ? year_active()['school_year_id'] : '' ?>'
 		let level = '<?= session()->get('c_role') ?>'
 
 		let student_id = 0
@@ -1411,10 +1497,10 @@
 				},
 				dataType: "json",
 				beforeSend: function() {
-					// show_loading()
+					show_loading()
 				},
 				success: function(data) {
-					// hide_loading()
+					hide_loading()
 				}
 			})
 		}
@@ -1430,32 +1516,46 @@
 				}
 
 				view += `
-            <div class="form-check form-check-custom form-check-solid mb-2">
-                <input class="form-check-input" type="radio" onclick="set_year(${v.school_year_id})" name="radio_tp" value="${v.school_year_id}" id="opt${v.school_year_id}" ${chk} />
-                <label class="form-check-label text-dark" for="opt${v.school_year_id}">
-                    T.P ${v.school_year_period}
-                </label>
-            </div>
-        `
+					<div class="form-check form-check-custom form-check-solid mb-2">
+						<input class="form-check-input" type="radio" onclick="set_year(${v.school_year_id})" name="radio_tp" value="${v.school_year_id}" id="opt${v.school_year_id}" ${chk} />
+						<label class="form-check-label text-dark" for="opt${v.school_year_id}">
+							T.P ${v.school_year_period}
+						</label>
+					</div>
+				`
 			})
 			$('#lists_year').html(view)
 			$('#active_tp').modal('show');
 		}
 
 		function show_tp() {
+			console.log('akljas');
+			
 			$.ajax({
 				url: "<?= base_url('/config-teacher-student/active-year/list-year') ?>",
 				type: "post",
 				// data: {'menu_id': param},
 				dataType: "json",
 				beforeSend: function() {
-					// show_loading()
+					show_loading()
 				},
 				success: function(data) {
 					generate_years(data)
-					// hide_loading()
+					hide_loading()
 				}
 			})
+		}
+
+		function show_loading() {
+			$(".animate_loader").removeAttr('style')
+		}
+
+		function removeLoader() {
+			$(".animate_loader").fadeOut(500, function() {});
+		}
+
+		function hide_loading() {
+			removeLoader()
 		}
 	</script>
 

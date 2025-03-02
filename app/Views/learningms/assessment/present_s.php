@@ -65,6 +65,7 @@
         <div class="random hide"></div>
         <div class="no_cheat hide"></div>
         <div class="assesst_id hide"></div>
+        <div class="sch_year_id hide"></div>
         <br>
 
         <div class="mb-3 bg-light-info p-3 rounded">

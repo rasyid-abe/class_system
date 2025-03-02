@@ -43,3 +43,16 @@ CREATE TABLE `lms_assessment_result` (
   `assessment_result_submit_message` text DEFAULT NULL,
   PRIMARY KEY (`assessment_result_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=467 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `account_access` (
+  `access_id` int(11) NOT NULL AUTO_INCREMENT,
+  `access_role_id` int(11) NOT NULL,
+  `access_menu_id` int(11) NOT NULL,
+  PRIMARY KEY (`access_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
+
+ALTER TABLE `lms_assessment` ADD `assessment_religion` TINYINT(2) NOT NULL AFTER `assessment_duration`;
+
+ALTER TABLE `lms_assessment_result` ADD `assessment_jresult_created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `assessment_result_submit_message`;

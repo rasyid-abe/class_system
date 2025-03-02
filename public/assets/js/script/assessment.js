@@ -30,8 +30,12 @@ function show_qb(subj, grad) {
       data: { subj, grad },
       method: "post",
       dataType: "json",
+      beforeSend: function() {
+        show_loading()
+      },
       success: function (e) {
         preview_qb(e.res, subj, e.sub_name, grad, e.grd_name);
+        hide_loading()
       },
     });
   }
@@ -41,7 +45,7 @@ function preview_qb(e, subj, subjname, grad, gradname) {
   let content = "";
   let i1 = 1;
   $.each(e, function (i, v) {
-    if (v.content.length > 0) {
+    // if (v.content.length > 0) {
       let ch1 = "";
       let i2 = 1;
       $.each(v.content, function (idx, val) {
@@ -50,57 +54,52 @@ function preview_qb(e, subj, subjname, grad, gradname) {
         let chi = 1;
         $.each(val["child"], function (index, value) {
           let cch = "";
+
           $.each(value, function (a, b) {
             cch += `<a href="#" onclick="view_tasks(${i1}, ${b})" class="m-1 btn btn-icon btn-sm btn-outline btn-outline-primary">${chi}</a>`;
             chi++;
           });
+
           child += `
-                <div style="margin-left: 8px; margin-bottom: 10px;" class="d-flex justify-content-start">
-                    ${cch}
-                </div>
-                `;
-          // child += `
-          // <li class="list-group-item">
-          //   <a href="#" onclick="view_tasks(${i1}, ${value.id})" style="text-decoration: none;">Soal ${ii}</a>
-          // </li>
-          // `
+          <div style="margin-left: 8px; margin-bottom: 10px;" class="d-flex justify-content-start">
+              ${cch}
+          </div>
+          `;
           ii++;
         });
-
+        
         let child_body = `
-                 <ul class="list-group list-group-flush hide task_child" id="i${i1}${i2}">
-                    ${child}
-                </ul>
-            `;
+          <ul class="list-group list-group-flush hide task_child" id="i${i1}${i2}">
+            ${child}
+          </ul>
+        `;
 
         ch1 += `
-                 <div class="form-check my-2 form-switch form-check-custom form-check-solid" style="margin-left: 10px">
-                    <input class="form-check-input h-20px w-30px" type="radio" name="task_ass_check" data-tasksrc=${v.src
-          } data-taskname="${val.title}" value="${val.id}" />
-                    <label class="form-check-label head22" data-source="${i1}${i2}">
-                      ${val.title}
-                    </label>
-                </div>
-                ${val.child.length > 0 ? child_body : ""}    
-                `;
-        // <li class="list-group-item head22" data-source="${i1}${i2}">${val.title}</li>
+          <div class="form-check my-2 form-switch form-check-custom form-check-solid" style="margin-left: 10px">
+            <input class="form-check-input h-20px w-30px" type="radio" name="task_ass_check" data-tasksrc=${v.src} data-taskname="${val.title}" value="${val.id}" />
+            <label class="form-check-label head22" data-source="${i1}${i2}">
+              ${val.title}
+            </label>
+          </div>
+          ${val.child.length > 0 ? child_body : ''}    
+          `;
 
         i2++;
       });
 
       let ch1_body = `
-            <ul class="list-group list-group-flush hide head_head22 text-bold" id="i${i1}">
-                ${ch1}
-            </ul>
-        `;
+        <ul class="list-group list-group-flush hide head_head22 text-bold" id="i${i1}">
+          ${ch1}
+        </ul>
+      `;
+
       content += `
-            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${v.head
-        }</h6></li>
-            ${v.content.length > 0 ? ch1_body : ""}
+            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${v.head}</h6></li>
+            ${v.content.length > 0 ? ch1_body : `<ul class="list-group list-group-flush hide task_child p-2" id="i${i1}">Soal tidak tersedia</ul>`}
         `;
 
       i1++;
-    }
+    // }
   });
 
   let page = `
@@ -140,6 +139,8 @@ function set_task_ass() {
       $("#select_qb_alert").addClass("hide");
     }, 5000);
   } else {
+    $("input[name=syi]").val('T.P ' + active_year).attr("readonly", true);
+    $("input[name=schoolyearid]").val(active_year_id);
     $("input[name=selected_task]").val(task_name).attr("readonly", true);
     $("input[name=taskid]").val(task_ass);
     $("input[name=tasksrc]").val(task_src);
@@ -150,10 +151,38 @@ function set_task_ass() {
     $("input[name=selected_grad]").val(grad_name).attr("readonly", true);
     $("input[name=gradid]").val(grad_ass);
 
-    $("#modal_assessment").modal("show");
+    get_religion()
     set_datepicker();
     check_group(subj_ass, grad_ass);
+
+    $("#modal_assessment").modal("show");
   }
+}
+
+function get_religion(reli = null) {
+  
+  let relig = $("#select_religion_test");
+  $.ajax({
+    url: base_url + "/teacher/assessment/get-list-religion",
+    method: "post",
+    dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
+    success: function (e) {
+      let option = "<option value=0>Pilih Agama</option>";
+      $.each(e, function (i, v) {
+        if (reli != null) {
+          console.log(reli);
+          option += `<option value="${i}" ${reli == i ? 'selected' : ''}>${v}</option>`;
+        } else {
+          option += `<option value="${i}">${v}</option>`;
+        }
+      });
+      relig.html(option);
+      hide_loading()
+    },
+  });
 }
 
 function set_datepicker() {
@@ -164,18 +193,33 @@ function set_datepicker() {
   });
 }
 
+function clear_form_assessment() {
+  $("input[name=title]").val('');
+  $("select[name=subject]").val('');
+  $("select[name=grade]").val('');
+  $("#multiple-select-group").val(null).trigger("change");
+  $("#start_assessment").val('');
+  $("#end_assessment").val('');
+  $(".inprand").html('<input class="form-check-input asscheck" name="random" id="ass_random" type="checkbox" value="1">');
+  $(".inptime").html('<input class="form-check-input asscheck" name="ass_timer" id="ass_timer" type="checkbox" value="1">');
+  $(".inpchea").html('<input class="form-check-input asscheck" name="cheat" id="ass_cheat" type="checkbox" value="2">');
+  $(".inpsubm").html('<input class="form-check-input asscheck checked w-45px h-30px" type="checkbox" id="autosumbit" checked="true">');
+  $(".inpreli").html('<input class="form-check-input asscheck" name="religion_assign" id="religion_assign" type="checkbox" value="1">');
+  $("input[name=timer]").val('').addClass('hide');
+  $("#instruction_assessment > .ql-editor").html('<p><br></p>');
+
+  $('.end_ass').addClass('hide')
+  $('.start_ass').addClass('hide')
+  $('.group_ass').addClass('hide')
+  $('.title_ass').addClass('hide')
+  $('.timer_ass').addClass('hide')
+  $('.selreli').addClass('hide')
+  $('.reli_ass').addClass('hide')
+}
+
 function hide_modal() {
-  // $("input[name=title]").val('');
-  // $("select[name=subject]").val('');
-  // $("select[name=grade]").val('');
-  // $("#multiple-select-group").val(null).trigger("change");
-  // $("#start_assessment").val('');
-  // $("#end_assessment").val('');
-  // $("input[name=timer]").val('');
-  // $("#ass_random").toggleClass("checked");
-  // $("#ass_cheat").toggleClass("checked");
-  // $("#autosumbit").toggleClass("checked");
-  // $("#instruction_assessment").html('');
+  clear_form_assessment()
+
   $("#modal_tasks_ch").modal("hide");
   $("#modal_assessment").modal("hide");
   $("#task_prev_ass").modal("hide");
@@ -192,6 +236,9 @@ function check_group(subs, grad) {
     data: { subs, grad },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       if (e) {
         let option = "";
@@ -203,6 +250,7 @@ function check_group(subs, grad) {
         groups.val(null).trigger("change");
         groups.attr("disabled", true);
       }
+      hide_loading()
     },
   });
 }
@@ -214,8 +262,12 @@ function view_task_assessment(id, src) {
     data: { id, src },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       list_ass_question(e)
+      hide_loading()
     },
   });
 }
@@ -231,6 +283,10 @@ function list_ass_question(e) {
 
 $(document.body).on("click", ".asscheck", function () {
   $(this).toggleClass("checked");
+});
+
+$(document.body).on("click", "#religion_assign", function () {
+  $(".selreli").toggleClass("hide");
 });
 
 $(document.body).on("click", "#ass_timer", function () {
@@ -272,14 +328,19 @@ function save_assessment(status = null, save_type = null) {
   let end = $("#end_assessment").val();
   let timer = $("input[name=timer]").val();
   let istimer = $("#ass_timer").hasClass("checked");
+  let isreli = $("#religion_assign").hasClass("checked");
   let random = $("#ass_random").hasClass("checked");
   let cheat = $("#ass_cheat").hasClass("checked");
   let submit = $("#autosumbit").hasClass("checked");
   let insass = $("#instruction_assessment > .ql-editor").html();
+  let sch_year_id = $("input[name=schoolyearid]").val();
+  let reli_sel = $('#select_religion_test').val();
 
   let timer_sts = istimer ? (timer != 0 ? true : false) : true;
-  let msg = ["title_ass", "group_ass", "start_ass", "end_ass", "timer_ass"];
-  let chk = [title != "", group.length > 0, start != "", end != "", timer_sts];
+  let reli_sts = isreli ? (reli_sel != 0 ? true : false) : true;
+
+  let msg = ["title_ass", "group_ass", "start_ass", "end_ass", "timer_ass", "reli_ass"];
+  let chk = [title != "", group.length > 0, start != "", end != "", timer_sts, reli_sts];
 
   for (let i = 0; i < chk.length; i++) {
     if (chk[i] != true) {
@@ -304,7 +365,7 @@ function save_assessment(status = null, save_type = null) {
         group,
         start,
         end,
-        timer,
+        istimer ? timer : 0,
         random,
         cheat,
         submit,
@@ -315,8 +376,11 @@ function save_assessment(status = null, save_type = null) {
         task_src,
         status,
         save_type,
+        sch_year_id,
+        reli_sel,
       ];
 
+      clear_form_assessment()
       store_data(1, JSON.stringify(data), id_ass);
     } else {
       let msg =
@@ -335,6 +399,9 @@ function store_data(type, data, id = null) {
     data: { type, data, id },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       $("#modal_assessment_edit").modal("hide");
       $("#modal_assessment").modal("hide");
@@ -344,6 +411,7 @@ function store_data(type, data, id = null) {
         icon: e.icn,
         title: e.msg,
       });
+      hide_loading()
     },
   });
 }
@@ -354,17 +422,22 @@ function edit_draft(id) {
     data: { id },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       check_group(e.assessment_subject_id, e.assessment_grade);
       set_datepicker();
       setTimeout(function () {
         view_edit(e);
       }, 1000);
+      hide_loading()
     },
   });
 }
 
 function view_edit(e) {
+  get_religion(parseInt(e.assessment_religion))
   let task_title = ''
   if (e.assessment_question_bank_src != 2) {
     task_title = e.question_bank_standart_title
@@ -372,6 +445,8 @@ function view_edit(e) {
     task_title = e.question_bank_title
   }
 
+  $("input[name=syi]").val('T.P ' + active_year).attr("readonly", true);
+  $("input[name=schoolyearid]").val(active_year_id);
   $("input[name=assessment_id]").val(e.assessment_id);
   $("input[name=taskid]").val(e.assessment_question_bank_id);
   $("input[name=tasksrc]").val(e.assessment_question_bank_src);
@@ -385,6 +460,7 @@ function view_edit(e) {
   $.each(JSON.parse(e.assessment_group), function (i, v) {
     selected_group.push(v.id);
   });
+  
   $("#multiple-select-group").val(selected_group).trigger("change");
 
   let start = e.assessment_start.substring(0, 16);
@@ -396,6 +472,13 @@ function view_edit(e) {
     $("#autosumbit").addClass("checked").prop("checked", true);
   } else {
     $("#autosumbit").removeClass("checked").prop("checked", false);
+  }
+
+  if (parseInt(e.assessment_religion) > 0) {
+    $("#religion_assign").addClass("checked").prop("checked", true);
+    $(".selreli").removeClass("hide");
+  } else {
+    $("#religion_assign").removeClass("checked").prop("checked", false);
   }
 
   if (e.assessment_duration > 1) {
@@ -611,6 +694,11 @@ if (url.includes("teacher/assessment")) {
   }
 }
 
+function close_view_assess_student() {
+  $('#modal_look_student_act_assessment').modal('hide')
+  $('bd_list_ass_student').html('<div id="ass_student_act"></div>')
+}
+
 $(document).ready(function () {
 
   if (url.includes("assessment/index-add")) {
@@ -717,6 +805,7 @@ function info_begin_assessment(e) {
   $('.random').html(e.assessment_is_random)
   $('.no_cheat').html(e.assessment_is_prevent_cheat)
   $('.assesst_id').html(e.assessment_id)
+  $('.sch_year_id').html(e.assessment_school_year_id)
   
   let allow_cheat = e.assessment_is_prevent_cheat > 0 ? '<li>Ujian ini bersifat tutup buku (tidak boleh menutup atau meninggalkan halaman ujian)</li>' : ''
   let auto_submit = e.assessment_is_autosubmit > 0 ? '<li>Ketika waktu mengerjakan sudah habis, maka jawaban akan terkirim secara otomatis.</li>' : ''
@@ -822,7 +911,6 @@ function alert_submit_assessment() {
     },
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
-      $('.assessment_modal_act').modal('hide')
       submit_assessment_act(1, 'Menekan tombol submit')
     }
   });
@@ -978,6 +1066,7 @@ function get_assessment(type, id, src = null) {
       document.querySelector('.no_cheat').innerHTML,
       document.querySelector('.source_question_bank').innerHTML,
       document.querySelector('.assesst_id').innerHTML,
+      document.querySelector('.sch_year_id').innerHTML,
     ];
   }
 
@@ -986,6 +1075,9 @@ function get_assessment(type, id, src = null) {
     data: { type, id, src },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
       if (type == 1) {
         info_begin_assessment(e)
@@ -993,6 +1085,7 @@ function get_assessment(type, id, src = null) {
         $('#modal_assessment_information').modal('hide')
         assessment_page(e)
       }
+      hide_loading()
     },
   });
 }
@@ -1012,6 +1105,7 @@ function submit_assessment_act(submit_type, submit_msg) {
   send.qb_parent_id = row.qb_parent_id
   send.begin_assign = row.begin_assign
   send.end_date = row.end_date
+  send.sch_year_id = row.sch_year_id
 
   let student_answer = []
   $.each(row.assessment, function(i,v) {
@@ -1022,7 +1116,7 @@ function submit_assessment_act(submit_type, submit_msg) {
 
     student_answer.push({
       question_id: v.question_id,
-      answer : v.student_answer != '[]' ? answer : ''
+      answer : v.student_answer != '[]' ? answer : ['empty']
     })
   })
   send.answer = student_answer
@@ -1032,7 +1126,11 @@ function submit_assessment_act(submit_type, submit_msg) {
     data: { send },
     method: "post",
     dataType: "json",
+    beforeSend: function() {
+      show_loading()
+    },
     success: function (e) {
+      $('.assessment_modal_act').modal('hide')
       if (e.sts) {
         Swal.fire({
           icon: e.icn,
@@ -1049,6 +1147,7 @@ function submit_assessment_act(submit_type, submit_msg) {
           confirmButtonText: "Kirim Ulang",
         })
       }
+      hide_loading()
       
     },
   });

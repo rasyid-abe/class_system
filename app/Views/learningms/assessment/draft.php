@@ -25,12 +25,13 @@
       <div class="modal-body">
         <form id="kt_account_profile_details_form" class="form fv-plugins-bootstrap5 fv-plugins-framework" novalidate="novalidate">
           <div class="card-body">
-
+            
             <div class="row mb-6">
               <label class="col-lg-3 col-form-label fw-semibold fs-6">Soal</label>
-
+              
               <div class="col-lg-9 fv-row fv-plugins-icon-container">
                 <input type="text" name="selected_task" class="form-control form-control-lg form-control-solid" />
+                <input type="hidden" name="schoolyearid" />
                 <input type="hidden" name="taskid" />
                 <input type="hidden" name="tasksrc" />
                 <input type="hidden" name="assessment_id" />
@@ -46,6 +47,26 @@
                   <input type="hidden" name="subjid" />
                   <input type="hidden" name="gradid" />
                 </div>
+              </div>
+            </div>
+
+            <div class="row mb-6">
+              <label class="col-lg-3 col-form-label fw-semibold fs-6">Penilaian Agama<small class="text-danger">**</small></label>
+
+              <div class="col-lg-4 fv-row">
+                <div class="d-flex">
+                  <label class="form-check form-check-custom form-check-inline form-check-solid me-5 form-switch">
+                    <div class="inpreli">
+                      <input class="form-check-input asscheck" name="religion_assign" id="religion_assign" type="checkbox" value="1">
+                    </div>
+                  </label>
+                  <div class="selreli hide">
+                    <select class="form-select form-select-solid" name=select_religion_test id="select_religion_test" data-close-on-select="false" data-dropdown-parent="#modal_assessment" data-placeholder="Pilih Penilaian Agama" data-allow-clear="true">
+                    </select>
+                  </div>
+                  <!-- <input type="number" max="168" min="30" name="timer" class="hide form-control form-control-lg form-control-solid" placeholder="Waktu Pengerjaan (menit)" id="c_timer"> -->
+                </div>
+                <small class="hide reli_ass text-danger">Kolom Penilaian Agama harus dipilih!</small>
               </div>
             </div>
 

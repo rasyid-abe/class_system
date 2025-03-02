@@ -12,6 +12,7 @@ class AssessmentResultModel extends Model
         'assessment_result_id',
         'assessment_result_assessment_id', 
         'assessment_result_school_id', 
+        'assessment_result_school_year_id',
         'assessment_result_group_id', 
         'assessment_result_student_id', 
         'assessment_result_begin_assignment_datetime', 

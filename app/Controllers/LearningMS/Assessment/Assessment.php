@@ -79,8 +79,14 @@ class Assessment extends BaseController
         $data['grd'] = $list_grade;
 
         $data['my_duty'] = $subs;
+        $data['religion'] = get_list('religion');
 
         return view("learningms/assessment/index", $data);
+    }
+
+    public function get_list_religion()
+    {
+        echo json_encode(get_list('religion'));
     }
 
     public function data_option()
@@ -233,6 +239,12 @@ class Assessment extends BaseController
                     assessment_group,
                     assessment_question_bank_src,
                     assessment_question_bank_id,
+                    assessment_duration,
+                    assessment_religion,
+                    assessment_is_random,
+                    assessment_is_autosubmit,
+                    assessment_is_prevent_cheat,
+                    assessment_instruction,
                     subject_name,
                     question_bank_title,
                     question_bank_standart_title,
@@ -271,6 +283,7 @@ class Assessment extends BaseController
                         ->set('assessment_start', date('Y-m-d H:i:s', strtotime($d[4] . ':00')))
                         ->set('assessment_end', date('Y-m-d H:i:s', strtotime($d[5] . ':00')))
                         ->set('assessment_duration', $d[6])
+                        ->set('assessment_religion', $d[18])
                         ->set('assessment_is_random', $d[7])
                         ->set('assessment_is_autosubmit', $d[9])
                         ->set('assessment_is_prevent_cheat', $d[8])
@@ -280,21 +293,24 @@ class Assessment extends BaseController
                         ->update();
 
                     foreach ($group as $k => $v) {
-                        $students = $this->in_group->where([
-                            'student_in_group_student_group_id' => $v['id'],
-                            'student_in_group_school_id' => userdata()['school_id'],
-                        ])->findAll();
+                        $students = $this->in_group->list_for_assessment($v['id'], userdata()['school_id'], $d[18]);
+                        // $students = $this->in_group->where([
+                        //     'student_in_group_student_group_id' => $v['id'],
+                        //     'student_in_group_school_id' => userdata()['school_id'],
+                        // ])->findAll();
 
                         $data_exists = [];
                         $data_exists['assessment_result_assessment_id'] = $req['id'];
                         $data_exists['assessment_result_school_id'] = userdata()['school_id'];
 
                         $this->assessment_result->where($data_exists)->delete();
+
                         foreach ($students as $key => $val) {
                             $data_res = [];
                             $data_res['assessment_result_id'] = $req['id'] . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'];
                             $data_res['assessment_result_assessment_id'] = $req['id'];
                             $data_res['assessment_result_school_id'] = userdata()['school_id'];
+                            $data_res['assessment_result_school_year_id'] = $d[17];
                             $data_res['assessment_result_group_id'] = $v['id'];
                             $data_res['assessment_result_student_id'] = $val['student_in_group_student_id'];
 
@@ -326,6 +342,7 @@ class Assessment extends BaseController
                 try {
                     $data = [
                         'assessment_school_id' => userdata()['school_id'],
+                        'assessment_school_year_id' => $d[17],
                         'assessment_teacher_id' => userdata()['id_profile'],
                         'assessment_grade' => $d[2],
                         'assessment_subject_id' => $d[1],
@@ -338,6 +355,7 @@ class Assessment extends BaseController
                         'assessment_start' => date('Y-m-d H:i:s', strtotime($d[4] . ':00')),
                         'assessment_end' => date('Y-m-d H:i:s', strtotime($d[5] . ':00')),
                         'assessment_duration' => $d[6],
+                        'assessment_religion' => $d[18],
                         'assessment_is_random' => $d[7],
                         'assessment_is_autosubmit' => $d[9],
                         'assessment_is_prevent_cheat' => $d[8],
@@ -347,28 +365,19 @@ class Assessment extends BaseController
                     $this->assessment->insert($data);
 
                     foreach ($group as $k => $v) {
-                        $students = $this->in_group->where([
-                            'student_in_group_student_group_id' => $v['id'],
-                            'student_in_group_school_id' => userdata()['school_id'],
-                        ])->findAll();
+                        $students = $this->in_group->list_for_assessment($v['id'], userdata()['school_id'], $d[18]);
 
                         foreach ($students as $key => $val) {
                             $data_res = [
                                 'assessment_result_id' => $this->assessment->getInsertID() . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'],
                                 'assessment_result_assessment_id' => $this->assessment->getInsertID(),
                                 'assessment_result_school_id' => userdata()['school_id'],
+                                'assessment_result_school_year_id' => $d[17],
                                 'assessment_result_group_id' => $v['id'],
                                 'assessment_result_student_id' => $val['student_in_group_student_id']
                             ];
 
                             $this->assessment_result->insert($data_res);
-                            // echo '<pre>';
-                            // print_r($ins_result_assessment);
-                            // echo '</pre>';
-                            // die;
-                            // if (!$ins_result_assessment) {
-                            //     throw new \Exception('Insert assessment result group id ' . $v['id'] . ' failed!');
-                            // }
                         }
                     }
 
@@ -494,6 +503,7 @@ class Assessment extends BaseController
                     subject_name,
                     question_bank_title,
                     question_bank_standart_title,
+                    school_year_period,
                 ';
 
         if ($req['page-ass'] == 1) {
@@ -502,6 +512,7 @@ class Assessment extends BaseController
                 ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
                 ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
                 ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
+                ->join('master_school_year', 'school_year_id=assessment_school_year_id', 'left')
                 ->where('assessment_status', 1)
                 ->where('assessment_school_id', userdata()['school_id'])
                 ->where('assessment_teacher_id', userdata()['id_profile'])
@@ -513,6 +524,7 @@ class Assessment extends BaseController
                 ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
                 ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
                 ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
+                ->join('master_school_year', 'school_year_id=assessment_school_year_id', 'left')
                 ->where('assessment_status', 2)
                 ->where('assessment_start >=', date('Y-m-d H:i:s'))
                 ->where('assessment_school_id', userdata()['school_id'])
@@ -524,6 +536,7 @@ class Assessment extends BaseController
                 ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
                 ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
                 ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
+                ->join('master_school_year', 'school_year_id=assessment_school_year_id', 'left')
                 ->where('assessment_status', 2)
                 ->where('assessment_start <=', date('Y-m-d H:i:s'))
                 ->where('assessment_end >=', date('Y-m-d H:i:s'))
@@ -536,6 +549,7 @@ class Assessment extends BaseController
                 ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
                 ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
                 ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
+                ->join('master_school_year', 'school_year_id=assessment_school_year_id', 'left')
                 ->where('assessment_status', 2)
                 ->where('assessment_end <=', date('Y-m-d H:i:s'))
                 ->where('assessment_school_id', userdata()['school_id'])
@@ -548,9 +562,9 @@ class Assessment extends BaseController
             $groups = '';
             foreach (json_decode($v['assessment_group']) as $key => $val) {
                 if ($req['page-ass'] == 3 || $req['page-ass'] == 4) {
-                    $groups .= '<a href="" data-group_id="' . $val->id . '" data-assessment_id="' . $v['assessment_id'] . '" class="badge badge-info mx-1 view_student">' . $val->group . '</a>';
+                    $groups .= '<a href="" data-group_id="' . $val->id . '" data-assessment_id="' . $v['assessment_id'] . '" class="badge badge-danger mx-1 view_student">' . $val->group . '</a>';
                 } else {
-                    $groups .= '<a href="' . base_url('teacher/groups/view-students/' . $val->id) . '" class="badge badge-info mx-1">' . $val->group . '</a>';
+                    $groups .= '<a href="' . base_url('teacher/groups/view-students/' . $val->id) . '" class="badge badge-danger mx-1">' . $val->group . '</a>';
                 }
             }
 
@@ -595,7 +609,7 @@ class Assessment extends BaseController
                                 <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
                                     <span class="text-gray-800 fw-semibold">' . $v['subject_name'] . '</span>
                                     <div class="bdg-group">
-                                    ' . $groups . '&nbsp;
+                                    <badge class="badge badge-info mx-1">T.P ' . $v['school_year_period'] . '</badge>' . $groups . '&nbsp;
                                     </div>
                                 </div>
                             </div>
@@ -629,7 +643,7 @@ class Assessment extends BaseController
                                 <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
                                     <span class="text-gray-800 fw-semibold">' . $v['subject_name'] . '</span>
                                     <div class="bdg-group">
-                                    ' . $groups . '&nbsp;
+                                    <badge class="badge badge-info mx-1">T.P ' . $v['school_year_period'] . '</badge>' . $groups . '&nbsp;
                                     </div>
                                 </div>
                             </div>
@@ -701,6 +715,7 @@ class Assessment extends BaseController
             ->join('profile_student', 'student_id=assessment_result_student_id', 'left')
             ->where('assessment_result_assessment_id', $req['aid'])
             ->where('assessment_result_school_id', userdata()['school_id'])
+            ->where('assessment_result_school_year_id', year_active()['school_year_id'])
             ->where('assessment_result_group_id', $req['gid'])
             ->findAll();
 
@@ -811,49 +826,109 @@ class Assessment extends BaseController
         $req = $this->request->getVar();
         $list = $this->assessment->get_list_student($req['page-ass']);
 
+        $my_assign = $this->assessment_result
+            ->select('assessment_result_assessment_id ass_id')
+            ->where('assessment_result_student_id', userdata()['id_profile'])
+            ->findAll();
+
+        $my_assign = array_column($my_assign, 'ass_id');
+        $my_list = array_column($list, 'assessment_id');
+
+        $merge_idx = array_merge($my_assign, $my_list);
+        $list_idx = array_unique(array_diff_assoc($merge_idx, array_unique($merge_idx)));
+
         $data = [];
         foreach ($list as $k => $v) {
-            $deg = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : '';
-            $name = $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $deg;
-            $duration = $v['assessment_duration'] > 0 ? $v['assessment_duration'] . " Menit" : '-';
+            if ($req['page-ass'] == 1 || $req['page-ass'] == 2) {
+
+                if (in_array($v['assessment_id'], $list_idx)) {
+                    $deg = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : '';
+                    $name = $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $deg;
+                    $duration = $v['assessment_duration'] > 0 ? $v['assessment_duration'] . " Menit" : '-';
+                    $button = '';
+                    if ($req['page-ass'] == 1) {
+                        $button = '<a href="#" class="btn btn-primary pl-10" onclick="alert_begin_assessment(' . $v['assessment_id'] . ')">Kerjakan</a>';
+                    }
+
+                    $lists = '
+                        <div class="row bigrow-tabulator">
+                        <div class="col-lg-5 mx-auto">
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    ' . $button . '
+                                    <div class="flex-grow-1 mx-5" style="word-wrap: break-word;">
+                                        <h5 class="">' . $v['assessment_title'] . '</h5>
+                                        <badge class="badge badge-info"><i class="bi-alarm text-white"></i> ' . $duration . '</badge>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 mx-auto">
+                            <div class="additional-info">
+                                <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
+                                    <span class="text-gray-800 fw-bold d-block">' . $v['subject_name'] . '</span>
+                                    <span class="text-gray-700 fw-semibold">' . $name . '</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mx-auto">
+                            <div class="additional-info">
+                                <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
+                                    <span class="text-gray-700 fw-semibold">' . datetime_indo($v['assessment_start']) . '</span>
+                                    <span class="text-gray-700 fw-semibold">' . datetime_indo($v['assessment_end']) . '</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ';
+
+                    $data[] = [
+                        'id' => $v['assessment_id'],
+                        'lists' => $lists
+                    ];
+                }
+            } else {
+                $deg = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : '';
+                $name = $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $deg;
+                $duration = $v['assessment_duration'] > 0 ? $v['assessment_duration'] . " Menit" : '-';
 
 
-            $lists = '
-                <div class="row bigrow-tabulator">
-                <div class="col-lg-5 mx-auto">
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <a href="#" class="btn btn-primary pl-10" onclick="alert_begin_assessment(' . $v['assessment_id'] . ')">Kerjakan</a>
-                            <div class="flex-grow-1 mx-5" style="word-wrap: break-word;">
-                                <h5 class="">' . $v['assessment_title'] . '</h5>
-                                <badge class="badge badge-info"><i class="bi-alarm text-white"></i> ' . $duration . '</badge>
+                $lists = '
+                    <div class="row bigrow-tabulator">
+                    <div class="col-lg-5 mx-auto">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 mx-5" style="word-wrap: break-word;">
+                                    <h5 class="">' . $v['assessment_title'] . '</h5>
+                                    <badge class="badge badge-info"><i class="bi-alarm text-white"></i> ' . $duration . '</badge>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 mx-auto">
+                        <div class="additional-info">
+                            <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
+                                <span class="text-gray-800 fw-bold d-block">' . $v['subject_name'] . '</span>
+                                <span class="text-gray-700 fw-semibold">' . $name . '</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mx-auto">
+                        <div class="additional-info">
+                            <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
+                                <span class="text-gray-700 fw-semibold">' . datetime_indo($v['assessment_start']) . '</span>
+                                <span class="text-gray-700 fw-semibold">' . datetime_indo($v['assessment_end']) . '</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 mx-auto">
-                    <div class="additional-info">
-                        <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
-                            <span class="text-gray-800 fw-bold d-block">' . $v['subject_name'] . '</span>
-                            <span class="text-gray-700 fw-semibold">' . $name . '</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 mx-auto">
-                    <div class="additional-info">
-                        <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
-                            <span class="text-gray-700 fw-semibold">' . datetime_indo($v['assessment_start']) . '</span>
-                            <span class="text-gray-700 fw-semibold">' . datetime_indo($v['assessment_end']) . '</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            ';
+                ';
 
-            $data[] = [
-                'id' => $v['assessment_id'],
-                'lists' => $lists
-            ];
+                $data[] = [
+                    'id' => $v['assessment_id'],
+                    'lists' => $lists
+                ];
+            }
         }
 
         echo (json_encode($data));
@@ -867,6 +942,7 @@ class Assessment extends BaseController
             $data = $this->assessment
                 ->select('
                     assessment_id,
+                    assessment_school_year_id,
                     assessment_title,
                     assessment_start,
                     assessment_end,
@@ -901,11 +977,13 @@ class Assessment extends BaseController
             $autosubmit = $req['src'][4];
             $random = $req['src'][5];
             $no_cheat = $req['src'][6];
+            $sch_year_id = $req['src'][9];
 
             $this->assessment_result
                 ->where('assessment_result_student_id', $student_id)
                 ->where('assessment_result_assessment_id', $assessment_id)
                 ->where('assessment_result_school_id', userdata()['school_id'])
+                ->where('assessment_result_school_year_id', $sch_year_id)
                 ->set('assessment_result_begin_assignment_datetime', date('Y-m-d H:i:s'))
                 ->update();
 
@@ -940,6 +1018,7 @@ class Assessment extends BaseController
             $storage = [];
             $storage['assessment_id'] = $assessment_id;
             $storage['assessment_title'] = $assessment_title;
+            $storage['sch_year_id'] = $sch_year_id;
             $storage['subject'] = $subject;
             $storage['begin_assign'] = date('Y-m-d H:i:s');
             $storage['end_date'] = $end_period;
@@ -1015,9 +1094,11 @@ class Assessment extends BaseController
 
         $arr_student_answer = [];
         foreach ($row['answer'] as $k => $v) {
-            $ans = $v['answer'];
-            if (count($ans) > 0) {
-                sort($ans);
+            if ($v['answer'] != '' || $v['answer'] != null) {
+                $ans = $v['answer'];
+                if (count($ans) > 0) {
+                    sort($ans);
+                }
             }
             $arr_student_answer[$v['question_id']] = $ans;
         }
@@ -1058,6 +1139,7 @@ class Assessment extends BaseController
             ->where('assessment_result_student_id',  userdata()['id_profile'])
             ->where('assessment_result_assessment_id', $row['assessment_id'])
             ->where('assessment_result_school_id', userdata()['school_id'])
+            ->where('assessment_result_school_year_id', $row['sch_year_id'])
             ->set('assessment_result_begin_assignment_datetime', $row['begin_assign'])
             ->set('assessment_result_submit_datetime', date('Y-m-d H:i:s'))
             ->set('assessment_result_end_datetime', $row['end_date'])

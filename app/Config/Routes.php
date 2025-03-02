@@ -122,6 +122,7 @@ $routes->post('/teacher/assessment/view-question-bank', 'LearningMS\Assessment\A
 $routes->post('/teacher/assessment/get-edit', 'LearningMS\Assessment\Assessment::get_edit', ['filter' => 'auth']);
 $routes->post('/teacher/assessment/view-assessment-question', 'LearningMS\Assessment\Assessment::view_assessment_question', ['filter' => 'auth']);
 $routes->get('/teacher/assessment/get-student-assessment', 'LearningMS\Assessment\Assessment::get_student_assessment', ['filter' => 'auth']);
+$routes->post('/teacher/assessment/get-list-religion', 'LearningMS\Assessment\Assessment::get_list_religion', ['filter' => 'auth']);
 
 $routes->get('/teacher/tasks/index-add', 'LearningMS\Tasks\Tasks::index', ['filter' => 'auth']);
 $routes->get('/teacher/tasks/index-draft', 'LearningMS\Tasks\Tasks::index_draft', ['filter' => 'auth']);
