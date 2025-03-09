@@ -34,8 +34,9 @@ $routes->post('/dashboard/school/email-verify', 'Dashboard\DashboardSchool::emai
 $routes->get('/dashboard/school/validate-email/(:any)/(:any)', 'Dashboard\DashboardSchool::validate_email/$1/$2', ['filter' => 'auth']);
 
 $routes->get('/dashboard/teacher', 'Dashboard\DashboardTeacher::index', ['filter' => 'auth']);
-$routes->get('/dashboard/teacher/change-password', 'Dashboard\DashboarTeacher::change_password', ['filter' => 'auth']); #done
-$routes->post('/dashboard/teacher/update-password', 'Dashboard\DashboarTeacher::update_password', ['filter' => 'auth']); #done
+$routes->get('/dashboard/teacher/change-password', 'Dashboard\DashboardTeacher::change_password', ['filter' => 'auth']); #done
+$routes->post('/dashboard/teacher/update-password', 'Dashboard\DashboardTeacher::update_password', ['filter' => 'auth']); #done
+$routes->post('/dashboard/teacher/data-dashboard', 'Dashboard\DashboardTeacher::data_dashboard', ['filter' => 'auth']); #done
 
 $routes->get('/dashboard/student', 'Dashboard\DashboardStudent::index', ['filter' => 'auth']);
 $routes->get('/dashboard/student/change-password', 'Dashboard\DashboardStudent::change_password', ['filter' => 'auth']); #done

@@ -124,5 +124,89 @@ class AssessmentModel extends Model
 
         return $this->db->query($sql)->getResultArray();
     }
+
+    public function data_draft($select, $school_id, $teacher_id)
+    {
+        $sql = "
+            select $select 
+            from lms_assessment 
+            left join master_subject on subject_id=assessment_subject_id
+            left join lms_question_bank on question_bank_id=assessment_question_bank_id
+            left join lms_question_bank_standart on question_bank_standart_id=assessment_question_bank_id
+            left join master_school_year on school_year_id=assessment_school_year_id
+            where 
+                assessment_status = 1
+                and assessment_school_id = $school_id
+                and assessment_teacher_id = $teacher_id
+            order by
+                assessment_id desc
+        ";
+
+        return $this->db->query($sql)->getResultArray();
+    }
+    
+    public function data_scheduled($select, $date_now, $school_id, $teacher_id)
+    {
+        $sql = "
+            select $select 
+            from lms_assessment 
+            left join master_subject on subject_id=assessment_subject_id
+            left join lms_question_bank on question_bank_id=assessment_question_bank_id
+            left join lms_question_bank_standart on question_bank_standart_id=assessment_question_bank_id
+            left join master_school_year on school_year_id=assessment_school_year_id
+            where 
+                assessment_status = 2
+                and assessment_start >= '$date_now'
+                and assessment_school_id = $school_id
+                and assessment_teacher_id = $teacher_id
+            order by
+                assessment_id desc
+        ";
+
+        return $this->db->query($sql)->getResultArray();
+    }
+    
+    public function data_present($select, $date_now, $school_id, $teacher_id)
+    {
+        $sql = "
+            select $select 
+            from lms_assessment 
+            left join master_subject on subject_id=assessment_subject_id
+            left join lms_question_bank on question_bank_id=assessment_question_bank_id
+            left join lms_question_bank_standart on question_bank_standart_id=assessment_question_bank_id
+            left join master_school_year on school_year_id=assessment_school_year_id
+            where 
+                assessment_status = 2
+                and assessment_start <= '$date_now'
+                and assessment_end >= '$date_now'
+                and assessment_school_id = $school_id
+                and assessment_teacher_id = $teacher_id
+            order by
+                assessment_id desc
+        ";
+
+        return $this->db->query($sql)->getResultArray();
+    }
+    
+    public function data_done($select, $date_now, $school_id, $teacher_id)
+    {
+        $sql = "
+            select $select 
+            from lms_assessment 
+            left join master_subject on subject_id=assessment_subject_id
+            left join lms_question_bank on question_bank_id=assessment_question_bank_id
+            left join lms_question_bank_standart on question_bank_standart_id=assessment_question_bank_id
+            left join master_school_year on school_year_id=assessment_school_year_id
+            where 
+                assessment_status = 2
+                and assessment_end <= '$date_now'
+                and assessment_school_id = $school_id
+                and assessment_teacher_id = $teacher_id
+            order by
+                assessment_id desc
+        ";
+
+        return $this->db->query($sql)->getResultArray();
+    }
 }
 

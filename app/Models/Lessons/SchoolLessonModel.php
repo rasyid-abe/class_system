@@ -75,5 +75,42 @@ class SchoolLessonModel extends Model
 
         return $this->db->query($query)->getResultArray();
     }
+
+    public function total_chapter($school, $school_year, $teacher)
+    {
+        $sql = "
+            select
+                count(distinct lls.lesson_school_chapter) total
+            from lms_lesson_school lls 
+            where 
+                lls.lesson_school_status < 9	
+                and lls.lesson_school_school_id = $school
+                and lls.lesson_school_teacher_id = $teacher
+                and lls.lesson_school_school_year_id = $school_year
+        ";
+
+        return $this->db->query($sql)->getRowArray();
+    }
+
+    public function total_subchapter($school, $school_year, $teacher)
+    {
+        $sql = "
+            select
+                sum(case 
+                    when lesson_school_lesson_standart_id <> 0 then 1
+                    when lesson_school_lesson_additional_id <> 0 then 1
+                    when lesson_school_lesson_shared_id <> 0 then 1
+                    else 0
+                end) total
+            from lms_lesson_school lls 
+            where 
+                lls.lesson_school_status < 9	
+                and lls.lesson_school_school_id = $school
+                and lls.lesson_school_teacher_id = $teacher
+                and lls.lesson_school_school_year_id = $school_year
+        ";
+
+        return $this->db->query($sql)->getRowArray();
+    }
 }
 

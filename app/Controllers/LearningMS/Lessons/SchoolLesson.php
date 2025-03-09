@@ -76,33 +76,17 @@ class SchoolLesson extends BaseController
     {
         $req = $this->request->getVar();
 
+        $sch = userdata()['school_id'];
+        $s_year = year_active()['school_year_id'];
+        $teach = userdata()['id_profile'];
+
         if (isset(year_active()['school_year_id'])) {
-            $total_chapter = $this->lesson_school
-                ->select('count(*)')
-                ->where('lesson_school_status < 9')
-                ->where('lesson_school_school_id', userdata()['school_id'])
-                ->where('lesson_school_teacher_id', userdata()['id_profile'])
-                ->where('lesson_school_school_year_id', year_active()['school_year_id'])
-                ->groupBy('lesson_school_chapter, lesson_school_grade')
-                ->findAll();
-            $total_subchapter = $this->lesson_school
-                ->select('lesson_school_lesson_standart_id, lesson_school_lesson_additional_id, lesson_school_lesson_shared_id')
-                ->where('lesson_school_status < 9')
-                ->where('lesson_school_school_id', userdata()['school_id'])
-                ->where('lesson_school_teacher_id', userdata()['id_profile'])
-                ->where('lesson_school_school_year_id', year_active()['school_year_id'])
-                ->findAll();
-    
-            $c = 0;
-            foreach ($total_subchapter as $v) {
-                if ($v['lesson_school_lesson_standart_id'] > 0 || $v['lesson_school_lesson_additional_id'] > 0 || $v['lesson_school_lesson_shared_id'] > 0) {
-                    $c++;
-                }
-            }
-    
+            $total_chapter = $this->lesson_school->total_chapter($sch, $s_year, $teach);
+            $total_subchapter = $this->lesson_school->total_subchapter($sch, $s_year, $teach);
+  
             $res = [
-                't_chap' => count($total_chapter),
-                't_subchap' => $c,
+                't_chap' => $total_chapter['total'],
+                't_subchap' => $total_subchapter['total'],
             ];
         } else {
             $res = [
@@ -251,6 +235,7 @@ class SchoolLesson extends BaseController
     public function update_content()
     {
         $req = $this->request->getVar();
+
         $update = false;
         if ($req['type'] == 1) {
             $update = $this->lesson_school
@@ -300,7 +285,7 @@ class SchoolLesson extends BaseController
                 ->where($arr_ins)
                 ->first();
 
-            if (!$chk) {
+            if (empty($chk)) {
                 $arr_ins['lesson_school_order_child'] = $runnum['lesson_school_order_child'] + 1;
                 $update = $this->lesson_school->insert($arr_ins);
             }
@@ -385,6 +370,7 @@ class SchoolLesson extends BaseController
             ->where('lesson_additional_subject_id', $subject)
             ->where('lesson_additional_status < 9')
             ->where('lesson_additional_subchapter != ""')
+            ->groupBy('lesson_additional_chapter')
             ->findAll();
 
         foreach ($private as $k => $v) {

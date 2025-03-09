@@ -58,27 +58,7 @@
 
                         <div class="m-0">
                             <div class="timeline timeline-border-dashed">
-                                <div class="timeline-item pb-5">
-
-                                    <div class="timeline-content m-0">
-                                        <span class="fs-8 fw-bolder text-primary text-uppercase">X MB 1</span>
-
-                                        <a href="#" class="fs-6 text-gray-800 fw-bold d-block text-hover-primary">Bahasa Indonesia</a>
-
-                                        <span class="fw-semibold text-gray-500">Senin, 08:00 - 09:00 WIB</span>
-                                    </div>
-                                </div>
-
-                                <div class="timeline-item">
-
-                                    <div class="timeline-content m-0">
-                                        <span class="fs-8 fw-bolder text-primary text-uppercase">X MB 2</span>
-
-                                        <a href="#" class="fs-6 text-gray-800 fw-bold d-block text-hover-primary">Bahasa Indonesia</a>
-
-                                        <span class="fw-semibold text-gray-500">Senin, 10:00 - 11:00 WIB</span>
-                                    </div>
-                                </div>
+                                <div class="my_duty" id="myduty">memuat ...</div>
                             </div>
                         </div>
 

@@ -10,6 +10,9 @@ function grab_data_lesson(
     data: { type, id, subj, grad, param },
     method: "post",
     dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
     success: function (e) {
       if (type == 1) {
         treeview_tasks_ch(e, subj, grad);
@@ -29,6 +32,7 @@ function grab_data_lesson(
           $("#content_value").removeClass("hide");
         }
       }
+      hide_loading()
     },
   });
 }
@@ -66,7 +70,7 @@ $(document.body).on("click", "#btnshow_lesson", function () {
   $("#tasks_prev_less").modal("show");
 });
 
-function treeview_tasks_ch(e, subj, grad) {
+function treeview_tasks_ch(e, subj, grad) {  
   let content = "";
   let bdi1 = 1;
   $.each(e.datas, function (i, v) {
@@ -236,6 +240,9 @@ function store_tasks(type, id, param) {
     data: { type, id, param },
     method: "post",
     dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
     success: function (e) {
       $("#modal_task_choose").modal("hide");
       $("#modal_tasks_upd").modal("hide");
@@ -246,6 +253,7 @@ function store_tasks(type, id, param) {
         icon: e.icn,
         title: e.msg,
       });
+      hide_loading()
     },
   });
 }
@@ -256,6 +264,9 @@ function edit_task(id) {
     data: { id },
     method: "post",
     dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
     success: function (e) {
       check_group(e.task_subject_id, e.task_grade);
       set_datepicker();
@@ -312,6 +323,9 @@ function lesson_preview(id, src, task_id) {
       data: { id, src, task_id },
       method: "post",
       dataType: "json",
+      beforeSend: function () {
+        show_loading()
+      },
       success: function (e) {
         generate_view_lesson_p(e.lesson);
         generate_view_video_p(e.lesson);
@@ -323,6 +337,7 @@ function lesson_preview(id, src, task_id) {
           e.lesson.lesson_additional_grade
         );
         $("#tasks_prev_less").modal("show");
+        hide_loading()
       },
     });
   }
@@ -334,9 +349,13 @@ function view_quest_bank(id, subj, grad) {
     data: { subj, grad },
     method: "post",
     dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
     success: function (e) {
       choose_task_view(e, id);
       $("#modal_task_choose").modal("show");
+      hide_loading()
     },
   });
 }

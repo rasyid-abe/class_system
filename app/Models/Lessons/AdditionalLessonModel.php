@@ -40,5 +40,63 @@ class AdditionalLessonModel extends Model
         return $this->where($where)->first();
 
     }
+
+    public function my_chapter($school, $teacher)
+    {
+        $sql = "
+            select
+                distinct lla.lesson_additional_chapter
+            from
+                lms_lesson_additional lla
+            where
+                lla.lesson_additional_teacher_id = $teacher
+                and lla.lesson_additional_school_id = $school
+                and lla.lesson_additional_status < 9
+                
+            group by
+                lla.lesson_additional_chapter
+        ";
+
+        return $this->db->query($sql)->getResultArray();
+    }
+
+    public function my_subchapter($school, $teacher)
+    {
+        $sql = "
+            select
+                distinct lla.lesson_additional_subchapter 
+            from
+                lms_lesson_additional lla
+            where
+                lla.lesson_additional_teacher_id = $teacher
+                and lla.lesson_additional_school_id = $school
+                and lla.lesson_additional_status < 9
+                and lla.lesson_additional_subchapter <> ''
+            group by
+	            lla.lesson_additional_chapter,
+	            lla.lesson_additional_subchapter 
+        ";
+
+        return $this->db->query($sql)->getResultArray();
+    }
+
+    public function my_shared_lesson($school, $teacher)
+    {
+        $sql = "
+            select
+                lesson_additional_chapter,
+                count(lesson_additional_subchapter) total_subchap
+            from
+                lms_lesson_additional
+            where
+                lesson_additional_status < 9
+                and lesson_additional_school_id = $school
+                and lesson_additional_teacher_id = $teacher
+                and lesson_additional_shared_type > 0
+            group by lesson_additional_chapter
+        ";
+
+        return $this->db->query($sql)->getResultArray();
+    }
 }
 

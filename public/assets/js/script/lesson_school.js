@@ -419,6 +419,8 @@ function form_chapter(e, chap = null, subchap = null, id = null) {
 
 function generate_treeview2(e, chap) {
     let content = ''
+    console.log(e);
+    
     $.each(e, function (i,v) {
         let child1 = ''
         if (v.nodes.length > 0) {

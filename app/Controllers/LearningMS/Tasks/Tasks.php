@@ -130,6 +130,7 @@ class Tasks extends BaseController
                         lesson_standart_subject_id as subject,
                         lesson_standart_grade as grade,
                     ')
+                    ->where('lesson_standart_grade', $grade)
                     ->where('lesson_standart_chapter', $v['text'])
                     ->where('lesson_standart_subchapter != ""')
                     ->where('lesson_standart_status < 9')

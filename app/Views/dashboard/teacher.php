@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="d-flex flex-column my-7">
-                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">327</span>
+                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2"><span id="dash_t_chap">memuat ...</span></span>
 
                     <div class="m-0">
                         <span class="fw-semibold fs-6 text-gray-500">BAB Pelajaran </span>
@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="d-flex flex-column my-7">
-                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">327</span>
+                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2"><span id="dash_t_subchap">memuat ...</span></span>
 
                     <div class="m-0">
                         <span class="fw-semibold fs-6 text-gray-500">Topik Pelajaran </span>
@@ -62,7 +62,7 @@
                 </div>
 
                 <div class="d-flex flex-column my-7">
-                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">327</span>
+                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2"><span id="dash_t_tqb">memuat ...</span></span>
 
                     <div class="m-0">
                         <span class="fw-semibold fs-6 text-gray-500">Judul Bank Soal </span>
@@ -87,7 +87,7 @@
                 </div>
 
                 <div class="d-flex flex-column my-7">
-                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">327</span>
+                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2"><span id="dash_t_qb">memuat ...</span></span>
 
                     <div class="m-0">
                         <span class="fw-semibold fs-6 text-gray-500">Total Soal </span>
@@ -116,13 +116,13 @@
 
             <div class="card-body">
                 <div class="card-title d-flex flex-column">
-                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">69</span>
+                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2"><span id="dash_chp_shared">memuat ...</span></span>
 
                     <span class="text-white opacity-50 pt-1 fw-semibold fs-6">Topik Pelajaran</span>
                 </div>
                 <div class="separator separator-dashed my-3"></div>
                 <div class="card-title d-flex flex-column">
-                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">69</span>
+                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2"><span id="dash_schp_shared">memuat ...</span></span>
 
                     <span class="text-white opacity-50 pt-1 fw-semibold fs-6">Judul Bank Soal</span>
                 </div>
@@ -171,20 +171,20 @@
             </div>
 
             <div class="card-body pt-5">
-                <div class="d-flex fw-semibold align-items-center mb-4">
+                <!-- <div class="d-flex fw-semibold align-items-center mb-4">
                     <div class="bullet w-8px h-6px rounded-2 bg-success me-3"></div>
 
                     <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Standar</div>
 
                     <div class="text-gray-900 fw-bolder text-xxl-end">$7,660</div>
-                </div>
+                </div> -->
 
                 <div class="d-flex fw-semibold align-items-center mb-4">
                     <div class="bullet w-8px h-6px rounded-2 bg-primary me-3"></div>
 
                     <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Saya</div>
 
-                    <div class="text-gray-900 fw-bolder text-xxl-end">$7,660</div>
+                    <div class="text-gray-900 fw-bolder text-xxl-end"><span id="dash_add_less">memuat ...</span></div>
                 </div>
 
                 <div class="d-flex fw-semibold align-items-center mb-4">
@@ -192,7 +192,7 @@
 
                     <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Sekolah</div>
 
-                    <div class="text-gray-900 fw-bolder text-xxl-end">$7,660</div>
+                    <div class="text-gray-900 fw-bolder text-xxl-end"><span id="dash_sch_less">memuat ...</span></div>
                 </div>
 
                 <div class="d-flex fw-semibold align-items-center mb-4">
@@ -200,7 +200,7 @@
 
                     <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Publik</div>
 
-                    <div class="text-gray-900 fw-bolder text-xxl-end">$7,660</div>
+                    <div class="text-gray-900 fw-bolder text-xxl-end"><span id="dash_pub_less">memuat ...</span></div>
                 </div>
 
 
@@ -217,7 +217,7 @@
             </div>
 
             <div class="card-body pt-5">
-                <div class="d-flex fw-semibold align-items-center">
+                <!-- <div class="d-flex fw-semibold align-items-center">
                     <div class="bullet w-8px h-3px rounded-2 bg-primary me-3"></div>
 
                     <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Standar</div>
@@ -225,14 +225,14 @@
                     <div class="text-gray-900 fw-bolder text-xxl-end">$7,660</div>
                 </div>
 
-                <div class="separator separator-dashed my-3"></div>
+                <div class="separator separator-dashed my-3"></div> -->
 
                 <div class="d-flex fw-semibold align-items-center">
                     <div class="bullet w-8px h-3px rounded-2 bg-primary me-3"></div>
 
                     <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Saya</div>
 
-                    <div class="text-gray-900 fw-bolder text-xxl-end">$7,660</div>
+                    <div class="text-gray-900 fw-bolder text-xxl-end"><span id="t_qb_me">memuat ...</span></div>
                 </div>
 
                 <div class="separator separator-dashed my-3"></div>
@@ -242,7 +242,7 @@
 
                     <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Publik</div>
 
-                    <div class="text-gray-900 fw-bolder text-xxl-end">$7,660</div>
+                    <div class="text-gray-900 fw-bolder text-xxl-end"><span id="t_qb_pub">memuat ...</span></div>
                 </div>
 
 
@@ -1328,7 +1328,7 @@
 
 <div class="row gx-5 gx-xl-10 mb-xl-10">
 
-<div class="col-md-6 col-xl-6 mb-xl-10">
+    <div class="col-md-6 col-xl-6 mb-xl-10">
         <div class="card h-md-100">
             <div class="card-header align-items-center border-0">
                 <h3 class="fw-bold text-gray-900 m-0">Informasi Terkini</h3>
@@ -1443,7 +1443,6 @@
         </div>
     </div>
 
-
     <div class="col-md-6 col-xl-3 mb-xl-10">
         <div class="card h-md-100">
             <div class="card-header align-items-center border-0">
@@ -1526,8 +1525,7 @@
                     &nbsp;
                     <div class="flex-grow-1 me-5">
                         <div class="text-gray-800 fw-semibold fs-2">
-                            12
-                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                            <span id="as_draft">memuat ...</span>
                         </div>
 
                         <div class="text-gray-700 fw-semibold fs-6">
@@ -1547,8 +1545,7 @@
                     &nbsp;
                     <div class="flex-grow-1 me-5">
                         <div class="text-gray-800 fw-semibold fs-2">
-                            12
-                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                            <span id="as_scheduled">memuat ...</span>
                         </div>
 
                         <div class="text-gray-700 fw-semibold fs-6">
@@ -1568,8 +1565,7 @@
                     &nbsp;
                     <div class="flex-grow-1 me-5">
                         <div class="text-gray-800 fw-semibold fs-2">
-                            12
-                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                            <span id="as_present">memuat ...</span>
                         </div>
 
                         <div class="text-gray-700 fw-semibold fs-6">
@@ -1589,8 +1585,7 @@
                     &nbsp;
                     <div class="flex-grow-1 me-5">
                         <div class="text-gray-800 fw-semibold fs-2">
-                            12
-                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                            <span id="as_done">memuat ...</span>
                         </div>
 
                         <div class="text-gray-700 fw-semibold fs-6">

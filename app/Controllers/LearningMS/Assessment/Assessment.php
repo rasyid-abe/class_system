@@ -490,71 +490,34 @@ class Assessment extends BaseController
     {
         $req = $this->request->getVar();
 
+        $date_now = date('Y-m-d H:i:s');
+        $school_id = userdata()['school_id'];
+        $teacher_id = userdata()['id_profile'];
+
         $select = '
-                    assessment_id,
-                    assessment_title,
-                    assessment_start,
-                    assessment_end,
-                    assessment_grade,
-                    assessment_subject_id,
-                    assessment_group,
-                    assessment_question_bank_src,
-                    assessment_question_bank_id,
-                    subject_name,
-                    question_bank_title,
-                    question_bank_standart_title,
-                    school_year_period,
-                ';
+            assessment_id,
+            assessment_title,
+            assessment_start,
+            assessment_end,
+            assessment_grade,
+            assessment_subject_id,
+            assessment_group,
+            assessment_question_bank_src,
+            assessment_question_bank_id,
+            subject_name,
+            question_bank_title,
+            question_bank_standart_title,
+            school_year_period
+        ';
 
         if ($req['page-ass'] == 1) {
-            $get = $this->assessment
-                ->select($select)
-                ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
-                ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
-                ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
-                ->join('master_school_year', 'school_year_id=assessment_school_year_id', 'left')
-                ->where('assessment_status', 1)
-                ->where('assessment_school_id', userdata()['school_id'])
-                ->where('assessment_teacher_id', userdata()['id_profile'])
-                ->orderBy('assessment_id', 'desc')
-                ->findAll();
+            $get = $this->assessment->data_draft($select, $school_id, $teacher_id);
         } else if ($req['page-ass'] == 2) {
-            $get = $this->assessment
-                ->select($select)
-                ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
-                ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
-                ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
-                ->join('master_school_year', 'school_year_id=assessment_school_year_id', 'left')
-                ->where('assessment_status', 2)
-                ->where('assessment_start >=', date('Y-m-d H:i:s'))
-                ->where('assessment_school_id', userdata()['school_id'])
-                ->where('assessment_teacher_id', userdata()['id_profile'])
-                ->findAll();
+            $get = $this->assessment->data_scheduled($select, $date_now, $school_id, $teacher_id);
         } else if ($req['page-ass'] == 3) {
-            $get = $this->assessment
-                ->select($select)
-                ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
-                ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
-                ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
-                ->join('master_school_year', 'school_year_id=assessment_school_year_id', 'left')
-                ->where('assessment_status', 2)
-                ->where('assessment_start <=', date('Y-m-d H:i:s'))
-                ->where('assessment_end >=', date('Y-m-d H:i:s'))
-                ->where('assessment_school_id', userdata()['school_id'])
-                ->where('assessment_teacher_id', userdata()['id_profile'])
-                ->findAll();
+            $get = $this->assessment->data_present($select, $date_now, $school_id, $teacher_id);
         } else if ($req['page-ass'] == 4) {
-            $get = $this->assessment
-                ->select($select)
-                ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
-                ->join('lms_question_bank', 'question_bank_id=assessment_question_bank_id', 'left')
-                ->join('lms_question_bank_standart', 'question_bank_standart_id=assessment_question_bank_id', 'left')
-                ->join('master_school_year', 'school_year_id=assessment_school_year_id', 'left')
-                ->where('assessment_status', 2)
-                ->where('assessment_end <=', date('Y-m-d H:i:s'))
-                ->where('assessment_school_id', userdata()['school_id'])
-                ->where('assessment_teacher_id', userdata()['id_profile'])
-                ->findAll();
+            $get = $this->assessment->data_done($select, $date_now, $school_id, $teacher_id);
         }
 
         $data = [];
@@ -569,7 +532,7 @@ class Assessment extends BaseController
             }
 
             $task_title = '';
-            if ($v['assessment_question_bank_src'] != 2) {
+            if ($v['assessment_question_bank_src'] == 1) {
                 $task_title = $v['question_bank_standart_title'];
             } else {
                 $task_title = $v['question_bank_title'];
