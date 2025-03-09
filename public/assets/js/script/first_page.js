@@ -76,7 +76,7 @@ function ajax_std_less(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -96,7 +96,7 @@ function ajax_add_less(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -113,7 +113,7 @@ function ajax_sch_less(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -130,7 +130,7 @@ function ajax_pub_less(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -146,7 +146,7 @@ function ajax_std_qb(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -162,7 +162,7 @@ function ajax_add_qb(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -179,7 +179,7 @@ function ajax_pub_qb(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -195,7 +195,7 @@ function ajax_std_less_s(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -212,7 +212,7 @@ function ajax_sch_less_s(type, param = null) {
     data: { type, param },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -223,15 +223,29 @@ function ajax_sch_less_s(type, param = null) {
   });
 }
 
+function ajax_dash_teacher() {
+  $.ajax({
+    url: base_url + "/dashboard/teacher/data-dashboard",
+    method: "post",
+    dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      gen_dash_teacher(e)
+      hide_loading()
+    },
+  });
+}
+
 $(document).ready(function () {
   if (url.includes("dashboard/teacher")) {
-    console.log('dashboard');
-    
+    ajax_dash_teacher()
   } else if (url.includes("teacher/lesson/standart")) {
     ajax_std_less(1);
   } else if (url.includes("teacher/lesson/additional")) {
     ajax_add_less(1);
-  } else if (url.includes("teacher/lesson/school") || url.includes("teacher/assessment/index-add") ||  url.includes("teacher/tasks/index-add")) {
+  } else if (url.includes("teacher/lesson/school") || url.includes("teacher/assessment/index-add") || url.includes("teacher/tasks/index-add")) {
     if (active_year == '') {
       Swal.fire({
         html: 'Tahun Ajaran harus di aktifkan',
@@ -295,6 +309,40 @@ $(document).ready(function () {
   }
 });
 
+function gen_dash_teacher(e) {
+  console.log(e);
+  
+  let my_duty = ''
+  $.each(e.my_duty, function (i, v) {
+    my_duty += `
+      <div class="timeline-item pb-5">
+        <div class="timeline-content m-0">
+          <span class="fs-8 fw-bolder text-primary text-uppercase">${v.student_group_name}</span>
+          <a href="#" class="fs-6 text-gray-800 fw-bold d-block text-hover-primary">${v.subject_name}</a>
+          <span class="fw-semibold text-gray-500">n / a</span>
+        </div>
+      </div>
+    `
+  })
+
+  $('#myduty').html(my_duty)
+  $('#t_qb_me').html(e.total_qb_me + ' Soal')
+  $('#t_qb_pub').html(e.total_qb_pub + ' Soal')
+  $('#dash_t_chap').html(e.total_less_chap)
+  $('#dash_t_subchap').html(e.total_less_subchap)
+  $('#dash_t_tqb').html(e.total_qb_title)
+  $('#dash_t_qb').html(e.total_qb_quest)
+  $('#dash_add_less').html(e.total_less_add_chap)
+  $('#dash_sch_less').html(e.total_less_sch_chap)
+  $('#dash_pub_less').html(e.total_less_pub_chap)
+  $('#dash_chp_shared').html(e.total_less_share_chap)
+  $('#dash_schp_shared').html(e.total_less_share_subchap)
+  $('#as_draft').html(e.as_draft)
+  $('#as_scheduled').html(e.as_scheduled)
+  $('#as_present').html(e.as_present)
+  $('#as_done').html(e.as_done)
+}
+
 function gen_head_qb_std(e) {
   $("#count_qbtitle").html(e.t_title);
   $("#count_qbquest").html(e.t_quest);
@@ -315,7 +363,7 @@ function gen_head_qb_std(e) {
 
 function gen_header_qbpub(e) {
   console.log(e);
-  
+
   let cls = "";
   let tt = 0;
   let tq = 0;

@@ -439,7 +439,7 @@ function edit_draft(id) {
 function view_edit(e) {
   get_religion(parseInt(e.assessment_religion))
   let task_title = ''
-  if (e.assessment_question_bank_src != 2) {
+  if (e.assessment_question_bank_src == 1) {
     task_title = e.question_bank_standart_title
   } else {
     task_title = e.question_bank_title

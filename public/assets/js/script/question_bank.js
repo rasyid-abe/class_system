@@ -42,7 +42,11 @@ function act_share_task(clear = null) {
       data: { idd, val, thc },
       method: "post",
       dataType: "json",
+      beforeSend: function () {
+        show_loading()
+      },
       success: function (e) {
+        hide_loading()
         al_swal("Pembatalan berhasil.", "success");
       },
     });
@@ -61,7 +65,11 @@ function act_share_task(clear = null) {
           data: { idd, val, thc },
           method: "post",
           dataType: "json",
+          beforeSend: function () {
+            show_loading()
+          },
           success: function (e) {
+            hide_loading()
             al_swal("Soal berhasil di bagikan.", "success");
           },
         });
@@ -131,9 +139,10 @@ function view_question(id, type = null) {
     data: { id, type },
     method: "post",
     dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
     success: function (e) {
-      console.log(e);
-      
       if (type == "shr") {
         modal_shared_task_view(e);
       } else {
@@ -141,6 +150,7 @@ function view_question(id, type = null) {
         generate_hint(e);
         generate_explain(e);
       }
+      hide_loading()
     },
   });
 }
@@ -152,10 +162,14 @@ function view_question_std(id) {
     data: { id },
     method: "post",
     dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
     success: function (e) {
       generate_task(e);
       generate_hint(e);
       generate_explain(e);
+      hide_loading()
     },
   });
 }
@@ -364,6 +378,9 @@ function show_form_edit(type, id, subj = null, grad = null, parent = null) {
       data: { subj, grad, parent },
       method: "post",
       dataType: "json",
+      beforeSend: function () {
+        show_loading()
+      },
       success: function (e) {
         let form = "";
         if (e.length > 0) {
@@ -400,6 +417,7 @@ function show_form_edit(type, id, subj = null, grad = null, parent = null) {
         $("#body_content_modal_quest").html(form);
 
         $("#modal_update_content_quest").modal("show");
+        hide_loading()
       },
     });
   } else {
@@ -408,8 +426,12 @@ function show_form_edit(type, id, subj = null, grad = null, parent = null) {
       data: { id, type:null},
       method: "post",
       dataType: "json",
+      beforeSend: function () {
+        show_loading()
+      },
       success: function (e) {
         show_edit_task(e, type, id);
+        hide_loading()
       },
     });
   }
@@ -1025,8 +1047,12 @@ function store_content_quest(type, id, val) {
     },
     method: "post",
     dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
     success: function (e) {
       location.reload();
+      hide_loading()
     },
   });
 }
@@ -1072,8 +1098,12 @@ function act_remove_quest(id, type = null, file = null) {
     },
     method: "post",
     dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
     success: function (e) {
       location.reload();
+      hide_loading()
     },
   });
 }

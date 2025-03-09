@@ -72,24 +72,9 @@ class AdditionalLesson extends BaseController
 
     public function first_page()
     {
-        $req = $this->request->getVar();
-
-        $total_subchap = $this->lesson_additional
-            ->select('count(*)')
-            ->where('lesson_additional_status < 9')
-            ->where('lesson_additional_school_id', userdata()['school_id'])
-            ->where('lesson_additional_teacher_id', userdata()['id_profile'])
-            ->where('lesson_additional_subchapter != ""')
-            ->groupBy('lesson_additional_chapter, lesson_additional_subchapter, lesson_additional_grade')
-            ->findAll();
-        $total_chapter = $this->lesson_additional
-            ->select('count(*)')
-            ->where('lesson_additional_status < 9')
-            ->where('lesson_additional_school_id', userdata()['school_id'])
-            ->where('lesson_additional_teacher_id', userdata()['id_profile'])
-            ->groupBy('lesson_additional_chapter')
-            ->findAll();
-
+        $total_chapter = $this->lesson_additional->my_chapter(userdata()['school_id'], userdata()['id_profile']);
+        $total_subchap = $this->lesson_additional->my_subchapter(userdata()['school_id'], userdata()['id_profile']);
+        
         $res = [
             't_chap' => count($total_chapter),
             't_subchap' => count($total_subchap),

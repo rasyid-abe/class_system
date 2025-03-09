@@ -57,16 +57,21 @@ function act_share_a(clear = null) {
         let idd = $('input[name=less_id]').val()
         let val = 0
         let thc = null
-        $('#modal_share_a').modal('hide')
-            $.ajax({
-                url: base_url + '/teacher/lesson/additional/share-topic',
-                data: { idd, val, thc },
-                method: 'post',
-                dataType: 'json',
-                success: function (e) {
-                    al_swal('Pembatalan berhasil.', 'success')
-                }
-            })
+        // $('#modal_share_a').modal('hide')
+        $.ajax({
+            url: base_url + '/teacher/lesson/additional/share-topic',
+            data: { idd, val, thc },
+            method: 'post',
+            dataType: 'json',
+            beforeSend: function () {
+                show_loading()
+            },
+            success: function (e) {
+                close_share_les()
+                al_swal('Pembatalan berhasil.', 'success')
+                hide_loading()
+            }
+        })
     } else {
         let val = $('.input_share_a:checked').val()
         let thc = $('#multiple-select-field-a').val()
@@ -83,8 +88,12 @@ function act_share_a(clear = null) {
                     data: { idd, val, thc },
                     method: 'post',
                     dataType: 'json',
+                    beforeSend: function () {
+                        show_loading()
+                    },
                     success: function (e) {
                         al_swal('Soal berhasil di bagikan.', 'success')
+                        hide_loading()
                     }
                 })
             }
@@ -140,6 +149,9 @@ $(document.body).on('click', '#btn_update_content', function () {
         },
         method: 'post',
         dataType: 'json',
+        beforeSend: function () {
+            show_loading()
+        },
         success: function (e) {
             let form = `
                     <input type="hidden" name="lesson_id" value="${id}" />
@@ -158,8 +170,9 @@ $(document.body).on('click', '#btn_update_content', function () {
                   toolbar: toolbarOptions,
                 },
                 theme: "snow", // or 'bubble'
-              });
-              $('#editor_content > .ql-editor').html(e.lesson_additional_content)
+            });
+            $('#editor_content > .ql-editor').html(e.lesson_additional_content)
+            hide_loading()
         }
     })
 
@@ -168,7 +181,7 @@ $(document.body).on('click', '#btn_update_content', function () {
 $(document.body).on('click', '#btn_update_video', function () {
     let id = $('#btn_update_video').data('id');
     let url = $('#btn_update_video').data('url');
-
+    
     let id_vid = youtube_parser(url);
     let vid_view = `<iframe width="620" height="315"
             src="https://www.youtube.com/embed/${id_vid}?controls=0">
@@ -570,6 +583,9 @@ function view_content_a(id, type = null) {
         },
         method: 'post',
         dataType: 'json',
+        beforeSend: function () {
+            show_loading()
+        },
         success: function (e) {
             if (type == 'shr') {
                 modal_view_shared(e)
@@ -579,6 +595,7 @@ function view_content_a(id, type = null) {
                 generate_view_attachment_a(e)
                 generate_view_task_a(e.tasks, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade)
             }
+            hide_loading()
         }
     })
 
@@ -609,6 +626,9 @@ function form_chapter_a(e, chap = null, subchap = null, id = null) {
             },
             method: 'post',
             dataType: 'json',
+            beforeSend: function () {
+                show_loading()
+            },
             success: function (res) {
                 let opt = '';
                 $.each(res, function (i, v) {
@@ -631,6 +651,7 @@ function form_chapter_a(e, chap = null, subchap = null, id = null) {
 
                 $('#head_content_modal').html('<h3 class="modal-title">Ubah Judul Topik</h3>')
                 $('#body_content_modal_a').html(form)
+                hide_loading()
             }
         })
     } else if (e == 3) {
@@ -740,6 +761,9 @@ function store_content_a(type, id, val) {
         },
         method: 'post',
         dataType: 'json',
+        beforeSend: function () {
+            show_loading()
+        },
         success: function (e) {
             if (type == 5) {
                 view_content_a(id)
@@ -755,6 +779,7 @@ function store_content_a(type, id, val) {
             } else {
                 location.reload()
             }
+            hide_loading()
         }
     })
 }
@@ -766,7 +791,10 @@ function download_attach(file) {
             file
         },
         method: 'post',
-        success: function (e) { }
+        beforeSend: function () {
+            show_loading()
+        },
+        success: function (e) {hide_loading()}
     })
 }
 
@@ -796,6 +824,9 @@ function act_remove_a(id, type, file) {
         },
         method: 'post',
         dataType: 'json',
+        beforeSend: function () {
+            show_loading()
+        },
         success: function (e) {
             if (type == 5) {
                 view_content_a(id)
@@ -820,6 +851,7 @@ function act_remove_a(id, type, file) {
             } else {
                 location.reload()
             }
+            hide_loading()
         }
     })
 }
@@ -847,6 +879,9 @@ $('.delete').on('click', function (e) {
                 }),
                 method: 'delete',
                 dataType: 'json',
+                beforeSend: function () {
+                    show_loading()
+                },
                 success: function (e) {
                     location.reload();
                     $.toast({
@@ -856,6 +891,7 @@ $('.delete').on('click', function (e) {
                         position: 'top-right',
                         icon: 'success'
                     })
+                    hide_loading()
                 }
             })
         }
@@ -872,9 +908,13 @@ $(document.body).on('click', '#view_quest_bank', function() {
         data: {subj, grad},
         method: 'post',
         dataType: 'json',
+        beforeSend: function () {
+            show_loading()
+        },
         success: function (e) {
             treeview_task(e, id)
             $('#modal_task_a').modal('show')
+            hide_loading()
         }
     })
     
@@ -979,8 +1019,12 @@ function view_tasks(type, id, act = null){
         data: {type, id},
         method: 'post',
         dataType: 'json',
+        beforeSend: function () {
+            show_loading()
+        },
         success: function (e) {
             generate_preview(e, act)
+            hide_loading()
         }
     })
     

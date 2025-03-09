@@ -56,7 +56,7 @@
               <div class="fs-6 d-flex justify-content-between mb-4">
               <span class="card-label fw-bold text-gray-900"><?= grade_label($val) ?></span>
                 <div class="d-flex fw-bold">
-                  <a href="<?= base_url('teacher/question-bank/additional/view-content/' . $v['subj_id'] . '/' . $v['grade'][$key]) ?>" class="badge badge-primary">Buat Penilaian</a>
+                  <a href="<?= base_url('teacher/question-bank/additional/view-content/' . $v['subj_id'] . '/' . $v['grade'][$key]) ?>" class="badge badge-primary">Lihat</a>
                 </div>
               </div>
             <?php endforeach ?>
