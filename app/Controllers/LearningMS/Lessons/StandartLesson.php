@@ -194,9 +194,9 @@ class StandartLesson extends BaseController
             ->where('lesson_standart_status < 9')
             ->first();
 
-        $tasks = json_decode($data['lesson_task']);
+        $task = json_decode($data['lesson_task']);
 
-        $data['tasks'] = $tasks ? (array)$tasks : [];
+        $data['task'] = $task ? (array)$task : [];
         $data['attach_arr'] = $data['lesson_attachment_path'] != '' ? array_values(json_decode($data['lesson_attachment_path'], true)) : [];
             
         echo json_encode($data);

@@ -2,12 +2,12 @@
 <?php $this->section('content'); ?>
 
 <style>
-    #tasks_upload::file-selector-button {
+    #task_upload::file-selector-button {
         background-color: #2884EF;
         color: white;
     }
 
-    #tasks_upload::file-selector-button:hover {
+    #task_upload::file-selector-button:hover {
         background-color: red;
         color: white;
     }
@@ -465,13 +465,13 @@
     </div>
 </div>
 
-<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_upload_tasks">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_upload_task">
     <div class="modal-dialog">
         <div class="modal-content" id="content_modal">
             <div class="modal-header">
                 <div id="head_content_modal_upl"></div>
             </div>
-            <form action="<?= base_url('/teacher/question-bank/additional/upload-tasks') ?>" method="post" enctype="multipart/form-data">
+            <form action="<?= base_url('/teacher/question-bank/additional/upload-task') ?>" method="post" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div id="body_content_modal_upl"></div>
                     <div class="mb-3">
@@ -486,8 +486,8 @@
                         </p>
                         <br>
                         <br>
-                        <label for="tasks_upload" class="form-label">Pilih File Excel</label>
-                        <input class="form-control form-control-sm" id="tasks_upload" name="tasks_upload" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                        <label for="task_upload" class="form-label">Pilih File Excel</label>
+                        <input class="form-control form-control-sm" id="task_upload" name="task_upload" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                     </div>
                 </div>
 

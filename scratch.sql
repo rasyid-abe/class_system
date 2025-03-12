@@ -56,3 +56,5 @@ CREATE TABLE `account_access` (
 ALTER TABLE `lms_assessment` ADD `assessment_religion` TINYINT(2) NOT NULL AFTER `assessment_duration`;
 
 ALTER TABLE `lms_assessment_result` ADD `assessment_jresult_created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `assessment_result_submit_message`;
+
+ALTER TABLE `lms_task` ADD `task_religion` TINYINT NOT NULL DEFAULT '0' AFTER `task_is_autosubmit`; 

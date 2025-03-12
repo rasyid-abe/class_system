@@ -372,11 +372,11 @@ class AdditionalQuestionBank extends BaseController
         echo json_encode($question);
     }
 
-    public function upload_tasks()
+    public function upload_task()
     {
         $req = $this->request->getVar();
 
-        $file = $_FILES['tasks_upload']['tmp_name'];
+        $file = $_FILES['task_upload']['tmp_name'];
 
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file);
         $spreadsheet = $reader->load($file);
@@ -384,7 +384,7 @@ class AdditionalQuestionBank extends BaseController
         $success = true;
 
         $total_sheet = $spreadsheet->getSheetCount();
-        $all_tasks = [];
+        $all_task = [];
         for ($i=0; $i < $total_sheet; $i++) { 
             $sheetData = $spreadsheet->setActiveSheetIndex($i)->toArray();
             $xlsObj = $spreadsheet->setActiveSheetIndex($i);

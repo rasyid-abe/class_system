@@ -49,7 +49,7 @@ class StudentInGroupModel extends Model
                 AND system_student_in_group.student_in_group_school_id = $school_id
                 $whr_religi
         ";
-     
+
         return $this->db->query($sql)->getResultArray();
     }
 

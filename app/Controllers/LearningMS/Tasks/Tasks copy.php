@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\LearningMS\Tasks;
+namespace App\Controllers\LearningMS\task;
 
 use App\Controllers\BaseController;
 use App\Models\Systems\TeacherAssignModel;
@@ -9,9 +9,9 @@ use App\Models\Masters\SubjectModel;
 use App\Models\Lessons\StandartLessonModel;
 use App\Models\Lessons\AdditionalLessonModel;
 use App\Models\Lessons\PublicLessonModel;
-use App\Models\Tasks\TasksModel;
+use App\Models\task\taskModel;
 
-class Tasks extends BaseController
+class task extends BaseController
 {
     protected $title;
     protected $page;
@@ -21,26 +21,26 @@ class Tasks extends BaseController
     protected $lesson_standart;
     protected $lesson_additional;
     protected $lesson_public;
-    protected $tasks;
+    protected $task;
 
     public function __construct()
     {
         $this->title = "Tugas";
-        $this->page = "Tasks";
+        $this->page = "task";
         $this->teacher_subject = new TeacherAssignModel();
         $this->teacher = new TeacherModel();
         $this->subject = new SubjectModel();
         $this->lesson_standart = new StandartLessonModel();
         $this->lesson_additional = new AdditionalLessonModel();
         $this->lesson_public = new PublicLessonModel();
-        $this->tasks = new TasksModel();
+        $this->task = new taskModel();
     }
 
     public function index()
     {
         $data["title"] = 'Tambah Tugas';
         $data["page"] = $this->page;
-        $data["sidebar"] = 'Add_Tasks';
+        $data["sidebar"] = 'Add_task';
         $data["breadcrumb"] = [
             '#' => $this->title,
             '##' => 'Tambah Tugas',
@@ -68,7 +68,7 @@ class Tasks extends BaseController
 
         $data['my_duty'] = $subs;
 
-        return view("learningms/tasks/index", $data);
+        return view("learningms/task/index", $data);
     }
 
     public function grab_data_lesson()
@@ -188,7 +188,7 @@ class Tasks extends BaseController
                         lesson_additional_content_path as lesson_standart_content_path,
                         lesson_additional_video_path as lesson_standart_video_path,
                         lesson_additional_attachment_path as lesson_standart_attachment_path,
-                        lesson_additional_tasks as lesson_standart_tasks,
+                        lesson_additional_task as lesson_standart_tasks,
                     ')
                     ->where('lesson_additional_id', $req['id'])
                     ->where('lesson_additional_status < 9')
@@ -196,8 +196,8 @@ class Tasks extends BaseController
 
             }
 
-            $tasks = json_decode($data['lesson_standart_tasks']);
-            $data['tasks'] = $tasks ? (array)$tasks : [];
+            $task = json_decode($data['lesson_standart_tasks']);
+            $data['task'] = $task ? (array)$task : [];
             $data['attach_arr'] = $data['lesson_standart_attachment_path'] != '' ? array_values(json_decode($data['lesson_standart_attachment_path'], true)) : [];
 
             $result = $data;
@@ -222,20 +222,20 @@ class Tasks extends BaseController
             $lsrc = null;
             if ($r[11] == 2) {
                 $lsrc = $this->lesson_standart
-                    ->select('lesson_standart_tasks as tasks')
+                    ->select('lesson_standart_tasks as task')
                     ->where('lesson_standart_id', $r[8])
                     ->where('lesson_standart_status < 9')
                     ->first();
             } else {
                 $lsrc = $this->lesson_additional
-                    ->select('lesson_additional_tasks as tasks')
+                    ->select('lesson_additional_task as task')
                     ->where('lesson_additional_id', $r[8])
                     ->where('lesson_additional_status < 9')
                     ->first();
             }
 
             if ($req['id'] > 0) {
-                $upd = $this->tasks
+                $upd = $this->task
                     ->where('task_id', $req['id'])
                     ->set('task_title', $r[0])
                     ->set('task_start', date('Y-m-d H:i:s', strtotime($r[4].':00')))
@@ -266,7 +266,7 @@ class Tasks extends BaseController
                     'task_lesson_id' => $r[8],
                     'task_lesson_name' => $r[9],
                     'task_lesson_src' => $r[11],
-                    'task_task_ids' => $lsrc['tasks'],
+                    'task_task_ids' => $lsrc['task'],
                     'task_start' => date('Y-m-d H:i:s', strtotime($r[4].':00')),
                     'task_end' => date('Y-m-d H:i:s', strtotime($r[5].':00')),
                     'task_is_autosubmit' => $r[6],
@@ -274,7 +274,7 @@ class Tasks extends BaseController
                     'task_status' => $r[12],
                 ];
     
-                $ins = $this->tasks->insert($data);
+                $ins = $this->task->insert($data);
                 $res = [
                     'typ' => $req['type'],
                     'sts' => $ins,
@@ -289,16 +289,16 @@ class Tasks extends BaseController
             $i = 0;
             try {
                 foreach ($req['id'] as $k => $v) {
-                    $this->tasks
+                    $this->task
                         ->where('task_id', $v)
                         ->set('task_status', $req['param'])
                         ->update();
                     $i++;
                 }
-                $this->tasks->db->transCommit();
+                $this->task->db->transCommit();
             } catch (\Throwable $th) {
                 $success = false;
-                $this->tasks->db->transRollback();
+                $this->task->db->transRollback();
             }
 
             $msg = 'hapus';
@@ -317,13 +317,13 @@ class Tasks extends BaseController
             echo json_encode($res);
 
         } else if ($req['type'] == 3) {
-            $tasks = [];
-            $tasks['std'] = $req['param'][0];
-            $tasks['me'] = $req['param'][1];
-            $tasks['pub'] = $req['param'][2];
+            $task = [];
+            $task['std'] = $req['param'][0];
+            $task['me'] = $req['param'][1];
+            $task['pub'] = $req['param'][2];
 
-            $upd = $this->tasks
-                ->set('task_task_ids', json_encode($tasks))
+            $upd = $this->task
+                ->set('task_task_ids', json_encode($task))
                 ->set('task_updated_by', userdata()['user_id'])
                 ->where('task_id', $req['id'])
                 ->update();
@@ -342,74 +342,74 @@ class Tasks extends BaseController
     {
         $data["title"] = 'Draft';
         $data["page"] = $this->page;
-        $data["sidebar"] = 'Draft_Tasks';
+        $data["sidebar"] = 'Draft_task';
         $data["breadcrumb"] = [
             '#' => $this->title,
             '##' => 'Draft',
         ];
 
-        return view("learningms/tasks/draft", $data);
+        return view("learningms/task/draft", $data);
     }
 
     public function index_scheduled()
     {
         $data["title"] = 'Terjadwal';
         $data["page"] = $this->page;
-        $data["sidebar"] = 'Scheduled_Tasks';
+        $data["sidebar"] = 'Scheduled_task';
         $data["breadcrumb"] = [
             '#' => $this->title,
             '##' => 'Terjadwal',
         ];
 
-        return view("learningms/tasks/scheduled", $data);
+        return view("learningms/task/scheduled", $data);
     }
 
     public function index_present()
     {
         $data["title"] = 'Saat Ini';
         $data["page"] = $this->page;
-        $data["sidebar"] = 'Present_Tasks';
+        $data["sidebar"] = 'Present_task';
         $data["breadcrumb"] = [
             '#' => $this->title,
             '##' => 'Saat Ini',
         ];
 
-        return view("learningms/tasks/present", $data);
+        return view("learningms/task/present", $data);
     }
 
     public function index_done()
     {
         $data["title"] = 'Selesai';
         $data["page"] = $this->page;
-        $data["sidebar"] = 'Done_Tasks';
+        $data["sidebar"] = 'Done_task';
         $data["breadcrumb"] = [
             '#' => $this->title,
             '##' => 'Selesai',
         ];
 
-        return view("learningms/tasks/done", $data);
+        return view("learningms/task/done", $data);
     }
 
-    public function list_tasks()
+    public function list_task()
     {
         $req = $this->request->getVar();
 
         if ($req['page-task'] == 1) {
-            $get = $this->tasks
+            $get = $this->task
                 ->where('task_status', 1)
                 ->where('task_school_id', userdata()['school_id'])
                 ->where('task_teacher_id', userdata()['id_profile'])
                 ->orderBy('task_id', 'desc')
                 ->findAll();
         } else if ($req['page-task'] == 2) {
-            $get = $this->tasks
+            $get = $this->task
                 ->where('task_status', 2)
                 ->where('task_start >=', date('Y-m-d H:i:s'))
                 ->where('task_school_id', userdata()['school_id'])
                 ->where('task_teacher_id', userdata()['id_profile'])
                 ->findAll();
         } else if ($req['page-task'] == 3) {
-            $get = $this->tasks
+            $get = $this->task
                 ->where('task_status', 2)
                 ->where('task_start <=', date('Y-m-d H:i:s'))
                 ->where('task_end >=', date('Y-m-d H:i:s'))
@@ -417,7 +417,7 @@ class Tasks extends BaseController
                 ->where('task_teacher_id', userdata()['id_profile'])
                 ->findAll();
         } else if ($req['page-task'] == 4) {
-                $get = $this->tasks
+                $get = $this->task
                 ->where('task_status', 2)
                 ->where('task_end <=', date('Y-m-d H:i:s'))
                 ->where('task_school_id', userdata()['school_id'])
@@ -470,7 +470,7 @@ class Tasks extends BaseController
                     lesson_standart_content_path as lesson_additional_content_path,
                     lesson_standart_video_path as lesson_additional_video_path,
                     lesson_standart_attachment_path as lesson_additional_attachment_path,
-                    lesson_standart_tasks as lesson_additional_tasks,
+                    lesson_standart_tasks as lesson_additional_task,
                 ')
                 ->where('lesson_standart_id', $req['id'])
                 ->first();
@@ -480,7 +480,7 @@ class Tasks extends BaseController
                 ->first();
         }
 
-        $task = $this->tasks->select('task_task_ids')->where('task_id', $req['task_id'])->first();
+        $task = $this->task->select('task_task_ids')->where('task_id', $req['task_id'])->first();
 
         $res = [
             'lesson' => $data,
@@ -493,7 +493,7 @@ class Tasks extends BaseController
     public function get_edit() 
     {
         $id = $this->request->getVar('id');
-        $data = $this->tasks->where('task_id', $id)->first();
+        $data = $this->task->where('task_id', $id)->first();
         echo json_encode($data);
     }
 }  

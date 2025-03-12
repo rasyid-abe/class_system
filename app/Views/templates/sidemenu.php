@@ -232,8 +232,8 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/teacher/tasks/index-add') ?>"
-                                class="<?= $sidebar != 'Add_Tasks' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-6 fw-bold">Tambah</a>
+                            <a href="<?= base_url('/teacher/task/index-add') ?>"
+                                class="<?= $sidebar != 'Add_Task' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-6 fw-bold">Tambah</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -243,8 +243,8 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/teacher/tasks/index-draft') ?>"
-                                class="<?= $sidebar != 'Draft_Tasks' ? 'text-gray-800' : 'fw-bolder text-warning' ?> text-hover-warning fs-6 fw-bold">Draft</a>
+                            <a href="<?= base_url('/teacher/task/index-draft') ?>"
+                                class="<?= $sidebar != 'Draft_Task' ? 'text-gray-800' : 'fw-bolder text-warning' ?> text-hover-warning fs-6 fw-bold">Draft</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -254,8 +254,8 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/teacher/tasks/index-scheduled') ?>"
-                                class="<?= $sidebar != 'Scheduled_Tasks' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Terjadwal</a>
+                            <a href="<?= base_url('/teacher/task/index-scheduled') ?>"
+                                class="<?= $sidebar != 'Scheduled_Task' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Terjadwal</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -265,8 +265,8 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/teacher/tasks/index-present') ?>"
-                                class="<?= $sidebar != 'Present_Tasks' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Saat Ini</a>
+                            <a href="<?= base_url('/teacher/task/index-present') ?>"
+                                class="<?= $sidebar != 'Present_Task' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Saat Ini</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -276,8 +276,8 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/teacher/tasks/index-done') ?>"
-                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Selesai</a>
+                            <a href="<?= base_url('/teacher/task/index-done') ?>"
+                                class="<?= $sidebar != 'Done_Task' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Selesai</a>
                         </div>
                     </div>
                 </div>
@@ -327,10 +327,17 @@
                             <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div>
                         </div>
                     </div>
+                    <?php
+                        $loginname = userdata()['name'];
+                        $nisn = '<badge class="badge badge-info">NISN : ' . userdata()['student_nisn'] . '</badge>';
+                    ?>
                     <h3 class="fw-semibold text-gray-800 text-center lh-lg">
-                        Nama Lengkap, S.Pd
+                    <?= $loginname ?>
                     </h3>
-                    <div class="text-gray-500 fw-semibold text-center lh-lg">Users from all channels</div>
+                    <div class="text-gray-500 fw-semibold text-center lh-lg">
+                        <?= $nisn ?>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -415,8 +422,8 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/student/tasks/present') ?>"
-                                class="<?= $sidebar != 'Present_Tasks' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Aktif</a>
+                            <a href="<?= base_url('/student/task/present') ?>"
+                                class="<?= $sidebar != 'Present_Task' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Aktif</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -426,8 +433,8 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/student/tasks/missed') ?>"
-                                class="<?= $sidebar != 'Missed_Tasks' ? 'text-gray-800' : 'fw-bolder text-daner' ?> text-hover-danger fs-6 fw-bold">Terlewat</a>
+                            <a href="<?= base_url('/student/task/missed') ?>"
+                                class="<?= $sidebar != 'Missed_Task' ? 'text-gray-800' : 'fw-bolder text-daner' ?> text-hover-danger fs-6 fw-bold">Terlewat</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -437,8 +444,8 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column">
-                            <a href="<?= base_url('/student/tasks/done') ?>"
-                                class="<?= $sidebar != 'Done_Tasks' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Selesai</a>
+                            <a href="<?= base_url('/student/task/done') ?>"
+                                class="<?= $sidebar != 'Done_Task' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Selesai</a>
                         </div>
                     </div>
                 </div>

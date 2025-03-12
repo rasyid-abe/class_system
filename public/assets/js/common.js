@@ -15,7 +15,7 @@ function formatBytes(bytes, decimals = 2) {
 }
 
 function youtube_parser(url) {
-    console.log(url);
+    // console.log(url);
     if (url != undefined) {
         var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
         var match = url.match(regExp);

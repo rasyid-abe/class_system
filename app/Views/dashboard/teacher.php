@@ -1685,8 +1685,7 @@
                     &nbsp;
                     <div class="flex-grow-1 me-5">
                         <div class="text-gray-800 fw-semibold fs-2">
-                            12
-                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                            <span id="tk_draft">memuat ...</span>
                         </div>
 
                         <div class="text-gray-700 fw-semibold fs-6">
@@ -1706,8 +1705,7 @@
                     &nbsp;
                     <div class="flex-grow-1 me-5">
                         <div class="text-gray-800 fw-semibold fs-2">
-                            12
-                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                            <span id="tk_scheduled">memuat ...</span>
                         </div>
 
                         <div class="text-gray-700 fw-semibold fs-6">
@@ -1727,8 +1725,7 @@
                     &nbsp;
                     <div class="flex-grow-1 me-5">
                         <div class="text-gray-800 fw-semibold fs-2">
-                            12
-                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                            <span id="tk_present">memuat ...</span>
                         </div>
 
                         <div class="text-gray-700 fw-semibold fs-6">
@@ -1748,8 +1745,7 @@
                     &nbsp;
                     <div class="flex-grow-1 me-5">
                         <div class="text-gray-800 fw-semibold fs-2">
-                            12
-                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                            <span id="tk_done">memuat ...</span>
                         </div>
 
                         <div class="text-gray-700 fw-semibold fs-6">

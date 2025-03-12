@@ -528,7 +528,7 @@ $(document.body).on('click', '.ltv', function(e) {
 
     $('#ltv'+idd).addClass('active')
 
-    view_tasks(type, id, 'ltv')
+    view_task(type, id, 'ltv')
 
     
 })
@@ -593,7 +593,7 @@ function view_content_a(id, type = null) {
                 generate_view_lesson_a(e)
                 generate_view_video_a(e)
                 generate_view_attachment_a(e)
-                generate_view_task_a(e.tasks, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade)
+                generate_view_task_a(e.task, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade)
             }
             hide_loading()
         }
@@ -933,7 +933,7 @@ function treeview_task(e, id) {
                 child += `
                 <div class="form-check my-2">
                     <input class="form-check-input" type="checkbox" name="task_${i1}" value="${value.id}" />
-                    <label class="form-check-label" onclick="view_tasks(${i1}, ${value.id})">
+                    <label class="form-check-label" onclick="view_task(${i1}, ${value.id})">
                         Soal ${ii}
                     </label>
                 </div>
@@ -1010,7 +1010,7 @@ $(document.body).on('click', '.parent2', function() {
     }
 })
 
-function view_tasks(type, id, act = null){
+function view_task(type, id, act = null){
     let l_url = level == 11 ? 'teacher' : 'student'
     console.log(l_url);
     
@@ -1080,7 +1080,7 @@ function generate_preview(e, act){
     }
 }
 
-function act_tasks_a(){
+function act_task_a(){
     let std_task = []
     $('input[name="task_1"]:checked').each(function() {
         std_task.push(this.value)

@@ -281,9 +281,9 @@ class AdditionalLesson extends BaseController
                 ->where('lesson_additional_status < 9')
                 ->first();
     
-            $tasks = json_decode($data['lesson_additional_tasks']);
+            $task = json_decode($data['lesson_additional_task']);
             
-            $data['tasks'] = $tasks ? (array)$tasks : [];
+            $data['task'] = $task ? (array)$task : [];
             $data['attach_arr'] = $data['lesson_additional_attachment_path'] != '' ? array_values(json_decode($data['lesson_additional_attachment_path'], true)) : [];
         }
  
@@ -358,13 +358,13 @@ class AdditionalLesson extends BaseController
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
         } elseif ($req['type'] == 7) {
-            $tasks = [];
-            $tasks['std'] = $req['val'][0];
-            $tasks['me'] = $req['val'][1];
-            $tasks['pub'] = $req['val'][2];
+            $task = [];
+            $task['std'] = $req['val'][0];
+            $task['me'] = $req['val'][1];
+            $task['pub'] = $req['val'][2];
 
             $update = $this->lesson_additional
-                ->set('lesson_additional_tasks', json_encode($tasks))
+                ->set('lesson_additional_task', json_encode($task))
                 ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
@@ -541,7 +541,7 @@ class AdditionalLesson extends BaseController
         } elseif ($req['type'] == 9) {
             $update = $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
-                ->set('lesson_additional_tasks', null)
+                ->set('lesson_additional_task', null)
                 ->update();
         }
 

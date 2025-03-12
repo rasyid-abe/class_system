@@ -245,7 +245,7 @@ $(document).ready(function () {
     ajax_std_less(1);
   } else if (url.includes("teacher/lesson/additional")) {
     ajax_add_less(1);
-  } else if (url.includes("teacher/lesson/school") || url.includes("teacher/assessment/index-add") || url.includes("teacher/tasks/index-add")) {
+  } else if (url.includes("teacher/lesson/school") || url.includes("teacher/assessment/index-add") || url.includes("teacher/task/index-add")) {
     if (active_year == '') {
       Swal.fire({
         html: 'Tahun Ajaran harus di aktifkan',
@@ -341,6 +341,10 @@ function gen_dash_teacher(e) {
   $('#as_scheduled').html(e.as_scheduled)
   $('#as_present').html(e.as_present)
   $('#as_done').html(e.as_done)
+  $('#tk_draft').html(e.tk_draft)
+  $('#tk_scheduled').html(e.tk_scheduled)
+  $('#tk_present').html(e.tk_present)
+  $('#tk_done').html(e.tk_done)
 }
 
 function gen_head_qb_std(e) {

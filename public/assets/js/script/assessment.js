@@ -56,7 +56,7 @@ function preview_qb(e, subj, subjname, grad, gradname) {
           let cch = "";
 
           $.each(value, function (a, b) {
-            cch += `<a href="#" onclick="view_tasks(${i1}, ${b})" class="m-1 btn btn-icon btn-sm btn-outline btn-outline-primary">${chi}</a>`;
+            cch += `<a href="#" onclick="view_task(${i1}, ${b})" class="m-1 btn btn-icon btn-sm btn-outline btn-outline-primary">${chi}</a>`;
             chi++;
           });
 
@@ -76,7 +76,7 @@ function preview_qb(e, subj, subjname, grad, gradname) {
 
         ch1 += `
           <div class="form-check my-2 form-switch form-check-custom form-check-solid" style="margin-left: 10px">
-            <input class="form-check-input h-20px w-30px" type="radio" name="task_ass_check" data-tasksrc=${v.src} data-taskname="${val.title}" value="${val.id}" />
+            <input class="form-check-input h-20px w-30px" type="radio" name="task_ass_check" data-taskrc=${v.src} data-taskname="${val.title}" value="${val.id}" />
             <label class="form-check-label head22" data-source="${i1}${i2}">
               ${val.title}
             </label>
@@ -127,7 +127,7 @@ $(document.body).on("click", ".head22", function () {
 function set_task_ass() {
   let task_ass = $("input[name=task_ass_check]:checked").val();
   let task_name = $("input[name=task_ass_check]:checked").data("taskname");
-  let task_src = $("input[name=task_ass_check]:checked").data("tasksrc");
+  let task_src = $("input[name=task_ass_check]:checked").data("taskrc");
   let subj_ass = $("#idass_subj").data("subj");
   let subj_name = $("#idass_subj").data("subjname");
   let grad_ass = $("#idass_grad").data("grad");
@@ -143,7 +143,7 @@ function set_task_ass() {
     $("input[name=schoolyearid]").val(active_year_id);
     $("input[name=selected_task]").val(task_name).attr("readonly", true);
     $("input[name=taskid]").val(task_ass);
-    $("input[name=tasksrc]").val(task_src);
+    $("input[name=taskrc]").val(task_src);
     $("input[name=selected_subj]")
       .val(subj_name + " - " + grad_name)
       .attr("readonly", true);
@@ -219,8 +219,11 @@ function clear_form_assessment() {
 
 function hide_modal() {
   clear_form_assessment()
+  clear_form_task()
 
-  $("#modal_tasks_ch").modal("hide");
+  $('#treeview_task__').html('')
+  $("#task_prev_less").modal("hide");
+  $("#modal_task_ch").modal("hide");
   $("#modal_assessment").modal("hide");
   $("#task_prev_ass").modal("hide");
 }
@@ -319,7 +322,7 @@ function save_assessment(status = null, save_type = null) {
   let task_name = $("input[name=selected_task]").val();
   let subj_name = $("input[name=selected_subj]").val();
   let task = $("input[name=taskid]").val();
-  let task_src = $("input[name=tasksrc]").val();
+  let task_src = $("input[name=taskrc]").val();
   let subj = $("input[name=subjid]").val();
   let grad = $("input[name=gradid]").val();
   let title = $("input[name=title]").val();
@@ -449,7 +452,7 @@ function view_edit(e) {
   $("input[name=schoolyearid]").val(active_year_id);
   $("input[name=assessment_id]").val(e.assessment_id);
   $("input[name=taskid]").val(e.assessment_question_bank_id);
-  $("input[name=tasksrc]").val(e.assessment_question_bank_src);
+  $("input[name=taskrc]").val(e.assessment_question_bank_src);
   $("input[name=selected_task]").val(task_title);
   $("input[name=selected_subj]").val(e.subject_name + ' - Kelas ' + e.assessment_grade);
   $("input[name=subjid]").val(e.assessment_subject_id);

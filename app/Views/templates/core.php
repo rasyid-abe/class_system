@@ -269,6 +269,36 @@
 			</div>
 		</div>
 	</div>
+	
+	<div class="modal bg-body fade task_modal_act" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="task_modal_question">
+		<div class="modal-dialog modal-fullscreen">
+			<div class="modal-content shadow-none">
+				<div class="modal-header">
+					<div class="modal-title">
+						<h5 id="mdltitle_tsk"></h5>
+						<badge id="sbtl_tsk" class="badge badge-info mt-2"></badge>
+					</div>
+
+					<div class="buttonn">
+						<span class="fw-bold mx-5 fs-3"><span id="left_time_task" class="hide"></span></span>
+						<button type="button" class="btn btn-primary" onclick="alert_submit_task();">Submit</button>
+					</div>
+				</div>
+
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-3" style="overflow-y: scroll; max-height:690px;">
+							<div class="list_assact" id="list_assact"></div>
+						</div>
+						<div class="col-sm-9">
+							<div id="actass_question"></div>
+							<div id="actass_option"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<input type="hidden" id="base" value="<?php echo base_url(); ?>">
 	<div class="modal fade" id="active_tp" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -938,7 +968,7 @@
 													<!--end::Code-->
 													<!--begin::Title-->
 													<a href="#" class="text-gray-800 text-hover-primary fw-bold">Mail
-														tasks</a>
+														task</a>
 													<!--end::Title-->
 												</div>
 												<!--end::Section-->
@@ -1566,7 +1596,7 @@
 	<script src="<?= base_url() ?>assets/js/script/question_bank.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/assessment.js"></script>
 	<script src="<?= base_url() ?>assets/js/script/first_page.js"></script>
-	<script src="<?= base_url() ?>assets/js/script/tasks.js"></script>
+	<script src="<?= base_url() ?>assets/js/script/task.js"></script>
 	<script src="<?= base_url() ?>assets/js/form.repeater.js"></script>
 
 	<?php if (session()->getFlashdata('msg')): ?>
