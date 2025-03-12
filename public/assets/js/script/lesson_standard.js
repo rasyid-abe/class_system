@@ -234,7 +234,7 @@ function view_content_s(id) {
             generate_view_lesson_s(e)
             generate_view_video_s(e)
             generate_view_attachment_s(e)
-            generate_view_task_s(e.tasks, e.lesson_id, e.lesson_subject_id, e.lesson_grade)
+            generate_view_task_s(e.task, e.lesson_id, e.lesson_subject_id, e.lesson_grade)
             hide_loading()
         }
     })

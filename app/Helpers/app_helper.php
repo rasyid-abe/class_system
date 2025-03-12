@@ -30,6 +30,7 @@ function userdata()
             ps.student_id id_profile,
             CONCAT(ps.student_first_name, ' ', ps.student_last_name) name,
             ps.student_image image,
+            ps.student_nisn,
             ar.role_name
         ";
         $join = "LEFT JOIN profile_student ps ON au.user_id = ps.student_user_id";

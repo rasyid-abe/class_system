@@ -51,7 +51,7 @@ class SchoolLessonModel extends Model
                 lla.lesson_additional_content_path,
                 lla.lesson_additional_video_path,
                 lla.lesson_additional_attachment_path,
-                lla.lesson_additional_tasks,
+                lla.lesson_additional_task,
                 'additional' as source_lesson
             from lms_lesson_school lls
             left join lms_lesson_additional lla on lla.lesson_additional_id = lls.lesson_school_lesson_additional_id 

@@ -1,266 +1,401 @@
 <?php $this->extend('templates/core') ?>
 <?php $this->section('content'); ?>
+<div class="row gx-5 gx-xl-10 mb-xl-10">
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex align-items-center">
-                        <h4 class="card-title">Add Row</h4>
-                        <button class="btn btn-primary btn-round ml-auto" data-toggle="modal"
-                            data-target="#addRowModal">
-                            <i class="fa fa-plus"></i>
-                            Add Row
-                        </button>
+    <div class="col-md-6 col-xl-4 mb-xl-10">
+        <div class="card h-md-100">
+            <div class="card-header align-items-center border-0">
+                <h3 class="fw-bold text-gray-900 m-0">Ringkasan Penilaian</h3>
+
+                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+
+                    <i class="bi bi-three-dots fs-1"></i>
+                </button>
+
+                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px" data-kt-menu="true">
+                    <div class="menu-item px-3">
+                        <div class="menu-content fs-6 text-gray-900 fw-bold px-3 py-4">Quick Actions</div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <!-- Modal -->
-                    <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header no-bd">
-                                    <h5 class="modal-title">
-                                        <span class="fw-mediumbold">
-                                            New</span>
-                                        <span class="fw-light">
-                                            Row
-                                        </span>
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <p class="small">Create a new row using this form, make sure you fill them all</p>
-                                    <form>
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="form-group form-group-default">
-                                                    <label>Name</label>
-                                                    <input id="addName" type="text" class="form-control"
-                                                        placeholder="fill name">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 pr-0">
-                                                <div class="form-group form-group-default">
-                                                    <label>Position</label>
-                                                    <input id="addPosition" type="text" class="form-control"
-                                                        placeholder="fill position">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group form-group-default">
-                                                    <label>Office</label>
-                                                    <input id="addOffice" type="text" class="form-control"
-                                                        placeholder="fill office">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer no-bd">
-                                    <button type="button" id="addRowButton" class="btn btn-primary">Add</button>
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                </div>
+
+                    <div class="separator mb-3 opacity-75"></div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Ticket
+                        </a>
+                    </div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Customer
+                        </a>
+                    </div>
+
+                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+                        <a href="#" class="menu-link px-3">
+                            <span class="menu-title">New Group</span>
+                            <span class="menu-arrow"></span>
+                        </a>
+
+                        <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Admin Group
+                                </a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Staff Group
+                                </a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Member Group
+                                </a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="table-responsive">
-                        <table id="add-row" class="display table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Position</th>
-                                    <th>Office</th>
-                                    <th style="width: 10%">Action</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Position</th>
-                                    <th>Office</th>
-                                    <th>Action</th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                <tr>
-                                    <td>Tiger Nixon</td>
-                                    <td>System Architect</td>
-                                    <td>Edinburgh</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Garrett Winters</td>
-                                    <td>Accountant</td>
-                                    <td>Tokyo</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Ashton Cox</td>
-                                    <td>Junior Technical Author</td>
-                                    <td>San Francisco</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Cedric Kelly</td>
-                                    <td>Senior Javascript Developer</td>
-                                    <td>Edinburgh</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Airi Satou</td>
-                                    <td>Accountant</td>
-                                    <td>Tokyo</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Brielle Williamson</td>
-                                    <td>Integration Specialist</td>
-                                    <td>New York</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Herrod Chandler</td>
-                                    <td>Sales Assistant</td>
-                                    <td>San Francisco</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Rhona Davidson</td>
-                                    <td>Integration Specialist</td>
-                                    <td>Tokyo</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Colleen Hurst</td>
-                                    <td>Javascript Developer</td>
-                                    <td>San Francisco</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Sonya Frost</td>
-                                    <td>Software Engineer</td>
-                                    <td>Edinburgh</td>
-                                    <td>
-                                        <div class="form-button-action">
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                            <button type="button" data-toggle="tooltip" title=""
-                                                class="btn btn-link btn-danger" data-original-title="Remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Contact
+                        </a>
+                    </div>
+
+                    <div class="separator mt-3 opacity-75"></div>
+
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3 py-3">
+                            <a class="btn btn-primary  btn-sm px-4" href="#">
+                                Generate Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-body pt-2">
+                <div class="d-flex align-items-center mb-6">
+                    <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
+                    <i class="bi bi-file-earmark-spreadsheet-fill text-success fs-3x"></i>
+                    &nbsp;
+                    <div class="flex-grow-1 me-5">
+                        <div class="text-gray-800 fw-semibold fs-2">
+                            <span id="as_scheduled">memuat ...</span>
+                        </div>
+
+                        <div class="text-gray-700 fw-semibold fs-6">
+                            Terjadwal</div>
+
+                        <!-- <div class="text-gray-500 fw-semibold fs-7">
+                            Lead by
+                            <a href="#" class="text-primary opacity-75-hover fw-semibold">Peter Marcus</a>
+                        </div> -->
+                    </div>
+
+                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                </div>
+                <div class="d-flex align-items-center mb-6">
+                    <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
+                    <i class="bi bi-file-earmark-text-fill text-info fs-3x"></i>
+                    &nbsp;
+                    <div class="flex-grow-1 me-5">
+                        <div class="text-gray-800 fw-semibold fs-2">
+                            <span id="as_present">memuat ...</span>
+                        </div>
+
+                        <div class="text-gray-700 fw-semibold fs-6">
+                            Saat Ini</div>
+
+                        <!-- <div class="text-gray-500 fw-semibold fs-7">
+                            Lead by
+                            <a href="#" class="text-primary opacity-75-hover fw-semibold">Peter Marcus</a>
+                        </div> -->
+                    </div>
+
+                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                </div>
+                <div class="d-flex align-items-center mb-6">
+                    <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
+                    <i class="bi bi-file-earmark-check-fill text-danger fs-3x"></i>
+                    &nbsp;
+                    <div class="flex-grow-1 me-5">
+                        <div class="text-gray-800 fw-semibold fs-2">
+                            <span id="as_done">memuat ...</span>
+                        </div>
+
+                        <div class="text-gray-700 fw-semibold fs-6">
+                            Selesai</div>
+
+                        <!-- <div class="text-gray-500 fw-semibold fs-7">
+                            Lead by
+                            <a href="#" class="text-primary opacity-75-hover fw-semibold">Peter Marcus</a>
+                        </div> -->
+                    </div>
+
+                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-xl-8 mb-xl-10">
+        <div class="card h-md-100">
+            <div class="card-header align-items-center border-0">
+                <h3 class="fw-bold text-gray-900 m-0">Informasi Terkini</h3>
+
+                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+
+                    <i class="bi bi-three-dots fs-1"></i>
+                </button>
+
+                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px" data-kt-menu="true">
+                    <div class="menu-item px-3">
+                        <div class="menu-content fs-6 text-gray-900 fw-bold px-3 py-4">Quick Actions</div>
+                    </div>
+
+                    <div class="separator mb-3 opacity-75"></div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Ticket
+                        </a>
+                    </div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Customer
+                        </a>
+                    </div>
+
+                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+                        <a href="#" class="menu-link px-3">
+                            <span class="menu-title">New Group</span>
+                            <span class="menu-arrow"></span>
+                        </a>
+
+                        <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Admin Group
+                                </a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Staff Group
+                                </a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Member Group
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Contact
+                        </a>
+                    </div>
+
+                    <div class="separator mt-3 opacity-75"></div>
+
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3 py-3">
+                            <a class="btn btn-primary  btn-sm px-4" href="#">
+                                Generate Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-body pt-2 d-grid gap-3">
+                <div class="d-flex flex-column align-items-start">
+                    <div class="d-flex align-items-center mb-2">
+                    <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Alan Warden" data-kt-initialized="1">
+                        <span class="symbol-label bg-warning text-inverse-warning fw-bold">A</span>
+                    </div>
+                        <div class="ms-3">
+                            <a href="#" class="fs-6 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+                            <span class="text-muted fs-7 mb-1">2 mins</span>
+                        </div>
+
+                    </div>
+
+                    <div class="p-5 rounded bg-light-info text-gray-900 fw-semibold text-start" data-kt-element="message-text">
+                        <h4>Judul Informasi</h4>
+                        How likely are you to recommend our company How likely are you to recommend our company to your friends and family ? 
+                        <a href="">Selengkapnya</a>
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-start">
+                    <div class="d-flex align-items-center mb-2">
+                    <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Alan Warden" data-kt-initialized="1">
+                        <span class="symbol-label bg-warning text-inverse-warning fw-bold">A</span>
+                    </div>
+                        <div class="ms-3">
+                            <a href="#" class="fs-6 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+                            <span class="text-muted fs-7 mb-1">2 mins</span>
+                        </div>
+
+                    </div>
+
+                    <div class="p-5 rounded bg-light-info text-gray-900 fw-semibold text-start" data-kt-element="message-text">
+                        <h4>Judul Informasi</h4>
+                        How likely are you to recommend our company How likely are you to recommend our company to your friends and family ? 
+                        <a href="">Selengkapnya</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="col-md-6 col-xl-4 mb-xl-10">
+        <div class="card h-md-100">
+            <div class="card-header align-items-center border-0">
+                <h3 class="fw-bold text-gray-900 m-0">Ringkasan Tugas</h3>
+
+                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+
+                    <i class="bi bi-three-dots fs-1"></i>
+                </button>
+
+                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px" data-kt-menu="true">
+                    <div class="menu-item px-3">
+                        <div class="menu-content fs-6 text-gray-900 fw-bold px-3 py-4">Quick Actions</div>
+                    </div>
+
+                    <div class="separator mb-3 opacity-75"></div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Ticket
+                        </a>
+                    </div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Customer
+                        </a>
+                    </div>
+
+                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+                        <a href="#" class="menu-link px-3">
+                            <span class="menu-title">New Group</span>
+                            <span class="menu-arrow"></span>
+                        </a>
+
+                        <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Admin Group
+                                </a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Staff Group
+                                </a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Member Group
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Contact
+                        </a>
+                    </div>
+
+                    <div class="separator mt-3 opacity-75"></div>
+
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3 py-3">
+                            <a class="btn btn-primary  btn-sm px-4" href="#">
+                                Generate Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-body pt-2">
+                <div class="d-flex align-items-center mb-6">
+                    <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
+                    <i class="bi bi-file-earmark-spreadsheet-fill text-success fs-3x"></i>
+                    &nbsp;
+                    <div class="flex-grow-1 me-5">
+                        <div class="text-gray-800 fw-semibold fs-2">
+                            12
+                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                        </div>
+
+                        <div class="text-gray-700 fw-semibold fs-6">
+                            Terjadwal</div>
+
+                        <!-- <div class="text-gray-500 fw-semibold fs-7">
+                            Lead by
+                            <a href="#" class="text-primary opacity-75-hover fw-semibold">Peter Marcus</a>
+                        </div> -->
+                    </div>
+
+                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                </div>
+                <div class="d-flex align-items-center mb-6">
+                    <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
+                    <i class="bi bi-file-earmark-text-fill text-info fs-3x"></i>
+                    &nbsp;
+                    <div class="flex-grow-1 me-5">
+                        <div class="text-gray-800 fw-semibold fs-2">
+                            12
+                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                        </div>
+
+                        <div class="text-gray-700 fw-semibold fs-6">
+                            Saat Ini</div>
+
+                        <!-- <div class="text-gray-500 fw-semibold fs-7">
+                            Lead by
+                            <a href="#" class="text-primary opacity-75-hover fw-semibold">Peter Marcus</a>
+                        </div> -->
+                    </div>
+
+                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                </div>
+                <div class="d-flex align-items-center mb-6">
+                    <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
+                    <i class="bi bi-file-earmark-check-fill text-danger fs-3x"></i>
+                    &nbsp;
+                    <div class="flex-grow-1 me-5">
+                        <div class="text-gray-800 fw-semibold fs-2">
+                            12
+                            <!-- <span class="text-gray-500 fw-semibold fs-7"></span> -->
+                        </div>
+
+                        <div class="text-gray-700 fw-semibold fs-6">
+                            Selesai</div>
+
+                        <!-- <div class="text-gray-500 fw-semibold fs-7">
+                            Lead by
+                            <a href="#" class="text-primary opacity-75-hover fw-semibold">Peter Marcus</a>
+                        </div> -->
+                    </div>
+
+                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <?php $this->endSection(); ?>

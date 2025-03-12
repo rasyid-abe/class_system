@@ -13,7 +13,7 @@ use App\Models\Lessons\SchoolLessonModel;
 use App\Models\Lessons\PublicLessonModel;
 use App\Models\QuestionBank\PublicQuestionBankModel;
 use App\Models\Assessment\AssessmentModel;
-
+use App\Models\Tasks\TasksModel;
 
 class DashboardTeacher extends BaseController
 {
@@ -27,6 +27,7 @@ class DashboardTeacher extends BaseController
     protected $less_public;
     protected $less_school;
     protected $assessment;
+    protected $task;
 
     public function __construct()
     {
@@ -39,6 +40,7 @@ class DashboardTeacher extends BaseController
         $this->less_public = new PublicLessonModel();
         $this->less_school = new SchoolLessonModel();
         $this->assessment = new AssessmentModel();
+        $this->task = new TasksModel();
 
     }
     public function index()
@@ -182,10 +184,17 @@ class DashboardTeacher extends BaseController
 
         $date_now = date('Y-m-d H:i:s');
         $select_assessement = 'count(assessment_id) as total';
+        $select_task = 'count(task_id) as total';
+
         $assessment_draft = $this->assessment->data_draft($select_assessement, $school_id, $teacher_id);
         $assessment_scheduled = $this->assessment->data_scheduled($select_assessement, $date_now, $school_id, $teacher_id);
         $assessment_present = $this->assessment->data_present($select_assessement, $date_now, $school_id, $teacher_id);
         $assessment_done = $this->assessment->data_done($select_assessement, $date_now, $school_id, $teacher_id);
+
+        $task_draft = $this->task->data_draft($select_task, $school_id, $teacher_id, $date_now);
+        $task_scheduled = $this->task->data_scheduled($select_task, $school_id, $teacher_id, $date_now);
+        $task_present = $this->task->data_present($select_task, $school_id, $teacher_id, $date_now);
+        $task_done = $this->task->data_done($select_task, $school_id, $teacher_id, $date_now);
 
         $result = [
             'my_duty' => $my_duty,
@@ -207,6 +216,10 @@ class DashboardTeacher extends BaseController
             'as_scheduled' => $assessment_scheduled[0]['total'],
             'as_present' => $assessment_present[0]['total'],
             'as_done' => $assessment_done[0]['total'],
+            'tk_draft' => $task_draft[0]['total'],
+            'tk_scheduled' => $task_scheduled[0]['total'],
+            'tk_present' => $task_present[0]['total'],
+            'tk_done' => $task_done[0]['total'],
         ];
 
         echo json_encode($result);

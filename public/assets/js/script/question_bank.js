@@ -664,7 +664,7 @@ function form_chapter_quest(e, chap = null, id = null) {
       `<h3 class="modal-title">Upload Soal ke ${chap}</h3>`
     );
     $("#body_content_modal_upl").html(form);
-    $("#modal_upload_tasks").modal("show");
+    $("#modal_upload_task").modal("show");
   } else {
     let form = "";
 

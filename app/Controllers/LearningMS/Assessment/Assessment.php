@@ -814,7 +814,7 @@ class Assessment extends BaseController
                     }
 
                     $lists = '
-                        <div class="row bigrow-tabulator">
+                    <div class="row bigrow-tabulator">
                         <div class="col-lg-5 mx-auto">
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex align-items-center">

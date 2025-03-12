@@ -6,19 +6,19 @@ function grab_data_lesson(
   param = null
 ) {
   $.ajax({
-    url: base_url + "/teacher/tasks/grab-data-lesson",
+    url: base_url + "/teacher/task/grab-data-lesson",
     data: { type, id, subj, grad, param },
     method: "post",
     dataType: "json",
     success: function (e) {
       if (type == 1) {
-        treeview_tasks_ch(e, subj, grad);
+        treeview_task_ch(e, subj, grad);
       } else if (type == 2) {
         generate_view_lesson_s(e);
         generate_view_video_s(e);
         generate_view_attachment_s(e);
         generate_view_task_s(
-          e.tasks,
+          e.task,
           e.lesson_standart_id,
           e.lesson_standart_subject_id,
           e.lesson_standart_grade
@@ -33,9 +33,9 @@ function grab_data_lesson(
   });
 }
 
-function chk_range_tasks() {
-  let start = $("#start_tasks").val();
-  let end = $("#end_tasks").val();
+function chk_range_task() {
+  let start = $("#start_task").val();
+  let end = $("#end_task").val();
 
   if (start != "" && end != "") {
     let dtstart = new Date(Date.parse(start.replace(" ", "T") + ":00Z"));
@@ -55,7 +55,7 @@ function chk_range_tasks() {
 }
 
 function close_modal() {
-  $("#tasks_prev_less").modal("hide");
+  $("#task_prev_less").modal("hide");
 }
 
 $(document.body).on("click", "#btnshow_lesson", function () {
@@ -63,10 +63,10 @@ $(document.body).on("click", "#btnshow_lesson", function () {
   let grad = $(this).data("grade");
   grab_data_lesson(1, "", subj, grad);
   set_datepicker();
-  $("#tasks_prev_less").modal("show");
+  $("#task_prev_less").modal("show");
 });
 
-function treeview_tasks_ch(e, subj, grad) {
+function treeview_task_ch(e, subj, grad) {
   console.log(e);
 
   let content = "";
@@ -80,7 +80,7 @@ function treeview_tasks_ch(e, subj, grad) {
       $.each(val.nodes, function (index, value) {
         child += `
                 <div class="form-check my-2">
-                    <input class="form-check-input" type="radio" name="tasks_choose" data-lessonsrc=${v.ind} data-taskname="${value.text}" data-taskchapter="${value.chapter}" value="${value.lesson_id}" />
+                    <input class="form-check-input" type="radio" name="task_choose" data-lessonsrc=${v.ind} data-taskname="${value.text}" data-taskchapter="${value.chapter}" value="${value.lesson_id}" />
                     <label class="form-check-label" onclick="getlessonbyid(${value.lesson_id}, ${v.ind})">
                         ${value.text}
                     </label>
@@ -123,18 +123,18 @@ function treeview_tasks_ch(e, subj, grad) {
             ${content}
         </ul>
     `;
-  $("#treeview_tasks__").html(page);
+  $("#treeview_task__").html(page);
 }
 
 function getlessonbyid(id, src) {
   grab_data_lesson(2, id, "", "", src);
 }
 
-function choose_tasks() {
-  let task_less = $("input[name=tasks_choose]:checked").val();
-  let task_name = $("input[name=tasks_choose]:checked").data("taskname");
-  let task_chap = $("input[name=tasks_choose]:checked").data("taskchapter");
-  let lessonsrc = $("input[name=tasks_choose]:checked").data("lessonsrc");
+function choose_task() {
+  let task_less = $("input[name=task_choose]:checked").val();
+  let task_name = $("input[name=task_choose]:checked").data("taskname");
+  let task_chap = $("input[name=task_choose]:checked").data("taskchapter");
+  let lessonsrc = $("input[name=task_choose]:checked").data("lessonsrc");
   let subj_ass = $("#idass_subj").data("subj");
   let subj_name = $("#idass_subj").data("subjname");
   let grad_ass = $("#idass_grad").data("grad");
@@ -153,7 +153,7 @@ function choose_tasks() {
     $("input[name=selected_grad]").val(grad_name).attr("readonly", true);
     $("input[name=gradid]").val(grad_ass);
 
-    $("#modal_tasks_ch").modal("show");
+    $("#modal_task_ch").modal("show");
     set_datepicker();
     check_group(subj_ass, grad_ass);
   } else {
@@ -164,8 +164,8 @@ function choose_tasks() {
   }
 }
 
-function save_tasks(status = null, save_type = null) {
-  let id_task_ = $("input[name=tasks_id]").val();
+function save_task(status = null, save_type = null) {
+  let id_task_ = $("input[name=task_id]").val();
   let lesson_name = $("input[name=selected_task]").val();
   let subj_name = $("input[name=selected_subj]").val();
   let lesson = $("input[name=lessonid]").val();
@@ -174,14 +174,14 @@ function save_tasks(status = null, save_type = null) {
   let grad = $("input[name=gradid]").val();
   let title = $("input[name=title]").val();
   let group = $("#multiple-select-group").select2("data");
-  let start = $("#start_tasks").val();
-  let end = $("#end_tasks").val();
+  let start = $("#start_task").val();
+  let end = $("#end_task").val();
   let submit = $("#autosumbit").hasClass("checked");
   let instask = ''
   if (save_type == 2) {
-    instask = $("#instruction_tasks_upd > .ql-editor").html();
+    instask = $("#instruction_task_upd > .ql-editor").html();
   } else {
-    instask = $("#instruction_tasks > .ql-editor").html();
+    instask = $("#instruction_task > .ql-editor").html();
   }
 
   let msg = ["title_ass", "group_ass", "start_ass", "end_ass"];
@@ -202,7 +202,7 @@ function save_tasks(status = null, save_type = null) {
   if (chk.includes(false)) {
     return false;
   } else {
-    if (chk_range_tasks() == 1) {
+    if (chk_range_task() == 1) {
       let data = [
         title,
         subj,
@@ -220,10 +220,10 @@ function save_tasks(status = null, save_type = null) {
         save_type,
       ];
 
-      store_tasks(1, id_task_, JSON.stringify(data));
+      store_task(1, id_task_, JSON.stringify(data));
     } else {
       let msg =
-        chk_range_tasks() == 2
+        chk_range_task() == 2
           ? "Periode awal tidak boleh lebih besar dari periode akhir!"
           : "Periode awal tidak boleh lebih kecil dari hari ini!";
       $(".anom_period").html(msg).removeClass("hide");
@@ -232,17 +232,17 @@ function save_tasks(status = null, save_type = null) {
   }
 }
 
-function store_tasks(type, id, param) {
+function store_task(type, id, param) {
   $.ajax({
-    url: base_url + "/teacher/tasks/store-data",
+    url: base_url + "/teacher/task/store-data",
     data: { type, id, param },
     method: "post",
     dataType: "json",
     success: function (e) {
       $("#modal_task_choose").modal("hide");
-      $("#modal_tasks_upd").modal("hide");
-      $("#modal_tasks_ch").modal("hide");
-      $("#tasks_prev_less").modal("hide");
+      $("#modal_task_upd").modal("hide");
+      $("#modal_task_ch").modal("hide");
+      $("#task_prev_less").modal("hide");
       reload_tabulator();
       Toast.fire({
         icon: e.icn,
@@ -254,7 +254,7 @@ function store_tasks(type, id, param) {
 
 function edit_task(id) {
   $.ajax({
-    url: base_url + "/teacher/tasks/get-edit",
+    url: base_url + "/teacher/task/get-edit",
     data: { id },
     method: "post",
     dataType: "json",
@@ -269,7 +269,7 @@ function edit_task(id) {
 }
 
 function view_edit_task(e) {
-  $("input[name=tasks_id]").val(e.task_id);
+  $("input[name=task_id]").val(e.task_id);
   $("input[name=subjid]").val(e.task_subject_id);
   $("input[name=gradid]").val(e.task_grade);
   $("input[name=lessonid]").val(e.task_lesson_id);
@@ -280,8 +280,8 @@ function view_edit_task(e) {
 
   let start = e.task_start.substring(0, 16);
   let end = e.task_end.substring(0, 16);
-  $("#start_tasks").val(start);
-  $("#end_tasks").val(end);
+  $("#start_task").val(start);
+  $("#end_task").val(end);
 
   if (e.task_is_autosubmit == 1) {
     $("#autosumbit").addClass("checked").prop("checked", true);
@@ -295,15 +295,15 @@ function view_edit_task(e) {
   });
   $("#multiple-select-group").val(selected_group).trigger("change");
 
-  $("#instruction_tasks_upd > .ql-editor").html(e.task_instruction);
+  $("#instruction_task_upd > .ql-editor").html(e.task_instruction);
 
-  $('#modal_tasks_upd').modal('show')
+  $('#modal_task_upd').modal('show')
 }
 
 function lesson_preview(id, src, task_id) {
   if (id != "") {
     $.ajax({
-      url: base_url + "/teacher/tasks/task-lesson",
+      url: base_url + "/teacher/task/task-lesson",
       data: { id, src, task_id },
       method: "post",
       dataType: "json",
@@ -317,7 +317,7 @@ function lesson_preview(id, src, task_id) {
           e.lesson.lesson_additional_subject_id,
           e.lesson.lesson_additional_grade
         );
-        $("#tasks_prev_less").modal("show");
+        $("#task_prev_less").modal("show");
       },
     });
   }
@@ -349,7 +349,7 @@ function choose_task_view(e, id) {
         child += `
               <div class="form-check my-2">
                   <input class="form-check-input" type="checkbox" name="task_${i1}" value="${value.id}" />
-                  <label class="form-check-label" onclick="view_tasks(${i1}, ${value.id})">
+                  <label class="form-check-label" onclick="view_task(${i1}, ${value.id})">
                       Soal ${ii}
                   </label>
               </div>
@@ -399,7 +399,7 @@ function choose_task_view(e, id) {
   $("#view_select_task").html(page);
 }
 
-function selected_tasks() {
+function selected_task() {
   let std_task = [];
   $('input[name="task_1"]:checked').each(function () {
     std_task.push(this.value);
@@ -421,10 +421,10 @@ function selected_tasks() {
   let send_me = me_task.length > 0 ? me_task : "empty";
   let send_pub = pub_task.length > 0 ? pub_task : "empty";
 
-  store_tasks(3, idt, [send_std, send_me, send_pub]);
+  store_task(3, idt, [send_std, send_me, send_pub]);
 }
 
-function type_tasks(type, ids, sts) {
+function type_task(type, ids, sts) {
   let msg = sts == 9 ? "hapus" : sts == 2 ? "terbitkan" : "batalkan";
 
   Swal.fire({
@@ -443,20 +443,20 @@ function type_tasks(type, ids, sts) {
     },
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
-      store_tasks(type, ids, sts);
+      store_task(type, ids, sts);
     }
   });
 }
 
 function reload_tabulator() {
-  if (url.includes("tasks/index-draft")) {
+  if (url.includes("task/index-draft")) {
     task_draft.replaceData();
-  } else if (url.includes("tasks/index-scheduled")) {
+  } else if (url.includes("task/index-scheduled")) {
     task_scheduled.replaceData();
   }
 }
 
-if (url.includes("tasks/index-draft")) {
+if (url.includes("task/index-draft")) {
   let c = [
     { title: "#Aksi", field: "acts", width: 150, formatter: "html", headerVisible:false},
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
@@ -469,7 +469,7 @@ if (url.includes("tasks/index-draft")) {
 
   tbconf.columns = c;
   var task_draft = new Tabulator("#task_draft_table", tbconf);
-} else if (url.includes("tasks/index-scheduled")) {
+} else if (url.includes("task/index-scheduled")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Penilaian", field: "title", width: 250 },
@@ -480,7 +480,7 @@ if (url.includes("tasks/index-draft")) {
 
   tbconf.columns = c;
   var task_scheduled = new Tabulator("#task_scheduled_table", tbconf);
-} else if (url.includes("tasks/index-present")) {
+} else if (url.includes("task/index-present")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Penilaian", field: "title", width: 250 },
@@ -491,7 +491,7 @@ if (url.includes("tasks/index-draft")) {
 
   tbconf.columns = c;
   var task_present = new Tabulator("#task_present_table", tbconf);
-} else if (url.includes("tasks/index-done")) {
+} else if (url.includes("task/index-done")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Penilaian", field: "title", width: 250 },
@@ -504,29 +504,29 @@ if (url.includes("tasks/index-draft")) {
   var task_done = new Tabulator("#task_done_table", tbconf);
 }
 
-if (url.includes("teacher/tasks")) {
-  if (url.includes("tasks/index-draft")) {
+if (url.includes("teacher/task")) {
+  if (url.includes("task/index-draft")) {
     document
       .getElementById("select-all")
       .addEventListener("click", function () {
         task_draft.selectRow();
       });
   }
-  if (url.includes("tasks/index-scheduled")) {
+  if (url.includes("task/index-scheduled")) {
     document
       .getElementById("select-all")
       .addEventListener("click", function () {
         task_scheduled.selectRow();
       });
   }
-  if (url.includes("tasks/index-draft")) {
+  if (url.includes("task/index-draft")) {
     document
       .getElementById("deselect-all")
       .addEventListener("click", function () {
         task_draft.deselectRow();
       });
   }
-  if (url.includes("tasks/index-scheduled")) {
+  if (url.includes("task/index-scheduled")) {
     document
       .getElementById("deselect-all")
       .addEventListener("click", function () {
@@ -534,7 +534,7 @@ if (url.includes("teacher/tasks")) {
       });
   }
 
-  if (url.includes("tasks/index-draft")) {
+  if (url.includes("task/index-draft")) {
     document
       .getElementById("publish-btn")
       .addEventListener("click", function () {
@@ -551,7 +551,7 @@ if (url.includes("teacher/tasks")) {
               "error"
             );
           } else {
-            type_tasks(2, ids, 2);
+            type_task(2, ids, 2);
           }
         }
       });
@@ -564,12 +564,12 @@ if (url.includes("teacher/tasks")) {
         if (ids.length < 1) {
           al_swal("Belum ada data terpilih", "error");
         } else {
-          type_tasks(2, ids, 9);
+          type_task(2, ids, 9);
         }
       });
   }
 
-  if (url.includes("tasks/index-scheduled")) {
+  if (url.includes("task/index-scheduled")) {
     document
       .getElementById("unpublish-btn")
       .addEventListener("click", function () {
@@ -578,41 +578,41 @@ if (url.includes("teacher/tasks")) {
         if (ids.length < 1) {
           al_swal("Belum ada data terpilih", "error");
         } else {
-          type_tasks(2, ids, 1);
+          type_task(2, ids, 1);
         }
       });
   }
   // document.getElementById("delete-btn").addEventListener("click", function(){
   //   let sel_data = '';
-  //   if (url.includes("tasks/index-draft")) {
+  //   if (url.includes("task/index-draft")) {
   //     sel_data = task_draft.getSelectedData();
-  //   } else if (url.includes("tasks/index-scheduled")) {
+  //   } else if (url.includes("task/index-scheduled")) {
   //     sel_data = task_scheduled.getSelectedData();
   //   }
   // });
 }
 
 $(document).ready(function () {
-  if (url.includes("tasks/index-add")) {
-    var instruction_tasks = new Quill("#instruction_tasks", {
+  if (url.includes("task/index-add")) {
+    var instruction_task = new Quill("#instruction_task", {
       modules: {
         toolbar: toolbarOptions,
       },
       theme: "snow", // or 'bubble'
     });
-  } else if (url.includes("tasks/index-draft")) {
-    var instruction_tasks_upd = new Quill("#instruction_tasks_upd", {
+  } else if (url.includes("task/index-draft")) {
+    var instruction_task_upd = new Quill("#instruction_task_upd", {
       modules: {
         toolbar: toolbarOptions,
       },
       theme: "snow", // or 'bubble'
     });
-    task_draft.setData(base_url + "/teacher/tasks/list-tasks?page-task=1");
-  } else if (url.includes("tasks/index-scheduled")) {
-    task_scheduled.setData(base_url + "/teacher/tasks/list-tasks?page-task=2");
-  } else if (url.includes("tasks/index-present")) {
-    task_present.setData(base_url + "/teacher/tasks/list-tasks?page-task=3");
-  } else if (url.includes("tasks/index-done")) {
-    task_done.setData(base_url + "/teacher/tasks/list-tasks?page-task=4");
+    task_draft.setData(base_url + "/teacher/task/list-task?page-task=1");
+  } else if (url.includes("task/index-scheduled")) {
+    task_scheduled.setData(base_url + "/teacher/task/list-task?page-task=2");
+  } else if (url.includes("task/index-present")) {
+    task_present.setData(base_url + "/teacher/task/list-task?page-task=3");
+  } else if (url.includes("task/index-done")) {
+    task_done.setData(base_url + "/teacher/task/list-task?page-task=4");
   }
 });

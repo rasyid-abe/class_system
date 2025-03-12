@@ -18,5 +18,5 @@ nilai hanya di sms
 
 bug :
 cascade delete
-
 modal not clear after submit without reload
+cursor click become finger not pipe

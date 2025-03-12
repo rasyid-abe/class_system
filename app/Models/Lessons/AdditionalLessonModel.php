@@ -20,7 +20,7 @@ class AdditionalLessonModel extends Model
         'lesson_additional_video_path', 
         'lesson_additional_summary_path', 
         'lesson_additional_attachment_path', 
-        'lesson_additional_tasks', 
+        'lesson_additional_task', 
         'lesson_additional_shared_type',
         'lesson_additional_shared_to',  
         'lesson_additional_status', 

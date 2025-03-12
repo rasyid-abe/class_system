@@ -11,7 +11,7 @@ $(document).ready(function(){
                 generate_view_lesson_p(e)
                 generate_view_video_p(e)
                 generate_view_attachment_p(e)
-                generate_view_task_p(e.tasks, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade)
+                generate_view_task_p(e.task, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade)
             }
         })
     }

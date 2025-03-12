@@ -214,7 +214,7 @@ function view_content(id, source) {
             generate_view_lesson(e)
             generate_view_video(e)
             generate_view_attachment(e)
-            generate_view_task(e.tasks, e.lesson_id, e.lesson_subject_id, e.lesson_grade)
+            generate_view_task(e.task, e.lesson_id, e.lesson_subject_id, e.lesson_grade)
         }
     })
 

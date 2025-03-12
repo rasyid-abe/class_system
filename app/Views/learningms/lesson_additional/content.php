@@ -138,7 +138,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-light-danger" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" onclick="act_tasks_a();">Kirim</button>
+                <button type="button" class="btn btn-primary" onclick="act_task_a();">Kirim</button>
             </div>
         </div>
     </div>
@@ -254,7 +254,7 @@
                         <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_attachment" data-bs-toggle="tab" href="#tab_attachment_a">Lampiran</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_tasks" data-bs-toggle="tab" href="#tab_task">Latihan</a>
+                        <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_task" data-bs-toggle="tab" href="#tab_task">Latihan</a>
                     </li>
                 </ul>
             </div>

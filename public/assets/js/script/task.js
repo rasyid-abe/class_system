@@ -6,7 +6,7 @@ function grab_data_lesson(
   param = null
 ) {
   $.ajax({
-    url: base_url + "/teacher/tasks/grab-data-lesson",
+    url: base_url + "/teacher/task/grab-data-lesson",
     data: { type, id, subj, grad, param },
     method: "post",
     dataType: "json",
@@ -15,13 +15,13 @@ function grab_data_lesson(
     },
     success: function (e) {
       if (type == 1) {
-        treeview_tasks_ch(e, subj, grad);
+        treeview_task_ch(e, subj, grad);
       } else if (type == 2) {
         generate_view_lesson_s(e);
         generate_view_video_s(e);
         generate_view_attachment_s(e);
         generate_view_task_s(
-          e.tasks,
+          e.task,
           e.lesson_standart_id,
           e.lesson_standart_subject_id,
           e.lesson_standart_grade
@@ -37,9 +37,9 @@ function grab_data_lesson(
   });
 }
 
-function chk_range_tasks() {
-  let start = $("#start_tasks").val();
-  let end = $("#end_tasks").val();
+function chk_range_task() {
+  let start = $("#start_task").val();
+  let end = $("#end_task").val();
 
   if (start != "" && end != "") {
     let dtstart = new Date(Date.parse(start.replace(" ", "T") + ":00Z"));
@@ -59,7 +59,7 @@ function chk_range_tasks() {
 }
 
 function close_modal() {
-  $("#tasks_prev_less").modal("hide");
+  $("#task_prev_less").modal("hide");
 }
 
 $(document.body).on("click", "#btnshow_lesson", function () {
@@ -67,10 +67,10 @@ $(document.body).on("click", "#btnshow_lesson", function () {
   let grad = $(this).data("grade");
   grab_data_lesson(1, "", subj, grad);
   set_datepicker();
-  $("#tasks_prev_less").modal("show");
+  $("#task_prev_less").modal("show");
 });
 
-function treeview_tasks_ch(e, subj, grad) {  
+function treeview_task_ch(e, subj, grad) {  
   let content = "";
   let bdi1 = 1;
   $.each(e.datas, function (i, v) {
@@ -82,7 +82,7 @@ function treeview_tasks_ch(e, subj, grad) {
       $.each(val.nodes, function (index, value) {
         child += `
                 <div class="form-check my-2">
-                    <input class="form-check-input" type="radio" name="tasks_choose" data-lessonsrc=${v.ind} data-taskname="${value.text}" data-taskchapter="${value.chapter}" value="${value.lesson_id}" />
+                    <input class="form-check-input" type="radio" name="task_choose" data-lessonsrc=${v.ind} data-taskname="${value.text}" data-taskchapter="${value.chapter}" value="${value.lesson_id}" />
                     <label class="form-check-label" onclick="getlessonbyid(${value.lesson_id}, ${v.ind})">
                         ${value.text}
                     </label>
@@ -125,18 +125,18 @@ function treeview_tasks_ch(e, subj, grad) {
             ${content}
         </ul>
     `;
-  $("#treeview_tasks__").html(page);
+  $("#treeview_task__").html(page);
 }
 
 function getlessonbyid(id, src) {
   grab_data_lesson(2, id, "", "", src);
 }
 
-function choose_tasks() {
-  let task_less = $("input[name=tasks_choose]:checked").val();
-  let task_name = $("input[name=tasks_choose]:checked").data("taskname");
-  let task_chap = $("input[name=tasks_choose]:checked").data("taskchapter");
-  let lessonsrc = $("input[name=tasks_choose]:checked").data("lessonsrc");
+function choose_task() {
+  let task_less = $("input[name=task_choose]:checked").val();
+  let task_name = $("input[name=task_choose]:checked").data("taskname");
+  let task_chap = $("input[name=task_choose]:checked").data("taskchapter");
+  let lessonsrc = $("input[name=task_choose]:checked").data("lessonsrc");
   let subj_ass = $("#idass_subj").data("subj");
   let subj_name = $("#idass_subj").data("subjname");
   let grad_ass = $("#idass_grad").data("grad");
@@ -155,7 +155,8 @@ function choose_tasks() {
     $("input[name=selected_grad]").val(grad_name).attr("readonly", true);
     $("input[name=gradid]").val(grad_ass);
 
-    $("#modal_tasks_ch").modal("show");
+    $("#modal_task_ch").modal("show");
+    get_religion();
     set_datepicker();
     check_group(subj_ass, grad_ass);
   } else {
@@ -166,8 +167,26 @@ function choose_tasks() {
   }
 }
 
-function save_tasks(status = null, save_type = null) {
-  let id_task_ = $("input[name=tasks_id]").val();
+function clear_form_task() {
+  $("input[name=title]").val('')
+  $("input[name=selected_subj]").val('')
+  $("input[name=subjid]").val('')
+  $("#start_task").val('')
+  $("#end_task").val('')
+  $("#instruction_task > .ql-editor").html('<p><br></p>')
+
+  $(".inpsubm").html('<input class="form-check-input asscheck w-45px h-30px" type="checkbox" id="autosumbit">');
+  $(".inpreli").html('<input class="form-check-input asscheck" name="religion_assign" id="religion_assign" type="checkbox" value="1">');
+
+  $('.end_ass').addClass('hide')
+  $('.start_ass').addClass('hide')
+  $('.group_ass').addClass('hide')
+  $('.title_ass').addClass('hide')
+  $('.selreli').addClass('hide')
+}
+
+function save_task(status = null, save_type = null) {
+  let id_task_ = $("input[name=task_id]").val();
   let lesson_name = $("input[name=selected_task]").val();
   let subj_name = $("input[name=selected_subj]").val();
   let lesson = $("input[name=lessonid]").val();
@@ -176,18 +195,23 @@ function save_tasks(status = null, save_type = null) {
   let grad = $("input[name=gradid]").val();
   let title = $("input[name=title]").val();
   let group = $("#multiple-select-group").select2("data");
-  let start = $("#start_tasks").val();
-  let end = $("#end_tasks").val();
+  let start = $("#start_task").val();
+  let end = $("#end_task").val();
   let submit = $("#autosumbit").hasClass("checked");
+  let reli_sel = $('#select_religion_test').val();
+  let isreli = $("#religion_assign").hasClass("checked");
+
+  let reli_sts = isreli ? (reli_sel != 0 ? true : false) : true;
+
   let instask = ''
   if (save_type == 2) {
-    instask = $("#instruction_tasks_upd > .ql-editor").html();
+    instask = $("#instruction_task_upd > .ql-editor").html();
   } else {
-    instask = $("#instruction_tasks > .ql-editor").html();
+    instask = $("#instruction_task > .ql-editor").html();
   }
 
-  let msg = ["title_ass", "group_ass", "start_ass", "end_ass"];
-  let chk = [title != "", group.length > 0, start != "", end != ""];
+  let msg = ["title_ass", "group_ass", "start_ass", "end_ass", "reli_ass"];
+  let chk = [title != "", group.length > 0, start != "", end != "", reli_sts];
 
   for (let i = 0; i < chk.length; i++) {
     if (chk[i] != true) {
@@ -204,7 +228,7 @@ function save_tasks(status = null, save_type = null) {
   if (chk.includes(false)) {
     return false;
   } else {
-    if (chk_range_tasks() == 1) {
+    if (chk_range_task() == 1) {
       let data = [
         title,
         subj,
@@ -220,12 +244,13 @@ function save_tasks(status = null, save_type = null) {
         lessonsrc,
         status,
         save_type,
+        reli_sel,
       ];
 
-      store_tasks(1, id_task_, JSON.stringify(data));
+      store_task(1, id_task_, JSON.stringify(data));
     } else {
       let msg =
-        chk_range_tasks() == 2
+        chk_range_task() == 2
           ? "Periode awal tidak boleh lebih besar dari periode akhir!"
           : "Periode awal tidak boleh lebih kecil dari hari ini!";
       $(".anom_period").html(msg).removeClass("hide");
@@ -234,9 +259,9 @@ function save_tasks(status = null, save_type = null) {
   }
 }
 
-function store_tasks(type, id, param) {
+function store_task(type, id, param) {
   $.ajax({
-    url: base_url + "/teacher/tasks/store-data",
+    url: base_url + "/teacher/task/store-data",
     data: { type, id, param },
     method: "post",
     dataType: "json",
@@ -245,14 +270,15 @@ function store_tasks(type, id, param) {
     },
     success: function (e) {
       $("#modal_task_choose").modal("hide");
-      $("#modal_tasks_upd").modal("hide");
-      $("#modal_tasks_ch").modal("hide");
-      $("#tasks_prev_less").modal("hide");
+      $("#modal_task_upd").modal("hide");
+      $("#modal_task_ch").modal("hide");
+      $("#task_prev_less").modal("hide");
       reload_tabulator();
       Toast.fire({
         icon: e.icn,
         title: e.msg,
       });
+      hide_modal()
       hide_loading()
     },
   });
@@ -260,7 +286,7 @@ function store_tasks(type, id, param) {
 
 function edit_task(id) {
   $.ajax({
-    url: base_url + "/teacher/tasks/get-edit",
+    url: base_url + "/teacher/task/get-edit",
     data: { id },
     method: "post",
     dataType: "json",
@@ -278,6 +304,7 @@ function edit_task(id) {
 }
 
 function view_edit_task(e) {
+  get_religion(parseInt(e.task_religion))
   let title_chap = ''
   if (e.task_lesson_src == 2) {
     title_chap = e.lesson_standart_chapter + ' - ' + e.lesson_standart_subchapter
@@ -285,7 +312,7 @@ function view_edit_task(e) {
     title_chap = e.lesson_additional_chapter + ' - ' + e.lesson_additional_subchapter
   }
 
-  $("input[name=tasks_id]").val(e.task_id);
+  $("input[name=task_id]").val(e.task_id);
   $("input[name=subjid]").val(e.task_subject_id);
   $("input[name=gradid]").val(e.task_grade);
   $("input[name=lessonid]").val(e.task_lesson_id);
@@ -296,13 +323,20 @@ function view_edit_task(e) {
 
   let start = e.task_start.substring(0, 16);
   let end = e.task_end.substring(0, 16);
-  $("#start_tasks").val(start);
-  $("#end_tasks").val(end);
+  $("#start_task").val(start);
+  $("#end_task").val(end);
 
   if (e.task_is_autosubmit == 1) {
     $("#autosumbit").addClass("checked").prop("checked", true);
   } else {
     $("#autosumbit").removeClass("checked").prop("checked", false);
+  }
+
+  if (parseInt(e.task_religion) > 0) {
+    $("#religion_assign").addClass("checked").prop("checked", true);
+    $(".selreli").removeClass("hide");
+  } else {
+    $("#religion_assign").removeClass("checked").prop("checked", false);
   }
 
   let selected_group = [];
@@ -311,15 +345,15 @@ function view_edit_task(e) {
   });
   $("#multiple-select-group").val(selected_group).trigger("change");
 
-  $("#instruction_tasks_upd > .ql-editor").html(e.task_instruction);
+  $("#instruction_task_upd > .ql-editor").html(e.task_instruction);
 
-  $('#modal_tasks_upd').modal('show')
+  $('#modal_task_upd').modal('show')
 }
 
 function lesson_preview(id, src, task_id) {
   if (id != "") {
     $.ajax({
-      url: base_url + "/teacher/tasks/task-lesson",
+      url: base_url + "/teacher/task/task-lesson",
       data: { id, src, task_id },
       method: "post",
       dataType: "json",
@@ -336,7 +370,7 @@ function lesson_preview(id, src, task_id) {
           e.lesson.lesson_additional_subject_id,
           e.lesson.lesson_additional_grade
         );
-        $("#tasks_prev_less").modal("show");
+        $("#task_prev_less").modal("show");
         hide_loading()
       },
     });
@@ -373,7 +407,7 @@ function choose_task_view(e, id) {
         child += `
               <div class="form-check my-2">
                   <input class="form-check-input" type="checkbox" name="task_${i1}" value="${value.id}" />
-                  <label class="form-check-label" onclick="view_tasks(${i1}, ${value.id})">
+                  <label class="form-check-label" onclick="view_task(${i1}, ${value.id})">
                       Soal ${ii}
                   </label>
               </div>
@@ -423,7 +457,7 @@ function choose_task_view(e, id) {
   $("#view_select_task").html(page);
 }
 
-function selected_tasks() {
+function selected_task() {
   let std_task = [];
   $('input[name="task_1"]:checked').each(function () {
     std_task.push(this.value);
@@ -445,10 +479,10 @@ function selected_tasks() {
   let send_me = me_task.length > 0 ? me_task : "empty";
   let send_pub = pub_task.length > 0 ? pub_task : "empty";
 
-  store_tasks(3, idt, [send_std, send_me, send_pub]);
+  store_task(3, idt, [send_std, send_me, send_pub]);
 }
 
-function type_tasks(type, ids, sts) {
+function type_task(type, ids, sts) {
   let msg = sts == 9 ? "hapus" : sts == 2 ? "terbitkan" : "batalkan";
 
   Swal.fire({
@@ -467,20 +501,60 @@ function type_tasks(type, ids, sts) {
     },
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
-      store_tasks(type, ids, sts);
+      store_task(type, ids, sts);
     }
   });
 }
 
 function reload_tabulator() {
-  if (url.includes("tasks/index-draft")) {
+  if (url.includes("task/index-draft")) {
     task_draft.replaceData();
-  } else if (url.includes("tasks/index-scheduled")) {
+  } else if (url.includes("task/index-scheduled")) {
     task_scheduled.replaceData();
   }
 }
 
-if (url.includes("teacher/tasks/index-draft")) {
+function begin_task(id) {
+  Swal.fire({
+    html: `Apakah anda yakin ingin mulai mengerjakan?`,
+    icon: "info",
+    buttonsStyling: false,
+    showCancelButton: true,
+    confirmButtonText: "Ya",
+    cancelButtonText: "Tidak",
+    customClass: {
+      confirmButton: "btn btn-sm btn-primary",
+      cancelButton: "btn btn-sm btn-danger",
+    },
+  }).then(function (confirm) {
+    if (confirm.isConfirmed) {
+      get_task(id)
+    }
+  });
+}
+
+function get_task(id) {
+  $.ajax({
+    url: base_url + "/student/task/act-get-task",
+    data: { id },
+    method: "post",
+    dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      console.log(e);
+      hide_loading()
+    },
+  });
+}
+
+function show_modal_task() {
+  $('#mdltitle_tsk').html('Tugas')
+  $('#task_modal_question').modal('show')
+}
+
+if (url.includes("teacher/task/index-draft")) {
   let c = [
     // { title: "#Aksi", field: "acts", width: 150, formatter: "html", headerVisible:false},
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
@@ -490,7 +564,7 @@ if (url.includes("teacher/tasks/index-draft")) {
 
   tbconf.columns = c;
   var task_draft = new Tabulator("#task_draft_table", tbconf);
-} else if (url.includes("teacher/tasks/index-scheduled")) {
+} else if (url.includes("teacher/task/index-scheduled")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Akhir", field: "end_date", visible: false },
@@ -499,35 +573,35 @@ if (url.includes("teacher/tasks/index-draft")) {
 
   tbconf.columns = c;
   var task_scheduled = new Tabulator("#task_scheduled_table", tbconf);
-} else if (url.includes("teacher/tasks/index-present")) {
+} else if (url.includes("teacher/task/index-present")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var task_present = new Tabulator("#task_present_table", tbconf);
-} else if (url.includes("teacher/tasks/index-done")) {
+} else if (url.includes("teacher/task/index-done")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var task_done = new Tabulator("#task_done_table", tbconf);
-} else if (url.includes("student/tasks/present")) {
+} else if (url.includes("student/task/present")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var task_presents = new Tabulator("#task_presents_table", tbconf);
-} else if (url.includes("student/tasks/done")) {
+} else if (url.includes("student/task/done")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
 
   tbconf.columns = c;
   var task_dones = new Tabulator("#task_dones_table", tbconf);
-} else if (url.includes("student/tasks/missed")) {
+} else if (url.includes("student/task/missed")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
   ];
@@ -536,29 +610,29 @@ if (url.includes("teacher/tasks/index-draft")) {
   var task_misseds = new Tabulator("#task_misseds_table", tbconf);
 }
 
-if (url.includes("teacher/tasks")) {
-  if (url.includes("tasks/index-draft")) {
+if (url.includes("teacher/task")) {
+  if (url.includes("task/index-draft")) {
     document
       .getElementById("select-all")
       .addEventListener("click", function () {
         task_draft.selectRow();
       });
   }
-  if (url.includes("tasks/index-scheduled")) {
+  if (url.includes("task/index-scheduled")) {
     document
       .getElementById("select-all")
       .addEventListener("click", function () {
         task_scheduled.selectRow();
       });
   }
-  if (url.includes("tasks/index-draft")) {
+  if (url.includes("task/index-draft")) {
     document
       .getElementById("deselect-all")
       .addEventListener("click", function () {
         task_draft.deselectRow();
       });
   }
-  if (url.includes("tasks/index-scheduled")) {
+  if (url.includes("task/index-scheduled")) {
     document
       .getElementById("deselect-all")
       .addEventListener("click", function () {
@@ -566,7 +640,7 @@ if (url.includes("teacher/tasks")) {
       });
   }
 
-  if (url.includes("tasks/index-draft")) {
+  if (url.includes("task/index-draft")) {
     document
       .getElementById("publish-btn")
       .addEventListener("click", function () {
@@ -583,7 +657,7 @@ if (url.includes("teacher/tasks")) {
               "error"
             );
           } else {
-            type_tasks(2, ids, 2);
+            type_task(2, ids, 2);
           }
         }
       });
@@ -596,12 +670,12 @@ if (url.includes("teacher/tasks")) {
         if (ids.length < 1) {
           al_swal("Belum ada data terpilih", "error");
         } else {
-          type_tasks(2, ids, 9);
+          type_task(2, ids, 9);
         }
       });
   }
 
-  if (url.includes("tasks/index-scheduled")) {
+  if (url.includes("task/index-scheduled")) {
     document
       .getElementById("unpublish-btn")
       .addEventListener("click", function () {
@@ -610,7 +684,7 @@ if (url.includes("teacher/tasks")) {
         if (ids.length < 1) {
           al_swal("Belum ada data terpilih", "error");
         } else {
-          type_tasks(2, ids, 1);
+          type_task(2, ids, 1);
         }
       });
   }
@@ -618,32 +692,32 @@ if (url.includes("teacher/tasks")) {
 
 $(document).ready(function () {
   $('.tabulator-header-filter input').attr('placeholder', 'Cari data ...')
-  if (url.includes("teacher/tasks/index-add")) {
-    var instruction_tasks = new Quill("#instruction_tasks", {
+  if (url.includes("teacher/task/index-add")) {
+    var instruction_task = new Quill("#instruction_task", {
       modules: {
         toolbar: toolbarOptions,
       },
       theme: "snow", // or 'bubble'
     });
-  } else if (url.includes("teacher/tasks/index-draft")) {
-    var instruction_tasks_upd = new Quill("#instruction_tasks_upd", {
+  } else if (url.includes("teacher/task/index-draft")) {
+    var instruction_task_upd = new Quill("#instruction_task_upd", {
       modules: {
         toolbar: toolbarOptions,
       },
       theme: "snow", // or 'bubble'
     });
-    task_draft.setData(base_url + "/teacher/tasks/list-tasks?page-task=1");
-  } else if (url.includes("teacher/tasks/index-scheduled")) {
-    task_scheduled.setData(base_url + "/teacher/tasks/list-tasks?page-task=2");
-  } else if (url.includes("teacher/tasks/index-present")) {
-    task_present.setData(base_url + "/teacher/tasks/list-tasks?page-task=3");
-  } else if (url.includes("teacher/tasks/index-done")) {
-    task_done.setData(base_url + "/teacher/tasks/list-tasks?page-task=4");
-  } else if (url.includes("student/tasks/present")) {
-    task_presents.setData(base_url + "/student/tasks/list-tasks?page-task=1");
-  } else if (url.includes("student/tasks/missed")) {
-    task_misseds.setData(base_url + "/student/tasks/list-tasks?page-task=2");
-  } else if (url.includes("student/tasks/done")) {
-    task_dones.setData(base_url + "/student/tasks/list-tasks?page-task=3");
+    task_draft.setData(base_url + "/teacher/task/list-task?page-task=1");
+  } else if (url.includes("teacher/task/index-scheduled")) {
+    task_scheduled.setData(base_url + "/teacher/task/list-task?page-task=2");
+  } else if (url.includes("teacher/task/index-present")) {
+    task_present.setData(base_url + "/teacher/task/list-task?page-task=3");
+  } else if (url.includes("teacher/task/index-done")) {
+    task_done.setData(base_url + "/teacher/task/list-task?page-task=4");
+  } else if (url.includes("student/task/present")) {
+    task_presents.setData(base_url + "/student/task/list-task?page-task=1");
+  } else if (url.includes("student/task/missed")) {
+    task_misseds.setData(base_url + "/student/task/list-task?page-task=2");
+  } else if (url.includes("student/task/done")) {
+    task_dones.setData(base_url + "/student/task/list-task?page-task=3");
   }
 });

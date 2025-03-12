@@ -145,9 +145,9 @@ class PublicLesson extends BaseController
             ->groupBy('lesson_additional_chapter')
             ->first();
 
-        $tasks = json_decode($chapter['lesson_additional_tasks']);
+        $task = json_decode($chapter['lesson_additional_task']);
 
-        $chapter['tasks'] = $tasks ? (array)$tasks : [];
+        $chapter['task'] = $task ? (array)$task : [];
         $chapter['attach_arr'] = $chapter['lesson_additional_attachment_path'] != '' ? array_values(json_decode($chapter['lesson_additional_attachment_path'], true)) : [];
 
         echo json_encode($chapter);
