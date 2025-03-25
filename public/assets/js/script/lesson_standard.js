@@ -167,7 +167,7 @@ function generate_view_attachment_s(e) {
             btnn += `
 
                 <div class="btn-group m-1" role="group">
-                    <a href="${base_url + 'attachment/' + attach[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
+                    <a href="${file_path + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
                 </div>
             `;
         }
@@ -231,6 +231,8 @@ function view_content_s(id) {
             show_loading()
         },
         success: function(e) {
+            console.log(e);
+            $('#content_value_std').removeClass('hide')
             generate_view_lesson_s(e)
             generate_view_video_s(e)
             generate_view_attachment_s(e)

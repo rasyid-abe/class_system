@@ -1112,7 +1112,7 @@ class Assessment extends BaseController
             ->set('assessment_result_submit_message', $row['msg_submit'])
             ->update();
 
-        $msgsmbt = '<h2>Berhasil</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> berhasil dikirimkan</p>';
+        $msgsmbt = '<h2>Sukses</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> berhasil dikirimkan</p>';
         if ($row['submit_type'] != 1) {
             $msgsmbt = '<h2>Penilaian Terkirim Otomatis</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> terkirim otomatis karena <b>' . $row['msg_submit'] . '</b></p>';
         }
@@ -1126,7 +1126,7 @@ class Assessment extends BaseController
         } else {
             $res = [
                 'sts' => false,
-                'msg' => $msgsmbt,
+                'msg' => '<h2>Oops..</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> gagal dikirimkan</p>',
                 'icn' => 'error',
             ];
         }

@@ -238,6 +238,24 @@ function ajax_dash_teacher() {
   });
 }
 
+function ajax_view_student_group(param) {
+  $.ajax({
+    url: base_url + "/teacher/groups/get-summary",
+    data: { param },
+    method: "post",
+    dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      $('#count_male').html(e.male)
+      $('#count_female').html(e.female)
+      gen_religion_group(e.religion)
+      hide_loading()
+    },
+  });
+}
+
 $(document).ready(function () {
   if (url.includes("dashboard/teacher")) {
     ajax_dash_teacher()
@@ -275,6 +293,8 @@ $(document).ready(function () {
     ajax_add_qb(1);
   } else if (url.includes("teacher/question-bank/public")) {
     ajax_pub_qb(1);
+  } else if (url.includes("teacher/groups/view-students")) {
+    ajax_view_student_group(url);
   } else if (url.includes("student/lesson/standart") && !url.includes("view-content")) {
     ajax_std_less_s(1);
     less_std_list.replaceData(
@@ -468,4 +488,28 @@ function gen_listpub_lesson(e, act) {
     base_url + "/teacher/lesson/public/lesson-list/?subject_id=" + e
   );
   $("#" + act).addClass("active");
+}
+
+function gen_religion_group(e) {
+  let content = '';
+  $.each(e, function(i,v) {
+
+    let count = 0
+    $.each(v, function(idx, val){
+      count += parseInt(val)
+    })
+
+    content += `
+        <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+              <div class="d-flex align-items-center">
+                  <div class="fs-2 fw-bold text-light" id="count_female">${count}</div>
+              </div>
+
+              <div class="fw-semibold fs-6 text-gray-500">${i}</div>
+          </div>
+    `
+  })
+
+  $('#next_').after(content)
+  
 }

@@ -293,7 +293,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content" id="content_modal">
             <div class="modal-header">
-                <label for="chapter" class="form-label">Ubah Petunjuk Soal</label>
+                <label for="chapter" class="form-label">Ubah Soal</label>
             </div>
             <div class="modal-body">
                 <input type="hidden" name="subject" value="<?= $subject ?>">
@@ -335,7 +335,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content" id="content_modal">
             <div class="modal-header">
-                <label for="chapter" class="form-label">Ubah Petunjuk Soal</label>
+                <label for="chapter" class="form-label title-update-task"></label>
             </div>
             <div class="modal-body">
                 <input type="hidden" name="subject" value="<?= $subject ?>">

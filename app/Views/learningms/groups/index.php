@@ -26,24 +26,26 @@
                         <div class="d-flex flex-wrap">
                             <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="fs-2 fw-bold text-light" id="count_subj">memuat ...</div>
+                                    <div class="fs-2 fw-bold text-light" id="count_male">memuat ...</div>
                                 </div>
 
                                 <div class="fw-semibold fs-6 text-gray-500">Laki-laki</div>
                             </div>
 
-                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3" id="next_">
                                 <div class="d-flex align-items-center">
-                                    <div class="fs-2 fw-bold text-light" id="count_chap">memuat ...</div>
+                                    <div class="fs-2 fw-bold text-light" id="count_female">memuat ...</div>
                                 </div>
 
                                 <div class="fw-semibold fs-6 text-gray-500">Perempuan</div>
                             </div>
 
+                            <div class="reli" id="religion_student"></div>
                         </div>
                     </div>
 
                 </div>
+
             </div>
         </div>
 

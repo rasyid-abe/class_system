@@ -281,7 +281,7 @@ class AdditionalLesson extends BaseController
                 ->where('lesson_additional_status < 9')
                 ->first();
     
-            $task = json_decode($data['lesson_additional_task']);
+            $task = json_decode($data['lesson_additional_tasks']);
             
             $data['task'] = $task ? (array)$task : [];
             $data['attach_arr'] = $data['lesson_additional_attachment_path'] != '' ? array_values(json_decode($data['lesson_additional_attachment_path'], true)) : [];
@@ -364,7 +364,7 @@ class AdditionalLesson extends BaseController
             $task['pub'] = $req['val'][2];
 
             $update = $this->lesson_additional
-                ->set('lesson_additional_task', json_encode($task))
+                ->set('lesson_additional_tasks', json_encode($task))
                 ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
@@ -422,31 +422,44 @@ class AdditionalLesson extends BaseController
             $file_type = explode('.', $file_name);
             $extention = end($file_type);
 
+            $old_file = $this->lesson_additional->select('lesson_additional_content_path')->where('lesson_additional_id', $req['lesson_id'])->first();
+
             $allowTypes = ['pdf'];
-            $path_dir = 'documents/lms/additional_lessom/';
+            $path_dir = 'documents/lms/additional_lesson/';
             if (in_array($extention, $allowTypes)) {
                 $upload_file_name = $path_dir . $req['subject'] . '^' . $req['grade'] . '^' . str_replace(' ', '_', $file_name);
-                
                 $up = s3_uploads($temp_file, $upload_file_name);
-                if ($up['status']) {
-                    $old_file = $this->lesson_additional->select('lesson_additional_content_path')->where('lesson_additional_id', $req['lesson_id'])->first();
-                    if ($old_file) {
+
+                if ($up['status'] == 1) {
+                    if ($old_file['lesson_additional_content_path'] != '' || $old_file['lesson_additional_content_path'] != null) {
                         s3_unlink($old_file['lesson_additional_content_path']);
                     }
+
                     $update = $this->lesson_additional
                         ->set('lesson_additional_content_path', $upload_file_name)
                         ->set('lesson_additional_updated_by', userdata()['user_id'])
                         ->where('lesson_additional_id', $req['lesson_id'])
                         ->update();
 
-                    session()->setFlashdata('file_id', $req['lesson_id']);
+                    if ($update) {
+                        session()->setFlashdata('file_id', $req['lesson_id']);
+                    } else {
+                        session()->setFlashdata('att_id', $req['lesson_id']);
+                        session()->setFlashdata('upload_msg', "Update database gagal.");
+                    }
                 } else {
                     session()->setFlashdata('att_id', $req['lesson_id']);
                     session()->setFlashdata('upload_msg', $up['message']);
+                    echo '<pre>';
+                    print_r('gagal upload');
+                    echo '<br>';
+                    print_r($up);
+                    echo '</pre>';
+                    die;
                 }
             } else {
                 session()->setFlashdata('att_id', $req['lesson_id']);
-                session()->setFlashdata('upload_msg', $up['message']);
+                session()->setFlashdata('upload_msg', 'File tidak diizinkan.');
             }
             
         }
@@ -528,9 +541,7 @@ class AdditionalLesson extends BaseController
                     ->update();
             }
         } elseif ($req['type'] == 8) {
-            if (file_exists(FCPATH . '/lesson_file/' . $req['file'])) {
-                unlink(FCPATH . '/lesson_file/' . $req['file']);
-            }
+            s3_unlink($req['file']);
 
             $update = $this->lesson_additional
                 ->set('lesson_additional_content_path', null)
@@ -541,7 +552,7 @@ class AdditionalLesson extends BaseController
         } elseif ($req['type'] == 9) {
             $update = $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
-                ->set('lesson_additional_task', null)
+                ->set('lesson_additional_tasks', null)
                 ->update();
         }
 

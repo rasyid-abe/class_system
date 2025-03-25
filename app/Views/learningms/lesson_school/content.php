@@ -64,7 +64,7 @@
                     <div class="d-grid mb-2">
                         <div class="btn-group" role="group" aria-label="Basic outlined example">
                             <a href="#" onclick="form_chapter(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran &nbsp;</a>
-                            <a href="#" onclick="form_chapter(-1, '', '', '')"class="btn btn-icon btn-active-primary" type="button"><i class="mb-1 fs-2 fa fa-sort"></i></a>
+                            <a href="#" onclick="form_chapter(-1, '', '', '', '<?= $grade ?>')"class="btn btn-icon btn-active-primary" type="button"><i class="mb-1 fs-2 fa fa-sort"></i></a>
                         </div>
                     </div>
                     <?php endif ?>
@@ -85,7 +85,7 @@
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" data-popper-placement="bottom-end"
                                             style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);">
                                             <div class="menu-item px-3">
-                                                <span onclick="form_chapter(-2, '<?= $v['lesson_school_chapter'] ?>', '', '<?= $parent ?>');" class="menu-link px-3">
+                                                <span onclick="form_chapter(-2, '<?= $v['lesson_school_chapter'] ?>', '', '<?= $parent ?>', '<?= $grade ?>');" class="menu-link px-3">
                                                     Urutkan Topik
                                                 </span>
                                             </div>
@@ -144,7 +144,7 @@
         </div>
     </div>
 
-    <div class="col-sm-9 hide" id="content_tab">
+    <div class="col-sm-9 hide" id="content_tab_sch">
         <div class="hover-scroll-x">
             <div class="d-grid">
                 <ul class="nav nav-tabs flex-nowrap text-nowrap">
@@ -164,7 +164,7 @@
             </div>
         </div>
 
-        <div class="card p-5 hide" id="content_value">
+        <div class="card p-5 hide" id="content_value_sch">
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade content_topic show active" id="tab_content" role="tabpanel">
                     <div id="content_lesson"></div>
@@ -174,7 +174,7 @@
                     <div id="video_lesson"></div>
                 </div>
                 <div class="tab-pane fade content_topic" id="tab_attachment" role="tabpanel">
-                    <div id="btn_conf_attach_"></div>
+                    <div id="btn_conf_attach_a"></div>
                     <div id="attachment_lesson"></div>
                 </div>
                 <div class="tab-pane fade content_topic" id="tab_task" role="tabpanel">

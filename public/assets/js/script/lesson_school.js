@@ -149,7 +149,7 @@ function generate_view_attachment(e) {
             spl = attach[i].split("^");
             btnn += `
                     <div class="btn-group m-1" role="group">
-                        <a href="${base_url + 'attachment/' + attach[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
+                        <a href="${file_path + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
                     </div>
                 `;
         }
@@ -215,16 +215,17 @@ function view_content(id, source) {
             generate_view_video(e)
             generate_view_attachment(e)
             generate_view_task(e.task, e.lesson_id, e.lesson_subject_id, e.lesson_grade)
+            
+            if ($('#content_tab_sch').hasClass('hide')) {
+                $('#content_tab_sch').removeClass('hide')
+                $('#content_value_sch').removeClass('hide')
+            }
         }
     })
 
-    if ($('#content_tab').hasClass('hide')) {
-        $('#content_tab').removeClass('hide')
-        $('#content_value').removeClass('hide')
-    }
 }
 
-function form_chapter(e, chap = null, subchap = null, id = null) {
+function form_chapter(e, chap = null, subchap = null, id = null, grade = null) {
     let form = ''
     const year = $('#school_active_year').data('id')
     
@@ -323,7 +324,7 @@ function form_chapter(e, chap = null, subchap = null, id = null) {
         $.ajax({
             url: base_url + '/teacher/lesson/school/grab-parent-sort',
             data: {
-                id
+                id, grade
             },
             method: 'post',
             dataType: 'json',
@@ -365,7 +366,7 @@ function form_chapter(e, chap = null, subchap = null, id = null) {
         $.ajax({
             url: base_url + '/teacher/lesson/school/grab-child-sort',
             data: {
-                id
+                id, grade
             },
             method: 'post',
             dataType: 'json',

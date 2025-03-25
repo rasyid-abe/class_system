@@ -37,7 +37,7 @@ function grab_data_lesson(
   });
 }
 
-function chk_range_task() {
+function chk_range_task(save_type = null) {
   let start = $("#start_task").val();
   let end = $("#end_task").val();
 
@@ -47,11 +47,27 @@ function chk_range_task() {
 
     curr = new Date();
     if (dtstart < curr) {
-      return 3;
+      if (save_type == 2) {
+        let old_start = $("#old_start_task").val()
+        let dtold = new Date(Date.parse(old_start.replace(" ", "T") + ":00Z"));
+
+        if (dtstart.getTime() === dtold.getTime()) {
+          console.log(1);
+          
+          return 1;
+        } else {
+          console.log(31);
+          return 3;
+        }
+      } else {
+        console.log(32);
+        return 3;
+      }
     } else {
       if (dtstart < dtend) {
         return 1;
       } else {
+        console.log(2);
         return 2;
       }
     }
@@ -70,7 +86,7 @@ $(document.body).on("click", "#btnshow_lesson", function () {
   $("#task_prev_less").modal("show");
 });
 
-function treeview_task_ch(e, subj, grad) {  
+function treeview_task_ch(e, subj, grad) {
   let content = "";
   let bdi1 = 1;
   $.each(e.datas, function (i, v) {
@@ -228,7 +244,7 @@ function save_task(status = null, save_type = null) {
   if (chk.includes(false)) {
     return false;
   } else {
-    if (chk_range_task() == 1) {
+    if (chk_range_task(save_type) == 1) {
       let data = [
         title,
         subj,
@@ -236,7 +252,7 @@ function save_task(status = null, save_type = null) {
         group,
         start,
         end,
-        submit,
+        submit ? 0 : 1,
         instask,
         lesson,
         lesson_name,
@@ -246,7 +262,7 @@ function save_task(status = null, save_type = null) {
         save_type,
         reli_sel,
       ];
-
+      
       store_task(1, id_task_, JSON.stringify(data));
     } else {
       let msg =
@@ -303,7 +319,7 @@ function edit_task(id) {
   });
 }
 
-function view_edit_task(e) {
+function view_edit_task(e) {  
   get_religion(parseInt(e.task_religion))
   let title_chap = ''
   if (e.task_lesson_src == 2) {
@@ -318,15 +334,16 @@ function view_edit_task(e) {
   $("input[name=lessonid]").val(e.task_lesson_id);
   $("input[name=lessonsrc]").val(e.task_lesson_src);
   $("input[name=selected_task]").val(title_chap);
-  $("input[name=selected_subj]").val(e.subject_name  + ' - Kelas ' + e.task_grade );
+  $("input[name=selected_subj]").val(e.subject_name + ' - Kelas ' + e.task_grade);
   $("input[name=title]").val(e.task_title);
 
   let start = e.task_start.substring(0, 16);
   let end = e.task_end.substring(0, 16);
+  $("#old_start_task").val(start);
   $("#start_task").val(start);
   $("#end_task").val(end);
 
-  if (e.task_is_autosubmit == 1) {
+  if (e.task_is_ignored_time_submit == 0) {
     $("#autosumbit").addClass("checked").prop("checked", true);
   } else {
     $("#autosumbit").removeClass("checked").prop("checked", false);
@@ -350,7 +367,7 @@ function view_edit_task(e) {
   $('#modal_task_upd').modal('show')
 }
 
-function lesson_preview(id, src, task_id) {
+function lesson_preview(id, src, task_id) {  
   if (id != "") {
     $.ajax({
       url: base_url + "/teacher/task/task-lesson",
@@ -361,11 +378,13 @@ function lesson_preview(id, src, task_id) {
         show_loading()
       },
       success: function (e) {
+        console.log(e);
+        
         generate_view_lesson_p(e.lesson);
         generate_view_video_p(e.lesson);
         generate_view_attachment_p(e.lesson);
         generate_view_task_p(
-          JSON.parse(e.task.task_task_ids),
+          e.task.task_task_ids != '' ? JSON.parse(e.task.task_task_ids) : [],
           e.lesson.lesson_additional_id,
           e.lesson.lesson_additional_subject_id,
           e.lesson.lesson_additional_grade
@@ -423,9 +442,8 @@ function choose_task_view(e, id) {
           `;
 
       ch1 += `
-              <li class="list-group-item parent2" data-source="${i1}${i2}">${
-        val.title
-      }</li>
+              <li class="list-group-item parent2" data-source="${i1}${i2}">${val.title
+        }</li>
               ${val.child.length > 0 ? child_body : ""}    
           `;
 
@@ -438,9 +456,8 @@ function choose_task_view(e, id) {
           </ul>
       `;
     content += `
-          <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${
-      v.head
-    }</h6></li>
+          <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${v.head
+      }</h6></li>
           ${v.content.length > 0 ? ch1_body : ""}
       `;
 
@@ -507,59 +524,366 @@ function type_task(type, ids, sts) {
 }
 
 function reload_tabulator() {
-  if (url.includes("task/index-draft")) {
+  if (url.includes("teacher/task/index-draft")) {
     task_draft.replaceData();
-  } else if (url.includes("task/index-scheduled")) {
+  } else if (url.includes("teacher/task/index-scheduled")) {
     task_scheduled.replaceData();
+  } else if (url.includes("student/task/present")) {
+    task_presents.replaceData();
   }
 }
 
-function begin_task(id) {
-  Swal.fire({
-    html: `Apakah anda yakin ingin mulai mengerjakan?`,
-    icon: "info",
-    buttonsStyling: false,
-    showCancelButton: true,
-    confirmButtonText: "Ya",
-    cancelButtonText: "Tidak",
-    customClass: {
-      confirmButton: "btn btn-sm btn-primary",
-      cancelButton: "btn btn-sm btn-danger",
-    },
-  }).then(function (confirm) {
-    if (confirm.isConfirmed) {
-      get_task(id)
-    }
-  });
+function begin_task(id, temp) {
+  if (temp < 1) {
+    Swal.fire({
+      html: `Apakah anda yakin ingin mulai mengerjakan?`,
+      icon: "info",
+      buttonsStyling: false,
+      showCancelButton: true,
+      confirmButtonText: "Ya",
+      cancelButtonText: "Tidak",
+      customClass: {
+        confirmButton: "btn btn-sm btn-primary",
+        cancelButton: "btn btn-sm btn-danger",
+      },
+    }).then(function (confirm) {
+      if (confirm.isConfirmed) {
+        get_task(id, temp)
+      }
+    });
+  } else {
+    get_task(id, temp)
+  }
 }
 
-function get_task(id) {
+function get_task(id, temp) {
   $.ajax({
     url: base_url + "/student/task/act-get-task",
-    data: { id },
+    data: { id, temp },
     method: "post",
     dataType: "json",
     beforeSend: function () {
       show_loading()
     },
     success: function (e) {
-      console.log(e);
+      task_page(e)
       hide_loading()
     },
   });
 }
 
-function show_modal_task() {
-  $('#mdltitle_tsk').html('Tugas')
-  $('#task_modal_question').modal('show')
+function task_page(e = null) {
+  let my_task = localStorage.getItem(e.key)
+  if (!my_task) {
+    if (e.value) {
+      localStorage.setItem(e.key, JSON.stringify(e.value))
+
+      my_task = localStorage.getItem(e.key)
+      actview_task(my_task, 0, false, e.tasks)
+      $('#task_modal_question').modal('show')
+    }
+  } else {
+    actview_task(my_task, 0, false, e.tasks)
+    $('#task_modal_question').modal('show')
+  }
 }
+
+function actview_task(e, idx = 0, fix = false, ids = []) {
+  let data = JSON.parse(e)
+
+  $('#mdltitle_tsk').html(data.title)
+  $('#sbtl_tsk').html(data.subject)
+
+  if (Object.keys(ids).length > 0) {
+    let number_quest = ''
+    let num = 1
+    $.each(data.tasks, function (i, v) {
+      let btnn = ''
+      if (!fix) {
+        if (num > 1) {
+          if (v.student_answer != '[]') {
+            btnn = 'btn-success iss'
+          } else {
+            btnn = 'btn-outline btn-outline-dark'
+          }
+        } else {
+          btnn = v.student_answer != '[]' ? 'btn-primary iss' : 'btn-primary'
+        }
+      } else {
+        if (idx == v.question_id) {
+          btnn = v.student_answer != '[]' ? 'btn-primary iss' : 'btn-primary'
+        } else {
+          if (v.student_answer != '[]') {
+            btnn = 'btn-success iss'
+          } else {
+            btnn = 'btn-outline btn-outline-dark'
+          }
+        }
+      }
+  
+      number_quest += `<a href="#" onclick="view_question_act_tsk(${v.question_id})" class="m-1 btn btn-icon  ${btnn} actbtn">${num}</a>`
+      num++
+    })
+  
+    if (!fix) {
+      if (idx > 0) {
+        view_question_act_tsk(Object.keys(data.tasks[idx]))
+      } else {
+        view_question_act_tsk(Object.keys(data.tasks)[0])
+      }
+    }
+    $('#list_taskact').html(number_quest);
+  } else {
+    $('#list_taskact').html('<h5>Latihan tidak tersedia.</h5>');
+  }
+
+  generate_view_lesson_p(data.lesson)
+  generate_view_video_p(data.lesson)
+  generate_view_attachment_p(data.lesson)
+
+  if (data.ignore_time != 1) {
+    let enddate = new Date(data.end)
+    let current = new Date();
+
+    if (enddate < current) {
+      send_task_act(2)
+    }
+  }
+}
+
+function view_question_act_tsk(id) {
+  let my_tasks = localStorage.getItem('bluecode_' + student_id)
+  let data = JSON.parse(my_tasks)
+  let row = data.tasks[id]
+  let qtype = data.tasks[id].type
+  let student_answer = data.tasks[id].student_answer
+
+
+  let question = `
+    <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row mb-5">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-dark mb-2">Pertanyaan</span>
+        <span class="fw-semibold fs-3 text-dark">
+          ${row.question}
+        </span>
+      </span>
+    </div>
+  `;
+
+  let option = ''
+  let num = 1
+  let type = qtype == 2 ? 'checkbox' : 'radio'
+  $.each(row.option, function (i, v) {
+    let opt_val = row.type == 3 ? (v == 1 ? 'Benar' : 'Salah') : v
+    let is_choose = student_answer.includes(i) ? 'chk_act_tsk' : ''
+    let is_checked = student_answer.includes(i) ? 'checked="checked"' : ''
+
+    option += `
+    <div class="col-sm-6">
+      <input type="${type}" data-question_id="${id}" data-type="${type}" class="btn-check tglchk_tsk ${is_choose}" ${is_checked} name="choose_opt" value="${i}" id="kt_choose_${num}" />
+      <label class="btn btn-outline btn-outline-primary p-7 d-flex align-items-center mb-5" for="kt_choose_${num}">
+        <span class="d-block fw-semibold text-start">
+          <span class="fw-bold d-block fs-3 mb-2">Pilihan Jawaban ${num}</span>
+          <span class="fs-3">${opt_val}</span>
+        </span>
+      </label>
+    </div>
+    `
+    num++;
+  })
+
+  $('#acttask_question').html(question)
+  $('#acttask_option').html(`<div class="row">${option}</div>`)
+}
+
+function save_act_task() {
+  $('#task_modal_question').modal('hide')
+  send_task_act(1)
+}
+
+function alert_submit_task() {
+  Swal.fire({
+    html: `<h2>Apakah anda yakin?</h2><br><p>Jika sudah dikirimkan, maka tidak dapat mengubah atau mengulang tugas yang sama.</p>`,
+    icon: "warning",
+    buttonsStyling: false,
+    showCancelButton: true,
+    confirmButtonText: "Ya, Kirimkan",
+    cancelButtonText: "Periksa Kembali",
+    customClass: {
+      confirmButton: "btn btn-sm btn-primary",
+      cancelButton: "btn btn-sm btn-info",
+    },
+  }).then(function (confirm) {
+    if (confirm.isConfirmed) {
+      send_task_act(2)
+    }
+  });
+}
+
+$(document).on('click', '.tglchk_tsk', function () {
+  let question_id = $(this).data('question_id')
+  let quest_type = $(this).data('type')
+
+  if (quest_type != 'radio') {
+    $(this).toggleClass("chk_act_tsk");
+  } else {
+    if ($(this).hasClass('chk_act_tsk')) {
+      $(this).removeClass('chk_act_tsk')
+    } else {
+      $(".tglchk_tsk").each(function () {
+        if ($(this).hasClass("chk_act_tsk")) {
+          $(this).removeClass("chk_act_tsk");
+        }
+      });
+      $(this).toggleClass('chk_act_tsk');
+    }
+  }
+
+  change_localstorage_tsk('option', question_id)
+})
+
+function change_localstorage_tsk(type, key, value = null) {
+  let key_storage = 'bluecode_' + student_id
+  let my_data = JSON.parse(localStorage.getItem(key_storage))
+
+  let my_choose = []
+  $(".tglchk_tsk").each(function () {
+    if ($(this).hasClass('chk_act_tsk')) {
+      my_choose.push($(this).val())
+    }
+  })
+  localStorage.setItem('tsk_rcop_' + student_id, JSON.stringify(my_choose))
+  let rcop = localStorage.getItem('tsk_rcop_' + student_id)
+
+  my_data.tasks[key].student_answer = rcop
+  localStorage.setItem(key_storage, JSON.stringify(my_data))
+
+  let res_data = localStorage.getItem(key_storage)
+  view_question_act_tsk(key)
+  actview_task(res_data, key, true, my_data.tasks)
+}
+
+function send_task_act(typ) {
+  
+  let row = JSON.parse(localStorage.getItem('bluecode_' + student_id))
+  let send = Object()
+
+  if (typ == 1) {
+    send.subject_id = row.subject_id
+    send.title = row.title
+    send.subject = row.subject
+    send.task_id = row.task_id
+    send.task_id = row.task_id
+    send.data = localStorage.getItem('bluecode_' + student_id)
+    send.type = typ
+  } else {
+    send.task_id = row.task_id
+    send.subject = row.subject
+    send.task_title = row.title
+    send.task_end = row.end
+    send.task_start = row.start
+    send.task_begin = row.begin_task
+    
+    let curr = new Date();
+    let dtend = new Date(Date.parse(row.end));
+    
+    if (curr > dtend) {
+      if (row.ignore_time == 0) {
+        send.submit_msg = 'Submit Otomatis karena Melewati batas waktu'
+        send.submit_type = 2
+        send.autosubmit = 1
+      } else {
+        send.submit_msg = 'Melewati batas waktu'
+        send.submit_type = 2
+        send.autosubmit = 0
+      }
+    } else {
+      send.submit_msg = 'Submit sebelum batas waktu'
+      send.submit_type = 1
+      send.autosubmit = 0
+    }
+  
+    let student_answer = []
+    $.each(row.tasks, function (i, v) {
+      let answer = []
+      $.each(JSON.parse(v.student_answer), function (idx, val) {
+        answer.push(v.option[val])
+      })
+  
+      student_answer.push({
+        question_id: v.question_id,
+        answer: v.student_answer != '[]' ? answer : ['empty'],
+        source : v.source
+      })
+    })
+    send.answer = student_answer
+    send.type = typ
+  }
+
+  $.ajax({
+    url: base_url + "/student/task/save-action-task",
+    data: { send },
+    method: "post",
+    dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      if (e.sts) {
+        $('#task_modal_question').modal('hide')
+        if (typ == 1) {
+          Toast.fire({
+            icon: e.icn,
+            title: e.msg,
+          });
+        } else {
+          Swal.fire({
+            icon: e.icn,
+            html: e.msg,
+            confirmButtonText: "OK",
+          })
+        }
+        localStorage.removeItem('bluecode_' + student_id)
+        localStorage.removeItem('tsk_rcop_' + student_id)
+      } else {
+        Swal.fire({
+          icon: e.icn,
+          html: e.msg,
+          confirmButtonText: type < 2 ? "Simpan Ulang" : "Submit Ulang",
+        }).then(function (confirm) {
+          location.reload()
+        })
+      }
+      reload_tabulator()
+      hide_loading()
+    },
+  });
+}
+
+function close_view_task_student() {
+  $('#modal_look_student_act_task').modal('hide')
+  $('bd_list_task_student').html('<div id="task_student_act"></div>')
+}
+
+$(document).on('click', '.view_student_task', function(e) {
+  e.preventDefault()
+  let task_id = $(this).data('task_id')
+  let group_id = $(this).data('group_id')
+
+  student_act.setData(
+    base_url + "/teacher/task/get-student-task?tid=" + task_id + "&gid=" + group_id
+  );
+
+  $('#modal_look_student_act_task').modal('show')
+})
 
 if (url.includes("teacher/task/index-draft")) {
   let c = [
     // { title: "#Aksi", field: "acts", width: 150, formatter: "html", headerVisible:false},
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Akhir", field: "end_date", visible: false },
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { title: "Tasks", field: "task_ids", visible: false },
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
@@ -568,45 +892,68 @@ if (url.includes("teacher/task/index-draft")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     { title: "Akhir", field: "end_date", visible: false },
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
   var task_scheduled = new Tabulator("#task_scheduled_table", tbconf);
 } else if (url.includes("teacher/task/index-present")) {
   let c = [
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
+  tbconf.selectableRows = false;
   var task_present = new Tabulator("#task_present_table", tbconf);
+
+  let cl = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
+  ]
+
+  tbconf.columns = cl;
+  tbconf.selectableRows = false;
+  var student_act = new Tabulator('#task_student_act', tbconf)
 } else if (url.includes("teacher/task/index-done")) {
   let c = [
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
+  tbconf.selectableRows = false;
   var task_done = new Tabulator("#task_done_table", tbconf);
+
+  let cl = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
+  ]
+
+  tbconf.columns = cl;
+  tbconf.selectableRows = false;
+  var student_act = new Tabulator('#task_student_act', tbconf)
 } else if (url.includes("student/task/present")) {
   let c = [
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
+  tbconf.selectableRows = false;
   var task_presents = new Tabulator("#task_presents_table", tbconf);
 } else if (url.includes("student/task/done")) {
   let c = [
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
+  tbconf.selectableRows = false;
   var task_dones = new Tabulator("#task_dones_table", tbconf);
 } else if (url.includes("student/task/missed")) {
   let c = [
-    { field: "lists", formatter: "html", headerFilter:"input", headerSort:false},
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
   ];
 
   tbconf.columns = c;
+  tbconf.selectableRows = false;
   var task_misseds = new Tabulator("#task_misseds_table", tbconf);
 }
 
@@ -647,6 +994,7 @@ if (url.includes("teacher/task")) {
         let sel_data = task_draft.getSelectedData();
         let ids = sel_data.map((i) => i.id);
         let eds = sel_data.map((i) => i.end_date);
+        // let tasks = sel_data.map((i) => i.task_ids);
 
         if (ids.length < 1) {
           al_swal("Belum ada data terpilih", "error");

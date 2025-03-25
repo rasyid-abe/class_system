@@ -209,7 +209,7 @@
                       <div class="inpsubm">
                         <input class="form-check-input asscheck w-45px h-30px" type="checkbox" id="autosumbit">
                       </div>
-                        <label class="form-check-label" style="margin-left: 16px">Kirim Otomatis</label>
+                        <label class="form-check-label" style="margin-left: 16px">Batas Waktu Aktif</label>
                       </div>
                     </div>
                   </div>

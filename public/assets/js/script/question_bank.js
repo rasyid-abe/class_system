@@ -439,6 +439,7 @@ function show_form_edit(type, id, subj = null, grad = null, parent = null) {
 
 function show_edit_task(e, type, id) {
   if (type == -11) {
+    $('.title-update-task').html('Ubah Data Soal')
     $("#repeater_edit").removeClass("hide");
     let opt = `<option value="0">Pilih Tipe Soal</option>`;
     $.each(e.list_quest, function (i, v) {
@@ -448,11 +449,12 @@ function show_edit_task(e, type, id) {
     });
 
     let choose = "";
-    let iddx = 0;
-    $.each(e.option, function (i, v) {
+    // let iddx = 0;
+    
+    for (let i = 0; i < e.option.length; i++) {
       if (e.type == 1) {
         choose += `
-          <div class="mt-5" id="opt_mc_rem${iddx}">
+          <div class="mt-5" id="opt_mc_rem${i}">
               <div class="position-relative">
                   <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
                       <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
@@ -465,15 +467,15 @@ function show_edit_task(e, type, id) {
                               Jawaban Benar
                           </label>
                       </div>
-                      <button onclick="rem_elem_id('opt_mc_rem${iddx}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
+                      <button onclick="rem_elem_id('opt_mc_rem${i}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
                   </div>
-                  <div id="edit_optmc${iddx}" name="optmc${iddx}" class="optmc_n_edit"></div>
+                  <div id="edit_optmc${i}" name="optmc${i}" class="optmc_n_edit"></div>
               </div>
           </div>
         `;
       } else if (e.type == 2) {
         choose += `
-          <div class="mt-5" id="opt_mcx_rem${iddx}">
+          <div class="mt-5" id="opt_mcx_rem${i}">
               <div class="position-relative">
                   <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
                       <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
@@ -486,26 +488,83 @@ function show_edit_task(e, type, id) {
                               Jawaban Benar
                           </label>
                       </div>
-                      <button onclick="rem_elem_id('opt_mcx_rem${iddx}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
+                      <button onclick="rem_elem_id('opt_mcx_rem${i}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
                   </div>
-                  <div id="edit_optmcx${iddx}" name="optmcx${iddx}" class="optmcx_n_edit"></div>
+                  <div id="edit_optmcx${i}" name="optmcx${i}" class="optmcx_n_edit"></div>
               </div>
           </div>
         `;
       } else if (e.type == 3) {
+        $('.repeater').addClass('hide')
+        
         choose += `
           <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
-              <input class="form-check-input tf_option" type="radio" name="tfopt_edit" value="${v}" id="ctrue_edit" ${
-          iddx == v ? "checked" : ""
-        } />
+              <input class="form-check-input tf_option" type="radio" name="tfopt_edit" value="${e.option[i]}" id="ctrue_edit" ${e.keys.includes(i) ? "checked" : ""} />
               <label class="form-check-label" for="ctrue">
-                  ${v == 1 ? "Benar" : "Salah"}
+                  ${e.option[i] == 1 ? "Benar" : "Salah"}
               </label>
           </div>
         `;
       }
-      iddx++;
-    });
+    }
+
+    // $.each(e.option, function (i, v) {
+    //   if (e.type == 1) {
+    //     choose += `
+    //       <div class="mt-5" id="opt_mc_rem${iddx}">
+    //           <div class="position-relative">
+    //               <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
+    //                   <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
+    //                       <input class="form-check-input mc_option_edit ${
+    //                         e.keys.includes(i) ? "checked_mc" : ""
+    //                       }" type="radio" value="" ${
+    //                         e.keys.includes(i) ? "checked" : ""
+    //                       } />
+    //                       <label class="form-check-label">
+    //                           Jawaban Benar
+    //                       </label>
+    //                   </div>
+    //                   <button onclick="rem_elem_id('opt_mc_rem${iddx}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
+    //               </div>
+    //               <div id="edit_optmc${iddx}" name="optmc${iddx}" class="optmc_n_edit"></div>
+    //           </div>
+    //       </div>
+    //     `;
+    //   } else if (e.type == 2) {
+    //     choose += `
+    //       <div class="mt-5" id="opt_mcx_rem${iddx}">
+    //           <div class="position-relative">
+    //               <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
+    //                   <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
+    //                       <input class="form-check-input mcx_option_edit ${
+    //                         e.keys.includes(i) ? "checked_mcx" : ""
+    //                       }" type="checkbox" value="" ${
+    //                         e.keys.includes(i) ? "checked" : ""
+    //                       } />
+    //                       <label class="form-check-label">
+    //                           Jawaban Benar
+    //                       </label>
+    //                   </div>
+    //                   <button onclick="rem_elem_id('opt_mcx_rem${iddx}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
+    //               </div>
+    //               <div id="edit_optmcx${iddx}" name="optmcx${iddx}" class="optmcx_n_edit"></div>
+    //           </div>
+    //       </div>
+    //     `;
+    //   } else if (e.type == 3) {
+    //     choose += `
+    //       <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
+    //           <input class="form-check-input tf_option" type="radio" name="tfopt_edit" value="${v}" id="ctrue_edit" ${
+    //       iddx == v ? "checked" : ""
+    //     } />
+    //           <label class="form-check-label" for="ctrue">
+    //               ${v == 1 ? "Benar" : "Salah"}
+    //           </label>
+    //       </div>
+    //     `;
+    //   }
+    //   iddx++;
+    // });
 
     let task = `
         <input type="hidden" name="id_quest_edit" value="${id}" />
@@ -585,6 +644,7 @@ function show_edit_task(e, type, id) {
       });
     }
   } else if (type == -12) {
+    $('.title-update-task').html('Ubah Data Petunjuk Soal')
     $("#repeater_edit").addClass("hide");
     let hint = `
     <input type="hidden" name="id_quest_edit" value="${id}" />
@@ -605,6 +665,7 @@ function show_edit_task(e, type, id) {
     });
     $("#hint_quest_edit > .ql-editor").html(e.hint);
   } else if (type == -13) {
+    $('.title-update-task').html('Ubah Data Penjelasan Soal')
     $("#repeater_edit").addClass("hide");
     let hint = `
     <input type="hidden" name="id_quest_edit" value="${id}" />

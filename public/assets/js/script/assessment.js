@@ -1148,6 +1148,8 @@ function submit_assessment_act(submit_type, submit_msg) {
           icon: e.icn,
           html: e.msg,
           confirmButtonText: "Kirim Ulang",
+        }).then(function (confirm) {
+          location.reload()
         })
       }
       hide_loading()

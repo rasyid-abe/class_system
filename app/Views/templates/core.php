@@ -269,30 +269,71 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal bg-body fade task_modal_act" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="task_modal_question">
 		<div class="modal-dialog modal-fullscreen">
 			<div class="modal-content shadow-none">
 				<div class="modal-header">
 					<div class="modal-title">
 						<h5 id="mdltitle_tsk"></h5>
-						<badge id="sbtl_tsk" class="badge badge-info mt-2"></badge>
+						<badge id="sbtl_tsk" class="badge badge-secondary mt-2"></badge>
 					</div>
 
 					<div class="buttonn">
 						<span class="fw-bold mx-5 fs-3"><span id="left_time_task" class="hide"></span></span>
+						<button type="button" class="btn btn-success" onclick="save_act_task();">Simpan</button>
 						<button type="button" class="btn btn-primary" onclick="alert_submit_task();">Submit</button>
 					</div>
 				</div>
 
 				<div class="modal-body">
 					<div class="row">
-						<div class="col-sm-3" style="overflow-y: scroll; max-height:690px;">
-							<div class="list_assact" id="list_assact"></div>
-						</div>
-						<div class="col-sm-9">
-							<div id="actass_question"></div>
-							<div id="actass_option"></div>
+						<div class="col-sm-12">
+							<div class="hover-scroll-x">
+								<div class="d-grid">
+									<ul class="nav nav-tabs flex-nowrap text-nowrap">
+										<li class="nav-item">
+											<a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic active" id="tab_topic_content" data-bs-toggle="tab" href="#tab_content_public">Materi</a>
+										</li>
+										<li class="nav-item">
+											<a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_video" data-bs-toggle="tab" href="#tab_video_public">Video</a>
+										</li>
+										<li class="nav-item">
+											<a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_attachment" data-bs-toggle="tab" href="#tab_attachment_public">Lampiran</a>
+										</li>
+										<li class="nav-item">
+											<a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_task" data-bs-toggle="tab" href="#tab_task_public">Latihan</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+
+							<div class="card p-5" id="content_value">
+								<div class="tab-content" id="myTabContent">
+									<div class="tab-pane fade content_topic show active" id="tab_content_public" role="tabpanel">
+										<div id="content_lesson_public"></div>
+									</div>
+									<div class="tab-pane fade content_topic" id="tab_video_public" role="tabpanel">
+										<div id="btn_conf_vid_"></div>
+										<div id="video_lesson_public"></div>
+									</div>
+									<div class="tab-pane fade content_topic" id="tab_attachment_public" role="tabpanel">
+										<div id="btn_conf_attach_"></div>
+										<div id="attachment_lesson_public"></div>
+									</div>
+									<div class="tab-pane fade content_topic" id="tab_task_public" role="tabpanel">
+										<div class="row">
+											<div class="col-sm-3" style="overflow-y: scroll; max-height:690px;">
+												<div class="list_taskact" id="list_taskact"></div>
+											</div>
+											<div class="col-sm-9">
+												<div id="acttask_question"></div>
+												<div id="acttask_option"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -1350,8 +1391,21 @@
 						<!--end::Invite user-->
 						<!--begin::Create app-->
 						<div class="d-flex ms-3">
-							<a href="#" class="btn btn-info" tooltip="New App" data-bs-toggle="modal"
-								data-bs-target="#kt_modal_create_app" id="kt_toolbar_primary_button">New Goal</a>
+							<!-- Example single danger button -->
+							<div class="btn-group">
+								<button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+									Action
+								</button>
+								<ul class="dropdown-menu">
+									<li><a class="dropdown-item" href="#">Action</a></li>
+									<li><a class="dropdown-item" href="#">Another action</a></li>
+									<li><a class="dropdown-item" href="#">Something else here</a></li>
+									<li>
+										<hr class="dropdown-divider">
+									</li>
+									<li><a class="dropdown-item" href="#">Separated link</a></li>
+								</ul>
+							</div>
 						</div>
 						<!--end::Create app-->
 					</div>
@@ -1443,6 +1497,8 @@
 		let active_year = '<?= year_active() != null ? year_active()['school_year_period'] : '' ?>'
 		let active_year_id = '<?= year_active() != null ? year_active()['school_year_id'] : '' ?>'
 		let level = '<?= session()->get('c_role') ?>'
+		let file_path = 'https://abeaws-bucket.s3.ap-southeast-1.amazonaws.com/'
+
 
 		let student_id = 0
 		if (url.includes("student")) {
@@ -1463,6 +1519,26 @@
 	<script src="<?= base_url() ?>assets/js/common.js"></script>
 
 	<script>
+		// import axios from 'axios';
+		// const downloadAs = (url, name) => {
+		// 	Axios.get(url, {
+		// 			headers: {
+		// 				"Content-Type": "application/octet-stream"
+		// 			},
+		// 			responseType: "blob"
+		// 		})
+		// 		.then(response => {
+		// 			const a = document.createElement("a");
+		// 			const url = window.URL.createObjectURL(response.data);
+		// 			a.href = url;
+		// 			a.download = name;
+		// 			a.click();
+		// 		})
+		// 		.catch(err => {
+		// 			console.log("error", err);
+		// 		});
+		// };
+
 		const tbconf = {
 			height: "600px",
 			layout: "fitDataStretch",
@@ -1560,7 +1636,7 @@
 
 		function show_tp() {
 			console.log('akljas');
-			
+
 			$.ajax({
 				url: "<?= base_url('/config-teacher-student/active-year/list-year') ?>",
 				type: "post",
