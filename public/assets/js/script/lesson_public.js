@@ -18,6 +18,8 @@ $(document).ready(function(){
 })
 
 function generate_view_lesson_p(e) {
+    console.log(e.lesson_additional_content != '' ? e.lesson_additional_content : 'Materi belum tersedia');
+    
     $('.btn_content_content').html('');
     $('.btn_conf_topic').html('');
 
@@ -56,8 +58,10 @@ function generate_view_lesson_p(e) {
 
     `;
 
+    console.log(butn);
+    
 
-    $('#content_lesson').html(butn)
+    $('#content_lesson_p').html(butn)
 }
 
 function generate_view_video_p(e) {
@@ -70,7 +74,7 @@ function generate_view_video_p(e) {
         <iframe width="560" height="315" src="https://www.youtube.com/embed/${id_vid}?controls=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>`;
 
-    $('#video_lesson').html(e.lesson_additional_video_path != '' ? vid_view : 'Video belum tersedia')
+    $('#video_lesson_p').html(e.lesson_additional_video_path != '' ? vid_view : 'Video belum tersedia')
 }
 
 function generate_view_attachment_p(e) {
@@ -84,7 +88,7 @@ function generate_view_attachment_p(e) {
             spl = attach[i].split("^");
             btnn += `
                 <div class="btn-group m-1" role="group">
-                    <a href="${base_url + 'attachment/' + attach[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
+                    <a href="${file_path + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
                 </div>
             `;
         }
@@ -92,11 +96,10 @@ function generate_view_attachment_p(e) {
         btnn = 'Lampiran belum tersedia';
     }
 
-    $('#attachment_lesson').html(btnn)
+    $('#attachment_lesson_p').html(btnn)
 }
 
 function generate_view_task_p(e, id, subj, grad) {
-    
     let btn_conf = `
             <div class="d-flex justify-content-begin mb-5">
                 <div class="btn_task_content">
@@ -145,6 +148,5 @@ function generate_view_task_p(e, id, subj, grad) {
         `
     }
     
-    $('#task_lesson').html(cont)
-    // $('.btn_task_content').html('');
+    $('#task_lesson_p').html(cont)
 }

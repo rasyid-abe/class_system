@@ -19,7 +19,7 @@ class TasksResultModel extends Model
         'task_result_end_datetime', 
         'task_result_answer', 
         'task_result_value', 
-        'task_result_fault', 
+        'task_result_submit_type', 
         'task_result_submit_message', 
     ];
 

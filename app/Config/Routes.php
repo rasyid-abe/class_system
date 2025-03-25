@@ -135,9 +135,11 @@ $routes->post('/teacher/task/get-edit', 'LearningMS\Tasks\Task::get_edit', ['fil
 $routes->post('/teacher/task/store-data', 'LearningMS\Tasks\Task::store_data', ['filter' => 'auth']);
 $routes->post('/teacher/task/task-lesson', 'LearningMS\Tasks\Task::task_lesson', ['filter' => 'auth']);
 $routes->get('/teacher/task/list-task', 'LearningMS\Tasks\Task::list_task', ['filter' => 'auth']);
+$routes->get('/teacher/task/get-student-task', 'LearningMS\Tasks\Task::get_student_task', ['filter' => 'auth']);
 
 $routes->get('/teacher/groups/view-students/(:num)', 'LearningMS\Groups\Groups::view_students/$1', ['filter' => 'auth']);
 $routes->get('/teacher/groups/get-list-student', 'LearningMS\Groups\Groups::get_list_students', ['filter' => 'auth']);
+$routes->post('/teacher/groups/get-summary', 'LearningMS\Groups\Groups::get_summary', ['filter' => 'auth']);
 
 ## BEGIN STUDENT ROUTE
 $routes->get('/student/lesson/standart', 'LearningMS\Lessons\StandartLesson::s_index', ['filter' => 'auth']);
@@ -166,3 +168,4 @@ $routes->get('/student/task/missed', 'LearningMS\Tasks\Task::s_index_missed', ['
 $routes->get('/student/task/done', 'LearningMS\Tasks\Task::s_index_done', ['filter' => 'auth']);
 $routes->get('/student/task/list-task', 'LearningMS\Tasks\Task::s_list_task', ['filter' => 'auth']);
 $routes->post('/student/task/act-get-task', 'LearningMS\Tasks\Task::s_act_get_task', ['filter' => 'auth']);
+$routes->post('/student/task/save-action-task', 'LearningMS\Tasks\Task::s_save_action_task', ['filter' => 'auth']);

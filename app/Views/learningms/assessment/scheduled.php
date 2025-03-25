@@ -18,8 +18,11 @@
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_look_question">
   <div class="modal-dialog modal-xl">
     <div class="modal-content" id="content_modal">
-      <div class="modal-header">
+    <div class="modal-header">
         <h3 class="modal-title">Soal Penilaian</h3>
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+          <i class="bi bi-x-square fs-2x"></i>
+        </div>
       </div>
       <div class="modal-body">
 
@@ -59,9 +62,6 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-sm btn-light-danger" data-bs-dismiss="modal">Tutup</button>
       </div>
     </div>
   </div>

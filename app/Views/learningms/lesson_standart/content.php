@@ -98,7 +98,7 @@
             </div>
         </div>
 
-        <div class="card p-5 hide" id="content_value">
+        <div class="card p-5 hide" id="content_value_std">
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade content_topic show active" id="tab_content" role="tabpanel">
                     <div id="content_lesson"></div>

@@ -417,7 +417,7 @@ if (!function_exists("s3_uploads")) {
     }
 }
 
-if (!function_exists("s3_listfile")) {
+if (!function_exists("s3_unlink")) {
     function s3_unlink($pathfile) 
     {
         $region = getenv()['S3_BUCKET_REGION'];

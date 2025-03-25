@@ -240,7 +240,7 @@
         </div>
     </div>
 
-    <div class="col-sm-9 hide" id="content_tab">
+    <div class="col-sm-9 hide" id="content_tab_add">
         <div class="hover-scroll-x">
             <div class="d-grid">
                 <ul class="nav nav-tabs flex-nowrap text-nowrap">
@@ -260,17 +260,17 @@
             </div>
         </div>
 
-        <div class="card p-5 hide" id="content_value">
+        <div class="card p-5 hide" id="content_value_add">
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade content_topic_a show active" id="tab_content" role="tabpanel">
                     <div id="content_lesson"></div>
                 </div>
                 <div class="tab-pane fade content_topic_a" id="tab_video_a" role="tabpanel">
-                    <div id="btn_conf_vid_"></div>
+                    <div id="btn_conf_vid_a"></div>
                     <div id="video_lesson"></div>
                 </div>
                 <div class="tab-pane fade content_topic_a" id="tab_attachment_a" role="tabpanel">
-                    <div id="btn_conf_attach_"></div>
+                    <div id="btn_conf_attach_a"></div>
                     <div id="attachment_lesson"></div>
                 </div>
                 <div class="tab-pane fade content_topic_a" id="tab_task" role="tabpanel">

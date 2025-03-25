@@ -116,7 +116,7 @@ class SchoolLesson extends BaseController
 
         $chapter = $this->lesson_school
             ->select('
-                lesson_school_id, 
+                lesson_school_id,
                 lesson_school_chapter chapter, 
                 lesson_school_lesson_additional_id add, 
                 lesson_school_lesson_standart_id std,
@@ -460,19 +460,26 @@ class SchoolLesson extends BaseController
             ')
             ->join('lms_lesson_additional', 'lesson_additional_id=lesson_school_lesson_additional_id or lesson_additional_id=lesson_school_lesson_shared_id ', 'left')
             ->join('lms_lesson_standart', 'lesson_standart_id=lesson_school_lesson_standart_id', 'left')
+            ->where('lesson_school_school_id', userdata()['school_id'])
             ->where('lesson_school_parent_id', $req['id'])
+            ->where('lesson_school_grade', $req['grade'])
             ->where('lesson_school_status < 9')
             ->orderBy('lesson_school_order_child')
             ->findAll();
+        
         echo json_encode($sort);
     }
 
     public function grab_parent_sort()
     {
+        $req = $this->request->getVar();
+
         $data = $this->lesson_school
             ->select('lesson_school_id, lesson_school_chapter, lesson_school_order_parent')
+            ->where('lesson_school_school_id', userdata()['school_id'])
             ->where('lesson_school_teacher_id', userdata()['id_profile'])
             ->where('lesson_school_parent_id', 0)
+            ->where('lesson_school_grade', $req['grade'])
             ->where('lesson_school_status < 9')
             ->orderBy('lesson_school_order_parent')
             ->findAll();

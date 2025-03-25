@@ -340,8 +340,6 @@ function generate_view_lesson_a(e) {
     $('.btn_content_content').html('');
     $('.btn_conf_topic').html('');
 
-    let file_path = 'https://abeaws-bucket.s3.ap-southeast-1.amazonaws.com/'
-
     let butn = `
             <div class="accordion accordion-icon-toggle" id="kt_accordion_2">
                 <div class="mt-5">
@@ -397,7 +395,7 @@ function generate_view_lesson_a(e) {
 
 function generate_view_video_a(e) {
     $('.btn_video_content').html('');
-    $('#btn_conf_vid_').html('');
+    $('#btn_conf_vid_a').html('');
 
     let id_vid = youtube_parser(e.lesson_additional_video_path);
     let vid_view = `
@@ -417,12 +415,14 @@ function generate_view_video_a(e) {
                 </div>
             </div>
         `;
-    $('#btn_conf_vid_').html(btn_conf)
+    console.log(btn_conf);
+    
+    $('#btn_conf_vid_a').html(btn_conf)
 }
 
 function generate_view_attachment_a(e) {
     $('.btn_attach_content').html('');
-    $('#btn_conf_attach_').html('');
+    $('#btn_conf_attach_a').html('');
     
     let btnn = '';
     
@@ -431,21 +431,21 @@ function generate_view_attachment_a(e) {
             spl = e.attach_arr[i].split("^");
             
             btnn += `
-                    <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Button group with nested dropdown">
+                <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Button group with nested dropdown">
                     <button onclick="remove_content_a(${e.lesson_additional_id}, 7, '${e.attach_arr[i]}');" type="button" class="btn btn-primary btn-sm btn-icon"><i class="bi bi-x fs-5"></i></button>
 
                     <div class="btn-group" role="group">
-                        <a href="${base_url + 'attachment/' + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
+                        <a href="${file_path + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>                
                     </div>
-                    </div>
-                `;
+                </div>
+            `;
         }
     } else {
         btnn = 'Lampiran belum tersedia';
     }
 
     $('#attachment_lesson').html(btnn)
-    let btn_conf = `
+    let btn_conf_att = `
             <div class="d-flex justify-content-begin btn_conf_attach mb-3">
                 <div class="btn_attach_content">
                     <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_attach" data-url="${e.attach_arr}" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
@@ -455,7 +455,7 @@ function generate_view_attachment_a(e) {
                 </div>
             </div>
         `;
-    $('#btn_conf_attach_').html(btn_conf)
+    $('#btn_conf_attach_a').html(btn_conf_att)
 }
 
 function generate_view_task_a(e, id, subj, grad) {
@@ -596,13 +596,13 @@ function view_content_a(id, type = null) {
                 generate_view_task_a(e.task, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade)
             }
             hide_loading()
+        
+            if ($('#content_tab_add').hasClass('hide')) {
+                $('#content_tab_add').removeClass('hide')
+                $('#content_value_add').removeClass('hide')
+            }
         }
     })
-
-    if ($('#content_tab').hasClass('hide')) {
-        $('#content_tab').removeClass('hide')
-        $('#content_value').removeClass('hide')
-    }
 }
 
 function form_chapter_a(e, chap = null, subchap = null, id = null) {

@@ -20,7 +20,7 @@ class TasksModel extends Model
         'task_task_ids', 
         'task_start', 
         'task_end', 
-        'task_is_autosubmit', 
+        'task_is_ignored_time_submit', 
         'task_religion', 
         'task_instruction',
         'task_status', 
@@ -45,12 +45,17 @@ class TasksModel extends Model
     {
         $add_where = "AND ";
         $add_join = "";
+        $add_select = "";
         if ($type == 1) {
+            $add_select .= ", task_is_ignored_time_submit";
             $add_join .= "left join lms_task_result on task_id = task_result_task_id AND task_result_student_id = " . userdata()['id_profile'];
-            $add_where .= "task_status = 2 AND task_start <= '" . date('Y-m-d H:i:s') . "' AND task_end > '" . date('Y-m-d H:i:s') ."' AND task_result_submit_datetime is null ";
+            $add_where .= "task_status = 2 AND task_start <= '" . date('Y-m-d H:i:s') . "' AND task_result_submit_datetime is null ";
         } elseif ($type == 2) {
-            $add_where .= "task_status = 2 AND task_end < '" . date('Y-m-d H:i:s') . "'";
+            $add_select .= ", task_is_ignored_time_submit";
+            $add_join .= "left join lms_task_result on task_id = task_result_task_id AND task_result_student_id = " . userdata()['id_profile'];
+            $add_where .= "task_status = 2 AND task_is_ignored_time_submit = 0 AND task_end < '" . date('Y-m-d H:i:s') . "' AND task_result_submit_datetime is null";
         } elseif ($type == 3) {
+            $add_select .= ", task_result_submit_datetime, task_result_end_datetime";
             $add_join .= "left join lms_task_result on task_id = task_result_task_id";
             $add_where .= "task_status = 2 AND task_result_student_id = ". userdata()['id_profile'] ." AND task_result_submit_datetime is not null ";
         }
@@ -77,6 +82,7 @@ class TasksModel extends Model
                 teacher_first_name,
                 teacher_last_name,
                 teacher_degree
+                ".$add_select."
             FROM
                 lms_task
             LEFT JOIN profile_teacher ON teacher_id=task_teacher_id
@@ -89,6 +95,11 @@ class TasksModel extends Model
                 AND task_school_id = ".userdata()['school_id']."
                 AND task_group LIKE '%".$my_group['group_name']."%'
             GROUP BY task_id";
+
+        // echo '<pre>';
+        // print_r($sql);
+        // echo '</pre>';
+        // die;
 
         return $this->db->query($sql)->getResultArray();
     }

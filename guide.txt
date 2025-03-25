@@ -17,6 +17,9 @@ teknis check:
 nilai hanya di sms
 
 bug :
+paragraph question like english test
 cascade delete
 modal not clear after submit without reload
 cursor click become finger not pipe
+alert publish task check question exists
+autosubmit task not credible (past date now show in present so it can't be submit)

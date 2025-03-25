@@ -23,10 +23,11 @@
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="task_prev_less">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">
-        <div id="task_title_a">Materi Tugas</div>
-        </h3>
+    <div class="modal-header">
+        <h3 class="modal-title">Materi Tugas</h3>
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal">
+          <i class="bi bi-x-square fs-2x"></i>
+        </div>
       </div>
       <div class="modal-body">
         <div class="" id="select_qb_alert">
@@ -36,16 +37,16 @@
                 <div class="d-grid">
                   <ul class="nav nav-tabs flex-nowrap text-nowrap">
                     <li class="nav-item">
-                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic active" id="tab_topic_content" data-bs-toggle="tab" href="#tab_content">Materi</a>
+                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a active" id="tab_topic_a_content" data-bs-toggle="tab" href="#tab_content_p">Materi</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_video" data-bs-toggle="tab" href="#tab_video">Video</a>
+                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_video" data-bs-toggle="tab" href="#tab_video_p">Video</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_attachment" data-bs-toggle="tab" href="#tab_attachment">Lampiran</a>
+                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_attachment" data-bs-toggle="tab" href="#tab_attachment_p">Lampiran</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_task" data-bs-toggle="tab" href="#tab_task">Latihan</a>
+                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_task" data-bs-toggle="tab" href="#tab_task_p">Latihan</a>
                     </li>
                   </ul>
                 </div>
@@ -53,29 +54,25 @@
 
               <div class="card p-5" id="content_value">
                 <div class="tab-content" id="myTabContent">
-                  <div class="tab-pane fade content_topic show active" id="tab_content" role="tabpanel">
-                    <div id="content_lesson"></div>
+                  <div class="tab-pane fade content_topic show active" id="tab_content_p" role="tabpanel">
+                    <div id="content_lesson_p"></div>
                   </div>
-                  <div class="tab-pane fade content_topic" id="tab_video" role="tabpanel">
+                  <div class="tab-pane fade content_topic" id="tab_video_p" role="tabpanel">
                     <div id="btn_conf_vid_"></div>
-                    <div id="video_lesson"></div>
+                    <div id="video_lesson_p"></div>
                   </div>
-                  <div class="tab-pane fade content_topic" id="tab_attachment" role="tabpanel">
+                  <div class="tab-pane fade content_topic" id="tab_attachment_p" role="tabpanel">
                     <div id="btn_conf_attach_"></div>
-                    <div id="attachment_lesson"></div>
+                    <div id="attachment_lesson_p"></div>
                   </div>
-                  <div class="tab-pane fade content_topic" id="tab_task" role="tabpanel">
-                    <div id="task_lesson"></div>
+                  <div class="tab-pane fade content_topic" id="tab_task_p" role="tabpanel">
+                    <div id="task_lesson_p"></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">Tutup</button>
         </div>
       </div>
     </div>
@@ -191,6 +188,7 @@
               <div class="col-lg-9">
                 <div class="row">
                   <div class="col-lg-4 fv-row fv-plugins-icon-container">
+                    <input type="hidden" name="old_start_task" id="old_start_task">
                     <input onchange="chk_range_task()" class="form-control form-control-solid periode_date" placeholder="Periode Awal" id="start_task" name="start_task" />
                     <small class="hide text-danger start_ass anom_period">Periode awal harus dipilih!</small>
                   </div>
@@ -204,7 +202,7 @@
                     <div class="col-lg-9 d-flex align-items-center">
                       <div class="form-check form-check-solid form-switch form-check-custom fv-row">
                         <input class="form-check-input asscheck checked w-45px h-30px" type="checkbox" id="autosumbit" checked="true">
-                        <label class="form-check-label" style="margin-left: 16px">Kirim Otomatis</label>
+                        <label class="form-check-label" style="margin-left: 16px">Batas Waktu Aktif</label>
                       </div>
                     </div>
                   </div>

@@ -114,4 +114,35 @@ class Groups extends BaseController
             echo (json_encode($data));
     }
 
+    public function get_summary() {
+        $req = $this->request->getVar();
+        $d = explode('/', $req['param']);
+        $group_id = end($d);
+
+        $data = $this->ingroup->get_data_summary($group_id);
+        
+        $religion = get_list('religion');
+
+        $male = $female = 0;
+        $arr_reli = [];
+        foreach ($data as $k => $v) {
+            if ($v['student_gender'] == 1) {
+                $male += $v['total'];
+            } else if ($v['student_gender'] == 2) {
+                $female += $v['total'];
+            }
+
+            $arr_reli[$religion[$v['student_religion']]][] = $v['total'] ;
+
+        }
+
+        $res = [
+            'male' => $male,
+            'female' => $female,
+            'religion' => $arr_reli
+        ];
+
+        echo json_encode($res);
+    }
+
 }

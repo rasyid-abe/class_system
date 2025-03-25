@@ -53,5 +53,28 @@ class StudentInGroupModel extends Model
         return $this->db->query($sql)->getResultArray();
     }
 
+    public function get_data_summary($id)
+    {
+        $sql = "
+            select
+                distinct student_gender,
+                student_religion,
+                count(*) total
+            from
+                system_student_in_group
+            left join profile_student on
+                student_id = student_in_group_student_id
+                and student_status < 9
+            where
+                student_in_group_student_group_id = $id
+                and student_in_group_status < 9
+            group by
+                student_religion,
+                student_gender
+        ";
+
+        return $this->db->query($sql)->getResultArray();
+    }
+
 }
 
