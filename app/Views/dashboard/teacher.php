@@ -129,12 +129,12 @@
             </div>
         </div>
 
-        <div class="card card-flush h-md-50 mb-5 mb-xl-10">
+        <div class="card card-flush h-md-50 mb-5 mb-xl-10"  style="background-color: #080655">
             <div class="card-header pt-5">
                 <div class="card-title d-flex flex-column">
-                    <span class="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2">357</span>
+                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">357</span>
 
-                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Lampiran Dokumen</span>
+                    <span class="text-white pt-1 fw-semibold fs-6">Lampiran Dokumen</span>
                 </div>
             </div>
 

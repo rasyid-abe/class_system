@@ -311,15 +311,15 @@
 							<div class="card p-5" id="content_value">
 								<div class="tab-content" id="myTabContent">
 									<div class="tab-pane fade content_topic show active" id="tab_content_public" role="tabpanel">
-										<div id="content_lesson_public"></div>
+										<div id="content_lesson_p"></div>
 									</div>
 									<div class="tab-pane fade content_topic" id="tab_video_public" role="tabpanel">
 										<div id="btn_conf_vid_"></div>
-										<div id="video_lesson_public"></div>
+										<div id="video_lesson_p"></div>
 									</div>
 									<div class="tab-pane fade content_topic" id="tab_attachment_public" role="tabpanel">
 										<div id="btn_conf_attach_"></div>
-										<div id="attachment_lesson_public"></div>
+										<div id="attachment_lesson_p"></div>
 									</div>
 									<div class="tab-pane fade content_topic" id="tab_task_public" role="tabpanel">
 										<div class="row">
@@ -337,6 +337,102 @@
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_assessment_information">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content" id="content_modal">
+				<div class="modal-header">
+					<div class="text-gray-900 fw-bolder fs-6">Informasi Penilaian</div>
+				</div>
+				<div class="modal-body">
+					<div class="card-body">
+						<div class="d-flex flex-stack">
+							<div class="text-gray-700 fw-semibold fs-6 me-2">Penilaian</div>
+							<div class="d-flex align-items-senter">
+								<span class="text-gray-900 fw-bolder fs-6">
+									<div class="title_assessment"></div>
+								</span>
+							</div>
+						</div>
+
+						<div class="separator separator-dashed my-3"></div>
+
+						<div class="d-flex flex-stack">
+							<div class="text-gray-700 fw-semibold fs-6 me-2">Bidang Studi</div>
+							<div class="d-flex align-items-senter">
+								<span class="text-gray-900 fw-bolder fs-6">
+									<div class="subject_assessment"></div>
+								</span>
+							</div>
+						</div>
+
+						<div class="separator separator-dashed my-3"></div>
+
+						<div class="d-flex flex-stack">
+							<div class="text-gray-700 fw-semibold fs-6 me-2">Guru</div>
+							<div class="d-flex align-items-senter">
+								<span class="text-gray-900 fw-bolder fs-6">
+									<div class="teacher_assessment"></div>
+								</span>
+							</div>
+						</div>
+						<div class="separator separator-dashed my-3"></div>
+
+						<div class="d-flex flex-stack">
+							<div class="text-gray-700 fw-semibold fs-6 me-2">Periode</div>
+							<div class="d-flex align-items-senter">
+								<span class="text-gray-900 fw-bolder fs-6">
+									<div class="period_assessment"></div>
+								</span>
+							</div>
+						</div>
+						<div class="separator separator-dashed my-3"></div>
+
+						<div class="d-flex flex-stack">
+							<div class="text-gray-700 fw-semibold fs-6 me-2">Waktu Mengerjakan</div>
+							<div class="d-flex align-items-senter">
+								<span class="text-gray-900 fw-bolder fs-6">
+									<div class="duration_assessment"></div>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="source_question_bank hide"></div>
+					<div class="end_time hide"></div>
+					<div class="timer hide"></div>
+					<div class="autosubmit hide"></div>
+					<div class="random hide"></div>
+					<div class="no_cheat hide"></div>
+					<div class="assesst_id hide"></div>
+					<div class="sch_year_id hide"></div>
+					<br>
+
+					<div class="mb-3 bg-light-info p-3 rounded">
+						<p class="d-inline" style="font-size: 9pt">
+							<b>Instruksi :</b>
+							<br>
+						<div class="instruction_assessment"></div>
+						</p>
+					</div>
+					<br>
+
+					<div class="mb-3 bg-light-danger p-3 rounded">
+						<p class="d-inline" style="font-size: 9pt">
+							<b>Catatan :</b>
+							<br>
+							<span id="assessment_notes"></span>
+						</p>
+					</div>
+
+					<div class="btn_footer d-flex justify-content-end">
+						<button type="button" class="btn btn-sm btn-light-danger mx-2" data-bs-dismiss="modal">Batal</button>
+						<div class="start" id="betin_assessment"></div>
+					</div>
+				</div>
+
 			</div>
 		</div>
 	</div>

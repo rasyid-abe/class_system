@@ -86,5 +86,25 @@ class StandartLessonModel extends Model
         return $this->db->query($query)->getResultArray();
 
     }
+
+    public function student_list_subject($grade)
+    {
+        $sql = "
+            select
+                subject_id,
+                subject_name,
+                lesson_standart_id,
+                lesson_standart_chapter,
+                lesson_standart_subchapter
+            from 
+                lms_lesson_standart
+            left join master_subject on subject_id=lesson_standart_subject_id
+            where
+                lesson_standart_grade = $grade and
+                lesson_standart_status < 9
+        ";
+
+        return $this->db->query($sql)->getResultArray();
+    }
 }
 

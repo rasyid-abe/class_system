@@ -1,3 +1,67 @@
+<style>
+    .node {
+        height: 15px;
+        width: 15px;
+        border-radius: 50%;
+        display: inline-block;
+        transition: all 1000ms ease;
+    }
+
+    .activated {
+        box-shadow: 0px 0px 3px 2px rgba(194, 255, 194, 0.8);
+    }
+
+    .divider {
+        height: 80px;
+        width: 2px;
+        margin-top: -10px;
+        margin-left: 6px;
+        transition: all 800ms ease;
+    }
+
+    .li-timeline p {
+        /* display: inline-block; */
+        margin-left: 25px;
+        margin-top: -5px;
+    }
+
+    .li-timeline h6 {
+        /* display: inline-block; */
+        margin-left: 25px;
+        margin-top: -5px;
+    }
+
+    .li-timeline {
+        list-style: none;
+        line-height: 10px;
+    }
+
+
+    .blue {
+        background-color: rgba(82, 165, 255, 1);
+    }
+
+    .green {
+        background-color: rgba(92, 184, 92, 1)
+    }
+
+    .red {
+        background-color: rgba(255, 148, 148, 1);
+    }
+
+    .grey {
+        background-color: rgba(201, 201, 201, 1);
+    }
+
+    .text-content {
+        position: absolute;
+        margin-top: -10px;
+        /* display: flex; */
+        /* align-items: center; */
+
+    }
+</style>
+
 <div class="tab-content">
     <?php if (session()->get('c_role') == 11): ?>
         <div class="tab-pane fade <?= $page == "Dashboard" ? 'active show' : '' ?>" id="home_dashboard" role="tabpanel">
@@ -321,6 +385,9 @@
         <div class="tab-pane fade <?= $page == "Dashboard" ? 'active show' : '' ?>" id="home_dashboard" role="tabpanel">
             <div class="mx-5">
                 <div class="mb-12">
+                    <h4 class="fw-semibold text-gray-700 text-center lh-lg">
+                        Selamat Datang
+                    </h4>
                     <div class="me-7 mb-4 d-flex justify-content-center">
                         <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                             <img src="<?= base_url() ?>images/default-user2.png" alt="image">
@@ -328,16 +395,105 @@
                         </div>
                     </div>
                     <?php
-                        $loginname = userdata()['name'];
-                        $nisn = '<badge class="badge badge-info">NISN : ' . userdata()['student_nisn'] . '</badge>';
+                    $loginname = userdata()['name'];
+                    $nisn = '<badge class="badge badge-info">NISN : ' . userdata()['student_nisn'] . '</badge>';
                     ?>
                     <h3 class="fw-semibold text-gray-800 text-center lh-lg">
-                    <?= $loginname ?>
+                        <?= $loginname ?>
                     </h3>
-                    <div class="text-gray-500 fw-semibold text-center lh-lg">
+                    <div class="text-gray-500 fw-semibold d-block text-center lh-lg">
+                        <badge class="badge badge-info mb-1">KELAS : <?= $group ?></badge>
                         <?= $nisn ?>
                     </div>
-
+                </div>
+            </div>
+            <div class="separator separator-dashed border-primary my-10"></div>
+            <div class="mx-1">
+                <div class="mb-12">
+                <div class="text-gray-500 fw-semibold mb-4 lh-lg" style="margin-left: 1rem; margin-right: 1rem;">
+                        <badge class="badge badge-success d-block fs-5 p-2">
+                            Pelajaran Hari Ini:
+                        </badge>
+                    </div>
+                    <ul id="progress" style="padding-left: 1rem; list-style-type: none;">
+                        <li class="li-timeline">
+                            <div class="node green"></div>
+                            <div class="text-content">
+                                <h6>Pendidika Agama Islam & Budi Pekerti</h6>
+                                <p>Guru Agama Islam</p>
+                                <p>10:00 - 11:39 WIB</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="divider green"></div>
+                        </li>
+                        <li class="li-timeline">
+                            <div class="node green"></div>
+                            <div class="text-content">
+                                <h6>Bahasa Indonesia</h6>
+                                <p>Guru Agama Islam</p>
+                                <p>10:00 - 11:39 WIB</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="divider green"></div>
+                        </li>
+                        <li class="li-timeline">
+                            <div class="node green"></div>
+                            <div class="text-content">
+                                <h6>Pendidika Agama Islam & Budi Pekerti</h6>
+                                <p>Guru Agama Islam</p>
+                                <p>10:00 - 11:39 WIB</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="divider green"></div>
+                        </li>
+                        <li class="li-timeline">
+                            <div class="node green"></div>
+                            <div class="text-content">
+                                <h6>Bahasa Indonesia</h6>
+                                <p>Guru Agama Islam</p>
+                                <p>10:00 - 11:39 WIB</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="divider green"></div>
+                        </li>
+                        <li class="li-timeline">
+                            <div class="node grey"></div>
+                            <div class="text-content">
+                                <h6>Matematika</h6>
+                                <p>Guru Agama Islam</p>
+                                <p>10:00 - 11:39 WIB</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="divider grey"></div>
+                        </li>
+                        <li class="li-timeline">
+                            <div class="node grey"></div>
+                            <div class="text-content">
+                                <h6>Pendidika Agama Islam & Budi Pekerti</h6>
+                                <p>Guru Agama Islam</p>
+                                <p>10:00 - 11:39 WIB</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="divider grey"></div>
+                        </li>
+                        <li class="li-timeline">
+                            <div class="node grey"></div>
+                            <div class="text-content">
+                                <h6>Pendidika Agama Islam & Budi Pekerti</h6>
+                                <p>Guru Agama Islam</p>
+                                <p>10:00 - 11:39 WIB</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="divider grey"></div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

@@ -18,8 +18,6 @@ $(document).ready(function(){
 })
 
 function generate_view_lesson_p(e) {
-    console.log(e.lesson_additional_content != '' ? e.lesson_additional_content : 'Materi belum tersedia');
-    
     $('.btn_content_content').html('');
     $('.btn_conf_topic').html('');
 
@@ -58,9 +56,6 @@ function generate_view_lesson_p(e) {
 
     `;
 
-    console.log(butn);
-    
-
     $('#content_lesson_p').html(butn)
 }
 
@@ -81,6 +76,8 @@ function generate_view_attachment_p(e) {
     $('.btn_attach_content').html('');
     $('#btn_conf_attach_').html('');
 
+    console.log(e);
+    
     let btnn = '';
     if (e.lesson_additional_attachment_path != '') {
         let attach = JSON.parse(e.lesson_additional_attachment_path)
