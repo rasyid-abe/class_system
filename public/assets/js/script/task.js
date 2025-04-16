@@ -556,7 +556,7 @@ function begin_task(id, temp) {
   }
 }
 
-function get_task(id, temp) {
+function get_task(id, temp) {  
   $.ajax({
     url: base_url + "/student/task/act-get-task",
     data: { id, temp },

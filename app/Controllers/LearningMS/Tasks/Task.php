@@ -879,9 +879,9 @@ class Task extends BaseController
                 $tmp_exists = in_array($v['task_id'], $arr_temp_task) ? 1 : 0;
                 $bdg_exsists = '';
                 if (in_array($v['task_id'], $arr_temp_task)) {
-                    $bdg_exsists = '<badge class="badge badge-info">Belum dikirim</badge>';
+                    $bdg_exsists = '<badge class="badge badge-danger">Belum dikirim</badge>';
                 } else {
-                    $bdg_exsists = '<badge class="badge badge-danger">Belum dikerjakan</badge>';
+                    $bdg_exsists = '<badge class="badge badge-info">Belum dikerjakan</badge>';
                 }
 
                 if (in_array($v['task_id'], $list_idx)) {
@@ -1019,7 +1019,8 @@ class Task extends BaseController
    
     }
 
-    public function s_act_get_task() {
+    public function s_act_get_task() 
+    {
         $id = $this->request->getVar('id');
         $temp = $this->request->getVar('temp');
         
@@ -1076,6 +1077,7 @@ class Task extends BaseController
             $lesson['lesson_additional_content_path'] = $less['file_content'];
             $lesson['lesson_additional_video_path'] = $less['video'];
             $lesson['lesson_additional_attachment_path'] = $less['attach'];
+            $lesson['attach_arr'] = $less['attach'] != '' ? array_values(json_decode($less['attach'], true)) : [];
     
             $data['lesson'] = $lesson;
 
@@ -1149,8 +1151,6 @@ class Task extends BaseController
                 die;
             }
 
-    
-    
             $storage = [
                 'key' => 'bluecode_' . userdata()['id_profile'],
                 'value' => $data,

@@ -242,12 +242,7 @@ class StandartLesson extends BaseController
     public function s_list_subject()
     {
         $my_group = student_group();
-        $std_less = $this->lesson_standart
-            ->select('subject_id,subject_name,lesson_standart_id, lesson_standart_chapter, lesson_standart_subchapter')
-            ->join('master_subject', 'subject_id=lesson_standart_subject_id', 'left')
-            ->where('lesson_standart_grade', $my_group['grade'])
-            ->where('lesson_standart_status < 9')
-            ->findAll();
+        $std_less = $this->lesson_standart->student_list_subject($my_group['grade']);
         
         $sub_list = [];
         foreach ($std_less as $k => $v) {

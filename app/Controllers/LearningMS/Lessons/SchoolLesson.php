@@ -648,36 +648,37 @@ class SchoolLesson extends BaseController
     public function s_list_subject()
     {
         $my_group = student_group();
-        $sub_list = $this->lesson_school
-        ->select('
-            lesson_school_id,
-            lesson_school_subject_id, lesson_school_grade, 
-            COUNT(distinct lesson_school_chapter) total_chapter,
-            SUM(
-                CASE
-                    WHEN lesson_school_lesson_standart_id > 0 THEN 1
-                    WHEN lesson_school_lesson_additional_id > 0 THEN 1
-                    WHEN lesson_school_lesson_shared_id > 0 THEN 1
-                    ELSE 0
-                END
-            ) total_subchapter,
-            lesson_school_grade,
-            teacher_first_name,
-            teacher_last_name,
-            teacher_degree,
-            subject_name,
-            subject_id,
-            teacher_degree,')
-        ->join('master_subject', 'subject_id=lesson_school_subject_id', 'left')
-        ->join('profile_teacher', 'teacher_id=lesson_school_teacher_id', 'left')
-        ->join('system_teacher_assign', 'teacher_assign_teacher_id=teacher_id', 'right')
-        ->where('lesson_school_status < 9')
-        ->where('lesson_school_school_id', userdata()['school_id'])
-        ->where('lesson_school_grade', $my_group['grade'])
-        ->where('lesson_school_school_year_id', year_active()['school_year_id'])
-        ->where('teacher_assign_student_group_id', $my_group['group_id'])
-        ->groupBy('lesson_school_subject_id')
-        ->findAll();
+        $sub_list = $this->lesson_school->student_list_subject($my_group['grade'], $my_group['group_id']);
+        // $sub_list = $this->lesson_school
+        //     ->select('
+        //         lesson_school_id,
+        //         lesson_school_subject_id, lesson_school_grade, 
+        //         COUNT(distinct lesson_school_chapter) total_chapter,
+        //         SUM(
+        //             CASE
+        //                 WHEN lesson_school_lesson_standart_id > 0 THEN 1
+        //                 WHEN lesson_school_lesson_additional_id > 0 THEN 1
+        //                 WHEN lesson_school_lesson_shared_id > 0 THEN 1
+        //                 ELSE 0
+        //             END
+        //         ) total_subchapter,
+        //         lesson_school_grade,
+        //         teacher_first_name,
+        //         teacher_last_name,
+        //         teacher_degree,
+        //         subject_name,
+        //         subject_id,
+        //         teacher_degree,')
+        //     ->join('master_subject', 'subject_id=lesson_school_subject_id', 'left')
+        //     ->join('profile_teacher', 'teacher_id=lesson_school_teacher_id', 'left')
+        //     ->join('system_teacher_assign', 'teacher_assign_teacher_id=teacher_id', 'right')
+        //     ->where('lesson_school_status < 9')
+        //     ->where('lesson_school_school_id', userdata()['school_id'])
+        //     ->where('lesson_school_grade', $my_group['grade'])
+        //     ->where('lesson_school_school_year_id', year_active()['school_year_id'])
+        //     ->where('teacher_assign_student_group_id', $my_group['group_id'])
+        //     ->groupBy('lesson_school_subject_id')
+        //     ->findAll();
 
         $data = [];
         foreach ($sub_list as $k => $v) {
@@ -685,7 +686,7 @@ class SchoolLesson extends BaseController
             $lists = '
                 <div class="d-flex justify-content-between rounded">
                     <div class="d-flex align-items-start">
-                        <a href="http://localhost:8080/student/lesson/school/view-content/'.$v['subject_id'].'/'.$v['lesson_school_grade'].'" class="btn btn-primary pl-10">Lihat Materi</a>
+                        <a href="'.base_url().'student/lesson/school/view-content/'.$v['subject_id'].'/'.$v['lesson_school_grade'].'" class="btn btn-primary pl-10">Lihat Materi</a>
                         <div class="flex-grow-1 me-2 mx-10">
                             <h3 class="mb-1">'.$v['subject_name'].'</h3>
                             <span class="text-gray-700 fw-semibold d-block">BAB: '.$v['total_chapter'].' | Topik: '.$v['total_subchapter'].'</span>
