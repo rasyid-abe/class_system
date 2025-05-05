@@ -39,7 +39,7 @@
     }
 </style>
 
-
+<?php if(count($subj_school) > 0): ?>
 <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
     <div class="col-xxl-6">
 
@@ -61,7 +61,6 @@
                                         <i class="bi bi-three-dots text-white fs-1"></i>
                                     </a>
                                 </div>
-
                                 <?php foreach ($subj_school as $v): ?>
                                     <a href="<?= base_url('student/lesson/school/view-content/' . $v['subject_id'] . '/' . $grade) ?>" class="badge badge-primary p-5 my-1"><?= $v['subject_name'] ?></a>
                                 <?php endforeach; ?>
@@ -110,6 +109,8 @@
     </div>
 
 </div>
+<?php endif; ?>
+
 <div class="row">
     <?php if (count($assessment) > 0): ?>
         <div class="col-sm-12 mb-5">
@@ -154,60 +155,61 @@
             </div>
         </div>
     <?php endif; ?>
-    <div class="col-sm-12 mb-5">
-        <div class="alert alert-info" style="border-radius:10px;">
-            <div class="d-flex flex-stack text-white mb-3">
-                <div class="flex-shrink-0">
-                    <span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Tugas Aktif</span>
+    <?php if (count($task) > 0): ?>
+        <div class="col-sm-12 mb-5">
+            <div class="alert alert-info" style="border-radius:10px;">
+                <div class="d-flex flex-stack text-white mb-3">
+                    <div class="flex-shrink-0">
+                        <span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Tugas Aktif</span>
+                    </div>
+
+                    <a href="<?= base_url('student/task/present') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start pt-2 pr-4" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+                        <i class="bi bi-three-dots text-dark fs-1"></i>
+                    </a>
                 </div>
+                <div class="container-card">
+                    <div class="row-task">
+                        <?php foreach ($task as $v):
+                            $deg = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : '';
+                            $name = $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $deg;
+                            $tmp_exists = in_array($v['task_id'], $arr_temp_task) ? 1 : 0;
+                            $bdg_exsists = '';
+                            if (in_array($v['task_id'], $arr_temp_task)) {
+                                $bdg_exsists = '<badge class="badge badge-danger">Belum dikirim</badge>';
+                            } else {
+                                $bdg_exsists = '<badge class="badge badge-info">Belum dikerjakan</badge>';
+                            }
+                        ?>
 
-                <a href="<?= base_url('student/task/present') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start pt-2 pr-4" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
-                    <i class="bi bi-three-dots text-dark fs-1"></i>
-                </a>
-            </div>
-            <div class="container-card">
-                <div class="row-task">
-                    <?php foreach ($task as $v):
-                        $deg = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : '';
-                        $name = $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $deg;
-                        $tmp_exists = in_array($v['task_id'], $arr_temp_task) ? 1 : 0;
-                        $bdg_exsists = '';
-                        if (in_array($v['task_id'], $arr_temp_task)) {
-                            $bdg_exsists = '<badge class="badge badge-danger">Belum dikirim</badge>';
-                        } else {
-                            $bdg_exsists = '<badge class="badge badge-info">Belum dikerjakan</badge>';
-                        }
-                    ?>
-
-                        <?php if (in_array($v['task_id'], $list_idx)): ?>
-                            <?php if ($v['task_end'] > date('Y-m-d H:i:s') || ($v['task_end'] < date('Y-m-d H:i:s') && $v['task_is_ignored_time_submit'] == 1)): ?>
-                                <div class="card-task">
-                                    <div class="card">
-                                        <div class="card-body container-body">
-                                            <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
-                                                <div class="mb-auto p-2 bd-highlight">
-                                                    <p class="fs-3 text-primary fw-bold mb-auto bd-highlight"><?= $v['task_title'] ?></p>
-                                                    <?= $bdg_exsists; ?>
-                                                </div>
-                                                <div class="p-2 bd-highlight" style="margin-bottom: -17px;">
-                                                    <p class="card-text fs-5 text-dark fw-semibold"><?= $v['subject_name'] ?></p>
-                                                    <p class="text-dark"><?= datetime_indo($v['task_start']) . ' s/d ' . datetime_indo($v['task_end']) ?></p>
-                                                    <p class="card-text fs-6 mb-2"><?= $name ?></p>
-                                                    <button class="btn btn-primary btn-sm" onclick="begin_task('<?= $v['task_id'] ?>', '<?= $tmp_exists ?>')">Kerjakan</button>
+                            <?php if (in_array($v['task_id'], $list_idx)): ?>
+                                <?php if ($v['task_end'] > date('Y-m-d H:i:s') || ($v['task_end'] < date('Y-m-d H:i:s') && $v['task_is_ignored_time_submit'] == 1)): ?>
+                                    <div class="card-task">
+                                        <div class="card">
+                                            <div class="card-body container-body">
+                                                <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
+                                                    <div class="mb-auto p-2 bd-highlight">
+                                                        <p class="fs-3 text-primary fw-bold mb-auto bd-highlight"><?= $v['task_title'] ?></p>
+                                                        <?= $bdg_exsists; ?>
+                                                    </div>
+                                                    <div class="p-2 bd-highlight" style="margin-bottom: -17px;">
+                                                        <p class="card-text fs-5 text-dark fw-semibold"><?= $v['subject_name'] ?></p>
+                                                        <p class="text-dark"><?= datetime_indo($v['task_start']) . ' s/d ' . datetime_indo($v['task_end']) ?></p>
+                                                        <p class="card-text fs-6 mb-2"><?= $name ?></p>
+                                                        <button class="btn btn-primary btn-sm" onclick="begin_task('<?= $v['task_id'] ?>', '<?= $tmp_exists ?>')">Kerjakan</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
                             <?php endif; ?>
-                        <?php endif; ?>
 
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    <?php endif; ?>
 </div>
 
 

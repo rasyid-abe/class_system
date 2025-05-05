@@ -175,8 +175,6 @@ function view_question_std(id) {
 }
 
 function generate_task(e) {
-  console.log(e);
-  
   let opt = ``;
   let num = 1;
   $.each(e.option, function (i, v) {
@@ -439,8 +437,10 @@ function show_form_edit(type, id, subj = null, grad = null, parent = null) {
 
 function show_edit_task(e, type, id) {
   if (type == -11) {
-    $('.title-update-task').html('Ubah Data Soal')
-    $("#repeater_edit").removeClass("hide");
+    $('#task_edit').html("");
+    $('#task_edit_mcx').html("");
+    
+    $('.title-update-task').html('Ubah Data Soal');
     let opt = `<option value="0">Pilih Tipe Soal</option>`;
     $.each(e.list_quest, function (i, v) {
       opt += `<option value="${i}" ${
@@ -449,7 +449,6 @@ function show_edit_task(e, type, id) {
     });
 
     let choose = "";
-    // let iddx = 0;
     
     for (let i = 0; i < e.option.length; i++) {
       if (e.type == 1) {
@@ -566,6 +565,16 @@ function show_edit_task(e, type, id) {
     //   iddx++;
     // });
 
+    let viewopt = ""
+    if (e.type != 4) {
+      viewopt = `
+        <div class="" id="multiplechoice">
+            <label for="exampleFormControlInput1" class="form-label">Pilihan</label>
+            ${choose}
+        </div>
+      `;
+    }
+
     let task = `
         <input type="hidden" name="id_quest_edit" value="${id}" />
         <input type="hidden" name="form_type" value="${type}" />
@@ -589,21 +598,19 @@ function show_edit_task(e, type, id) {
                     <label for="exampleFormControlInput1" class="form-label">Pertanyaan</label>
                     <div id="task_quest_edit"></div>
                 </div>
-  
-                <div class="" id="multiplechoice">
-                    <label for="exampleFormControlInput1" class="form-label">Pilihan</label>
-                    ${choose}
-                </div>
+                ${viewopt}
             </div>
         </div>
     `;
     if (e.type == 1) {
       $("#task_edit").html(task);
+      $("#repeater_edit").removeClass("hide");
       $("#modal_update_task").modal("show");
     } else if (e.type == 2) {
       $("#task_edit_mcx").html(task);
+      $("#repeater_edit_mcx").removeClass("hide");
       $("#modal_update_task_mcx").modal("show");
-    } else if (e.type == 3) {
+    } else if (e.type == 3 || e.type == 4) {
       $("#repeater_edit").addClass("hide");
       $("#task_edit").html(task);
       $("#modal_update_task").modal("show");
@@ -759,6 +766,8 @@ function form_chapter_quest(e, chap = null, id = null) {
 }
 
 function close_modal_content_quest() {
+  // $('#task_edit').html('');
+  // $("#task_quest_edit").html('');
   $("#modal_update_content_quest").modal("hide");
   $("#body_content_modal_quest").html("");
   $("#modal_update_question_quest").modal("hide");
@@ -904,10 +913,9 @@ function pre_question(type) {
 
   if (quest_type != 0) {
     if (question != "<p><br></p>") {
-      if (option.length > 0) {
+      if (option.length > 0 || quest_type == 4) {
         if (right_ans) {
-          if (!idx_a.includes(false) && idx_a.length > 0) {
-            // al_swal("Jawaban ok", "success")
+          if ((!idx_a.includes(false) && idx_a.length > 0) || quest_type == 4) {
             store_content_quest(type, id, [
               subj,
               grad,
@@ -1017,9 +1025,9 @@ function pre_question_edit(type) {
 
   if (quest_type != 0) {
     if (question != "<p><br></p>") {
-      if (option.length > 0) {
+      if (option.length > 0 || quest_type == 4) {
         if (right_ans) {
-          if (!idx_a.includes(false) && idx_a.length > 0) {
+          if ((!idx_a.includes(false) && idx_a.length > 0) || quest_type == 4) {
             store_content_quest(type, id, [
               subj,
               grad,
@@ -1182,6 +1190,10 @@ function chk_type() {
     $("#multiplechoice").addClass("hide");
   } else if (type == 3) {
     $("#truefalse").removeClass("hide");
+    $("#multiplechoice_complex").addClass("hide");
+    $("#multiplechoice").addClass("hide");
+  } else if (type == 4) {
+    $("#truefalse").addClass("hide");
     $("#multiplechoice_complex").addClass("hide");
     $("#multiplechoice").addClass("hide");
   }

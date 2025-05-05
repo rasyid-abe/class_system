@@ -114,6 +114,7 @@ class SchoolLessonModel extends Model
     }
 
     public function student_list_subject($grade, $group) {
+
         $sql = "
             select
                 lesson_school_id,

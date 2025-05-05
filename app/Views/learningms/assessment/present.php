@@ -10,7 +10,7 @@
 </div>
 
 
-<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_look_student_act_assessment">
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"   tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_look_student_act_assessment">
   <div class="modal-dialog modal-xl">
     <div class="modal-content" id="content_modal">
       <div class="modal-header">
@@ -79,6 +79,5 @@
     </div>
   </div>
 </div>
-
 
 <?php $this->endSection(); ?>

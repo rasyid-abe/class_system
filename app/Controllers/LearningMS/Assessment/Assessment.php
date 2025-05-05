@@ -664,6 +664,7 @@ class Assessment extends BaseController
 
         $rows = $this->assessment_result
             ->select('
+                assessment_result_id as result_id,
                 assessment_result_assessment_id as assessment_id,
                 assessment_result_group_id as group_id,
                 assessment_result_student_id as student_id,
@@ -687,7 +688,8 @@ class Assessment extends BaseController
             $begin = $v['begin_assignment_datetime'] != null ? '<span class="text-gray-700 fw-bold" style="width: 65px">Mulai </span><badge class="badge badge-success" onclick="lesson_preview(18, 2, 15)"><b>' . datetime_indo($v['begin_assignment_datetime']) . '</b></badge>' : '';
             $submit = $v['submit_datetime'] != null ? '<span class="text-gray-700 fw-bold" style="width: 65px">Selesai </span><badge class="badge badge-success" onclick="lesson_preview(18, 2, 15)"><b>' . datetime_indo($v['submit_datetime']) . '</b></badge>' : '';
 
-            $value = $v['value'] != null ? '<badge class="badge badge-info my-1">Nilai : <b>' . $v['value'] . ' Poin</b></badge> &nbsp;' : '';
+            // $value = $v['value'] != null ? '<badge class="badge badge-info my-1">Nilai : <b>' . $v['value'] . ' Poin</b></badge> &nbsp;' : '';
+            $value = $v['value'] != null ? '<a href="#" onclick="data_result_student('.$v['result_id'].')" class="badge badge-info my-1">Periksa</b></a> &nbsp;' : '';
             $desc = $v['submit_message'] != null ? 'Ket : ' . $v['submit_message'] : '';
 
             if ($v['value'] != null) {
@@ -741,6 +743,140 @@ class Assessment extends BaseController
         }
 
         echo (json_encode($data));
+    }
+
+    public function check_result_assessment()
+    {
+        $result_id = $this->request->getVar('result_id');
+        $result = $this->assessment_result
+            ->join('lms_assessment', 'assessment_id=assessment_result_assessment_id', 'left')
+            ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
+            ->where('assessment_result_id', $result_id)->first();
+
+        if ($result['assessment_question_bank_src'] != 2) {
+            $question_ = $this->question_bank_standart
+                ->select('
+                    question_bank_standart_id as id,
+                    question_bank_standart_question as question,
+                    question_bank_standart_option as option,
+                    question_bank_standart_answer as answer,
+                    question_bank_standart_hint as hint,
+                    question_bank_standart_type as type,
+                    question_bank_standart_poin as poin
+                ')
+                ->where('question_bank_standart_parent_id', $result['assessment_question_bank_id'])
+                ->findAll();
+        } else {
+            $question_ = $this->question_bank
+                ->select('
+                    question_bank_id as id,
+                    question_bank_question as question,
+                    question_bank_option as option,
+                    question_bank_answer as answer,
+                    question_bank_hint as hint,
+                    question_bank_type as type,
+                    question_bank_poin as poin
+                ')
+                ->where('question_bank_parent_id', $result['assessment_question_bank_id'])
+                ->findAll();
+        }
+
+        $storage = [];
+        $storage['assessment_id'] = $result['assessment_id'];
+        $storage['assessment_title'] = $result['assessment_title'];
+        $storage['sch_year_id'] = $result['assessment_school_year_id'];
+        $storage['subject'] = $result['subject_name'];
+        $storage['source_qb'] = $result['assessment_question_bank_src'];
+        $storage['qb_parent_id'] = $result['assessment_question_bank_id'];
+
+        $quests = [];
+        foreach ($question_ as $k => $v) {
+            $quests[$v['id']]['question_id'] = $v['id'];
+            $quests[$v['id']]['question'] = $v['question'];
+            $opt = json_decode($v['option']);
+
+            $opts = [];
+            foreach ($opt as $key => $val) {
+                $opts['optt_' . $key + 1] = $val;
+            }
+
+            $answ = [];
+            foreach (json_decode($result['assessment_result_answer']) as $idx => $value) {
+                if ($value->answer->id == $v['id']) {
+                    $answ[] = $value->answer->student_answer;
+                    if (isset($value->answer->poin)) {
+                        $quests[$v['id']]['note_check'] = $value->answer->note_check;
+                        $quests[$v['id']]['res_poin'] = (float)$value->answer->poin;
+                    } else {
+                        $quests[$v['id']]['res_poin'] = 0;
+                        $quests[$v['id']]['note_check'] = '';
+                    }
+                    $quests[$v['id']]['checked'] = $value->answer->checked;;
+                }
+            }
+
+            $quests[$v['id']]['option'] = $opts;
+            $quests[$v['id']]['type'] = $v['type'];
+            $quests[$v['id']]['hint'] = $v['hint'];
+            $quests[$v['id']]['student_answer'] = $answ;
+            $quests[$v['id']]['right_answer'] = $v['answer'];
+            $quests[$v['id']]['poin'] = $v['poin'];
+            $quests[$v['id']]['student_poin'] = 0;
+        }
+
+        
+        $storage['assessment'] = $quests;
+
+        $data = [
+            'key' => 'limecode_' . userdata()['id_profile'] .'_'. $result['assessment_result_student_id'],
+            'value' => $storage,
+            'student_id' => $result['assessment_result_student_id'],
+            'result_id' => $result_id
+        ];
+
+        echo json_encode($data);
+    }
+
+    public function submit_check_assessment()
+    {
+        $req = $this->request->getVar();
+
+        $result = $this->assessment_result
+            ->where('assessment_result_id', $req['res'])->first();
+
+        
+        $arch_ans = [];
+        $total_poin = 0;
+        foreach (json_decode($result['assessment_result_answer']) as $k => $v) {
+            $arch_ans[$k]['answer']['id'] = $k;
+            $arch_ans[$k]['answer']['student_answer'] = $v->answer->student_answer;
+            $arch_ans[$k]['answer']['note_check'] = $req['result'][$k]['note_check'];
+            $arch_ans[$k]['answer']['poin'] = $req['result'][$k]['res_poin'];
+            $arch_ans[$k]['answer']['checked'] = 1;
+            $total_poin += $req['result'][$k]['res_poin'];
+        }
+
+        $upd = $this->assessment_result
+            ->set('assessment_result_answer', json_encode($arch_ans))
+            ->set('assessment_result_value', $total_poin)
+            ->where('assessment_result_id', $req['res'])
+            ->update();
+
+        if ($upd) {
+            $return = [
+                'sts' => true,
+                'msg' => 'Pemeriksaan berhasil disimpan!',
+                'icn' => 'success'
+            ];
+        } else {
+            $return = [
+                'sts' => false,
+                'msg' => 'Pemeriksaan gagal disimpan!',
+                'icn' => 'error'
+            ];
+        }
+
+        echo json_encode($return);
     }
 
     // BEGIN STUDENT FUNCTION
@@ -1032,7 +1168,8 @@ class Assessment extends BaseController
                 ->select('
                     question_bank_standart_id as id,
                     question_bank_standart_answer as answer,
-                    question_bank_standart_poin as poin
+                    question_bank_standart_poin as poin,
+                    question_bank_standart_type as type
                 ')
                 ->where('question_bank_standart_parent_id', $row['qb_parent_id'])
                 ->findAll();
@@ -1042,6 +1179,7 @@ class Assessment extends BaseController
                     question_bank_id as id,
                     question_bank_answer as answer,
                     question_bank_poin as poin,
+                    question_bank_type as type
                 ')
                 ->where('question_bank_parent_id', $row['qb_parent_id'])
                 ->findAll();
@@ -1053,14 +1191,17 @@ class Assessment extends BaseController
             sort($ans);
             $arr_right_answer[$v['id']]['answer'] = $ans;
             $arr_right_answer[$v['id']]['poin'] = $v['poin'];
+            $arr_right_answer[$v['id']]['type'] = $v['type'];
         }
 
         $arr_student_answer = [];
         foreach ($row['answer'] as $k => $v) {
             if ($v['answer'] != '' || $v['answer'] != null) {
                 $ans = $v['answer'];
-                if (count($ans) > 0) {
-                    sort($ans);
+                if ($v['question_type'] < 4) {
+                    if (count($ans) > 0) {
+                        sort($ans);
+                    }
                 }
             }
             $arr_student_answer[$v['question_id']] = $ans;
@@ -1069,33 +1210,46 @@ class Assessment extends BaseController
         $arch_ans = [];
         $total_poin = 0;
         foreach ($arr_right_answer as $k => $v) {
-            if (count($v['answer']) < 2) {
-                if ($v['answer'][0] == $arr_student_answer[$k][0]) {
-                    $total_poin = $total_poin + $v['poin'];
-                    $arch_ans[$k]['answer']['poin'] = $v['poin'];
-                } else {
-                    $arch_ans[$k]['answer']['poin'] = 0;
-                }
-            } else {
-                $mcx = [];
-                for ($i = 0; $i < count($arr_student_answer[$k]); $i++) {
-                    if (in_array($arr_student_answer[$k][$i], $v['answer']) && count($arr_student_answer[$k]) == count($v['answer'])) {
-                        $mcx[] = true;
+            if ($v['type'] < 4) {
+                if (count($v['answer']) < 2) {
+                    if ($v['answer'][0] == $arr_student_answer[$k][0]) {
+                        $total_poin = $total_poin + $v['poin'];
+                        $arch_ans[$k]['answer']['poin'] = $v['poin'];
+                        // $arch_ans[$k]['answer']['res_poin'] = $v['poin'];
                     } else {
-                        $mcx[] = false;
+                        $arch_ans[$k]['answer']['poin'] = 0;
+                        // $arch_ans[$k]['answer']['res_poin'] = 0;
+                    }
+                } else {
+                    $mcx = [];
+                    for ($i = 0; $i < count($arr_student_answer[$k]); $i++) {
+                        if (in_array($arr_student_answer[$k][$i], $v['answer']) && count($arr_student_answer[$k]) == count($v['answer'])) {
+                            $mcx[] = true;
+                        } else {
+                            $mcx[] = false;
+                        }
+                    }
+                    
+                    if (!in_array(false, $mcx)) {
+                        $total_poin = $total_poin + $v['poin'];
+                        $arch_ans[$k]['answer']['poin'] = $v['poin'];
+                        // $arch_ans[$k]['answer']['res_poin'] = $v['poin'];
+                    } else {
+                        $arch_ans[$k]['answer']['poin'] = 0;
+                        // $arch_ans[$k]['answer']['res_poin'] = 0;
                     }
                 }
-
-                if (!in_array(false, $mcx)) {
-                    $total_poin = $total_poin + $v['poin'];
-                    $arch_ans[$k]['answer']['poin'] = $v['poin'];
-                } else {
-                    $arch_ans[$k]['answer']['poin'] = 0;
-                }
+                
+                $arch_ans[$k]['answer']['id'] = $k;
+                $arch_ans[$k]['answer']['student_answer'] = $arr_student_answer[$k];
+                $arch_ans[$k]['answer']['checked'] = 1;
+            } else {
+                $arch_ans[$k]['answer']['id'] = $k;
+                $arch_ans[$k]['answer']['student_answer'] = $arr_student_answer[$k];
+                $arch_ans[$k]['answer']['poin'] = 0;
+                $arch_ans[$k]['answer']['checked'] = 0;
             }
-
-            $arch_ans[$k]['answer']['id'] = $k;
-            $arch_ans[$k]['answer']['student_answer'] = $arr_student_answer[$k];
+            $arch_ans[$k]['answer']['note_check'] = '';
         }
 
         $upd_result = $this->assessment_result
