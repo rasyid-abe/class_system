@@ -301,7 +301,7 @@
                 <div id="edit_form_type_mcx"></div>
 
                 <div id="task_edit_mcx" name="task_edit_mcx"></div>
-                <div class="repeater px-5" id="repeater_edit">
+                <div class="repeater px-5 hide" id="repeater_edit_mcx">
                     <div class="mt-5">
                         <div data-repeater-list="group-mcx">
                             <div data-repeater-item>
@@ -343,7 +343,7 @@
                 <div id="edit_form_type"></div>
 
                 <div id="task_edit" name="task_edit"></div>
-                <div class="repeater px-5" id="repeater_edit">
+                <div class="repeater px-5 hide" id="repeater_edit">
                     <div class="mt-5">
                         <div data-repeater-list="group-mc">
                             <div data-repeater-item>

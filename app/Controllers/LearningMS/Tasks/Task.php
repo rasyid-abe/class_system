@@ -726,6 +726,7 @@ class Task extends BaseController
 
         $rows = $this->task_result
             ->select('
+                task_result_id as result_id,
                 task_result_task_id as task_id,
                 task_result_group_id as group_id,
                 task_result_student_id as student_id,
@@ -748,7 +749,8 @@ class Task extends BaseController
             $begin = $v['begin_task_datetime'] != null ? '<span class="text-gray-700 fw-bold" style="width: 65px">Mulai </span><badge class="badge badge-success" onclick="lesson_preview(18, 2, 15)"><b>' . datetime_indo($v['begin_task_datetime']) . '</b></badge>' : '';
             $submit = $v['submit_datetime'] != null ? '<span class="text-gray-700 fw-bold" style="width: 65px">Selesai </span><badge class="badge badge-success" onclick="lesson_preview(18, 2, 15)"><b>' . datetime_indo($v['submit_datetime']) . '</b></badge>' : '';
 
-            $value = $v['value'] != null ? '<badge class="badge badge-info my-1">Nilai : <b>' . $v['value'] . ' Poin</b></badge> &nbsp;' : '';
+            // $value = $v['value'] != null ? '<badge class="badge badge-info my-1">Nilai : <b>' . $v['value'] . ' Poin</b></badge> &nbsp;' : '';
+            $value = $v['value'] != null ? '<a href="#" onclick="data_result_student_tsk('.$v['result_id'].')" class="badge badge-info my-1">Periksa</b></a> &nbsp;' : '';
             $desc = $v['submit_message'] != null ? 'Ket : ' . $v['submit_message'] : '';
 
             if ($v['value'] != null) {
@@ -804,6 +806,149 @@ class Task extends BaseController
         echo (json_encode($data));
     }
 
+    public function check_result_task()
+    {
+        $result_id = $this->request->getVar('result_id');
+        $result = $this->task_result
+            ->join('lms_task', 'task_id=task_result_task_id', 'left')
+            ->join('master_subject', 'subject_id=task_subject_id', 'left')
+            ->where('task_result_id', $result_id)->first();
+
+        $all_task = [];
+        foreach (json_decode($result['task_result_answer']) as $k => $v) {
+            foreach ($v as $val) {
+                if ($k == 'std') {
+                    $all_task[$k][] = $this->qc_std
+                        ->select('
+                            question_bank_standart_id as id,
+                            question_bank_standart_question as question,
+                            question_bank_standart_option as option,
+                            question_bank_standart_answer as answer,
+                            question_bank_standart_hint as hint,
+                            question_bank_standart_type as type,                               
+                            question_bank_standart_poin as poin                               
+                        ')
+                        ->where('question_bank_standart_id', $val->id)
+                        ->first();
+                } else {
+                    $all_task[$k][] = $this->qc_me
+                        ->select('
+                            question_bank_id as id,
+                            question_bank_question as question,
+                            question_bank_option as option,
+                            question_bank_answer as answer,
+                            question_bank_hint as hint,
+                            question_bank_type as type,
+                            question_bank_poin as poin
+                        ')
+                        ->where('question_bank_id', $val->id)
+                        ->first();
+                }
+            }
+        }
+
+        $storage = [];
+        $storage['task_id'] = $result['task_id'];
+        $storage['task_title'] = $result['task_title'];
+        $storage['subject'] = $result['subject_name'];
+
+        $quests = [];
+        $arr_src = ['me' => 1, 'pub' => 2, 'std' => 3];
+        foreach ($all_task as $k => $v) {
+            foreach ($v as  $val) {
+                $quests[$k.'_'.$val['id']]['question_id'] = $k.'_'.$val['id'];
+                $quests[$k.'_'.$val['id']]['question'] = $val['question'];
+
+                $answ = [];
+                foreach (json_decode($result['task_result_answer']) as $idx => $value) {
+                    foreach ($value as $kk => $vv) {
+                        if ($vv->id == $val['id']) {
+                            $answ[] = $vv->student_answer;
+                            if (isset($vv->poin)) {
+                                $quests[$k.'_'.$val['id']]['note_check'] = $vv->note_check;
+                                $quests[$k.'_'.$val['id']]['res_poin'] = (float)$vv->poin;
+                            } else {
+                                $quests[$k.'_'.$val['id']]['note_check'] = '';
+                                $quests[$k.'_'.$val['id']]['res_poin'] = 0;
+                            }
+                            $quests[$k.'_'.$val['id']]['checked'] = $vv->checked;
+                        }
+                    }
+                }
+
+                if ($val['type'] < 4) {
+                    $opts = [];
+                    foreach (json_decode($val['option']) as $key => $value) {
+                        $opts['opt_' . $key + 1] = $value;
+                    }
+
+                    $quests[$k.'_'.$val['id']]['option'] = $opts;
+                } else {
+                    $quests[$k.'_'.$val['id']]['option'] = [];
+                }
+
+                $quests[$k.'_'.$val['id']]['student_answer'] = $answ;
+                $quests[$k.'_'.$val['id']]['right_answer'] = $val['answer'];
+                $quests[$k.'_'.$val['id']]['type'] = $val['type'];
+                $quests[$k.'_'.$val['id']]['poin'] = $val['poin'];
+                $quests[$k.'_'.$val['id']]['hint'] = $val['hint'];
+            }
+        }
+
+        $storage['tasks'] = $quests;
+        
+        $data = [
+            'key' => 'aquacode_' . userdata()['id_profile'] .'_'. $result['task_result_student_id'],
+            'value' => $storage,
+            'student_id' => $result['task_result_student_id'],
+            'result_id' => $result_id
+        ];
+
+        echo json_encode($data);
+    }
+
+    public function submit_check_task()
+    {
+        $req = $this->request->getVar();
+
+        $result = $this->task_result
+            ->where('task_result_id', $req['res'])->first();
+
+        $arch_ans = [];
+        $total_poin = 0;
+        foreach (json_decode($result['task_result_answer']) as $k => $v) {
+            foreach ($v as $key => $val) {
+                $arch_ans[$k][$key]['id'] = $key;
+                $arch_ans[$k][$key]['student_answer'] = $val->student_answer;
+                $arch_ans[$k][$key]['checked'] = 1;
+                $arch_ans[$k][$key]['poin'] = $req['result'][$k.'_'.$key]['res_poin'];
+                $arch_ans[$k][$key]['note_check'] = $req['result'][$k.'_'.$key]['note_check'];
+                $total_poin += $req['result'][$k.'_'.$key]['res_poin'];
+            }
+        }
+
+        $upd = $this->task_result
+            ->set('task_result_answer', json_encode($arch_ans))
+            ->set('task_result_value', $total_poin)
+            ->where('task_result_id', $req['res'])
+            ->update();
+
+        if ($upd) {
+            $return = [
+                'sts' => true,
+                'msg' => 'Pemeriksaan berhasil disimpan!',
+                'icn' => 'success'
+            ];
+        } else {
+            $return = [
+                'sts' => false,
+                'msg' => 'Pemeriksaan gagal disimpan!',
+                'icn' => 'error'
+            ];
+        }
+
+        echo json_encode($return);
+    }
 
     // BEGIN STUDENT FUNCTION
     public function s_index_present()
@@ -1152,7 +1297,8 @@ class Task extends BaseController
             }
 
             $storage = [
-                'key' => 'bluecode_' . userdata()['id_profile'],
+                'task_id' => $id,
+                'key' => 'bluecode_' . userdata()['id_profile'] . '_' . $id,
                 'value' => $data,
                 'tasks' => $data['tasks']
             ];
@@ -1167,7 +1313,8 @@ class Task extends BaseController
             $data = json_decode($my_temp['task_temp_data']);
 
             $storage = [
-                'key' => 'bluecode_' . userdata()['id_profile'],
+                'task_id' => $id,
+                'key' => 'bluecode_' . userdata()['id_profile'] . '_' . $id,
                 'value' => $data,
                 'tasks' => count((array)$data->tasks) > 0 ? [1] : []
             ];
@@ -1219,60 +1366,70 @@ class Task extends BaseController
             $total_poin = 0;
             $arch_answer = [];
             foreach ($req['answer'] as $k => $v) {
-                $real_ans = [];
-                if ($v['source'] == 'std') {
-                    $real_ans = $this->qc_std
-                        ->select('
-                            question_bank_standart_id as id,
-                            question_bank_standart_answer as answer,
-                            question_bank_standart_poin as poin                               
-                        ')
-                        ->where('question_bank_standart_id', $v['question_id'])
-                        ->first();
-                } else {
-                    $real_ans = $this->qc_me
-                        ->select('
-                            question_bank_id as id,
-                            question_bank_answer as answer,
-                            question_bank_poin as poin,                           
-                        ')
-                        ->where('question_bank_id', $v['question_id'])
-                        ->first();
-                }
-
-                $arch_answer[$v['source']][$v['question_id']]['id'] = $v['question_id'];
-                $arch_answer[$v['source']][$v['question_id']]['student_answer'] = $v['answer'];
-                
-                $rans = json_decode($real_ans['answer']);
-
-                if (count($rans) < 2 ) {
-                    if ($v['answer'] == $rans) {
-                        $total_poin += $real_ans['poin'];
-                        $arch_answer[$v['source']][$v['question_id']]['poin'] = $real_ans['poin'];
+                if ($v['question_type'] < 4) {
+                    $real_ans = [];
+                    if ($v['source'] == 'std') {
+                        $real_ans = $this->qc_std
+                            ->select('
+                                question_bank_standart_id as id,
+                                question_bank_standart_answer as answer,
+                                question_bank_standart_poin as poin                               
+                            ')
+                            ->where('question_bank_standart_id', $v['question_id'])
+                            ->first();
                     } else {
-                        $arch_answer[$v['source']][$v['question_id']]['poin'] = 0;
+                        $real_ans = $this->qc_me
+                            ->select('
+                                question_bank_id as id,
+                                question_bank_answer as answer,
+                                question_bank_poin as poin,                           
+                            ')
+                            ->where('question_bank_id', $v['question_id'])
+                            ->first();
                     }
-                } else {
-                    if (count($rans) == count($v['answer'])) {
-                        $mcx = [];
-                        for ($i=0; $i < count($rans); $i++) { 
-                            if (in_array($rans[$i], $v['answer'])) {
-                                $mcx[] = true;
-                            } else {
-                                $mcx[] = false;
-                            }
-                        }
-                        
-                        if (in_array(false, $mcx)) {
+    
+                    $arch_answer[$v['source']][$v['question_id']]['id'] = $v['question_id'];
+                    $arch_answer[$v['source']][$v['question_id']]['student_answer'] = $v['answer'];
+                    
+                    $rans = json_decode($real_ans['answer']);
+
+                    if (count($rans) < 2 ) {
+                        if ($v['answer'] == $rans) {
                             $total_poin += $real_ans['poin'];
                             $arch_answer[$v['source']][$v['question_id']]['poin'] = $real_ans['poin'];
                         } else {
                             $arch_answer[$v['source']][$v['question_id']]['poin'] = 0;
                         }
                     } else {
-                        $arch_answer[$v['source']][$v['question_id']]['poin'] = 0;
+                        if (count($rans) == count($v['answer'])) {
+                            $mcx = [];
+                            for ($i=0; $i < count($rans); $i++) { 
+                                if (in_array($rans[$i], $v['answer'])) {
+                                    $mcx[] = true;
+                                } else {
+                                    $mcx[] = false;
+                                }
+                            }
+                            
+                            if (in_array(false, $mcx)) {
+                                $total_poin += $real_ans['poin'];
+                                $arch_answer[$v['source']][$v['question_id']]['poin'] = $real_ans['poin'];
+                            } else {
+                                $arch_answer[$v['source']][$v['question_id']]['poin'] = 0;
+                            }
+                        } else {
+                            $arch_answer[$v['source']][$v['question_id']]['poin'] = 0;
+                        }
                     }
+                    $arch_answer[$v['source']][$v['question_id']]['checked'] = 1;
+                } else {
+                    $arch_answer[$v['source']][$v['question_id']]['id'] = $v['question_id'];
+                    $arch_answer[$v['source']][$v['question_id']]['checked'] = 0;
+                    // $arch_answer[$v['source']][$v['question_id']]['poin'] = 0;
                 }
+                $arch_answer[$v['source']][$v['question_id']]['student_answer'] = $v['answer'];
+                $arch_answer[$v['source']][$v['question_id']]['note_check'] = '';
+                $arch_answer[$v['source']][$v['question_id']]['question_id'] = $v['question_id'];
             }
 
             $upd_result = $this->task_result

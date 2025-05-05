@@ -30,7 +30,7 @@ function show_qb(subj, grad) {
       data: { subj, grad },
       method: "post",
       dataType: "json",
-      beforeSend: function() {
+      beforeSend: function () {
         show_loading()
       },
       success: function (e) {
@@ -46,35 +46,35 @@ function preview_qb(e, subj, subjname, grad, gradname) {
   let i1 = 1;
   $.each(e, function (i, v) {
     // if (v.content.length > 0) {
-      let ch1 = "";
-      let i2 = 1;
-      $.each(v.content, function (idx, val) {
-        let child = "";
-        let ii = 1;
-        let chi = 1;
-        $.each(val["child"], function (index, value) {
-          let cch = "";
+    let ch1 = "";
+    let i2 = 1;
+    $.each(v.content, function (idx, val) {
+      let child = "";
+      let ii = 1;
+      let chi = 1;
+      $.each(val["child"], function (index, value) {
+        let cch = "";
 
-          $.each(value, function (a, b) {
-            cch += `<a href="#" onclick="view_task(${i1}, ${b})" class="m-1 btn btn-icon btn-sm btn-outline btn-outline-primary">${chi}</a>`;
-            chi++;
-          });
+        $.each(value, function (a, b) {
+          cch += `<a href="#" onclick="view_task(${i1}, ${b})" class="m-1 btn btn-icon btn-sm btn-outline btn-outline-primary">${chi}</a>`;
+          chi++;
+        });
 
-          child += `
+        child += `
           <div style="margin-left: 8px; margin-bottom: 10px;" class="d-flex justify-content-start">
               ${cch}
           </div>
           `;
-          ii++;
-        });
-        
-        let child_body = `
+        ii++;
+      });
+
+      let child_body = `
           <ul class="list-group list-group-flush hide task_child" id="i${i1}${i2}">
             ${child}
           </ul>
         `;
 
-        ch1 += `
+      ch1 += `
           <div class="form-check my-2 form-switch form-check-custom form-check-solid" style="margin-left: 10px">
             <input class="form-check-input h-20px w-30px" type="radio" name="task_ass_check" data-taskrc=${v.src} data-taskname="${val.title}" value="${val.id}" />
             <label class="form-check-label head22" data-source="${i1}${i2}">
@@ -84,21 +84,21 @@ function preview_qb(e, subj, subjname, grad, gradname) {
           ${val.child.length > 0 ? child_body : ''}    
           `;
 
-        i2++;
-      });
+      i2++;
+    });
 
-      let ch1_body = `
+    let ch1_body = `
         <ul class="list-group list-group-flush hide head_head22 text-bold" id="i${i1}">
           ${ch1}
         </ul>
       `;
 
-      content += `
+    content += `
             <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${v.head}</h6></li>
             ${v.content.length > 0 ? ch1_body : `<ul class="list-group list-group-flush hide task_child p-2" id="i${i1}">Soal tidak tersedia</ul>`}
         `;
 
-      i1++;
+    i1++;
     // }
   });
 
@@ -160,20 +160,19 @@ function set_task_ass() {
 }
 
 function get_religion(reli = null) {
-  
+
   let relig = $("#select_religion_test");
   $.ajax({
     url: base_url + "/teacher/assessment/get-list-religion",
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
       let option = "<option value=0>Pilih Agama</option>";
       $.each(e, function (i, v) {
         if (reli != null) {
-          console.log(reli);
           option += `<option value="${i}" ${reli == i ? 'selected' : ''}>${v}</option>`;
         } else {
           option += `<option value="${i}">${v}</option>`;
@@ -239,7 +238,7 @@ function check_group(subs, grad) {
     data: { subs, grad },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -265,7 +264,7 @@ function view_task_assessment(id, src) {
     data: { id, src },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -402,7 +401,7 @@ function store_data(type, data, id = null) {
     data: { type, data, id },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -425,7 +424,7 @@ function edit_draft(id) {
     data: { id },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -463,7 +462,7 @@ function view_edit(e) {
   $.each(JSON.parse(e.assessment_group), function (i, v) {
     selected_group.push(v.id);
   });
-  
+
   $("#multiple-select-group").val(selected_group).trigger("change");
 
   let start = e.assessment_start.substring(0, 16);
@@ -758,7 +757,7 @@ function check_good_date(eds) {
   return result.includes(false)
 }
 
-$(document).on('click', '.view_student', function(e) {
+$(document).on('click', '.view_student', function (e) {
   e.preventDefault()
   let assessment_id = $(this).data('assessment_id')
   let group_id = $(this).data('group_id')
@@ -769,6 +768,375 @@ $(document).on('click', '.view_student', function(e) {
 
   $('#modal_look_student_act_assessment').modal('show')
 })
+
+function data_result_student(result_id) {
+  $.ajax({
+    url: base_url + "/teacher/assessment/check-result-assessment",
+    data: { result_id },
+    method: "post",
+    dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      checking_page(e)
+      hide_loading()
+    },
+  });
+}
+
+function checking_page(e = null) {
+  let my_assessment = localStorage.getItem(e.key)
+  if (!my_assessment) {
+    if (e.value) {
+      localStorage.setItem(e.key, JSON.stringify(e.value))
+
+      my_assessment = localStorage.getItem(e.key)
+      actview_checking(e.student_id, my_assessment, 0, false)
+      $('#checking_modal_question').modal('show')
+    }
+  } else {
+    actview_checking(e.student_id, my_assessment, 0, false)
+    $('#checking_modal_question').modal('show')
+  }
+  $('#modal_look_student_act_assessment').modal('hide')
+  $('#btn_submit_checking').val(e.student_id)
+  $('#result_id').val(e.result_id)
+  $('#stu_id').val(e.student_id)
+}
+
+function close_checking_modal() {
+  // let sid = $('#stu_id').val()
+  // localStorage.removeItem('limecode_' + teacher_id + '_' + sid)
+  
+  $('#checking_modal_question').modal('hide')
+  $('#modal_look_student_act_assessment').modal('show')
+}
+
+function actview_checking(sid, e, idx = 0, fix = false) {
+  let data = JSON.parse(e)
+  $('#checking_title').html(data.title)
+  $('#checking_subtitle').html(data.subject)
+
+  let number_quest = ''
+  let num = 1
+  $.each(data.assessment, function (i, v) {
+    let btnn = ''
+    if (!fix) {
+      if (num > 1) {
+        if (v.checked != 0) {
+          btnn = 'btn-success iss'
+        } else {
+          btnn = 'btn-outline btn-outline-dark'
+        }
+      } else {
+        btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
+      }
+    } else {
+      if (idx == v.question_id) {
+        btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
+      } else {
+        if (v.checked != 0) {
+          btnn = 'btn-success iss'
+        } else {
+          btnn = 'btn-outline btn-outline-dark'
+        }
+      }
+    }
+
+    number_quest += `<a href="#" onclick="view_question_act_chk(${v.question_id}, ${sid})" class="m-1 btn btn-icon  ${btnn} actbtn">${num}</a>`
+    num++
+  })
+
+  if (!fix) {
+    if (idx > 0) {
+      view_question_act_chk(Object.keys(data.assessment[idx]), sid)
+    } else {
+      view_question_act_chk(Object.keys(data.assessment)[0], sid)
+    }
+  }
+
+  let nquest = `
+    <div class="alert bg-light border border-primary" style="min-height: 450px;">
+    <span class="d-block fw-semibold text-start py-2 px-3">
+    <span class="fw-bold d-block fs-3 text-primary mb-2">Nomor Soal</span>
+    ${number_quest}
+    </div>
+  `
+  $('#list_questions').html(nquest);
+}
+
+function view_question_act_chk(id, sid) {
+  $('#check_answer_essay').html('')
+  $('#checkpoin').html('')
+
+  let my_assessment = localStorage.getItem('limecode_' + teacher_id + '_' + sid)
+  let data = JSON.parse(my_assessment)
+  
+  let row = data.assessment[id]
+  let qtype = data.assessment[id].type
+  let spoin = data.assessment[id].res_poin
+  let poin = data.assessment[id].poin
+  let student_answer = data.assessment[id].student_answer[0]
+  let right_answer = JSON.parse(data.assessment[id].right_answer)
+  let nchk = data.assessment[id].note_check
+  let ischk = data.assessment[id].checked
+  
+  let tpoint = 0;
+  $.each(data.assessment, function(i,v) {
+    tpoint += parseFloat(v.res_poin)
+  })
+
+  let question = `
+    <div class="alert bg-light-info border border-info d-flex flex-column flex-sm-row mb-5">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-info mb-2">Pertanyaan</span>
+        <span class="fw-bold fs-3 text-info">
+          ${row.question}
+        </span>
+      </span>
+    </div>
+  `;
+
+  let option = ''
+  let num = 1
+  let type = qtype == 2 ? 'checkbox' : 'radio'
+  $.each(row.option, function (i, v) {   
+    let btn_cls = 'btn-outline btn-outline-primary'
+    if (student_answer[0].includes(v)) {
+      if (right_answer.includes(v)) {
+        btn_cls = 'btn-success'
+      } else {
+        btn_cls = 'btn-warning'
+      }
+    } else if (right_answer.includes(v)) {
+      btn_cls = 'btn-primary'
+    }
+
+    let opt_val = row.type == 3 ? (v == 1 ? 'Benar' : 'Salah') : v
+    option += `
+    <div class="col-sm-6">
+      
+      <label class="btn ${btn_cls} p-7 d-flex align-items-center mb-5" for="kt_choose_${num}">
+        <span class="d-block fw-semibold text-start">
+          <span class="fw-bold d-block fs-3 mb-2">Pilihan Jawaban ${num}</span>
+          <span class="fs-3">${opt_val}</span>
+        </span>
+      </label>
+    </div>
+    `
+    num++;
+  })
+
+  $('#check_question').html(question)
+  let setpoin = ''
+  let colorcode = ''
+  if (qtype < 4) {
+    $('#check_answer_essay').html('')
+    $('#check_answer').html(`<div class="row">${option}</div>`)
+
+  //   colorcode = `
+  //   <div id="code_color my-2" style="margin-top: 10px;">
+  //     <span class="fw-bold d-block fs-3 text-primary mb-2">Kode Warna</span>
+  //     <span class="btn btn-sm btn-warning">Jawaban Siswa</span><br>
+  //     <span class="btn btn-sm btn-primary my-2">Jawaban Benar</span><br>
+  //     <span class="btn btn-sm btn-success">Jawaban Tepat</span>
+  //   </div>
+  // `
+  } else {
+    $('#check_answer').html('')
+    
+    let formspoin = ''
+    if (ischk == 1) {
+      formspoin = `<input type="number" min="0" max="${poin}" class="form-control" id="percent_essay_poin" placeholder="Persen jawaban benar" value="${parseInt(spoin*100)}" onchange="setpercent(${id}, ${poin}, ${sid}, ${tpoint})" style="border: 2px solid #5014D0">`
+    } else {
+      formspoin = `<input type="number" min="0" max="${poin}" class="form-control" id="percent_essay_poin" placeholder="Persen jawaban benar" onchange="setpercent(${id}, ${poin}, ${sid}, ${tpoint})" style="border: 2px solid #5014D0">`
+    }
+
+    setpoin = `
+      <span class="fw-bold d-block fs-3 text-primary mb-2">Nilai</span>
+      <div class="d-flex justify-content-between">
+        <div class="input-group" style="width: 100%">
+          ${formspoin}
+          <button class="btn btn-primary btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="0" type="button">0</button>
+          <button class="btn btn-primary btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="25" type="button">25</button>
+          <button class="btn btn-primary btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="50" type="button">50</button>
+          <button class="btn btn-primary btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="75" type="button">75</button>
+          <button class="btn btn-primary btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="100" type="button">100</button>
+        </div>
+      </div>
+      <p class="text-danger err_poin hide">Nilai maksimal dibatasi hanya 100!</p>
+      `
+
+    let essay = `
+    <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row mb-5">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-dark mb-2">Jawaban Uraian</span>
+        <span class="fw-semibold fs-3 text-dark">
+          ${student_answer}
+        </span>
+      </span>
+    </div>
+    `;
+    $('#check_answer_essay').html(essay)
+  }
+
+  let checkpoin = `
+  <div class="alert bg-light border border-primary">
+    <span class="d-block fw-semibold text-start py-2 px-3">
+      <div class="d-flex justify-content-between mb-3">
+        <badge class="badge badge-info fs-3 p-5"><b>Poin Soal : ${poin}</b></badge>
+        <badge class="badge badge-success fs-3 p-5"><b id="allpoint">Total Poin : ${tpoint % 1 == 0 ? tpoint : tpoint.toFixed(2)}</b></badge>
+        <input type="hidden" name="allpoint" value="${tpoint}"/>
+      </div>
+      ${setpoin}
+      <span class="fw-bold d-block fs-3 text-primary my-2 ">Catatan</span>
+      <div id="checked_note"></div>
+      ${colorcode}
+    </span>
+  </div>  
+  `;
+
+  var Delta = Quill.import('delta');
+  $('#checkpoin').html(checkpoin)
+  var checked_note = new Quill("#checked_note", {
+    modules: {
+      toolbar: toolbarOptions,
+    },
+    theme: "snow", // or 'bubble'
+  });
+
+  var change = new Delta();
+  checked_note.on('text-change', function (delta) {
+    autosave_check_note(id, sid)
+    change = change.compose(delta);
+  });
+
+  $("#checked_note > .ql-editor").html(nchk != '' ? nchk : '<p><br></p>');
+}
+
+function autosave_check_note(key, sid) {
+  let note = $("#checked_note > .ql-editor").html()
+  update_localstorage_chk(sid, 'check_note', key, note)
+}
+
+function setpercent(key, val, sid, tpoint) {
+  spoin = $('#percent_essay_poin').val();
+  if (spoin <= 100) {
+    let nval = spoin * val / 100;
+  
+    let newpoint = parseFloat(tpoint) + parseFloat(nval)
+    $('#allpoint').html('Total Poin : ' + newpoint)
+  
+    update_localstorage_chk(sid, 'checking', key, nval)
+    $('.err_poin').addClass('hide')
+  } else {
+    $('.err_poin').removeClass('hide')
+  }
+}
+
+$(document).on('click', '.btn_vlchk', function (e) {
+  e.preventDefault()
+  let val = $(this).data('val')
+  let sid = $(this).data('sid')
+  let key = $(this).data('key')
+  let poin = $(this).data('poin')
+  let allpoint = $('input[name=allpoint]').val()
+  
+  let nval = val * poin / 100;
+  let newpoint = parseFloat(allpoint) + parseFloat(nval)
+  
+  $('#percent_essay_poin').val(parseFloat(val))
+  $('#allpoint').html('Total Poin : ' + newpoint)
+
+  update_localstorage_chk(sid, 'checking', key, nval)
+})
+
+function update_localstorage_chk(sid, type, key, value = null) {
+  let key_storage = 'limecode_' + teacher_id + '_' + sid;
+  let my_data = JSON.parse(localStorage.getItem(key_storage))
+  
+  if (type == 'checking') {
+    // let chk = value > 0 ? 1 : 0;
+    my_data.assessment[key].student_poin = value
+    my_data.assessment[key].res_poin = value
+    my_data.assessment[key].checked = 1
+    localStorage.setItem(key_storage, JSON.stringify(my_data))
+
+    let res_data = localStorage.getItem(key_storage)
+    view_question_act_chk(key, sid)
+    actview_checking(sid, res_data, key, true)
+  } else if (type == 'check_note') {
+    let notes = value != '<p><br></p>' ? value : "";
+    my_data.assessment[key].note_check = notes
+
+    localStorage.setItem(key_storage, JSON.stringify(my_data))   
+  }
+}
+
+$('#btn_submit_checking').on('click', function() {
+  let sid = $(this).val()
+  let resid = $('#result_id').val()
+
+  let key_storage = 'limecode_' + teacher_id + '_' + sid;
+  let my_data = JSON.parse(localStorage.getItem(key_storage))
+  
+  let status_checked = [];
+  $.each(my_data.assessment, function(i,v) {
+    if (v.checked == 1) {
+      status_checked.push(true)
+    } else {
+      status_checked.push(false)
+    }
+  })
+
+  if (status_checked.includes(false)) {
+    toast_act('Gagal!','Masih ada yang belum diperiksa!', 'error')
+  } else {
+    // Swal.fire({
+    //   html: `<h2>Apakah anda yakin?</h2><br><p>Jika sudah dikirimkan, maka tidak dapat mengubah atau mengulang pemeriksaan.</p>`,
+    //   icon: "warning",
+    //   buttonsStyling: false,
+    //   showCancelButton: true,
+    //   confirmButtonText: "Ya, Kirimkan",
+    //   cancelButtonText: "Periksa Kembali",
+    //   customClass: {
+    //     confirmButton: "btn btn-sm btn-primary",
+    //     cancelButton: "btn btn-sm btn-info",
+    //   },
+    // }).then(function (confirm) {
+    //   if (confirm.isConfirmed) {
+        submit_checking_act(my_data, resid, key_storage)
+    //   }
+    // });
+  }
+  
+})
+
+function submit_checking_act(e, res, key)
+{
+  let result = e.assessment
+  $.ajax({
+    url: base_url + "/teacher/assessment/submit-check-assessment",
+    data: { res, result },
+    method: "post",
+    dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      if (e.sts) {
+        localStorage.removeItem(key)
+        close_checking_modal()
+        // $('#checking_modal_question').modal('hide')
+        // localStorage.removeItem('limecode_' + teacher_id + '_' + sid)
+      }
+      toast_act('', e.msg, e.icn)
+      hide_loading()
+
+    },
+  });
+}
 
 // Begin Action Assessment
 function alert_begin_assessment(assessment) {
@@ -809,7 +1177,7 @@ function info_begin_assessment(e) {
   $('.no_cheat').html(e.assessment_is_prevent_cheat)
   $('.assesst_id').html(e.assessment_id)
   $('.sch_year_id').html(e.assessment_school_year_id)
-  
+
   let allow_cheat = e.assessment_is_prevent_cheat > 0 ? '<li>Ujian ini bersifat tutup buku (tidak boleh menutup atau meninggalkan halaman ujian)</li>' : ''
   let auto_submit = e.assessment_is_autosubmit > 0 ? '<li>Ketika waktu mengerjakan sudah habis, maka jawaban akan terkirim secara otomatis.</li>' : ''
 
@@ -840,29 +1208,30 @@ function assessment_page(e = null) {
   if (!my_assessment) {
     if (e.value) {
       localStorage.setItem(e.key, JSON.stringify(e.value))
-      
+
       let timer = localStorage.getItem('tmr_' + student_id)
       let tim = parseInt(e.value.timer)
       if (tim > 0) {
         if (!timer) {
           let end = new Date(e.value.end_date)
           let beg = new Date(e.value.begin_assign)
-          
+
           Date.prototype.addMins = function (m) {
-              this.setTime(this.getTime() + (m * 60 * 1000));
-              return this;
+            this.setTime(this.getTime() + (m * 60 * 1000));
+            return this;
           }
-          
+
           beg.addMins(tim);
+
           if (beg > end) {
             localStorage.setItem('tmr_' + student_id, end.getTime())
           } else {
             localStorage.setItem('tmr_' + student_id, beg.getTime())
           }
-          
+
         }
       }
-      
+
       my_assessment = localStorage.getItem(e.key)
       actview_assessment(my_assessment)
       $('#modal_assessment_information').modal('hide')
@@ -873,7 +1242,7 @@ function assessment_page(e = null) {
     $('#assessment_modal_question').modal('show')
   }
 
-  
+
 }
 
 window.onblur = function () {
@@ -885,14 +1254,14 @@ window.onblur = function () {
       if (rcop) {
         let cheat = rcop.fault
         change_localstorage('fault', 0, cheat + 1)
-    
+
         Swal.fire({
           icon: "error",
           html: `<h2>Oops...</h2><br><p>Anda membuat <b>${cheat + 1} kesalahan</b> karena meinggalkan halaman penilaian!</p><br><p>Toleransi kesalahan maksimal ${allow_cheat} kali.</p>`,
           confirmButtonText: "Ya, Saya Mengerti",
         })
-    
-        if (allow_cheat <= cheat+1) {
+
+        if (allow_cheat <= cheat + 1) {
           submit_assessment_act(2, 'Melakukan kesalahan sebanyak ' + allow_cheat + ' kali.')
         }
       }
@@ -950,6 +1319,7 @@ function actview_assessment(e, idx = 0, fix = false) {
         }
       }
     }
+
     number_assest += `<a href="#" onclick="view_question_act(${v.question_id})" class="m-1 btn btn-icon  ${btnn} actbtn">${num}</a>`
     num++
   })
@@ -961,7 +1331,15 @@ function actview_assessment(e, idx = 0, fix = false) {
       view_question_act(Object.keys(data.assessment)[0])
     }
   }
-  $('#list_assact').html(number_assest);
+
+  let nquest = `
+    <div class="alert bg-light border border-dark" style="min-height: 450px;">
+    <span class="d-block fw-semibold text-start py-2 px-3">
+    <span class="fw-bold d-block fs-3 text-dark mb-2">Nomor Soal</span>
+    ${number_assest}
+    </div>
+  `
+  $('#list_assact').html(nquest);
 }
 
 function view_question_act(id) {
@@ -970,7 +1348,6 @@ function view_question_act(id) {
   let row = data.assessment[id]
   let qtype = data.assessment[id].type
   let student_answer = data.assessment[id].student_answer
-
 
   let question = `
     <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row mb-5">
@@ -1006,8 +1383,63 @@ function view_question_act(id) {
   })
 
   $('#actass_question').html(question)
-  $('#actass_option').html(`<div class="row">${option}</div>`)
+  if (qtype < 4) {
+    $('#actass_essay_answer').html('')
+    $('#actass_option').html(`<div class="row">${option}</div>`)
+  } else if (qtype == 4) {
+    $('#actass_option').html('')
+    $('#actass_essay_answer').html(`
+      <div id="essay_answer" class="ansessay" data-id="${id}"></div>
+    `)
+      // <button class="btn btn-sm btn-success mt-4 save_esans" data-id="${id}">Simpan Jawaban</button>
+
+    var Delta = Quill.import('delta');
+    var essay_answer = new Quill("#essay_answer", {
+      modules: {
+        toolbar: toolbarOptions,
+      },
+      theme: "snow", // or 'bubble'
+    });
+
+    var change = new Delta();
+    essay_answer.on('text-change', function (delta) {
+      autosave_essay()
+      change = change.compose(delta);
+    });
+  }
+
+  if (qtype == 4) {
+    let sans = data.assessment[id].student_answer
+    if (sans != "[]") {
+      $("#essay_answer > .ql-editor").html(sans);
+    }
+
+  }
 }
+
+function autosave_essay() {
+  let id = $('#essay_answer').data('id')
+  if (id != undefined) {
+    let my_assessment = localStorage.getItem('redcode_' + student_id)
+    let data = JSON.parse(my_assessment)
+    let qtype = data.assessment[id].type
+    if (qtype == 4) {
+      let ans = $("#essay_answer > .ql-editor").html()
+
+      rans = ans == '<p><br></p>' ? "[]" : ans;
+      change_localstorage('essay', id, rans, true)
+    }
+  }
+
+}
+
+$(document).on('click', '.save_esans', function () {
+  let id = $(this).data('id')
+  let ans = $("#essay_answer > .ql-editor").html()
+  rans = ans == '<p><br></p>' ? "[]" : ans;
+
+  change_localstorage('essay', id, rans)
+})
 
 $(document).on('click', '.tglchk', function () {
   let question_id = $(this).data('question_id')
@@ -1031,7 +1463,7 @@ $(document).on('click', '.tglchk', function () {
   change_localstorage('option', question_id)
 })
 
-function change_localstorage(type, key, value = null) {
+function change_localstorage(type, key, value = null, stay = false) {
   let key_storage = 'redcode_' + student_id
   let my_data = JSON.parse(localStorage.getItem(key_storage))
 
@@ -1044,13 +1476,22 @@ function change_localstorage(type, key, value = null) {
     })
     localStorage.setItem('rcop_' + student_id, JSON.stringify(my_choose))
     let rcop = localStorage.getItem('rcop_' + student_id)
-  
+
     my_data.assessment[key].student_answer = rcop
     localStorage.setItem(key_storage, JSON.stringify(my_data))
-  
+
     let res_data = localStorage.getItem(key_storage)
     view_question_act(key)
     actview_assessment(res_data, key, true)
+  } else if (type == 'essay') {
+    my_data.assessment[key].student_answer = value
+    localStorage.setItem(key_storage, JSON.stringify(my_data))
+
+    let res_data = localStorage.getItem(key_storage)
+    actview_assessment(res_data, key, true)
+    if (!stay) {
+      view_question_act(key)
+    }
   } else if (type == 'fault') {
     my_data.fault = value
     localStorage.setItem(key_storage, JSON.stringify(my_data))
@@ -1078,7 +1519,7 @@ function get_assessment(type, id, src = null) {
     data: { type, id, src },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -1111,25 +1552,35 @@ function submit_assessment_act(submit_type, submit_msg) {
   send.sch_year_id = row.sch_year_id
 
   let student_answer = []
-  $.each(row.assessment, function(i,v) {
-    let answer = []
-    $.each(JSON.parse(v.student_answer), function(idx, val) {
-      answer.push(v.option[val])
-    })
+  $.each(row.assessment, function (i, v) {
+    if (v.type != 4) {
+      let answer = []
+      $.each(JSON.parse(v.student_answer), function (idx, val) {
+        answer.push(v.option[val])
+      })
 
-    student_answer.push({
-      question_id: v.question_id,
-      answer : v.student_answer != '[]' ? answer : ['empty']
-    })
+      student_answer.push({
+        question_id: v.question_id,
+        question_type: v.type,
+        answer: v.student_answer != '[]' ? answer : ['empty']
+      })
+      send.answer = student_answer
+    } else {
+      student_answer.push({
+        question_id: v.question_id,
+        question_type: v.type,
+        answer: v.student_answer != '[]' ? v.student_answer : ['empty']
+      })
+      send.answer = student_answer
+    }
   })
-  send.answer = student_answer
-  
+
   $.ajax({
     url: base_url + "/student/assessment/submit-assessment",
     data: { send },
     method: "post",
     dataType: "json",
-    beforeSend: function() {
+    beforeSend: function () {
       show_loading()
     },
     success: function (e) {
@@ -1153,7 +1604,7 @@ function submit_assessment_act(submit_type, submit_msg) {
         })
       }
       hide_loading()
-      
+
     },
   });
 }
@@ -1183,52 +1634,27 @@ function runtimer() {
   let timer = localStorage.getItem('tmr_' + student_id)
   if (timer) {
     let countDownDate = timer;
-    
-    let x = setInterval(function() {
+
+    let x = setInterval(function () {
       let now = new Date().getTime();
       let distance = countDownDate - now;
-        
+
       let days = Math.floor(distance / (1000 * 60 * 60 * 24));
       let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        
-      document.getElementById("left_time_assessment").innerHTML = "Sisa Waktu : "
-      + minutes + " Menit " + seconds + " Detik";
-      
+
+      document.getElementById("left_time_assessment").innerHTML = "Sisa Waktu : " + hours + " Jam "
+        + minutes + " Menit " + seconds + " Detik";
+
       if (distance < 0) {
         document.getElementById("left_time_assessment").innerHTML = "EXPIRED";
         clearInterval(x);
         submit_assessment_act(3, 'Waktu habis')
-      } else if (minutes < 6) {
+      } else if (minutes < 120) {
         $('#left_time_assessment').removeClass('hide')
       }
     }, 1000);
-    
+
   }
 }
-
-// function toggleFullScreen() {
-//   if (!document.fullscreenElement &&    // alternative standard method
-//       !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
-//     if (document.documentElement.requestFullscreen) {
-//       document.documentElement.requestFullscreen();
-//     } else if (document.documentElement.msRequestFullscreen) {
-//       document.documentElement.msRequestFullscreen();
-//     } else if (document.documentElement.mozRequestFullScreen) {
-//       document.documentElement.mozRequestFullScreen();
-//     } else if (document.documentElement.webkitRequestFullscreen) {
-//       document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-//     }
-//   } else {
-//     if (document.exitFullscreen) {
-//       document.exitFullscreen();
-//     } else if (document.msExitFullscreen) {
-//       document.msExitFullscreen();
-//     } else if (document.mozCancelFullScreen) {
-//       document.mozCancelFullScreen();
-//     } else if (document.webkitExitFullscreen) {
-//       document.webkitExitFullscreen();
-//     }
-//   }
-// }

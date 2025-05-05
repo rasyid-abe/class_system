@@ -124,6 +124,8 @@ $routes->post('/teacher/assessment/get-edit', 'LearningMS\Assessment\Assessment:
 $routes->post('/teacher/assessment/view-assessment-question', 'LearningMS\Assessment\Assessment::view_assessment_question', ['filter' => 'auth']);
 $routes->get('/teacher/assessment/get-student-assessment', 'LearningMS\Assessment\Assessment::get_student_assessment', ['filter' => 'auth']);
 $routes->post('/teacher/assessment/get-list-religion', 'LearningMS\Assessment\Assessment::get_list_religion', ['filter' => 'auth']);
+$routes->post('/teacher/assessment/check-result-assessment', 'LearningMS\Assessment\Assessment::check_result_assessment', ['filter' => 'auth']);
+$routes->post('/teacher/assessment/submit-check-assessment', 'LearningMS\Assessment\Assessment::submit_check_assessment', ['filter' => 'auth']);
 
 $routes->get('/teacher/task/index-add', 'LearningMS\Tasks\Task::index', ['filter' => 'auth']);
 $routes->get('/teacher/task/index-draft', 'LearningMS\Tasks\Task::index_draft', ['filter' => 'auth']);
@@ -136,6 +138,8 @@ $routes->post('/teacher/task/store-data', 'LearningMS\Tasks\Task::store_data', [
 $routes->post('/teacher/task/task-lesson', 'LearningMS\Tasks\Task::task_lesson', ['filter' => 'auth']);
 $routes->get('/teacher/task/list-task', 'LearningMS\Tasks\Task::list_task', ['filter' => 'auth']);
 $routes->get('/teacher/task/get-student-task', 'LearningMS\Tasks\Task::get_student_task', ['filter' => 'auth']);
+$routes->post('/teacher/task/check-result-task', 'LearningMS\Tasks\Task::check_result_task', ['filter' => 'auth']);
+$routes->post('/teacher/task/submit-check-task', 'LearningMS\Tasks\Task::submit_check_task', ['filter' => 'auth']);
 
 $routes->get('/teacher/groups/view-students/(:num)', 'LearningMS\Groups\Groups::view_students/$1', ['filter' => 'auth']);
 $routes->get('/teacher/groups/get-list-student', 'LearningMS\Groups\Groups::get_list_students', ['filter' => 'auth']);

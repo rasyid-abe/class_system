@@ -9,6 +9,7 @@ use App\Models\Tasks\TasksResultModel;
 use App\Models\Tasks\TasksTempModel;
 use App\Models\Lessons\SchoolLessonModel;
 use App\Models\Lessons\StandartLessonModel;
+use PDO;
 
 class DashboardStudent extends BaseController
 {
@@ -74,7 +75,10 @@ class DashboardStudent extends BaseController
         $data['list_idx'] = $list_idx;
 
         $my_group = student_group();
-        $sub_list = $this->lesson_school->student_list_subject($my_group['grade'], $my_group['group_id']);
+        $sub_list = [];
+        if (!empty(year_active())) {
+            $sub_list = $this->lesson_school->student_list_subject($my_group['grade'], $my_group['group_id']);
+        }
 
         $std_less = $this->lesson_standart
             ->select('subject_id,subject_name,lesson_standart_id, lesson_standart_chapter, lesson_standart_subchapter')
@@ -87,7 +91,6 @@ class DashboardStudent extends BaseController
         $data['subj_school'] = $sub_list;
         $data['subj_standart'] = $std_less;
         $data['grade'] = $my_group['grade'];
-        $data['group'] = $my_group['group_name'];
 
         return view("dashboard/student", $data);
     }

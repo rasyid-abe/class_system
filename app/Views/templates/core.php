@@ -226,6 +226,15 @@
 				transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
 			}
 		}
+
+		.ql-container {
+			min-height: 200px;
+			background-color: #fff;
+		}
+
+		.ql-container, .ql-toolbar {
+			border : 1px solid darkgrey !important;
+		}
 	</style>
 </head>
 <!--end::Head-->
@@ -258,6 +267,7 @@
 						<div class="col-sm-9">
 							<div id="actass_question"></div>
 							<div id="actass_option"></div>
+							<div id="actass_essay_answer"></div>
 
 							<!-- <div class="d-flex justify-content-between">
 								<button class="btn btn-warning">Batalkan Pilihan</button>
@@ -281,6 +291,7 @@
 
 					<div class="buttonn">
 						<span class="fw-bold mx-5 fs-3"><span id="left_time_task" class="hide"></span></span>
+						<input type="hidden" name="tid" value="">
 						<button type="button" class="btn btn-success" onclick="save_act_task();">Simpan</button>
 						<button type="button" class="btn btn-primary" onclick="alert_submit_task();">Submit</button>
 					</div>
@@ -311,15 +322,15 @@
 							<div class="card p-5" id="content_value">
 								<div class="tab-content" id="myTabContent">
 									<div class="tab-pane fade content_topic show active" id="tab_content_public" role="tabpanel">
-										<div id="content_lesson_p"></div>
+										<div class="content_lesson_pub"></div>
 									</div>
 									<div class="tab-pane fade content_topic" id="tab_video_public" role="tabpanel">
 										<div id="btn_conf_vid_"></div>
-										<div id="video_lesson_p"></div>
+										<div class="video_lesson_pub"></div>
 									</div>
 									<div class="tab-pane fade content_topic" id="tab_attachment_public" role="tabpanel">
 										<div id="btn_conf_attach_"></div>
-										<div id="attachment_lesson_p"></div>
+										<div class="attachment_lesson_pub"></div>
 									</div>
 									<div class="tab-pane fade content_topic" id="tab_task_public" role="tabpanel">
 										<div class="row">
@@ -329,11 +340,84 @@
 											<div class="col-sm-9">
 												<div id="acttask_question"></div>
 												<div id="acttask_option"></div>
+												<div id="acttask_essay_answer"></div>
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal bg-body fade task_modal_act" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="checking_modal_question">
+		<div class="modal-dialog modal-fullscreen">
+			<div class="modal-content shadow-none">
+				<div class="modal-header">
+					<div class="modal-title">
+						<h5 id="checking_title"></h5>
+						<badge id="checking_subtitle" class="badge badge-secondary mt-2"></badge>
+					</div>
+					<div class="buttonn">
+						<span class="fw-bold mx-5 fs-3"><span id="left_time_task" class="hide"></span></span>
+						<button type="button" class="btn btn-danger" onclick="close_checking_modal()">Tutup</button>
+						<button type="button" class="btn btn-primary" id="btn_submit_checking">Submit</button>
+						<input type="hidden" name="result_id" id="result_id">
+						<input type="hidden" name="stu_id" id="stu_id">
+					</div>
+				</div>
+
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-2" style="overflow-y: scroll; max-height:690px;">
+							<div class="list_questions" id="list_questions"></div>
+						</div>
+						<div class="col-sm-6">
+							<div id="check_question"></div>
+							<div id="check_answer"></div>
+							<div id="check_answer_essay"></div>
+						</div>
+						<div class="col-sm-4">
+							<div id="checkpoin"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal bg-body fade task_modal_act" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="checking_modal_question_tsk">
+		<div class="modal-dialog modal-fullscreen">
+			<div class="modal-content shadow-none">
+				<div class="modal-header">
+					<div class="modal-title">
+						<h5 id="checking_title"></h5>
+						<badge id="checking_subtitle" class="badge badge-secondary mt-2"></badge>
+					</div>
+					<div class="buttonn">
+						<span class="fw-bold mx-5 fs-3"><span id="left_time_task" class="hide"></span></span>
+						<button type="button" class="btn btn-danger" onclick="close_checking_modal_tsk()">Tutup</button>
+						<button type="button" class="btn btn-primary" id="btn_submit_checking_tsk">Submit</button>
+						<input type="hidden" name="result_id_tsk" id="result_id_tsk">
+						<input type="hidden" name="stu_id_tsk" id="stu_id_tsk">
+					</div>
+				</div>
+
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-2" style="overflow-y: scroll; max-height:690px;">
+							<div class="list_questions_tsk" id="list_questions_tsk"></div>
+						</div>
+						<div class="col-sm-6">
+							<div id="check_question_tsk"></div>
+							<div id="check_answer_tsk"></div>
+							<div id="check_answer_essay_tsk"></div>
+						</div>
+						<div class="col-sm-4">
+							<div id="checkpoin_tsk"></div>
 						</div>
 					</div>
 				</div>
@@ -1600,6 +1684,10 @@
 		if (url.includes("student")) {
 			student_id = '<?= userdata()['id_profile'] ?>'
 		}
+		let teacher_id = 0
+		if (url.includes("teacher")) {
+			teacher_id = '<?= userdata()['id_profile'] ?>'
+		}
 	</script>
 	<!--begin::Javascript-->
 	<!--begin::Global Javascript Bundle(used by all pages)-->
@@ -1611,30 +1699,10 @@
 	<script type="text/javascript" src="<?= base_url() ?>assets/js/tabulator.min.js"></script>
 
 	<script src="<?= base_url() ?>assets/js/scripts.bundle.js"></script>
-	<script src="<?= base_url() ?>assets/js/jquery.toast.js"></script>
+	<!-- <script src="<?= base_url() ?>assets/js/jquery.toast.js"></script> -->
 	<script src="<?= base_url() ?>assets/js/common.js"></script>
 
 	<script>
-		// import axios from 'axios';
-		// const downloadAs = (url, name) => {
-		// 	Axios.get(url, {
-		// 			headers: {
-		// 				"Content-Type": "application/octet-stream"
-		// 			},
-		// 			responseType: "blob"
-		// 		})
-		// 		.then(response => {
-		// 			const a = document.createElement("a");
-		// 			const url = window.URL.createObjectURL(response.data);
-		// 			a.href = url;
-		// 			a.download = name;
-		// 			a.click();
-		// 		})
-		// 		.catch(err => {
-		// 			console.log("error", err);
-		// 		});
-		// };
-
 		const tbconf = {
 			height: "600px",
 			layout: "fitDataStretch",
@@ -1678,17 +1746,32 @@
 			}
 		});
 
-		function al_swal(msg, type) {
-			Swal.fire({
-				text: msg,
-				icon: type,
-				buttonsStyling: false,
-				confirmButtonText: "Ok",
-				customClass: {
-					confirmButton: "btn btn-primary"
-				}
+		function toast_act(heading = '', text = '', icon = '', hide = '') {
+			Toast.fire({
+				icon: icon,
+				title: text
 			});
 		}
+
+		// function al_swal(msg, type) {
+		// 	Swal.fire({
+		// 		text: msg,
+		// 		icon: type,
+		// 		buttonsStyling: false,
+		// 		confirmButtonText: "Ok",
+		// 		customClass: {
+		// 			confirmButton: "btn btn-primary"
+		// 		}
+		// 	});
+
+		// 	// Swal.fire({
+		// 	// position: "top-end",
+		// 	// icon: "success",
+		// 	// title: "Your work has been saved",
+		// 	// showConfirmButton: false,
+		// 	// timer: 1500
+		// 	// });
+		// }
 
 		function set_year(e) {
 			$.ajax({
@@ -1731,8 +1814,6 @@
 		}
 
 		function show_tp() {
-			console.log('akljas');
-
 			$.ajax({
 				url: "<?= base_url('/config-teacher-student/active-year/list-year') ?>",
 				type: "post",

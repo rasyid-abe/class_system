@@ -61,7 +61,7 @@
            <div id="treeview_task__"></div>
           </div>
 
-          <div class="col-sm-9 hide" id="content_tab">
+          <div class="col-sm-9 hide" id="content_tab_ct">
             <div class="hover-scroll-x">
               <div class="d-grid">
                 <ul class="nav nav-tabs flex-nowrap text-nowrap">
@@ -81,7 +81,7 @@
               </div>
             </div>
 
-            <div class="card p-5 hide" id="content_value">
+            <div class="card p-5 hide" id="content_value_ct">
               <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade content_topic_a show active" id="tab_content" role="tabpanel">
                   <div id="content_lesson"></div>

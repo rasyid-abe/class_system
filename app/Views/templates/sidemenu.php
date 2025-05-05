@@ -402,7 +402,7 @@
                         <?= $loginname ?>
                     </h3>
                     <div class="text-gray-500 fw-semibold d-block text-center lh-lg">
-                        <badge class="badge badge-info mb-1">KELAS : <?= $group ?></badge>
+                        <badge class="badge badge-info mb-1">KELAS : <?= student_group()['group_name'] ?></badge>
                         <?= $nisn ?>
                     </div>
                 </div>

@@ -156,7 +156,7 @@
         $('.page-loader').remove();
     }
 
-    function toast_act(heading, text, icon, hide) {
+    function toast_act(heading, text, icon, hide) {        
         Toast.fire({
             icon: icon,
             title: text

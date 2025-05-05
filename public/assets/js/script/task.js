@@ -17,6 +17,12 @@ function grab_data_lesson(
       if (type == 1) {
         treeview_task_ch(e, subj, grad);
       } else if (type == 2) {
+        
+        $('#content_lesson').html('')
+        $('#video_lesson').html('')
+        $('#attachment_lesson').html('')
+        $('#task_lesson').html('')
+        
         generate_view_lesson_s(e);
         generate_view_video_s(e);
         generate_view_attachment_s(e);
@@ -26,10 +32,10 @@ function grab_data_lesson(
           e.lesson_standart_subject_id,
           e.lesson_standart_grade
         );
-
-        if ($("#content_tab").hasClass("hide")) {
-          $("#content_tab").removeClass("hide");
-          $("#content_value").removeClass("hide");
+        
+        if ($("#content_tab_ct").hasClass("hide")) {
+          $("#content_tab_ct").removeClass("hide");
+          $("#content_value_ct").removeClass("hide");
         }
       }
       hide_loading()
@@ -52,22 +58,17 @@ function chk_range_task(save_type = null) {
         let dtold = new Date(Date.parse(old_start.replace(" ", "T") + ":00Z"));
 
         if (dtstart.getTime() === dtold.getTime()) {
-          console.log(1);
-          
           return 1;
         } else {
-          console.log(31);
           return 3;
         }
       } else {
-        console.log(32);
         return 3;
       }
     } else {
       if (dtstart < dtend) {
         return 1;
       } else {
-        console.log(2);
         return 2;
       }
     }
@@ -378,8 +379,6 @@ function lesson_preview(id, src, task_id) {
         show_loading()
       },
       success: function (e) {
-        console.log(e);
-        
         generate_view_lesson_p(e.lesson);
         generate_view_video_p(e.lesson);
         generate_view_attachment_p(e.lesson);
@@ -566,6 +565,7 @@ function get_task(id, temp) {
       show_loading()
     },
     success: function (e) {
+      $('input[name=tid]').val(e.task_id)
       task_page(e)
       hide_loading()
     },
@@ -652,8 +652,10 @@ function actview_task(e, idx = 0, fix = false, ids = []) {
 }
 
 function view_question_act_tsk(id) {
-  let my_tasks = localStorage.getItem('bluecode_' + student_id)
-  let data = JSON.parse(my_tasks)
+  let tid = $('input[name=tid]').val()
+
+  let my_tasks = localStorage.getItem('bluecode_' + student_id + '_' + tid)
+  let data = JSON.parse(my_tasks)  
   let row = data.tasks[id]
   let qtype = data.tasks[id].type
   let student_answer = data.tasks[id].student_answer
@@ -693,7 +695,50 @@ function view_question_act_tsk(id) {
   })
 
   $('#acttask_question').html(question)
-  $('#acttask_option').html(`<div class="row">${option}</div>`)
+  
+  if (qtype < 4) {
+    $('#acttask_option').html(`<div class="row">${option}</div>`)
+    $('#acttask_essay_answer').html(``)
+  } else {
+    $('#acttask_option').html(``)
+    $('#acttask_essay_answer').html(`<div id="tsk_essay_answer" class="ansessay" data-id="${id}"></div>`)
+
+    var Delta = Quill.import('delta');
+    var tsk_essay_answer = new Quill("#tsk_essay_answer", {
+      modules: {
+        toolbar: toolbarOptions,
+      },
+      theme: "snow", // or 'bubble'
+    });
+
+    var change = new Delta();
+    tsk_essay_answer.on('text-change', function (delta) {
+      autosave_essay_tsk()
+      change = change.compose(delta);
+    });
+
+    let sans = data.tasks[id].student_answer
+    if (sans != "[]") {
+      $("#tsk_essay_answer > .ql-editor").html(sans);
+    }
+  }
+}
+
+function autosave_essay_tsk() {
+  let id = $('#tsk_essay_answer').data('id')
+  let tid = $('input[name=tid]').val()
+
+  if (id != undefined) {
+    let my_tasks = localStorage.getItem('bluecode_' + student_id + '_' + tid)
+    let data = JSON.parse(my_tasks)
+    let qtype = data.tasks[id].type
+    if (qtype == 4) {
+      let ans = $("#tsk_essay_answer > .ql-editor").html()
+
+      rans = ans == '<p><br></p>' ? "[]" : ans;
+      change_localstorage_tsk('essay', id, rans, true)
+    }
+  }
 }
 
 function save_act_task() {
@@ -742,30 +787,44 @@ $(document).on('click', '.tglchk_tsk', function () {
   change_localstorage_tsk('option', question_id)
 })
 
-function change_localstorage_tsk(type, key, value = null) {
-  let key_storage = 'bluecode_' + student_id
+function change_localstorage_tsk(type, key, value = null, stay = false) {
+  let tid = $('input[name=tid]').val()
+  let key_storage = 'bluecode_' + student_id + '_' + tid;
   let my_data = JSON.parse(localStorage.getItem(key_storage))
 
-  let my_choose = []
-  $(".tglchk_tsk").each(function () {
-    if ($(this).hasClass('chk_act_tsk')) {
-      my_choose.push($(this).val())
+  if (type == 'option') {
+    let my_choose = []
+    $(".tglchk_tsk").each(function () {
+      if ($(this).hasClass('chk_act_tsk')) {
+        my_choose.push($(this).val())
+      }
+    })
+    localStorage.setItem('tsk_rcop_' + student_id + '_' + tid, JSON.stringify(my_choose))
+    let rcop = localStorage.getItem('tsk_rcop_' + student_id + '_' + tid)
+  
+    my_data.tasks[key].student_answer = rcop
+    localStorage.setItem(key_storage, JSON.stringify(my_data))
+  
+    let res_data = localStorage.getItem(key_storage)
+    view_question_act_tsk(key)
+    actview_task(res_data, key, true, my_data.tasks)
+  } else if (type == 'essay') {
+    my_data.tasks[key].student_answer = value
+    localStorage.setItem(key_storage, JSON.stringify(my_data))
+    
+    let res_data = localStorage.getItem(key_storage)
+    actview_task(res_data, key, true, my_data.tasks)
+    if (!stay) {
+      view_question_act_tsk(key)
     }
-  })
-  localStorage.setItem('tsk_rcop_' + student_id, JSON.stringify(my_choose))
-  let rcop = localStorage.getItem('tsk_rcop_' + student_id)
+  }
 
-  my_data.tasks[key].student_answer = rcop
-  localStorage.setItem(key_storage, JSON.stringify(my_data))
-
-  let res_data = localStorage.getItem(key_storage)
-  view_question_act_tsk(key)
-  actview_task(res_data, key, true, my_data.tasks)
 }
 
 function send_task_act(typ) {
-  
-  let row = JSON.parse(localStorage.getItem('bluecode_' + student_id))
+  let tid = $('input[name=tid]').val()
+
+  let row = JSON.parse(localStorage.getItem('bluecode_' + student_id + '_' + tid))
   let send = Object()
 
   if (typ == 1) {
@@ -774,7 +833,7 @@ function send_task_act(typ) {
     send.subject = row.subject
     send.task_id = row.task_id
     send.task_id = row.task_id
-    send.data = localStorage.getItem('bluecode_' + student_id)
+    send.data = localStorage.getItem('bluecode_' + student_id  + '_' + tid)
     send.type = typ
   } else {
     send.task_id = row.task_id
@@ -805,18 +864,29 @@ function send_task_act(typ) {
   
     let student_answer = []
     $.each(row.tasks, function (i, v) {
-      let answer = []
-      $.each(JSON.parse(v.student_answer), function (idx, val) {
-        answer.push(v.option[val])
-      })
-  
-      student_answer.push({
-        question_id: v.question_id,
-        answer: v.student_answer != '[]' ? answer : ['empty'],
-        source : v.source
-      })
+      if (v.type != 4) {
+        let answer = []
+        $.each(JSON.parse(v.student_answer), function (idx, val) {
+          answer.push(v.option[val])
+        })
+    
+        student_answer.push({
+          question_id: v.question_id,
+          answer: v.student_answer != '[]' ? answer : ['empty'],
+          question_type: v.type,
+          source : v.source
+        })
+        send.answer = student_answer
+      } else {
+        student_answer.push({
+          question_id: v.question_id,
+          question_type: v.type,
+          answer: v.student_answer != '[]' ? v.student_answer : ['empty'],
+          source : v.source
+        })
+        send.answer = student_answer
+      }
     })
-    send.answer = student_answer
     send.type = typ
   }
 
@@ -843,8 +913,8 @@ function send_task_act(typ) {
             confirmButtonText: "OK",
           })
         }
-        localStorage.removeItem('bluecode_' + student_id)
-        localStorage.removeItem('tsk_rcop_' + student_id)
+        localStorage.removeItem('bluecode_' + student_id  + '_' + tid)
+        localStorage.removeItem('tsk_rcop_' + student_id  + '_' + tid)
       } else {
         Swal.fire({
           icon: e.icn,
@@ -853,6 +923,7 @@ function send_task_act(typ) {
         }).then(function (confirm) {
           location.reload()
         })
+        localStorage.removeItem('tsk_rcop_' + student_id  + '_' + tid)
       }
       reload_tabulator()
       hide_loading()
@@ -876,6 +947,360 @@ $(document).on('click', '.view_student_task', function(e) {
 
   $('#modal_look_student_act_task').modal('show')
 })
+
+function data_result_student_tsk(result_id) {
+  $.ajax({
+    url: base_url + "/teacher/task/check-result-task",
+    data: { result_id },
+    method: "post",
+    dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      checking_page_tsk(e)
+      hide_loading()
+    },
+  });
+}
+
+function checking_page_tsk(e) {
+  let my_task = localStorage.getItem(e.key)
+  if (!my_task) {
+    if (e.value) {
+      localStorage.setItem(e.key, JSON.stringify(e.value))
+
+      my_task = localStorage.getItem(e.key)
+      actview_checking_tsk(e.student_id, my_task, 0, false)
+      $('#checking_modal_question_tsk').modal('show')
+    }
+  } else {
+    actview_checking_tsk(e.student_id, my_task, 0, false)
+    $('#checking_modal_question_tsk').modal('show')
+  }
+  $('#modal_look_student_act_task').modal('hide')
+  $('#btn_submit_checking_tsk').val(e.student_id)
+  $('#result_id_tsk').val(e.result_id)
+  $('#stu_id_tsk').val(e.student_id)
+}
+
+function actview_checking_tsk(sid, e, idx = 0, fix = false) {
+  let data = JSON.parse(e)
+  
+  $('#checking_title').html(data.title)
+  $('#checking_subtitle').html(data.subject)
+
+  let number_quest = ''
+  let num = 1
+  $.each(data.tasks, function (i, v) {
+    let btnn = ''
+    if (!fix) {
+      if (num > 1) {
+        if (v.checked != 0) {
+          btnn = 'btn-success iss'
+        } else {
+          btnn = 'btn-outline btn-outline-dark'
+        }
+      } else {
+        btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
+      }
+    } else {
+      if (idx == v.question_id) {
+        btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
+      } else {
+        if (v.checked != 0) {
+          btnn = 'btn-success iss'
+        } else {
+          btnn = 'btn-outline btn-outline-dark'
+        }
+      }
+    }
+
+    number_quest += `<a href="#" onclick="view_question_act_chk_tsk('${v.question_id}', ${sid})" class="m-1 btn btn-icon  ${btnn} actbtn">${num}</a>`
+      num++
+  })
+
+  if (!fix) {
+    if (idx > 0) {
+      view_question_act_chk_tsk(Object.keys(data.tasks[idx]), sid)
+    } else {
+      view_question_act_chk_tsk(Object.keys(data.tasks)[0], sid)
+    }
+  }
+
+  let nquest = `
+    <div class="alert bg-light border border-primary" style="min-height: 450px;">
+    <span class="d-block fw-semibold text-start py-2 px-3">
+    <span class="fw-bold d-block fs-3 text-primary mb-2">Nomor Soal</span>
+    ${number_quest}
+    </div>
+  `
+  $('#list_questions_tsk').html(nquest);
+}
+
+
+function view_question_act_chk_tsk(id, sid) {
+  $('#check_answer_essay_tsk').html('')
+  $('#checkpoin_tsk').html('')
+
+  let my_tasks = localStorage.getItem('aquacode_' + teacher_id + '_' + sid)
+  let data = JSON.parse(my_tasks)
+  
+  let row = data.tasks[id]
+  let qtype = data.tasks[id].type
+  let spoin = data.tasks[id].res_poin
+  let poin = data.tasks[id].poin
+  let student_answer = data.tasks[id].student_answer[0]
+  let right_answer = JSON.parse(data.tasks[id].right_answer)
+  let nchk = data.tasks[id].note_check
+  let ischk = data.tasks[id].checked
+  
+  let tpoint = 0;
+  $.each(data.tasks, function(i,v) {
+    tpoint += parseFloat(v.res_poin)
+  })
+
+  let question = `
+    <div class="alert bg-light-info border border-info d-flex flex-column flex-sm-row mb-5">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-info mb-2">Pertanyaan</span>
+        <span class="fw-bold fs-3 text-info">
+          ${row.question}
+        </span>
+      </span>
+    </div>
+  `;
+
+  let option = ''
+  let num = 1
+  let type = qtype == 2 ? 'checkbox' : 'radio'
+  $.each(row.option, function (i, v) {   
+    let btn_cls = 'btn-outline btn-outline-primary'
+    if (student_answer[0].includes(v)) {
+      if (right_answer.includes(v)) {
+        btn_cls = 'btn-success'
+      } else {
+        btn_cls = 'btn-warning'
+      }
+    } else if (right_answer.includes(v)) {
+      btn_cls = 'btn-primary'
+    }
+
+    let opt_val = row.type == 3 ? (v == 1 ? 'Benar' : 'Salah') : v
+    option += `
+    <div class="col-sm-6">
+      
+      <label class="btn ${btn_cls} p-7 d-flex align-items-center mb-5" for="kt_choose_${num}">
+        <span class="d-block fw-semibold text-start">
+          <span class="fw-bold d-block fs-3 mb-2">Pilihan Jawaban ${num}</span>
+          <span class="fs-3">${opt_val}</span>
+        </span>
+      </label>
+    </div>
+    `
+    num++;
+  })
+
+  $('#check_question_tsk').html(question)
+  let setpoin = ''
+  let colorcode = ''
+  if (qtype < 4) {
+    $('#check_answer_essay_tsk').html('')
+    $('#check_answer_tsk').html(`<div class="row">${option}</div>`)
+
+  //   colorcode = `
+  //   <div id="code_color my-2" style="margin-top: 10px;">
+  //     <span class="fw-bold d-block fs-3 text-primary mb-2">Kode Warna</span>
+  //     <span class="btn btn-sm btn-warning">Jawaban Siswa</span><br>
+  //     <span class="btn btn-sm btn-primary my-2">Jawaban Benar</span><br>
+  //     <span class="btn btn-sm btn-success">Jawaban Tepat</span>
+  //   </div>
+  // `
+  } else {
+    $('#check_answer_tsk').html('')
+    
+    let formspoin = ''
+    if (ischk == 1) {
+      formspoin = `<input type="number" min="0" max="${poin}" class="form-control" id="percent_essay_poin_tsk" placeholder="Persen jawaban benar" value="${parseInt(spoin*100)}" onchange="setpercent_tsk(${id}, ${poin}, ${sid}, ${tpoint})" style="border: 2px solid #5014D0">`
+    } else {
+      formspoin = `<input type="number" min="0" max="${poin}" class="form-control" id="percent_essay_poin_tsk" placeholder="Persen jawaban benar" onchange="setpercent(${id}, ${poin}, ${sid}, ${tpoint})" style="border: 2px solid #5014D0">`
+    }
+
+    setpoin = `
+      <span class="fw-bold d-block fs-3 text-primary mb-2">Nilai</span>
+      <div class="d-flex justify-content-between">
+        <div class="input-group" style="width: 100%">
+          ${formspoin}
+          <button class="btn btn-primary btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="0" type="button">0</button>
+          <button class="btn btn-primary btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="25" type="button">25</button>
+          <button class="btn btn-primary btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="50" type="button">50</button>
+          <button class="btn btn-primary btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="75" type="button">75</button>
+          <button class="btn btn-primary btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="100" type="button">100</button>
+        </div>
+      </div>
+      <p class="text-danger err_poin_tsk hide">Nilai maksimal dibatasi hanya 100!</p>
+      `
+
+    let essay = `
+    <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row mb-5">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-dark mb-2">Jawaban Uraian</span>
+        <span class="fw-semibold fs-3 text-dark">
+          ${student_answer}
+        </span>
+      </span>
+    </div>
+    `;
+    $('#check_answer_essay_tsk').html(essay)
+  }
+
+  let checkpoin = `
+  <div class="alert bg-light border border-primary">
+    <span class="d-block fw-semibold text-start py-2 px-3">
+      <div class="d-flex justify-content-between mb-3">
+        <badge class="badge badge-info fs-3 p-5"><b>Poin Soal : ${poin}</b></badge>
+        <badge class="badge badge-success fs-3 p-5"><b id="allpoint_tsk">Total Poin : ${tpoint % 1 == 0 ? tpoint : tpoint.toFixed(2)}</b></badge>
+        <input type="hidden" name="allpoint_tsk" value="${tpoint}"/>
+      </div>
+      ${setpoin}
+      <span class="fw-bold d-block fs-3 text-primary my-2 ">Catatan</span>
+      <div id="checked_note_tsk"></div>
+      ${colorcode}
+    </span>
+  </div>  
+  `;
+
+  var Delta = Quill.import('delta');
+  $('#checkpoin_tsk').html(checkpoin)
+  var checked_note = new Quill("#checked_note_tsk", {
+    modules: {
+      toolbar: toolbarOptions,
+    },
+    theme: "snow", // or 'bubble'
+  });
+
+  var change = new Delta();
+  checked_note.on('text-change', function (delta) {
+    autosave_check_note_tsk(id, sid)
+    change = change.compose(delta);
+  });
+
+  $("#checked_note_tsk > .ql-editor").html(nchk != '' ? nchk : '<p><br></p>');
+}
+
+
+$(document).on('click', '.btn_vlchk_tsk', function (e) {
+  e.preventDefault()
+  let val = $(this).data('val')
+  let sid = $(this).data('sid')
+  let key = $(this).data('key')
+  let poin = $(this).data('poin')
+  let allpoint = $('input[name=allpoint_tsk]').val()
+  
+  let nval = val * poin / 100;
+  let newpoint = parseFloat(allpoint) + parseFloat(nval)
+  
+  $('#percent_essay_poin_tsk').val(parseFloat(val))
+  $('#allpoint_tsk').html('Total Poin : ' + newpoint)
+
+  update_localstorage_chk_tsk(sid, 'checking', key, nval)
+})
+
+function autosave_check_note_tsk(key, sid) {
+  let note = $("#checked_note_tsk > .ql-editor").html()
+  update_localstorage_chk_tsk(sid, 'check_note', key, note)
+}
+
+function setpercent(key, val, sid, tpoint) {
+  spoin = $('#percent_essay_poin_tsk').val();
+  if (spoin <= 100) {
+    let nval = spoin * val / 100;
+  
+    let newpoint = parseFloat(tpoint) + parseFloat(nval)
+    $('#allpoint_tsk').html('Total Poin : ' + newpoint)
+  
+    update_localstorage_chk_tsk(sid, 'checking', key, nval)
+    $('.err_poin_tsk').addClass('hide')
+  } else {
+    $('.err_poin_tsk').removeClass('hide')
+  }
+}
+
+function update_localstorage_chk_tsk(sid, type, key, value = null) {
+  let key_storage = 'aquacode_' + teacher_id + '_' + sid;
+  let my_data = JSON.parse(localStorage.getItem(key_storage))
+  
+  if (type == 'checking') {
+    // let chk = value > 0 ? 1 : 0;
+    my_data.tasks[key].student_poin = value
+    my_data.tasks[key].res_poin = value
+    my_data.tasks[key].checked = 1
+    localStorage.setItem(key_storage, JSON.stringify(my_data))
+
+    let res_data = localStorage.getItem(key_storage)
+    view_question_act_chk_tsk(key, sid)
+    actview_checking_tsk(sid, res_data, key, true)
+  } else if (type == 'check_note') {
+    let notes = value != '<p><br></p>' ? value : "";
+    my_data.tasks[key].note_check = notes
+
+    localStorage.setItem(key_storage, JSON.stringify(my_data))   
+  }
+}
+
+function close_checking_modal_tsk() {
+  $('#checking_modal_question_tsk').modal('hide')
+  $('#modal_look_student_act_task').modal('show')
+}
+
+$('#btn_submit_checking_tsk').on('click', function() {
+  let sid = $(this).val()
+  let resid = $('#result_id_tsk').val()
+
+  let key_storage = 'aquacode_' + teacher_id + '_' + sid;
+  let my_data = JSON.parse(localStorage.getItem(key_storage))
+  
+  let status_checked = [];
+  $.each(my_data.tasks, function(i,v) {
+    if (v.checked == 1) {
+      status_checked.push(true)
+    } else {
+      status_checked.push(false)
+    }
+  })
+
+  if (status_checked.includes(false)) {
+    toast_act('Gagal!','Masih ada yang belum diperiksa!', 'error')
+  } else {
+    submit_checking_act_tsk(my_data, resid, key_storage)
+  }
+})
+
+
+function submit_checking_act_tsk(e, res, key)
+{
+  let result = e.tasks
+  
+  $.ajax({
+    url: base_url + "/teacher/task/submit-check-task",
+    data: { res, result },
+    method: "post",
+    dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      if (e.sts) {
+        localStorage.removeItem(key)
+        close_checking_modal_tsk()
+      }
+      toast_act('', e.msg, e.icn)
+      hide_loading()
+    },
+  });
+}
+
+
 
 if (url.includes("teacher/task/index-draft")) {
   let c = [
