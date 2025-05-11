@@ -21,6 +21,7 @@ class TasksResultModel extends Model
         'task_result_value', 
         'task_result_submit_type', 
         'task_result_submit_message', 
+        'task_result_is_checked', 
     ];
 
     public function getSingle($where = [])

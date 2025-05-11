@@ -116,25 +116,81 @@ class DashboardTeacher extends BaseController
 
     public function data_dashboard()
     {
-        $year = year_active()['school_year_id'];
         $school_id = userdata()['school_id'];
         $teacher_id = userdata()['id_profile'];
 
-        $my_duty = $this->tassign
-            ->select('
-                subject_id,
-                subject_name,
-                teacher_assign_grade,
-                student_group_name,
-            ')
-            ->join('master_subject', 'subject_id=teacher_assign_subject_id', 'left')
-            ->join('master_student_group', 'student_group_id=teacher_assign_student_group_id', 'left')
-            ->where([
-                'teacher_assign_school_id' => $school_id,
-                'teacher_assign_school_year_id' => $year,
-                'teacher_assign_teacher_id' => $teacher_id,
-                'teacher_assign_status < 9',
-            ])->findAll();
+        $total_sch_chapter['total'] = 0;
+        $total_sch_subchap['total'] = 0;
+
+        $should_check = [];
+        $my_duty = [];
+        if (!empty(year_active())) {
+            $year = year_active()['school_year_id'];
+
+            $total_sch_chapter = $this->less_school->total_chapter($school_id, $year, $teacher_id);
+            $total_sch_subchap = $this->less_school->total_subchapter($school_id, $year, $teacher_id);
+    
+            $my_duty = $this->tassign
+                ->select('
+                    subject_id,
+                    subject_name,
+                    teacher_assign_grade,
+                    student_group_name,
+                ')
+                ->join('master_subject', 'subject_id=teacher_assign_subject_id', 'left')
+                ->join('master_student_group', 'student_group_id=teacher_assign_student_group_id', 'left')
+                ->where([
+                    'teacher_assign_school_id' => $school_id,
+                    'teacher_assign_school_year_id' => $year,
+                    'teacher_assign_teacher_id' => $teacher_id,
+                    'teacher_assign_status < 9',
+                ])->findAll();
+
+            $schk = $this->assessment->get_checked_assessment($school_id, $year, $teacher_id, date('Y-m-d H:i:s'));
+            $tchk = $this->task->get_checked_task($school_id, $teacher_id, date('Y-m-d H:i:s'));
+
+            foreach ($tchk as $k => $v) {
+                $grp = json_decode($v['task_group']);
+                
+                $should_check[$v['task_id']]['id'] = $v['task_id'];
+                $should_check[$v['task_id']]['title'] = $v['task_title'];
+                $should_check[$v['task_id']]['subject'] = $v['subject_name'];
+                $should_check[$v['task_id']]['start'] = $v['task_start'];
+                $should_check[$v['task_id']]['end'] = $v['task_end'];
+                $should_check[$v['task_id']]['type'] = 'Tugas';
+                $should_check[$v['task_id']]['group'] = $grp;
+                
+                $chkexst = [];
+                foreach ($grp as $key => $val) {
+                    if (isset($val->checked_all)) {
+                        $chkexst[] = $val->checked_all;
+                    }
+                }
+
+                $should_check[$v['task_id']]['check'] = in_array(0, $chkexst) ? 0 : 1;
+            }
+
+            foreach ($schk as $k => $v) {
+                $grp = json_decode($v['assessment_group']);
+                
+                $should_check[$v['assessment_id']]['id'] = $v['assessment_id'];
+                $should_check[$v['assessment_id']]['title'] = $v['assessment_title'];
+                $should_check[$v['assessment_id']]['subject'] = $v['subject_name'];
+                $should_check[$v['assessment_id']]['start'] = $v['assessment_start'];
+                $should_check[$v['assessment_id']]['end'] = $v['assessment_end'];
+                $should_check[$v['assessment_id']]['type'] = 'Peniliaian';
+                $should_check[$v['assessment_id']]['group'] = $grp;
+                
+                $chkexst = [];
+                foreach ($grp as $key => $val) {
+                    if (isset($val->checked_all)) {
+                        $chkexst[] = $val->checked_all;
+                    }
+                }
+
+                $should_check[$v['assessment_id']]['check'] = in_array(0, $chkexst) ? 0 : 1;
+            }
+        }
 
         $grade = teacher_grades($teacher_id);
         $subject_id = teacher_subjects($teacher_id);
@@ -176,11 +232,10 @@ class DashboardTeacher extends BaseController
         $total_add_chapter = $this->less_addition->my_chapter($school_id, $teacher_id);
         $total_add_subchap = $this->less_addition->my_subchapter($school_id, $teacher_id);
 
-        $total_sch_chapter = $this->less_school->total_chapter($school_id, $year, $teacher_id);
-        $total_sch_subchap = $this->less_school->total_subchapter($school_id, $year, $teacher_id);
-
         $sharedless = $this->less_addition->my_shared_lesson($school_id, $teacher_id);
         $sc_shared = array_sum(array_column($sharedless, 'total_subchap'));
+
+        $qb_shared = $this->qb_addition->my_shared_question($school_id, $teacher_id);
 
         $date_now = date('Y-m-d H:i:s');
         $select_assessement = 'count(assessment_id) as total';
@@ -198,6 +253,7 @@ class DashboardTeacher extends BaseController
 
         $result = [
             'my_duty' => $my_duty,
+            'assessment_task_check' => $should_check,
             'total_less_add_chap' => count($total_add_chapter),
             'total_less_add_subchap' => count($total_add_subchap),
             'total_less_chap' => count($total_add_chapter) + $total_sch_chapter['total'] + $pc,
@@ -212,6 +268,7 @@ class DashboardTeacher extends BaseController
             'total_qb_pub' => $total_quespub,
             'total_qb_title' => count($public_qb) + $total_title['total'],
             'total_qb_quest' => $total_quespub + $total_quest['total'],
+            'total_qb_shared' => $qb_shared['total'],
             'as_draft' => $assessment_draft[0]['total'],
             'as_scheduled' => $assessment_scheduled[0]['total'],
             'as_present' => $assessment_present[0]['total'],

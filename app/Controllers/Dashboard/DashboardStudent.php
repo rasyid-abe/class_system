@@ -46,6 +46,57 @@ class DashboardStudent extends BaseController
 
         $data['user'] = userdata();
 
+        // $assess = $this->assessment->get_list_student(1);
+        // $data['assessment'] = $assess;
+        
+        // $task = $this->task->get_list_student_task(1);
+        // $my_task = $this->task_result
+        //     ->select('task_result_task_id task_id')
+        //     ->where('task_result_student_id', userdata()['id_profile'])
+        //     ->findAll();
+
+        // $my_assign = array_column($my_task, 'task_id');
+        // $my_list = array_column($task, 'task_id');
+
+        // $merge_idx = array_merge($my_assign, $my_list);
+        // $list_idx = array_unique(array_diff_assoc($merge_idx, array_unique($merge_idx)));
+        
+        // $my_temp = $this->task_temp
+        //     ->select('task_temp_task_id')
+        //     ->where([
+        //         'task_temp_school_id' => userdata()['school_id'],
+        //         'task_temp_student_id' => userdata()['id_profile'],
+        //     ])->findAll();
+
+        // $arr_temp_task = array_column($my_temp, 'task_temp_task_id');
+        
+        // $data['task'] = $task;
+        // $data['arr_temp_task'] = $arr_temp_task;
+        // $data['list_idx'] = $list_idx;
+
+        $my_group = student_group();
+        $sub_list = [];
+        if (!empty(year_active())) {
+            $sub_list = $this->lesson_school->student_list_subject($my_group['grade'], $my_group['group_id']);
+        }
+
+        $std_less = $this->lesson_standart
+            ->select('subject_id,subject_name,lesson_standart_id, lesson_standart_chapter, lesson_standart_subchapter')
+            ->join('master_subject', 'subject_id=lesson_standart_subject_id', 'left')
+            ->where('lesson_standart_grade', $my_group['grade'])
+            ->where('lesson_standart_status < 9')
+            ->groupBy('subject_id')
+            ->findAll();
+
+        $data['subj_school'] = $sub_list;
+        $data['subj_standart'] = $std_less;
+        $data['grade'] = $my_group['grade'];
+
+        return view("dashboard/student", $data);
+    }
+
+    public function data_dashboard()
+    {
         $assess = $this->assessment->get_list_student(1);
         $data['assessment'] = $assess;
         
@@ -69,30 +120,32 @@ class DashboardStudent extends BaseController
             ])->findAll();
 
         $arr_temp_task = array_column($my_temp, 'task_temp_task_id');
-        
+
+        // $my_group = student_group();
+        // $sub_list = [];
+        // if (!empty(year_active())) {
+        //     $sub_list = $this->lesson_school->student_list_subject($my_group['grade'], $my_group['group_id']);
+        // }
+
+        // $std_less = $this->lesson_standart
+        //     ->select('subject_id,subject_name,lesson_standart_id, lesson_standart_chapter, lesson_standart_subchapter')
+        //     ->join('master_subject', 'subject_id=lesson_standart_subject_id', 'left')
+        //     ->where('lesson_standart_grade', $my_group['grade'])
+        //     ->where('lesson_standart_status < 9')
+        //     ->groupBy('subject_id')
+        //     ->findAll();
+
+            
+        $data = [];
+        $data['assessment'] = $assess;
         $data['task'] = $task;
         $data['arr_temp_task'] = $arr_temp_task;
         $data['list_idx'] = $list_idx;
+        // $data['subj_school'] = $sub_list;
+        // $data['subj_standart'] = $std_less;
+        // $data['grade'] = $my_group['grade'];
 
-        $my_group = student_group();
-        $sub_list = [];
-        if (!empty(year_active())) {
-            $sub_list = $this->lesson_school->student_list_subject($my_group['grade'], $my_group['group_id']);
-        }
-
-        $std_less = $this->lesson_standart
-            ->select('subject_id,subject_name,lesson_standart_id, lesson_standart_chapter, lesson_standart_subchapter')
-            ->join('master_subject', 'subject_id=lesson_standart_subject_id', 'left')
-            ->where('lesson_standart_grade', $my_group['grade'])
-            ->where('lesson_standart_status < 9')
-            ->groupBy('subject_id')
-            ->findAll();
-
-        $data['subj_school'] = $sub_list;
-        $data['subj_standart'] = $std_less;
-        $data['grade'] = $my_group['grade'];
-
-        return view("dashboard/student", $data);
+        echo json_encode($data);
     }
 
     public function change_password()

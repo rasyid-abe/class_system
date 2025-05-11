@@ -698,7 +698,20 @@ if (url.includes("teacher/assessment")) {
 
 function close_view_assess_student() {
   $('#modal_look_student_act_assessment').modal('hide')
-  $('bd_list_ass_student').html('<div id="ass_student_act"></div>')
+  $('#bd_list_ass_student').html('<div id="ass_student_act"></div>')
+
+  let cl = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
+  ]
+
+  tbconf.columns = cl;
+  tbconf.selectableRows = false;
+  student_act = new Tabulator('#ass_student_act', tbconf)
+
+  // if (url.includes("dashboard/teacher")) {
+    
+  // }
 }
 
 $(document).ready(function () {
@@ -761,7 +774,9 @@ $(document).on('click', '.view_student', function (e) {
   e.preventDefault()
   let assessment_id = $(this).data('assessment_id')
   let group_id = $(this).data('group_id')
+  let title = $(this).data('title')
 
+  $('#title_ass_lsstd').html(`<span class="text-primary">${title}</span>`)
   student_act.setData(
     base_url + "/teacher/assessment/get-student-assessment?aid=" + assessment_id + "&gid=" + group_id
   );
@@ -779,10 +794,27 @@ function data_result_student(result_id) {
       show_loading()
     },
     success: function (e) {
+      $('#checking_title').html(e.student_name)
+      $('#checking_subtitle2').html(e.assessment_title)
+      $('#modal_look_student_act_assessment').modal('hide')
+      $('#btn_submit_checking').val(e.student_id)
+      $('#result_id').val(e.result_id)
+      $('#stu_id').val(e.student_id)
+      $('#asse_id').val(e.assessment_id)
       checking_page(e)
       hide_loading()
     },
   });
+}
+
+function reload_checking() {
+  let ls = Object();
+  let sid = $('#btn_submit_checking').val()
+  let asse_id = $('#asse_id').val()
+  ls.key = 'limecode_' + teacher_id + '_' + sid + '_' + asse_id;
+  console.log(ls);
+  
+  checking_page(ls)
 }
 
 function checking_page(e = null) {
@@ -799,18 +831,44 @@ function checking_page(e = null) {
     actview_checking(e.student_id, my_assessment, 0, false)
     $('#checking_modal_question').modal('show')
   }
-  $('#modal_look_student_act_assessment').modal('hide')
-  $('#btn_submit_checking').val(e.student_id)
-  $('#result_id').val(e.result_id)
-  $('#stu_id').val(e.student_id)
 }
 
-function close_checking_modal() {
-  // let sid = $('#stu_id').val()
-  // localStorage.removeItem('limecode_' + teacher_id + '_' + sid)
-  
+function act_close_chkmdl() {
   $('#checking_modal_question').modal('hide')
   $('#modal_look_student_act_assessment').modal('show')
+
+  let asse_id = $('#asse_id').val()
+  let sid = $('#btn_submit_checking').val()
+  let key = 'limecode_' + teacher_id + '_' + sid + '_' + asse_id;
+
+  localStorage.removeItem(key)
+}
+
+function close_checking_modal(type = 1) {
+  if (type == 1) {
+    Swal.fire({
+      html: `<h3>Anda yakin menutup halaman pemeriksaan?</h3><br><p>Anda akan kehilahan data pemeriksaan jika menutup halamana ini.</p>`,
+      icon: "info",
+      buttonsStyling: false,
+      showCancelButton: true,
+      confirmButtonText: "Ya",
+      cancelButtonText: "Tidak",
+      customClass: {
+        confirmButton: "btn btn-sm btn-primary",
+        cancelButton: "btn btn-sm btn-danger",
+      },
+    }).then(function (confirm) {
+      if (confirm.isConfirmed) {
+        act_close_chkmdl()
+      }
+    });
+  } else {
+    act_close_chkmdl()
+    if (url.includes("dashboard/teacher")) {
+      ajax_dash_teacher()
+    }
+  }
+
 }
 
 function actview_checking(sid, e, idx = 0, fix = false) {
@@ -870,17 +928,21 @@ function view_question_act_chk(id, sid) {
   $('#check_answer_essay').html('')
   $('#checkpoin').html('')
 
-  let my_assessment = localStorage.getItem('limecode_' + teacher_id + '_' + sid)
+  let asse_id = $('#asse_id').val()
+
+  let my_assessment = localStorage.getItem('limecode_' + teacher_id + '_' + sid + '_' + asse_id)
   let data = JSON.parse(my_assessment)
   
   let row = data.assessment[id]
   let qtype = data.assessment[id].type
   let spoin = data.assessment[id].res_poin
   let poin = data.assessment[id].poin
-  let student_answer = data.assessment[id].student_answer[0]
+  let student_answer = data.assessment[id].student_answer
   let right_answer = JSON.parse(data.assessment[id].right_answer)
   let nchk = data.assessment[id].note_check
   let ischk = data.assessment[id].checked
+
+  
   
   let tpoint = 0;
   $.each(data.assessment, function(i,v) {
@@ -901,9 +963,17 @@ function view_question_act_chk(id, sid) {
   let option = ''
   let num = 1
   let type = qtype == 2 ? 'checkbox' : 'radio'
-  $.each(row.option, function (i, v) {   
+  
+  let saws = null;
+  if (qtype == 3) {
+    saws = student_answer[0].map(function (x) {return parseInt(x, 10)})
+  } else {
+    saws = student_answer[0]
+  }
+  
+  $.each(row.option, function (i, v) {     
     let btn_cls = 'btn-outline btn-outline-primary'
-    if (student_answer[0].includes(v)) {
+    if (saws.includes(v)) {
       if (right_answer.includes(v)) {
         btn_cls = 'btn-success'
       } else {
@@ -913,7 +983,7 @@ function view_question_act_chk(id, sid) {
       btn_cls = 'btn-primary'
     }
 
-    let opt_val = row.type == 3 ? (v == 1 ? 'Benar' : 'Salah') : v
+    let opt_val = row.type == 3 ? (v == "1" ? 'Benar' : 'Salah') : v
     option += `
     <div class="col-sm-6">
       
@@ -985,7 +1055,7 @@ function view_question_act_chk(id, sid) {
   <div class="alert bg-light border border-primary">
     <span class="d-block fw-semibold text-start py-2 px-3">
       <div class="d-flex justify-content-between mb-3">
-        <badge class="badge badge-info fs-3 p-5"><b>Poin Soal : ${poin}</b></badge>
+        <badge class="badge badge-info fs-3 p-5">Poin : ${poin}<span class="fw-bold fs-6">/${spoin}</span></badge>
         <badge class="badge badge-success fs-3 p-5"><b id="allpoint">Total Poin : ${tpoint % 1 == 0 ? tpoint : tpoint.toFixed(2)}</b></badge>
         <input type="hidden" name="allpoint" value="${tpoint}"/>
       </div>
@@ -1053,7 +1123,8 @@ $(document).on('click', '.btn_vlchk', function (e) {
 })
 
 function update_localstorage_chk(sid, type, key, value = null) {
-  let key_storage = 'limecode_' + teacher_id + '_' + sid;
+  let asse_id = $('#asse_id').val()
+  let key_storage = 'limecode_' + teacher_id + '_' + sid + '_' + asse_id;
   let my_data = JSON.parse(localStorage.getItem(key_storage))
   
   if (type == 'checking') {
@@ -1077,8 +1148,9 @@ function update_localstorage_chk(sid, type, key, value = null) {
 $('#btn_submit_checking').on('click', function() {
   let sid = $(this).val()
   let resid = $('#result_id').val()
+  let asse_id = $('#asse_id').val()
 
-  let key_storage = 'limecode_' + teacher_id + '_' + sid;
+  let key_storage = 'limecode_' + teacher_id + '_' + sid + '_' + asse_id;
   let my_data = JSON.parse(localStorage.getItem(key_storage))
   
   let status_checked = [];
@@ -1093,22 +1165,7 @@ $('#btn_submit_checking').on('click', function() {
   if (status_checked.includes(false)) {
     toast_act('Gagal!','Masih ada yang belum diperiksa!', 'error')
   } else {
-    // Swal.fire({
-    //   html: `<h2>Apakah anda yakin?</h2><br><p>Jika sudah dikirimkan, maka tidak dapat mengubah atau mengulang pemeriksaan.</p>`,
-    //   icon: "warning",
-    //   buttonsStyling: false,
-    //   showCancelButton: true,
-    //   confirmButtonText: "Ya, Kirimkan",
-    //   cancelButtonText: "Periksa Kembali",
-    //   customClass: {
-    //     confirmButton: "btn btn-sm btn-primary",
-    //     cancelButton: "btn btn-sm btn-info",
-    //   },
-    // }).then(function (confirm) {
-    //   if (confirm.isConfirmed) {
-        submit_checking_act(my_data, resid, key_storage)
-    //   }
-    // });
+    submit_checking_act(my_data, resid, key_storage)
   }
   
 })
@@ -1126,10 +1183,8 @@ function submit_checking_act(e, res, key)
     },
     success: function (e) {
       if (e.sts) {
-        localStorage.removeItem(key)
-        close_checking_modal()
-        // $('#checking_modal_question').modal('hide')
-        // localStorage.removeItem('limecode_' + teacher_id + '_' + sid)
+        // localStorage.removeItem(key)
+        close_checking_modal(2)
       }
       toast_act('', e.msg, e.icn)
       hide_loading()
@@ -1196,10 +1251,18 @@ function info_begin_assessment(e) {
 }
 
 function reload_assessment() {
+  let ls = Object()
+  ls.key = 'redcode_' + student_id
+  assessment_page(ls);
+}
+
+function reload_modal() {
+  console.log(url);
+  
   if (url.includes("student")) {
-    let ls = Object()
-    ls.key = 'redcode_' + student_id
-    assessment_page(ls);
+    reload_assessment()
+  } else if (url.includes("teacher")) {
+    reload_checking()
   }
 }
 
@@ -1345,6 +1408,7 @@ function actview_assessment(e, idx = 0, fix = false) {
 function view_question_act(id) {
   let my_assessment = localStorage.getItem('redcode_' + student_id)
   let data = JSON.parse(my_assessment)
+  
   let row = data.assessment[id]
   let qtype = data.assessment[id].type
   let student_answer = data.assessment[id].student_answer
@@ -1430,7 +1494,6 @@ function autosave_essay() {
       change_localstorage('essay', id, rans, true)
     }
   }
-
 }
 
 $(document).on('click', '.save_esans', function () {
@@ -1594,6 +1657,8 @@ function submit_assessment_act(submit_type, submit_msg) {
         localStorage.removeItem('redcode_' + student_id)
         localStorage.removeItem('rcop_' + student_id)
         localStorage.removeItem('tmr_' + student_id)
+
+        // ajax_dash_student()
       } else {
         Swal.fire({
           icon: e.icn,
@@ -1651,10 +1716,19 @@ function runtimer() {
         document.getElementById("left_time_assessment").innerHTML = "EXPIRED";
         clearInterval(x);
         submit_assessment_act(3, 'Waktu habis')
-      } else if (minutes < 120) {
+      } else if (minutes < 15) {
         $('#left_time_assessment').removeClass('hide')
       }
     }, 1000);
 
   }
 }
+
+// let cl = [
+//   { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+//   { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
+// ]
+
+// tbconf.columns = cl
+// tbconf.selectableRows = false;
+// var student_act = new Tabulator('#ass_student_act', tbconf)

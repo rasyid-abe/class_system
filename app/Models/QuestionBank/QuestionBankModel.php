@@ -42,5 +42,25 @@ class QuestionBankModel extends Model
         return $this->where($where)->first();
 
     }
+
+    public function my_shared_question($school_id, $teacher_id)
+    {
+        $sql = "
+            with parent as (
+                select question_bank_id id
+                from lms_question_bank
+                where 1=1 
+                    and question_bank_shared_type != 0
+                    and question_bank_school_id = $school_id
+                    and question_bank_teacher_id = $teacher_id
+                    and question_bank_status < 9
+            )
+
+            select count(*) total from parent
+            left join lms_question_bank on question_bank_parent_id = id
+        ";
+
+        return $this->db->query($sql)->getRowArray();
+    }
 }
 

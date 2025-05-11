@@ -915,6 +915,8 @@ function send_task_act(typ) {
         }
         localStorage.removeItem('bluecode_' + student_id  + '_' + tid)
         localStorage.removeItem('tsk_rcop_' + student_id  + '_' + tid)
+
+        ajax_dash_student()
       } else {
         Swal.fire({
           icon: e.icn,
@@ -931,17 +933,14 @@ function send_task_act(typ) {
   });
 }
 
-function close_view_task_student() {
-  $('#modal_look_student_act_task').modal('hide')
-  $('bd_list_task_student').html('<div id="task_student_act"></div>')
-}
-
 $(document).on('click', '.view_student_task', function(e) {
   e.preventDefault()
   let task_id = $(this).data('task_id')
   let group_id = $(this).data('group_id')
-
-  student_act.setData(
+  let task_title = $(this).data('task')
+  
+  $('#title_tsk_lsstd').html(`<span class="text-primary">${task_title}</span>`)
+  student_act_tsk.setData(
     base_url + "/teacher/task/get-student-task?tid=" + task_id + "&gid=" + group_id
   );
 
@@ -958,13 +957,18 @@ function data_result_student_tsk(result_id) {
       show_loading()
     },
     success: function (e) {
+      
+      $('#btn_submit_checking_tsk').val(e.student_id)
+      $('#result_id_tsk').val(e.result_id)
+      $('#stu_id_tsk').val(e.student_id)
+      $('#taskidd').val(e.task_id)
       checking_page_tsk(e)
       hide_loading()
     },
   });
 }
 
-function checking_page_tsk(e) {
+function checking_page_tsk(e) {  
   let my_task = localStorage.getItem(e.key)
   if (!my_task) {
     if (e.value) {
@@ -978,17 +982,17 @@ function checking_page_tsk(e) {
     actview_checking_tsk(e.student_id, my_task, 0, false)
     $('#checking_modal_question_tsk').modal('show')
   }
+  
   $('#modal_look_student_act_task').modal('hide')
-  $('#btn_submit_checking_tsk').val(e.student_id)
-  $('#result_id_tsk').val(e.result_id)
-  $('#stu_id_tsk').val(e.student_id)
+  
+  $('#ctt').html(e.student_name)
+  $('#cstt2').html(e.task_title)
 }
 
 function actview_checking_tsk(sid, e, idx = 0, fix = false) {
   let data = JSON.parse(e)
   
-  $('#checking_title').html(data.title)
-  $('#checking_subtitle').html(data.subject)
+  $('#cstt1').html(data.subject)
 
   let number_quest = ''
   let num = 1
@@ -1042,15 +1046,17 @@ function actview_checking_tsk(sid, e, idx = 0, fix = false) {
 function view_question_act_chk_tsk(id, sid) {
   $('#check_answer_essay_tsk').html('')
   $('#checkpoin_tsk').html('')
+  
+  let tsk = $('input[name=taskidd]').val();
 
-  let my_tasks = localStorage.getItem('aquacode_' + teacher_id + '_' + sid)
+  let my_tasks = localStorage.getItem('aquacode_' + teacher_id + '_' + sid + '_' + tsk)
   let data = JSON.parse(my_tasks)
   
   let row = data.tasks[id]
   let qtype = data.tasks[id].type
   let spoin = data.tasks[id].res_poin
   let poin = data.tasks[id].poin
-  let student_answer = data.tasks[id].student_answer[0]
+  let student_answer = data.tasks[id].student_answer
   let right_answer = JSON.parse(data.tasks[id].right_answer)
   let nchk = data.tasks[id].note_check
   let ischk = data.tasks[id].checked
@@ -1074,15 +1080,19 @@ function view_question_act_chk_tsk(id, sid) {
   let option = ''
   let num = 1
   let type = qtype == 2 ? 'checkbox' : 'radio'
+
+  let sas = qtype == 3 ? student_answer[0].map(function (x) {return parseInt(x, 10)}) : student_answer[0];
+  let ras = qtype == 3 ? right_answer.map(function (x) {return parseInt(x, 10)}) : right_answer;
+  
   $.each(row.option, function (i, v) {   
     let btn_cls = 'btn-outline btn-outline-primary'
-    if (student_answer[0].includes(v)) {
-      if (right_answer.includes(v)) {
+    if (sas.includes(v)) {
+      if (ras.includes(v)) {
         btn_cls = 'btn-success'
       } else {
         btn_cls = 'btn-warning'
       }
-    } else if (right_answer.includes(v)) {
+    } else if (ras.includes(v)) {
       btn_cls = 'btn-primary'
     }
 
@@ -1158,7 +1168,7 @@ function view_question_act_chk_tsk(id, sid) {
   <div class="alert bg-light border border-primary">
     <span class="d-block fw-semibold text-start py-2 px-3">
       <div class="d-flex justify-content-between mb-3">
-        <badge class="badge badge-info fs-3 p-5"><b>Poin Soal : ${poin}</b></badge>
+        <badge class="badge badge-info fs-3 p-5">Poin : ${poin}<span class="fw-bold fs-6">/${spoin}</span></badge>
         <badge class="badge badge-success fs-3 p-5"><b id="allpoint_tsk">Total Poin : ${tpoint % 1 == 0 ? tpoint : tpoint.toFixed(2)}</b></badge>
         <input type="hidden" name="allpoint_tsk" value="${tpoint}"/>
       </div>
@@ -1227,7 +1237,8 @@ function setpercent(key, val, sid, tpoint) {
 }
 
 function update_localstorage_chk_tsk(sid, type, key, value = null) {
-  let key_storage = 'aquacode_' + teacher_id + '_' + sid;
+  let tsk = $('input[name=taskidd]').val();
+  let key_storage = 'aquacode_' + teacher_id + '_' + sid + '_' + tsk;
   let my_data = JSON.parse(localStorage.getItem(key_storage))
   
   if (type == 'checking') {
@@ -1248,16 +1259,49 @@ function update_localstorage_chk_tsk(sid, type, key, value = null) {
   }
 }
 
-function close_checking_modal_tsk() {
+function act_close_chkmdl_tsk() {
   $('#checking_modal_question_tsk').modal('hide')
   $('#modal_look_student_act_task').modal('show')
+
+  let sid = $('#btn_submit_checking_tsk').val()
+  let tsk = $('input[name=taskidd]').val();
+
+  let key_storage = 'aquacode_' + teacher_id + '_' + sid  + '_' + tsk;
+  localStorage.removeItem(key_storage)
+}
+
+function close_checking_modal_tsk(type = 1) {
+  if (type == 1) {
+    Swal.fire({
+      html: `<h3>Anda yakin menutup halaman pemeriksaan?</h3><br><p>Anda akan kehilahan data pemeriksaan jika menutup halamana ini.</p>`,
+      icon: "info",
+      buttonsStyling: false,
+      showCancelButton: true,
+      confirmButtonText: "Ya",
+      cancelButtonText: "Tidak",
+      customClass: {
+        confirmButton: "btn btn-sm btn-primary",
+        cancelButton: "btn btn-sm btn-danger",
+      },
+    }).then(function (confirm) {
+      if (confirm.isConfirmed) {
+        act_close_chkmdl_tsk()
+      }
+    });
+  } else {
+    act_close_chkmdl_tsk()
+    if (url.includes("dashboard/teacher")) {
+      ajax_dash_teacher()
+    }
+  }
 }
 
 $('#btn_submit_checking_tsk').on('click', function() {
   let sid = $(this).val()
   let resid = $('#result_id_tsk').val()
+  let tsk = $('input[name=taskidd]').val();
 
-  let key_storage = 'aquacode_' + teacher_id + '_' + sid;
+  let key_storage = 'aquacode_' + teacher_id + '_' + sid  + '_' + tsk;
   let my_data = JSON.parse(localStorage.getItem(key_storage))
   
   let status_checked = [];
@@ -1272,12 +1316,11 @@ $('#btn_submit_checking_tsk').on('click', function() {
   if (status_checked.includes(false)) {
     toast_act('Gagal!','Masih ada yang belum diperiksa!', 'error')
   } else {
-    submit_checking_act_tsk(my_data, resid, key_storage)
+    submit_checking_act_tsk(my_data, resid)
   }
 })
 
-
-function submit_checking_act_tsk(e, res, key)
+function submit_checking_act_tsk(e, res)
 {
   let result = e.tasks
   
@@ -1291,16 +1334,13 @@ function submit_checking_act_tsk(e, res, key)
     },
     success: function (e) {
       if (e.sts) {
-        localStorage.removeItem(key)
-        close_checking_modal_tsk()
+        close_checking_modal_tsk(2)
       }
       toast_act('', e.msg, e.icn)
       hide_loading()
     },
   });
 }
-
-
 
 if (url.includes("teacher/task/index-draft")) {
   let c = [
@@ -1338,7 +1378,7 @@ if (url.includes("teacher/task/index-draft")) {
 
   tbconf.columns = cl;
   tbconf.selectableRows = false;
-  var student_act = new Tabulator('#task_student_act', tbconf)
+  var student_act_tsk = new Tabulator('#task_student_act', tbconf)
 } else if (url.includes("teacher/task/index-done")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
@@ -1355,7 +1395,7 @@ if (url.includes("teacher/task/index-draft")) {
 
   tbconf.columns = cl;
   tbconf.selectableRows = false;
-  var student_act = new Tabulator('#task_student_act', tbconf)
+  var student_act_tsk = new Tabulator('#task_student_act', tbconf)
 } else if (url.includes("student/task/present")) {
   let c = [
     { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
@@ -1494,3 +1534,17 @@ $(document).ready(function () {
     task_dones.setData(base_url + "/student/task/list-task?page-task=3");
   }
 });
+
+
+function close_view_task_student() {
+  $('#modal_look_student_act_task').modal('hide')
+  $('#bd_list_task_student').html('<div id="task_student_act"></div>')
+  let cl = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
+  ]
+
+  tbconf.columns = cl;
+  tbconf.selectableRows = false;
+  student_act_tsk = new Tabulator('#task_student_act', tbconf)
+}

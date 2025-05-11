@@ -41,6 +41,7 @@ $routes->post('/dashboard/teacher/data-dashboard', 'Dashboard\DashboardTeacher::
 $routes->get('/dashboard/student', 'Dashboard\DashboardStudent::index', ['filter' => 'auth']);
 $routes->get('/dashboard/student/change-password', 'Dashboard\DashboardStudent::change_password', ['filter' => 'auth']); #done
 $routes->post('/dashboard/student/update-password', 'Dashboard\DashboardStudent::update_password', ['filter' => 'auth']); #done
+$routes->post('/dashboard/student/data-dashboard', 'Dashboard\DashboardStudent::data_dashboard', ['filter' => 'auth']); #done
 
 ## BEGIN TEACHER ROUTE
 $routes->get('/teacher/lesson/standart', 'LearningMS\Lessons\StandartLesson::index', ['filter' => 'auth']);

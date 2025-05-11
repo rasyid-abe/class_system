@@ -77,10 +77,10 @@ class SchoolLesson extends BaseController
         $req = $this->request->getVar();
 
         $sch = userdata()['school_id'];
-        $s_year = year_active()['school_year_id'];
         $teach = userdata()['id_profile'];
-
+        
         if (isset(year_active()['school_year_id'])) {
+            $s_year = year_active()['school_year_id'];
             $total_chapter = $this->lesson_school->total_chapter($sch, $s_year, $teach);
             $total_subchapter = $this->lesson_school->total_subchapter($sch, $s_year, $teach);
   

@@ -22,6 +22,7 @@ class AssessmentResultModel extends Model
         'assessment_result_value', 
         'assessment_result_fault', 
         'assessment_result_submit_message', 
+        'assessment_result_is_checked', 
     ];
 
     public function getSingle($where = [])
