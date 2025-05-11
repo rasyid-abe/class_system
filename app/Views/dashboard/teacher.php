@@ -2,259 +2,226 @@
 <?php $this->section('content'); ?>
 
 
-<div class="row gx-5 gx-xl-10 mb-xl-10">
-    <div class="col-sm-6 col-xl-3 mb-xl-10 mb-5">
+<?php if (year_active() == null) : ?>
+    <div class="alert alert-danger d-flex align-items-center p-5  my-xl-5">
+        <i class="bi bi-exclamation-octagon-fill fs-2hx text-danger me4"></i>
+        <!-- <i class="ki-duotone ki-shield-tick fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i> -->
+        <div class="d-flex flex-column mx-4">
+            <h4 class="mb-1 text-danger">Peringatan</h4>
+            <span>Pilih tahun pelajaran untuk mengaktifkan seluruh Fitur</span>
+        </div>
+    </div>
+<?php endif ?>
 
-        <div class="card h-lg-100">
+<div class="row gx-5 gx-xl-10 my-xl-5">
+
+    <div class="col-md-6 col-xl-3 my-xl-5">
+
+        <div class="card h-lg-100 bg-hover-info" style="background-color: #192440" onclick="window.location.replace('<?= base_url('teacher/lesson/additional') ?>')">
             <div class="card-body d-flex justify-content-between align-items-start flex-column">
                 <div class="m-0">
-                    <i class="bi bi-grid-1x2-fill fs-2x"></i>
+                    <i class="text-white bi bi-grid-1x2-fill fs-2x"></i>
                 </div>
 
-                <div class="d-flex flex-column my-7">
-                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2"><span id="dash_t_chap">memuat ...</span></span>
+                <div class="d-flex flex-column my-4">
+                    <span class="fw-semibold fs-3x text-white lh-1 ls-n2"><span id="dash_t_chap">memuat ...</span></span>
 
                     <div class="m-0">
-                        <span class="fw-semibold fs-6 text-gray-500">BAB Pelajaran </span>
+                        <span class="fw-semibold fs-6 text-white">BAB Pelajaran </span>
                     </div>
                 </div>
 
-                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start">
-                    <i class="bi bi-three-dots fs-2x"></i>
-                </button>
+                <!-- <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start">
+                    <i class="text-white bi bi-three-dots fs-2x"></i>
+                </button> -->
             </div>
         </div>
 
 
     </div>
 
-    <div class="col-sm-6 col-xl-3 mb-xl-10 mb-5">
+    <div class="col-sm-6 col-xl-3 my-xl-5">
 
-        <div class="card h-lg-100">
+        <div class="card h-lg-100 bg-hover-info" style="background-color: #192440" onclick="window.location.replace('<?= base_url('teacher/lesson/additional') ?>')">
             <div class="card-body d-flex justify-content-between align-items-start flex-column">
                 <div class="m-0">
-                    <i class="fas fa-tasks fs-2x"></i>
+                    <i class="text-white fas fa-tasks fs-2x"></i>
                 </div>
 
-                <div class="d-flex flex-column my-7">
-                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2"><span id="dash_t_subchap">memuat ...</span></span>
+                <div class="d-flex flex-column my-4">
+                    <span class="fw-semibold fs-3x text-white lh-1 ls-n2"><span id="dash_t_subchap">memuat ...</span></span>
 
                     <div class="m-0">
-                        <span class="fw-semibold fs-6 text-gray-500">Topik Pelajaran </span>
+                        <span class="fw-semibold fs-6 text-white">Topik Pelajaran </span>
                     </div>
                 </div>
 
-                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start">
-                    <i class="bi bi-three-dots fs-2x"></i>
-                </button>
+                <!-- <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start">
+                    <i class="text-white bi bi-three-dots fs-2x"></i>
+                </button> -->
             </div>
         </div>
 
 
     </div>
 
-    <div class="col-sm-6 col-xl-3 mb-xl-10 mb-5">
+    <div class="col-sm-6 col-xl-3 my-xl-5">
 
-        <div class="card h-lg-100">
+        <div class="card h-lg-100 bg-hover-info" style="background-color: #192440" onclick="window.location.replace('<?= base_url('teacher/question-bank/additional') ?>')">
             <div class="card-body d-flex justify-content-between align-items-start flex-column">
                 <div class="m-0">
-                    <i class="fas fa-th-list fs-2x"></i>
+                    <i class="text-white fas fa-th-list fs-2x"></i>
                 </div>
 
-                <div class="d-flex flex-column my-7">
-                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2"><span id="dash_t_tqb">memuat ...</span></span>
+                <div class="d-flex flex-column my-4">
+                    <span class="fw-semibold fs-3x text-white lh-1 ls-n2"><span id="dash_t_tqb">memuat ...</span></span>
 
                     <div class="m-0">
-                        <span class="fw-semibold fs-6 text-gray-500">Judul Bank Soal </span>
+                        <span class="fw-semibold fs-6 text-white">Judul Bank Soal </span>
                     </div>
                 </div>
-
+<!-- 
                 <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start">
-                    <i class="bi bi-three-dots fs-2x"></i>
-                </button>
+                    <i class="text-white bi bi-three-dots fs-2x"></i>
+                </button> -->
             </div>
         </div>
 
 
     </div>
 
-    <div class="col-sm-6 col-xl-3 mb-xl-10 mb-5">
+    <div class="col-sm-6 col-xl-3 my-xl-5">
 
-        <div class="card h-lg-100">
+        <div class="card h-lg-100 bg-hover-info" style="background-color: #192440" onclick="window.location.replace('<?= base_url('teacher/question-bank/additional') ?>')">
             <div class="card-body d-flex justify-content-between align-items-start flex-column">
                 <div class="m-0">
-                    <i class="bi bi-grid-3x3-gap-fill fs-2x"></i>
+                    <i class="text-white bi bi-grid-3x3-gap-fill fs-2x"></i>
                 </div>
 
-                <div class="d-flex flex-column my-7">
-                    <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2"><span id="dash_t_qb">memuat ...</span></span>
+                <div class="d-flex flex-column my-4">
+                    <span class="fw-semibold fs-3x text-white lh-1 ls-n2"><span id="dash_t_qb">memuat ...</span></span>
 
                     <div class="m-0">
-                        <span class="fw-semibold fs-6 text-gray-500">Total Soal </span>
+                        <span class="fw-semibold fs-6 text-white">Total Soal </span>
                     </div>
                 </div>
 
-                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start">
-                    <i class="bi bi-three-dots fs-2x"></i>
-                </button>
+                <!-- <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start">
+                    <i class="text-white bi bi-three-dots fs-2x"></i>
+                </button> -->
             </div>
         </div>
 
 
     </div>
 
-    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-10">
+    <div class="checked_asstsk" id="checked_asstsk"></div>
 
-        <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 h-md-50 mb-5 mb-xl-10" style="background-color: #080655">
-            <div class="card-header align-items-center border-0">
-                <h3 class="fw-bold text-white m-0">Saya Berbagi</h3>
+    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-4 my-xl-5">
 
-                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end">
-                    <i class="bi bi-three-dots fs-1"></i>
-                </button>
-            </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-flush h-lg-70 mb-10">
+                    <div class="card-header align-items-center border-0">
+                        <h3 class="fw-bold text-gray-900 m-0">BAB Pelajaran</h3>
 
-            <div class="card-body">
-                <div class="card-title d-flex flex-column">
-                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2"><span id="dash_chp_shared">memuat ...</span></span>
-
-                    <span class="text-white opacity-50 pt-1 fw-semibold fs-6">Topik Pelajaran</span>
-                </div>
-                <div class="separator separator-dashed my-3"></div>
-                <div class="card-title d-flex flex-column">
-                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2"><span id="dash_schp_shared">memuat ...</span></span>
-
-                    <span class="text-white opacity-50 pt-1 fw-semibold fs-6">Judul Bank Soal</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="card card-flush h-md-50 mb-5 mb-xl-10"  style="background-color: #080655">
-            <div class="card-header pt-5">
-                <div class="card-title d-flex flex-column">
-                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">357</span>
-
-                    <span class="text-white pt-1 fw-semibold fs-6">Lampiran Dokumen</span>
-                </div>
-            </div>
-
-            <div class="card-body d-flex flex-column justify-content-end pe-0">
-                <!-- <span class="fs-6 fw-bolder text-gray-800 d-block mb-2">Today’s Heroes</span> -->
-
-                <div class="symbol-group symbol-hover flex-nowrap">
-                    <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Alan Warden" data-kt-initialized="1">
-                        <span class="symbol-label bg-warning text-inverse-warning fw-bold">A</span>
+                        <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end">
+                            <i class="bi bi-three-dots fs-1"></i>
+                        </button>
                     </div>
-                    <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Susan Redwood" data-kt-initialized="1">
-                        <span class="symbol-label bg-primary text-inverse-primary fw-bold">S</span>
+
+                    <div class="card-body pt-2">
+
+                        <div class="d-flex fw-semibold align-items-center mb-4">
+                            <div class="bullet w-8px h-6px rounded-2 bg-primary me-3"></div>
+
+                            <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Saya</div>
+
+                            <div class="text-gray-900 fw-bolder text-xxl-end"><span id="dash_add_less">memuat ...</span></div>
+                        </div>
+
+                        <div class="d-flex fw-semibold align-items-center mb-4">
+                            <div class="bullet w-8px h-6px rounded-2 bg-success me-3"></div>
+
+                            <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Dibagikan</div>
+
+                            <div class="text-gray-900 fw-bolder text-xxl-end"><span id="dash_chp_shared">memuat ...</span></div>
+                        </div>
+
+                        <div class="d-flex fw-semibold align-items-center mb-4">
+                            <div class="bullet w-8px h-6px rounded-2 bg-info me-3"></div>
+
+                            <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Sekolah</div>
+
+                            <div class="text-gray-900 fw-bolder text-xxl-end"><span id="dash_sch_less">memuat ...</span></div>
+                        </div>
+
+                        <div class="d-flex fw-semibold align-items-center mb-4">
+                            <div class="bullet w-8px h-6px rounded-2 bg-danger me-3"></div>
+
+                            <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Publik</div>
+
+                            <div class="text-gray-900 fw-bolder text-xxl-end"><span id="dash_pub_less">memuat ...</span></div>
+                        </div>
+
+
                     </div>
-                    <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Perry Matthew" data-kt-initialized="1">
-                        <span class="symbol-label bg-danger text-inverse-danger fw-bold">P</span>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="card card-flush h-lg-100">
+                    <div class="card-header align-items-center border-0">
+                        <h3 class="fw-bold text-gray-900 m-0">Bank Soal</h3>
+
+                        <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end">
+                            <i class="bi bi-three-dots fs-1"></i>
+                        </button>
                     </div>
-                    <a href="#" class="symbol symbol-35px symbol-circle" data-bs-toggle="modal" data-bs-target="#kt_modal_view_users">
-                        <span class="symbol-label bg-dark text-gray-300 fs-8 fw-bold">+42</span>
-                    </a>
+
+                    <div class="card-body pt-2">
+
+                        <div class="d-flex fw-semibold align-items-center">
+                            <div class="bullet w-8px h-3px rounded-2 bg-primary me-3"></div>
+
+                            <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Saya</div>
+
+                            <div class="text-gray-900 fw-bolder text-xxl-end"><span id="t_qb_me">memuat ...</span></div>
+                        </div>
+
+                        <div class="separator separator-dashed my-3"></div>
+
+                        <div class="d-flex fw-semibold align-items-center">
+                            <div class="bullet w-8px h-3px rounded-2 bg-success me-3"></div>
+
+                            <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Dibagikan</div>
+
+                            <div class="text-gray-900 fw-bolder text-xxl-end"><span id="t_qb_shr">memuat ...</span></div>
+                        </div>
+
+                        <div class="separator separator-dashed my-3"></div>
+
+                        <div class="d-flex fw-semibold align-items-center">
+                            <div class="bullet w-8px h-3px rounded-2 bg-danger me-3"></div>
+
+                            <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Publik</div>
+
+                            <div class="text-gray-900 fw-bolder text-xxl-end"><span id="t_qb_pub">memuat ...</span></div>
+                        </div>
+
+
+
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-10">
-
-        <div class="card card-flush h-lg-50 mb-10">
-            <div class="card-header align-items-center border-0">
-                <h3 class="fw-bold text-gray-900 m-0">BAB Pelajaran</h3>
-
-                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end">
-                    <i class="bi bi-three-dots fs-1"></i>
-                </button>
-            </div>
-
-            <div class="card-body pt-5">
-                <!-- <div class="d-flex fw-semibold align-items-center mb-4">
-                    <div class="bullet w-8px h-6px rounded-2 bg-success me-3"></div>
-
-                    <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Standar</div>
-
-                    <div class="text-gray-900 fw-bolder text-xxl-end">$7,660</div>
-                </div> -->
-
-                <div class="d-flex fw-semibold align-items-center mb-4">
-                    <div class="bullet w-8px h-6px rounded-2 bg-primary me-3"></div>
-
-                    <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Saya</div>
-
-                    <div class="text-gray-900 fw-bolder text-xxl-end"><span id="dash_add_less">memuat ...</span></div>
-                </div>
-
-                <div class="d-flex fw-semibold align-items-center mb-4">
-                    <div class="bullet w-8px h-6px rounded-2 bg-info me-3"></div>
-
-                    <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Sekolah</div>
-
-                    <div class="text-gray-900 fw-bolder text-xxl-end"><span id="dash_sch_less">memuat ...</span></div>
-                </div>
-
-                <div class="d-flex fw-semibold align-items-center mb-4">
-                    <div class="bullet w-8px h-6px rounded-2 bg-danger me-3"></div>
-
-                    <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Publik</div>
-
-                    <div class="text-gray-900 fw-bolder text-xxl-end"><span id="dash_pub_less">memuat ...</span></div>
-                </div>
-
-
-            </div>
-        </div>
-
-        <div class="card card-flush h-lg-50">
-            <div class="card-header align-items-center border-0">
-                <h3 class="fw-bold text-gray-900 m-0">Bank Soal</h3>
-
-                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end">
-                    <i class="bi bi-three-dots fs-1"></i>
-                </button>
-            </div>
-
-            <div class="card-body pt-5">
-                <!-- <div class="d-flex fw-semibold align-items-center">
-                    <div class="bullet w-8px h-3px rounded-2 bg-primary me-3"></div>
-
-                    <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Standar</div>
-
-                    <div class="text-gray-900 fw-bolder text-xxl-end">$7,660</div>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div> -->
-
-                <div class="d-flex fw-semibold align-items-center">
-                    <div class="bullet w-8px h-3px rounded-2 bg-primary me-3"></div>
-
-                    <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Saya</div>
-
-                    <div class="text-gray-900 fw-bolder text-xxl-end"><span id="t_qb_me">memuat ...</span></div>
-                </div>
-
-                <div class="separator separator-dashed my-3"></div>
-
-                <div class="d-flex fw-semibold align-items-center">
-                    <div class="bullet w-8px h-3px rounded-2 bg-primary me-3"></div>
-
-                    <div class="text-gray-700 fw-semibold fs-6 flex-grow-1 me-4">Publik</div>
-
-                    <div class="text-gray-900 fw-bolder text-xxl-end"><span id="t_qb_pub">memuat ...</span></div>
-                </div>
-
-
-
-            </div>
-        </div>
 
     </div>
 
-    <div class="col-lg-12 col-xl-12 col-xxl-6 mb-10 mb-xl-0">
+    <div class="col-lg-12 col-xl-12 col-xxl-8 my-5">
 
-        <div class="card h-md-100">
+        <div class="card">
             <div class="card-header border-0 pt-5">
                 <h3 class="card-title align-items-start flex-column">
                     <span class="card-label fw-bold text-gray-900">Jadwal Hari Ini</span>
@@ -1323,127 +1290,8 @@
             </div>
         </div>
     </div>
-</div>
 
-
-<div class="row gx-5 gx-xl-10 mb-xl-10">
-
-    <div class="col-md-6 col-xl-6 mb-xl-10">
-        <div class="card h-md-100">
-            <div class="card-header align-items-center border-0">
-                <h3 class="fw-bold text-gray-900 m-0">Informasi Terkini</h3>
-
-                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
-
-                    <i class="bi bi-three-dots fs-1"></i>
-                </button>
-
-                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px" data-kt-menu="true">
-                    <div class="menu-item px-3">
-                        <div class="menu-content fs-6 text-gray-900 fw-bold px-3 py-4">Quick Actions</div>
-                    </div>
-
-                    <div class="separator mb-3 opacity-75"></div>
-
-                    <div class="menu-item px-3">
-                        <a href="#" class="menu-link px-3">
-                            New Ticket
-                        </a>
-                    </div>
-
-                    <div class="menu-item px-3">
-                        <a href="#" class="menu-link px-3">
-                            New Customer
-                        </a>
-                    </div>
-
-                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
-                        <a href="#" class="menu-link px-3">
-                            <span class="menu-title">New Group</span>
-                            <span class="menu-arrow"></span>
-                        </a>
-
-                        <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                            <div class="menu-item px-3">
-                                <a href="#" class="menu-link px-3">
-                                    Admin Group
-                                </a>
-                            </div>
-
-                            <div class="menu-item px-3">
-                                <a href="#" class="menu-link px-3">
-                                    Staff Group
-                                </a>
-                            </div>
-
-                            <div class="menu-item px-3">
-                                <a href="#" class="menu-link px-3">
-                                    Member Group
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="menu-item px-3">
-                        <a href="#" class="menu-link px-3">
-                            New Contact
-                        </a>
-                    </div>
-
-                    <div class="separator mt-3 opacity-75"></div>
-
-                    <div class="menu-item px-3">
-                        <div class="menu-content px-3 py-3">
-                            <a class="btn btn-primary  btn-sm px-4" href="#">
-                                Generate Reports
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            <div class="card-body pt-2 d-grid gap-3">
-                <div class="d-flex flex-column align-items-start">
-                    <div class="d-flex align-items-center mb-2">
-                    <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Alan Warden" data-kt-initialized="1">
-                        <span class="symbol-label bg-warning text-inverse-warning fw-bold">A</span>
-                    </div>
-                        <div class="ms-3">
-                            <a href="#" class="fs-6 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
-                            <span class="text-muted fs-7 mb-1">2 mins</span>
-                        </div>
-
-                    </div>
-
-                    <div class="p-5 rounded bg-light-info text-gray-900 fw-semibold text-start" data-kt-element="message-text">
-                        <h4>Judul Informasi</h4>
-                        How likely are you to recommend our company How likely are you to recommend our company to your friends and family ? 
-                        <a href="">Selengkapnya</a>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-start">
-                    <div class="d-flex align-items-center mb-2">
-                    <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Alan Warden" data-kt-initialized="1">
-                        <span class="symbol-label bg-warning text-inverse-warning fw-bold">A</span>
-                    </div>
-                        <div class="ms-3">
-                            <a href="#" class="fs-6 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
-                            <span class="text-muted fs-7 mb-1">2 mins</span>
-                        </div>
-
-                    </div>
-
-                    <div class="p-5 rounded bg-light-info text-gray-900 fw-semibold text-start" data-kt-element="message-text">
-                        <h4>Judul Informasi</h4>
-                        How likely are you to recommend our company How likely are you to recommend our company to your friends and family ? 
-                        <a href="">Selengkapnya</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-3 mb-xl-10">
+    <div class="col-md-6 col-xl-3 my-xl-5">
         <div class="card h-md-100">
             <div class="card-header align-items-center border-0">
                 <h3 class="fw-bold text-gray-900 m-0">Ringkasan Penilaian</h3>
@@ -1603,7 +1451,7 @@
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-3 mb-xl-10">
+    <div class="col-md-6 col-xl-3 my-xl-5">
         <div class="card h-md-100">
             <div class="card-header align-items-center border-0">
                 <h3 class="fw-bold text-gray-900 m-0">Ringkasan Tugas</h3>
@@ -1763,7 +1611,184 @@
         </div>
     </div>
 
+    <div class="col-md-6 col-xl-6 my-xl-5">
+        <div class="card h-md-100">
+            <div class="card-header align-items-center border-0">
+                <h3 class="fw-bold text-gray-900 m-0">Informasi Terkini</h3>
+
+                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+
+                    <i class="bi bi-three-dots fs-1"></i>
+                </button>
+
+                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px" data-kt-menu="true">
+                    <div class="menu-item px-3">
+                        <div class="menu-content fs-6 text-gray-900 fw-bold px-3 py-4">Quick Actions</div>
+                    </div>
+
+                    <div class="separator mb-3 opacity-75"></div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Ticket
+                        </a>
+                    </div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Customer
+                        </a>
+                    </div>
+
+                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+                        <a href="#" class="menu-link px-3">
+                            <span class="menu-title">New Group</span>
+                            <span class="menu-arrow"></span>
+                        </a>
+
+                        <div class="menu-sub menu-sub-dropdown w-175px py-4">
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Admin Group
+                                </a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Staff Group
+                                </a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link px-3">
+                                    Member Group
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item px-3">
+                        <a href="#" class="menu-link px-3">
+                            New Contact
+                        </a>
+                    </div>
+
+                    <div class="separator mt-3 opacity-75"></div>
+
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3 py-3">
+                            <a class="btn btn-primary  btn-sm px-4" href="#">
+                                Generate Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-body pt-2 d-grid gap-3">
+                <div class="d-flex flex-column align-items-start">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Alan Warden" data-kt-initialized="1">
+                            <span class="symbol-label bg-warning text-inverse-warning fw-bold">A</span>
+                        </div>
+                        <div class="ms-3">
+                            <a href="#" class="fs-6 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+                            <span class="text-muted fs-7 mb-1">2 mins</span>
+                        </div>
+
+                    </div>
+
+                    <div class="p-5 rounded bg-light-info text-gray-900 fw-semibold text-start" data-kt-element="message-text">
+                        <h4>Judul Informasi</h4>
+                        How likely are you to recommend our company How likely are you to recommend our company to your friends and family ?
+                        <a href="">Selengkapnya</a>
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-start">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Alan Warden" data-kt-initialized="1">
+                            <span class="symbol-label bg-warning text-inverse-warning fw-bold">A</span>
+                        </div>
+                        <div class="ms-3">
+                            <a href="#" class="fs-6 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+                            <span class="text-muted fs-7 mb-1">2 mins</span>
+                        </div>
+
+                    </div>
+
+                    <div class="p-5 rounded bg-light-info text-gray-900 fw-semibold text-start" data-kt-element="message-text">
+                        <h4>Judul Informasi</h4>
+                        How likely are you to recommend our company How likely are you to recommend our company to your friends and family ?
+                        <a href="">Selengkapnya</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+<div class="row gx-5 gx-xl-10 my-xl-5">
+    <!-- 
+    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-10">
+
+        <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 h-md-50 mb-5 my-xl-5" style="background-color: #080655">
+            <div class="card-header align-items-center border-0">
+                <h3 class="fw-bold text-white m-0">Saya Berbagi</h3>
+
+                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end">
+                    <i class="bi bi-three-dots fs-1"></i>
+                </button>
+            </div>
+
+            <div class="card-body">
+                <div class="card-title d-flex flex-column">
+                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2"><span id="dash_chp_shared">memuat ...</span></span>
+
+                    <span class="text-white opacity-50 pt-1 fw-semibold fs-6">Topik Pelajaran</span>
+                </div>
+                <div class="separator separator-dashed my-3"></div>
+                <div class="card-title d-flex flex-column">
+                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2"><span id="dash_schp_shared">memuat ...</span></span>
+
+                    <span class="text-white opacity-50 pt-1 fw-semibold fs-6">Judul Bank Soal</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-flush h-md-50 mb-5 my-xl-5"  style="background-color: #080655">
+            <div class="card-header pt-5">
+                <div class="card-title d-flex flex-column">
+                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">357</span>
+
+                    <span class="text-white pt-1 fw-semibold fs-6">Lampiran Dokumen</span>
+                </div>
+            </div>
+
+            <div class="card-body d-flex flex-column justify-content-end pe-0">
+                <div class="symbol-group symbol-hover flex-nowrap">
+                    <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Alan Warden" data-kt-initialized="1">
+                        <span class="symbol-label bg-warning text-inverse-warning fw-bold">A</span>
+                    </div>
+                    <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Susan Redwood" data-kt-initialized="1">
+                        <span class="symbol-label bg-primary text-inverse-primary fw-bold">S</span>
+                    </div>
+                    <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" data-bs-original-title="Perry Matthew" data-kt-initialized="1">
+                        <span class="symbol-label bg-danger text-inverse-danger fw-bold">P</span>
+                    </div>
+                    <a href="#" class="symbol symbol-35px symbol-circle" data-bs-toggle="modal" data-bs-target="#kt_modal_view_users">
+                        <span class="symbol-label bg-dark text-gray-300 fs-8 fw-bold">+42</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+
+
+</div>
+
+
 
 
 <?php $this->endSection(); ?>

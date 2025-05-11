@@ -208,5 +208,25 @@ class AssessmentModel extends Model
 
         return $this->db->query($sql)->getResultArray();
     }
+
+    public function get_checked_assessment($school_id, $year, $teacher_id, $date)
+    {
+        $sql = "
+            select *
+            from lms_assessment
+            left join master_subject on subject_id = assessment_subject_id
+            where 
+                assessment_school_id = $school_id and
+                assessment_school_year_id = $year and
+                assessment_teacher_id = $teacher_id and
+                assessment_status = 2 and
+                assessment_start <= '$date' and
+                assessment_group like '%none%'
+        ";
+
+        return $this->db->query($sql)->getResultArray();
+    }
+    
 }
+
 

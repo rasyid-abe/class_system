@@ -370,7 +370,7 @@
                         <div class="d-flex align-items-center mb-7">
                             <div class="symbol symbol-50px me-5">
                                 <span class="symbol-label bg-secondary">
-                                    <i class="bi bi-x-circle text-info fs-2hx"></i>
+                                    <i class="bi bi-x-circle text-danger fs-2hx"></i>
                                 </span>
                             </div>
                             <div class="d-flex flex-column">

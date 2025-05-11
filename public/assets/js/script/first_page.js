@@ -256,8 +256,33 @@ function ajax_view_student_group(param) {
   });
 }
 
+function ajax_dash_student() {
+  $.ajax({
+    url: base_url + "/dashboard/student/data-dashboard",
+    method: "post",
+    dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      gen_dash_student(e)
+      hide_loading()
+    },
+  });
+}
+
 $(document).ready(function () {
   if (url.includes("dashboard/teacher")) {
+    let cl = [
+      { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+      { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
+    ]
+  
+    tbconf.columns = cl;
+    tbconf.selectableRows = false;
+    student_act = new Tabulator('#ass_student_act', tbconf)
+    student_act_tsk = new Tabulator('#task_student_act', tbconf)
+
     ajax_dash_teacher()
   } else if (url.includes("teacher/lesson/standart")) {
     ajax_std_less(1);
@@ -326,28 +351,211 @@ $(document).ready(function () {
         base_url + "/student/lesson/school/subject-list"
       );
     }
+  } else if (url.includes("dashboard/student")) {
+    ajax_dash_student()
   }
 });
 
-function gen_dash_teacher(e) {
-  console.log(e);
-  
-  let my_duty = ''
-  $.each(e.my_duty, function (i, v) {
-    my_duty += `
-      <div class="timeline-item pb-5">
-        <div class="timeline-content m-0">
-          <span class="fs-8 fw-bolder text-primary text-uppercase">${v.student_group_name}</span>
-          <a href="#" class="fs-6 text-gray-800 fw-bold d-block text-hover-primary">${v.subject_name}</a>
-          <span class="fw-semibold text-gray-500">n / a</span>
+function gen_dash_student(e) {
+  let list_assessment = ''
+  if (e.assessment.length > 0) {
+    let card_assessment = ''
+    $.each(e.assessment, function(i,v) {
+      let duration = v.assessment_duration > 0 ? v.assessment_duration + ` Menit` : '-'
+      let deg = v.teacher_degree != '' ? ', ' + v.teacher_degree : ''
+      let name = v.teacher_first_name + ' ' + v.teacher_last_name + deg
+
+      card_assessment += `
+        <div class="card-task">
+            <div class="card">
+                <div class="card-body container-body">
+                    <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
+                        <div class="mb-auto p-2 bd-highlight">
+                            <p class="fs-3 text-primary fw-bold mb-auto bd-highlight">${v.assessment_title}</p>
+                            <badge class="badge badge-info"><i class="bi-alarm text-white"></i> ${duration}</badge>
+                        </div>
+                        <div class="p-2 bd-highlight" style="margin-bottom: -17px;">
+                            <p class="card-text fs-5 text-dark fw-semibold">${v.subject_name}</p>
+                            <p class="text-dark">${ind_date(v.assessment_start)} s/d ${ind_date(v.assessment_end)}</p>
+                            <p class="card-text fs-6 mb-2">${name}</p>
+                            <button class="btn btn-primary btn-sm" onclick="alert_begin_assessment(${v.assessment_id})">Kerjakan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+      `
+    })
+    list_assessment = `
+      <div class="col-sm-12 mb-5" id="block-assessment">
+            <div class="alert alert-primary" style="border-radius:10px;">
+                <div class="d-flex flex-stack text-white mb-3">
+                    <div class="flex-shrink-0">
+                        <span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Penilaian Aktif</span>
+                    </div>
+
+                    <a href="<?= base_url('student/assessment/present') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary pt-2 pr-4" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+                        <i class="bi bi-three-dots text-dark fs-1"></i>
+                    </a>
+                </div>
+                <div class="container-card">
+                    <div class="row-task">
+                        ${card_assessment}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+  }
+  $('#block-assessment').html(list_assessment)
+
+  let list_task = ''
+  if (e.task.length > 0) {
+    let card_task = ''
+    $.each(e.task, function(i,v) {
+      if (Object.values(e.list_idx).includes(v.task_id)) {
+        let end = new Date(v.task_end)
+        let now = new Date();
+
+        if ((end > now) || (end < now && v.task_is_ignored_time_submit == 1)) {
+          let deg = v.teacher_degree != '' ? ', ' + v.teacher_degree : ''
+          let name = v.teacher_first_name + ' ' + v.teacher_last_name + deg
+          let temp_exists = e.arr_temp_task.includes(v.task_id) ? 1 : 0
+          let bdg_exists = e.arr_temp_task.includes(v.task_id) ? '<badge class="badge badge-danger">Belum dikirim</badge>' : '<badge class="badge badge-info">Belum dikerjakan</badge>'
+
+          card_task += `
+            <div class="card-task">
+                <div class="card">
+                    <div class="card-body container-body">
+                        <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
+                            <div class="mb-auto p-2 bd-highlight">
+                                <p class="fs-3 text-primary fw-bold mb-auto bd-highlight">${v.task_title}</p>
+                                ${bdg_exists}
+                            </div>
+                            <div class="p-2 bd-highlight" style="margin-bottom: -17px;">
+                                <p class="card-text fs-5 text-dark fw-semibold">${v.subject_name}<?= $v['subject_name'] ?></p>
+                                <p class="text-dark">${ind_date(v.task_start)} s/d ${ind_date(v.task_end)}</p>
+                                <p class="card-text fs-6 mb-2">${name}</p>
+                                <button class="btn btn-primary btn-sm" onclick="begin_task(${v.task_id}, ${temp_exists})">Kerjakan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          `
+        }
+      }
+    })
+
+    list_task += `
+      <div class="alert alert-info" style="border-radius:10px;">
+          <div class="d-flex flex-stack text-white mb-3">
+              <div class="flex-shrink-0">
+                  <span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Tugas Aktif</span>
+              </div>
+
+              <a href="<?= base_url('student/task/present') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start pt-2 pr-4" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+                  <i class="bi bi-three-dots text-dark fs-1"></i>
+              </a>
+          </div>
+          <div class="container-card">
+              <div class="row-task">
+                  ${card_task}
+              </div>
+          </div>
       </div>
     `
-  })
+  }
 
+  $('#block-task').html(list_task)
+  
+}
+
+function gen_dash_teacher(e) {
+  let my_duty = ''
+  if (e.my_duty.length > 0) {
+    $.each(e.my_duty, function (i, v) {
+      my_duty += `
+        <div class="timeline-item pb-5">
+          <div class="timeline-content m-0">
+            <span class="fs-8 fw-bolder text-primary text-uppercase">${v.student_group_name}</span>
+            <a href="#" class="fs-6 text-gray-800 fw-bold d-block text-hover-primary">${v.subject_name}</a>
+            <span class="fw-semibold text-gray-500">n / a</span>
+          </div>
+        </div>
+      `
+    })
+  } else {
+    my_duty = '<span>Tidak ada jadwal mengajar.</span>'
+  }
+
+  let content = ''
+  if (Object.keys(e.assessment_task_check).length > 0) {
+    let card = ''
+
+    $.each(e.assessment_task_check, function(i,v) {
+      let group = ''
+      $.each(v.group, function(idx, val) {    
+        if (val.checked_all == 'none') {
+          if (v.type == 'Tugas') {
+            group += `<a href="" data-group_id="${val.id}" data-task_id="${v.id}" data-task="${v.title}" class="badge badge-info mx-1 view_student_task">${val.group}</a>`
+          } else {
+            group += `<a href="" data-group_id="${val.id}" data-assessment_id="${v.id}" data-title="${v.title}" class="badge badge-info mx-1 view_student">${val.group}</a>`
+          }
+        }
+      })
+  
+      card += `
+        <div class="card-task">
+            <div class="card">
+                <div class="card-body container-body1 bg-light-info" style="border-radius: 10px;">
+                    <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
+                        <div class="mb-auto p-2 bd-highlight">
+                            <p class="fs-3 text-primary fw-bold mb-2 bd-highlight">${v.title}</p>
+                            <badge class="badge badge-${v.type != 'Tugas' ? 'danger' : 'success'} mb-2">${v.type}</badge>
+                            ${group}
+                        </div>
+                        <div class="p-2 bd-highlight">
+                            <p class="card-text fs-5 text-dark fw-semibold">${v.subject}</p>
+                            <p class="text-dark">${ind_date(v.start)} s/d ${ind_date(v.end)}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      `
+    })
+  
+    content = `
+      <div class="col-md-12 col-xl-12 my-xl-5">
+          <div class="card h-md-100">
+              <div class="card-header align-items-center border-0">
+                  <h3 class="fw-bold text-gray-900 m-0">Butuh Diperiksa</h3>
+  
+                  <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+  
+                      <i class="bi bi-three-dots fs-1"></i>
+                  </button>
+  
+              </div>
+              <div class="card-body pt-2">
+                  <div class="container-card">
+                      <div class="row-task" style="margin-left: -10px; margin-right: -15px;">
+                          ${card}
+                      </div>
+                  </div>
+                  
+              </div>
+          </div>
+      </div>
+    `
+  }
+
+  $('#checked_asstsk').html(content)
   $('#myduty').html(my_duty)
   $('#t_qb_me').html(e.total_qb_me + ' Soal')
   $('#t_qb_pub').html(e.total_qb_pub + ' Soal')
+  $('#t_qb_shr').html(e.total_qb_shared + ' Soal')
   $('#dash_t_chap').html(e.total_less_chap)
   $('#dash_t_subchap').html(e.total_less_subchap)
   $('#dash_t_tqb').html(e.total_qb_title)
@@ -386,8 +594,6 @@ function gen_head_qb_std(e) {
 }
 
 function gen_header_qbpub(e) {
-  console.log(e);
-
   let cls = "";
   let tt = 0;
   let tq = 0;

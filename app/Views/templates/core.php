@@ -30,6 +30,47 @@
 	<!-- <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator_simple.min.css" rel="stylesheet"> -->
 
 	<style>
+		.container-card {
+			padding-left: 10px;
+			padding-right: 15px;
+		}
+
+		.row-task {
+			align-items: stretch;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			overflow-y: hidden;
+		}
+
+		.card-task {
+			/*float: left;*/
+			width: 350px;
+			/* padding: .75rem; */
+			margin-bottom: 4px;
+			margin-right: 10px;
+			border: 0;
+			/* flex-basis: 30%; */
+			flex-grow: 0;
+			flex-shrink: 0;
+		}
+
+		.card .container-body {
+			height: 245px !important;
+			padding: 15px !important;
+		}
+
+		.card .container-body1 {
+			height: 215px !important;
+			padding: 15px !important;
+		}
+
+		.card-text {
+			font-size: 85%;
+			margin-bottom: -1px;
+		}
+
 		.tabulator .tabulator-header .tabulator-col .tabulator-col-content {
 			padding: 1px !important;
 		}
@@ -232,15 +273,16 @@
 			background-color: #fff;
 		}
 
-		.ql-container, .ql-toolbar {
-			border : 1px solid darkgrey !important;
+		.ql-container,
+		.ql-toolbar {
+			border: 1px solid darkgrey !important;
 		}
 	</style>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
 
-<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled" onload="reload_assessment()">
+<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled" onload="reload_modal()">
 
 	<div class="modal bg-body fade assessment_modal_act" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="assessment_modal_question">
 		<div class="modal-dialog modal-fullscreen">
@@ -359,6 +401,7 @@
 				<div class="modal-header">
 					<div class="modal-title">
 						<h5 id="checking_title"></h5>
+						<badge id="checking_subtitle2" class="badge badge-info mt-2"></badge>
 						<badge id="checking_subtitle" class="badge badge-secondary mt-2"></badge>
 					</div>
 					<div class="buttonn">
@@ -367,6 +410,7 @@
 						<button type="button" class="btn btn-primary" id="btn_submit_checking">Submit</button>
 						<input type="hidden" name="result_id" id="result_id">
 						<input type="hidden" name="stu_id" id="stu_id">
+						<input type="hidden" name="asse_id" id="asse_id">
 					</div>
 				</div>
 
@@ -394,8 +438,9 @@
 			<div class="modal-content shadow-none">
 				<div class="modal-header">
 					<div class="modal-title">
-						<h5 id="checking_title"></h5>
-						<badge id="checking_subtitle" class="badge badge-secondary mt-2"></badge>
+						<h5 id="ctt"></h5>
+						<badge id="cstt2" class="badge badge-info mt-2"></badge>
+						<badge id="cstt1" class="badge badge-secondary mt-2"></badge>
 					</div>
 					<div class="buttonn">
 						<span class="fw-bold mx-5 fs-3"><span id="left_time_task" class="hide"></span></span>
@@ -403,6 +448,7 @@
 						<button type="button" class="btn btn-primary" id="btn_submit_checking_tsk">Submit</button>
 						<input type="hidden" name="result_id_tsk" id="result_id_tsk">
 						<input type="hidden" name="stu_id_tsk" id="stu_id_tsk">
+						<input type="hidden" name="taskidd" id="taskidd">
 					</div>
 				</div>
 
@@ -543,6 +589,42 @@
 					<button type="button" class="btn btn-info" onclick="reload_tp();">Pilih</button>
 				</div>
 
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_look_student_act_task">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content" id="content_modal">
+				<div class="modal-header">
+					<h3 class="modal-title">Dafta Siswa Mengerjakan Tugas <span id="title_tsk_lsstd"></span></h3>
+					<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" onclick="close_view_task_student()">
+						<i class="bi bi-x-square fs-2x"></i>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div id="bd_list_task_std">
+						<div id="task_student_act"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_look_student_act_assessment">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content" id="content_modal">
+				<div class="modal-header">
+					<h3 class="modal-title">Dafta Siswa Mengerjakan Penilaian <span id="title_ass_lsstd"></span></h3>
+					<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" onclick="close_view_assess_student()">
+						<i class="bi bi-x-square fs-2x"></i>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="bd_list_ass_student">
+						<div id="ass_student_act"></div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1564,27 +1646,24 @@
 					<!--begin::Toolbar wrapper-->
 					<div class="d-flex flex-shrink-0">
 						<!--begin::Invite user-->
-						<div class="d-flex ms-3">
+						<!-- <div class="d-flex ms-3">
 							<a href="#" class="btn bg-body btn-color-gray-600 btn-active-info" tooltip="New Member"
 								data-bs-toggle="modal" data-bs-target="#kt_modal_invite_friends">New User</a>
-						</div>
+						</div> -->
 						<!--end::Invite user-->
 						<!--begin::Create app-->
 						<div class="d-flex ms-3">
 							<!-- Example single danger button -->
 							<div class="btn-group">
-								<button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-									Action
-								</button>
-								<ul class="dropdown-menu">
-									<li><a class="dropdown-item" href="#">Action</a></li>
-									<li><a class="dropdown-item" href="#">Another action</a></li>
-									<li><a class="dropdown-item" href="#">Something else here</a></li>
-									<li>
-										<hr class="dropdown-divider">
-									</li>
-									<li><a class="dropdown-item" href="#">Separated link</a></li>
-								</ul>
+								<?php if (year_active() != null) : ?>
+									<button type="button" class="btn btn-primary" onclick="show_tp()" aria-expanded="false">
+										<?= 'T.P ' . year_active()['school_year_period'] ?>
+									</button>
+								<?php else: ?>
+									<button type="button" class="btn btn-danger" onclick="show_tp()" aria-expanded="false">
+										Pilih Tahun Pelajaran
+									</button>
+								<?php endif ?>
 							</div>
 						</div>
 						<!--end::Create app-->
@@ -1840,6 +1919,18 @@
 		function hide_loading() {
 			removeLoader()
 		}
+
+		const ind_date = (tgl) => new Date(tgl).toLocaleString('id-ID', {
+			timeZone: 'Asia/Jakarta',
+			// weekday: 'long',
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+			// second: '2-digit',
+			// timeZoneName: 'short',
+		}).replace(/\./g, ':');
 	</script>
 
 	<script src="<?= base_url() ?>assets/js/script/lesson_school.js"></script>
