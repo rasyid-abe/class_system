@@ -282,7 +282,7 @@
 <!--end::Head-->
 <!--begin::Body-->
 
-<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled" onload="reload_modal()">
+<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled" onload="reload_assessment()">
 
 	<div class="modal bg-body fade assessment_modal_act" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="assessment_modal_question">
 		<div class="modal-dialog modal-fullscreen">
