@@ -807,16 +807,6 @@ function data_result_student(result_id) {
   });
 }
 
-function reload_checking() {
-  let ls = Object();
-  let sid = $('#btn_submit_checking').val()
-  let asse_id = $('#asse_id').val()
-  ls.key = 'limecode_' + teacher_id + '_' + sid + '_' + asse_id;
-  console.log(ls);
-  
-  checking_page(ls)
-}
-
 function checking_page(e = null) {
   let my_assessment = localStorage.getItem(e.key)
   if (!my_assessment) {
@@ -846,7 +836,7 @@ function act_close_chkmdl() {
 
 function close_checking_modal(type = 1) {
   if (type == 1) {
-    Swal.fire({
+    Swal.fire({ 
       html: `<h3>Anda yakin menutup halaman pemeriksaan?</h3><br><p>Anda akan kehilahan data pemeriksaan jika menutup halamana ini.</p>`,
       icon: "info",
       buttonsStyling: false,
@@ -1251,18 +1241,10 @@ function info_begin_assessment(e) {
 }
 
 function reload_assessment() {
-  let ls = Object()
-  ls.key = 'redcode_' + student_id
-  assessment_page(ls);
-}
-
-function reload_modal() {
-  console.log(url);
-  
   if (url.includes("student")) {
-    reload_assessment()
-  } else if (url.includes("teacher")) {
-    reload_checking()
+    let ls = Object()
+    ls.key = 'redcode_' + student_id
+    assessment_page(ls);
   }
 }
 

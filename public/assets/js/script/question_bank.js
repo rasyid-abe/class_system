@@ -779,7 +779,7 @@ function close_modal_content_quest() {
 function save_content_quest() {
   let type = $("input[name=form_type]").val();
   let form = true;
-
+  
   if (type == 1) {
     chap = $("input[name=chapter]").val();
     subj = $("input[name=subject]").val();

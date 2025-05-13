@@ -43,18 +43,18 @@
               <div class="card p-5" id="content_value">
                 <div class="tab-content" id="myTabContent">
                   <div class="tab-pane fade content_topic show active" id="tab_content_p" role="tabpanel">
-                    <div id="content_lesson_pub"></div>
+                    <div class="content_lesson_pub"></div>
                   </div>
                   <div class="tab-pane fade content_topic" id="tab_video_p" role="tabpanel">
                     <div id="btn_conf_vid_"></div>
-                    <div id="video_lesson_pub"></div>
+                    <div class="video_lesson_pub"></div>
                   </div>
                   <div class="tab-pane fade content_topic" id="tab_attachment_p" role="tabpanel">
                     <div id="btn_conf_attach_"></div>
-                    <div id="attachment_lesson_pub"></div>
+                    <div class="attachment_lesson_pub"></div>
                   </div>
                   <div class="tab-pane fade content_topic" id="tab_task_p" role="tabpanel">
-                    <div id="task_lesson_pub"></div>
+                    <div class="task_lesson_pub"></div>
                   </div>
                 </div>
               </div>

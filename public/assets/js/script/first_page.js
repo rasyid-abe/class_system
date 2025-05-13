@@ -272,12 +272,20 @@ function ajax_dash_student() {
 }
 
 $(document).ready(function () {
+
+  let all_locstorage = Object.entries(localStorage);
+  $.each(all_locstorage, function (i,v) {
+    if (v[0].includes("limecode") || v[0].includes("aquacode")) {
+      localStorage.removeItem(v[0])
+    }
+  })
+
   if (url.includes("dashboard/teacher")) {
     let cl = [
       { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
       { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
     ]
-  
+
     tbconf.columns = cl;
     tbconf.selectableRows = false;
     student_act = new Tabulator('#ass_student_act', tbconf)
@@ -360,7 +368,7 @@ function gen_dash_student(e) {
   let list_assessment = ''
   if (e.assessment.length > 0) {
     let card_assessment = ''
-    $.each(e.assessment, function(i,v) {
+    $.each(e.assessment, function (i, v) {
       let duration = v.assessment_duration > 0 ? v.assessment_duration + ` Menit` : '-'
       let deg = v.teacher_degree != '' ? ', ' + v.teacher_degree : ''
       let name = v.teacher_first_name + ' ' + v.teacher_last_name + deg
@@ -412,7 +420,7 @@ function gen_dash_student(e) {
   let list_task = ''
   if (e.task.length > 0) {
     let card_task = ''
-    $.each(e.task, function(i,v) {
+    $.each(e.task, function (i, v) {
       if (Object.values(e.list_idx).includes(v.task_id)) {
         let end = new Date(v.task_end)
         let now = new Date();
@@ -468,7 +476,7 @@ function gen_dash_student(e) {
   }
 
   $('#block-task').html(list_task)
-  
+
 }
 
 function gen_dash_teacher(e) {
@@ -493,9 +501,9 @@ function gen_dash_teacher(e) {
   if (Object.keys(e.assessment_task_check).length > 0) {
     let card = ''
 
-    $.each(e.assessment_task_check, function(i,v) {
+    $.each(e.assessment_task_check, function (i, v) {
       let group = ''
-      $.each(v.group, function(idx, val) {    
+      $.each(v.group, function (idx, val) {
         if (val.checked_all == 'none') {
           if (v.type == 'Tugas') {
             group += `<a href="" data-group_id="${val.id}" data-task_id="${v.id}" data-task="${v.title}" class="badge badge-info mx-1 view_student_task">${val.group}</a>`
@@ -504,7 +512,7 @@ function gen_dash_teacher(e) {
           }
         }
       })
-  
+
       card += `
         <div class="card-task">
             <div class="card">
@@ -525,7 +533,7 @@ function gen_dash_teacher(e) {
         </div>
       `
     })
-  
+
     content = `
       <div class="col-md-12 col-xl-12 my-xl-5">
           <div class="card h-md-100">
@@ -698,10 +706,10 @@ function gen_listpub_lesson(e, act) {
 
 function gen_religion_group(e) {
   let content = '';
-  $.each(e, function(i,v) {
+  $.each(e, function (i, v) {
 
     let count = 0
-    $.each(v, function(idx, val){
+    $.each(v, function (idx, val) {
       count += parseInt(val)
     })
 
@@ -717,5 +725,5 @@ function gen_religion_group(e) {
   })
 
   $('#next_').after(content)
-  
+
 }

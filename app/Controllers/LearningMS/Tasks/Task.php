@@ -738,11 +738,12 @@ class Task extends BaseController
                 ->first();
         }
 
+        $data['attach_arr'] = $data['lesson_additional_attachment_path'] != '' ? array_values(json_decode($data['lesson_additional_attachment_path'], true)) : []; 
         $task = $this->task->select('task_task_ids')->where('task_id', $req['task_id'])->first();
 
         $res = [
             'lesson' => $data,
-            'task' => $task
+            'task' => $task,
         ];
 
         echo json_encode($res);
