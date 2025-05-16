@@ -375,7 +375,7 @@ function gen_dash_student(e) {
 
       card_assessment += `
         <div class="card-task">
-            <div class="card">
+            <div class="card bg-light-primary card-bordered">
                 <div class="card-body container-body">
                     <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
                         <div class="mb-auto p-2 bd-highlight">
@@ -396,7 +396,7 @@ function gen_dash_student(e) {
     })
     list_assessment = `
       <div class="col-sm-12 mb-5" id="block-assessment">
-            <div class="alert alert-primary" style="border-radius:10px;">
+            <div class="alert alert-white" style="border-radius:10px;">
                 <div class="d-flex flex-stack text-white mb-3">
                     <div class="flex-shrink-0">
                         <span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Penilaian Aktif</span>
@@ -433,7 +433,7 @@ function gen_dash_student(e) {
 
           card_task += `
             <div class="card-task">
-                <div class="card">
+                <div class="card bg-light-info card-bordered">
                     <div class="card-body container-body">
                         <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
                             <div class="mb-auto p-2 bd-highlight">
@@ -456,7 +456,7 @@ function gen_dash_student(e) {
     })
 
     list_task += `
-      <div class="alert alert-info" style="border-radius:10px;">
+      <div class="alert alert-white" style="border-radius:10px;">
           <div class="d-flex flex-stack text-white mb-3">
               <div class="flex-shrink-0">
                   <span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Tugas Aktif</span>

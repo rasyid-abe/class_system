@@ -157,9 +157,9 @@
                     </div>
                     <?php foreach ($chapters as $k => $v) : ?>
                         <div class="accordion-item">
-                            <div class="accordion-body bg-light">
+                            <div class="accordion-body bg-secondary">
                                 <div class="d-flex justify-content-between pr-5">
-                                    <a href="#" class="d-grid text-wrap" style="font-weight: 500; width: 80%" onclick="toggle_collapse(<?= $k ?>);"><?= $v['lesson_additional_chapter'] ?></a>
+                                    <a href="#" class="d-grid text-wrap fs-4 fw-bold" style="width: 90%" onclick="toggle_collapse(<?= $k ?>);"><?= $v['lesson_additional_chapter'] ?></a>
                                     <div class="btnleft d-flex align-items-center">
                                         <a href="#" class="" onclick="form_chapter_a(3, '<?= $v['lesson_additional_chapter'] ?>', '', '<?= $v['lesson_additional_id'] ?>')">
                                             <i class="bi bi-plus-square-fill fs-2 text-primary"></i>
@@ -184,14 +184,14 @@
                                 </div>
                             </div>
                             <div id="coll_body_<?= $k ?>" class="hide body_collapse">
-                                <div class="accordion-body bg-secondary">
+                                <div class="accordion-body bg-white">
                                     <?php foreach ($v['sub_chapter'] as $key => $val): ?>
                                         <?php if ($val['lesson_additional_subchapter'] != '') : ?>
                                             <div class="d-flex justify-content-between pr-5">
                                                 <div class="shared-info text-wrap" style="width: 80%">
-                                                    <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold" onclick="view_content_a(<?= $val['lesson_additional_id'] ?>);"><?= $val['lesson_additional_subchapter'] ?></a>
+                                                    <a href="#" class="text-primary opacity-75-hover fs-4 fw-semibold" onclick="view_content_a(<?= $val['lesson_additional_id'] ?>);"><?= $val['lesson_additional_subchapter'] ?></a>
                                                     <?php if ($val['lesson_additional_shared_type'] > 0): ?>
-                                                        <br><small class="fw-bold text-info">Dibagikan</small>
+                                                        <br><small class="fw-bold text-info isshrls">Dibagikan</small>
                                                     <?php endif ?>
                                                 </div>
                                                 <div class="d-flex align-items-center">
@@ -241,7 +241,7 @@
     </div>
 
     <div class="col-sm-9 hide" id="content_tab_add">
-        <div class="hover-scroll-x">
+        <!-- <div class="hover-scroll-x"> -->
             <div class="d-grid">
                 <ul class="nav nav-tabs flex-nowrap text-nowrap">
                     <li class="nav-item">
@@ -258,7 +258,7 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        <!-- </div> -->
 
         <div class="card p-5 hide" id="content_value_add">
             <div class="tab-content" id="myTabContent">

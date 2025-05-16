@@ -12,6 +12,7 @@ function userdata()
     if ($role == 11) {
         $select = "
             au.user_id,
+            au.user_name,
             pt.teacher_school_id school_id,
             pt.teacher_id id_profile,
             CONCAT(pt.teacher_first_name, ' ', pt.teacher_last_name) name,
@@ -26,6 +27,7 @@ function userdata()
     } else if ($role == 12) {
         $select = "
             au.user_id,
+            au.user_name,
             ps.student_school_id school_id,
             ps.student_id id_profile,
             CONCAT(ps.student_first_name, ' ', ps.student_last_name) name,

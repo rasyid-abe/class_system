@@ -90,7 +90,7 @@ class AdditionalQuestionBank extends BaseController
             't_title' => $total_title['total'],
             't_quest' => $total_quest['total'],
         ];
-        
+
         echo json_encode($res);
     }
 
@@ -118,7 +118,7 @@ class AdditionalQuestionBank extends BaseController
             ->where('question_bank_grade', $grade)
             ->where('question_bank_parent_id', 0)
             ->findAll();
-        
+
         foreach ($question as $k => $v) {
             $child = $this->question_bank
                 ->select('question_bank_id, question_bank_parent_id')
@@ -134,41 +134,105 @@ class AdditionalQuestionBank extends BaseController
         $data['teachers'] = $this->teacher
             ->select('teacher_id, teacher_first_name, teacher_last_name, teacher_degree')
             ->where('teacher_school_id', userdata()['school_id'])
-            ->where('teacher_id <> '. userdata()['id_profile'])
+            ->where('teacher_id <> ' . userdata()['id_profile'])
             ->findAll();
 
         return view("learningms/question_bank_additional/content", $data);
+    }
+
+    public function grab_list_quest_title()
+    {
+        $grade = $this->request->getVar('gid');
+        $subject = $this->request->getVar('sid');
+
+        $data = [];
+        $question = $this->question_bank
+            ->select('question_bank_id, question_bank_title, question_bank_shared_type')
+            ->where('question_bank_teacher_id', userdata()['id_profile'])
+            ->where('question_bank_status < 9')
+            ->where('question_bank_subject_id', $subject)
+            ->where('question_bank_grade', $grade)
+            ->where('question_bank_parent_id', 0)
+            ->findAll();
+
+        foreach ($question as $k => $v) {
+            $child = $this->question_bank
+                ->select('question_bank_id, question_bank_parent_id')
+                ->where('question_bank_parent_id', $v['question_bank_id'])
+                ->where('question_bank_status < 9')
+                ->findAll();
+            $question[$k]['child'] = array_chunk($child, 5);
+        }
+
+        $data['questions'] = $question;
+
+
+        echo json_encode($data);
     }
 
     public function share_task()
     {
         $req = $this->request->getVar();
         if ($req['val'] == 0) {
-            $share = $this->question_bank
+            $this->question_bank
                 ->where('question_bank_id', $req['idd'])
                 ->set('question_bank_shared_type', $req['val'])
                 ->set('question_bank_shared_to', '')
                 ->update();
+
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'collapse' => 0,
+                    'show_quest' => 0,
+                    'id' => [$req['idd']]
+                ];
+            } else {
+                $res = [
+                    'collapse' => 0,
+                    'show_quest' => 0,
+                    'id' => [$req['idd']]
+                ];
+            }
+
+            echo json_encode($res);
         } else {
             $shared_to = '';
             if ($req['val'] == 4) {
                 $shared_to = isset($req['thc']) != '' ? json_encode($req['thc']) : '';
-            } 
-    
-            $share = $this->question_bank
+            }
+
+            $this->question_bank
                 ->where('question_bank_id', $req['idd'])
                 ->set('question_bank_shared_type', $req['val'])
                 ->set('question_bank_shared_to', $shared_to)
                 ->update();
+
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'collapse' => 0,
+                    'show_quest' => 0,
+                    'id' => [$req['idd']]
+                ];
+            } else {
+                $res = [
+                    'collapse' => 0,
+                    'show_quest' => 0,
+                    'id' => [$req['idd']]
+                ];
+            }
+
+            echo json_encode($res);
         }
 
-        echo json_encode($share);
+        // echo json_encode($share);
     }
 
     public function get_question()
     {
         $req = $this->request->getVar();
-        
+
         if ($req['type'] == 'shr') {
             $res = $this->question_bank
                 ->select('
@@ -183,7 +247,7 @@ class AdditionalQuestionBank extends BaseController
                 ->where('question_bank_id', $req['id'])
                 ->where('question_bank_status < 9')
                 ->first();
-    
+
             $opt = json_decode($d['question_bank_option']);
             $ans = json_decode($d['question_bank_answer']);
 
@@ -199,7 +263,7 @@ class AdditionalQuestionBank extends BaseController
             // print_r($idx_ans);
             // echo '</pre>';
             // die;
-    
+
             $res = [
                 'id' => $d['question_bank_id'],
                 'parent' => $d['question_bank_parent_id'],
@@ -220,12 +284,11 @@ class AdditionalQuestionBank extends BaseController
         echo json_encode($res);
     }
 
-    public function update_content() 
+    public function update_content()
     {
         $req = $this->request->getVar();
 
-        $update = false;
-        if($req['type'] == 1) {
+        if ($req['type'] == 1) {
             $ins = [
                 'question_bank_school_id' => userdata()['school_id'],
                 'question_bank_teacher_id' => userdata()['id_profile'],
@@ -235,14 +298,54 @@ class AdditionalQuestionBank extends BaseController
                 'question_bank_status' => 1
             ];
 
-            $update = $this->question_bank->insert($ins);
+            $this->question_bank->insert($ins);
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Judul Bank Soal gagal ditambahkan.',
+                    'icon' => 'error',
+                    'collapse' => 0,
+                    'id' => [0]
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Judul Bank Soal berhasil ditambahkan.',
+                    'icon' => 'success',
+                    'collapse' => 0,
+                    'id' => [0]
+                ];
+            }
 
+            echo json_encode($res);
         } else if ($req['type'] == 2) {
-            $update = $this->question_bank
+            $this->question_bank
                 ->set('question_bank_title', $req['val'][0])
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
                 ->update();
+
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Judul Bank Soal gagal diubah.',
+                    'icon' => 'error',
+                    'collapse' => 0,
+                    'id' => [0]
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Judul Bank Soal berhasil diubah.',
+                    'icon' => 'success',
+                    'collapse' => 0,
+                    'id' => [0]
+                ];
+            }
+
+            echo json_encode($res);
         } else if ($req['type'] == -1) {
 
             $ins = [
@@ -261,10 +364,33 @@ class AdditionalQuestionBank extends BaseController
                 'question_bank_status' => 1
             ];
 
-            $update = $this->question_bank->insert($ins);
-        } else if ($req['type'] == -11) {
+            $this->question_bank->insert($ins);
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Soal gagal ditambahkan.',
+                    'icon' => 'error',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['id']],
+                    'chid' => $this->question_bank->getInsertID()
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Soal berhasil ditambahkan.',
+                    'icon' => 'success',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['id']],
+                    'chid' => $this->question_bank->getInsertID()
+                ];
+            }
 
-            $update = $this->question_bank
+            echo json_encode($res);
+        } else if ($req['type'] == -11) {
+            $this->question_bank
                 ->set('question_bank_question', $req['val'][3])
                 ->set('question_bank_option', $req['val'][4])
                 ->set('question_bank_answer', $req['val'][5])
@@ -273,27 +399,125 @@ class AdditionalQuestionBank extends BaseController
                 ->where('question_bank_id', $req['id'])
                 ->update();
 
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Soal gagal diubah.',
+                    'icon' => 'error',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['val'][7]],
+                    'chid' => $req['id']
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Soal berhasil diubah.',
+                    'icon' => 'success',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['val'][7]],
+                    'chid' => $req['id']
+                ];
+            }
+
+            echo json_encode($res);
         } else if ($req['type'] == -12) {
-            $update = $this->question_bank
+            $this->question_bank
                 ->set('question_bank_hint', $req['val'][0])
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
                 ->update();
 
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Petunjuk Soal gagal diperbarui.',
+                    'icon' => 'error',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['val'][1]],
+                    'chid' => $req['id']
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Petunjuk Soal berhasil diperbarui.',
+                    'icon' => 'success',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['val'][1]],
+                    'chid' => $req['id']
+                ];
+            }
+
+            echo json_encode($res);
         } else if ($req['type'] == -13) {
-            $update = $this->question_bank
+            $this->question_bank
                 ->set('question_bank_explain', $req['val'][0])
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
                 ->update();
 
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Penjelasan Soal gagal diperbarui.',
+                    'icon' => 'error',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['val'][1]],
+                    'chid' => $req['id']
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Penjelasan Soal berhasil diperbarui.',
+                    'icon' => 'success',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['val'][1]],
+                    'chid' => $req['id']
+                ];
+            }
+
+            echo json_encode($res);
         } else if ($req['type'] == -14) {
-            $update = $this->question_bank
+            $this->question_bank
                 ->set('question_bank_parent_id', $req['val'][0])
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
                 ->update();
 
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Pindah soal gagal.',
+                    'icon' => 'error',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['val'][1], $req['val'][0]],
+                    'chid' => $req['id'],
+                    'coll_act' => 0
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Pindah soal berhasil.',
+                    'icon' => 'success',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['val'][1], $req['val'][0]],
+                    'chid' => $req['id'],
+                    'coll_act' => 0
+                ];
+            }
+
+            echo json_encode($res);
         } else if ($req['type'] == -15) {
             $d = $this->question_bank->where('question_bank_id', $req['id'])->first();
 
@@ -313,46 +537,165 @@ class AdditionalQuestionBank extends BaseController
                 'question_bank_status' => 1
             ];
 
-            $update = $this->question_bank->insert($ins);
-        }
-        
-        echo json_encode($update);
-    
+            $this->question_bank->insert($ins);
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Salin soal gagal.',
+                    'icon' => 'error',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['val'][1], $req['val'][0]],
+                    'chid' => $this->question_bank->getInsertID(),
+                    'coll_act' => 0,
+                    'src' => $req['val'][2]
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Salin soal berhasil.',
+                    'icon' => 'success',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['val'][1], $req['val'][0]],
+                    'chid' => $this->question_bank->getInsertID(),
+                    'coll_act' => 0,
+                    'src' => $req['val'][2]
 
+                ];
+            }
+
+            echo json_encode($res);
+        }
     }
 
     public function remove_content()
     {
         $req = $this->request->getVar();
 
-        $remove = false;
+        $sts = [];
         if ($req['type'] == 1) {
-            $remove = $this->question_bank
+            $this->question_bank
                 ->set('question_bank_status', 9)
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
                 ->update();
+
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Soal gagal dihapus.',
+                    'icon' => 'error',
+                    'collapse' => 1,
+                    'show_quest' => 0,
+                    'id' => [$req['parent']],
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Soal berhasil dihapus.',
+                    'icon' => 'success',
+                    'collapse' => 1,
+                    'show_quest' => 0,
+                    'id' => [$req['parent']],
+                ];
+            }
+            echo json_encode($res);
         } else if ($req['type'] == 2) {
-            $remove = $this->question_bank
+            $this->question_bank
                 ->set('question_bank_status', 9)
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
+                ->orWhere('question_bank_parent_id', $req['id'])
                 ->update();
+
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Soal gagal dihapus.',
+                    'icon' => 'error',
+                    'collapse' => 0,
+                    'id' => [0]
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Soal berhasil dihapus.',
+                    'icon' => 'success',
+                    'collapse' => 0,
+                    'id' => [0]
+                ];
+            }
+
+            echo json_encode($res);
         } else if ($req['type'] == 3) {
-            $remove = $this->question_bank
+            $this->question_bank
                 ->set('question_bank_hint', '<p><br></p>')
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
                 ->update();
+
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Petunjuk Soal gagal dihapus.',
+                    'icon' => 'error',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['parent']],
+                    'chid' => $req['id']
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Petunjuk Soal berhasil dihapus.',
+                    'icon' => 'success',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['parent']],
+                    'chid' => $req['id']
+                ];
+            }
+
+            echo json_encode($res);
         } else if ($req['type'] == 4) {
-            $remove = $this->question_bank
+            $this->question_bank
                 ->set('question_bank_explain', '<p><br></p>')
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
                 ->update();
+
+            $sts = $this->question_bank->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Penjelasan Soal gagal dihapus.',
+                    'icon' => 'error',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['parent']],
+                    'chid' => $req['id']
+                ];
+            } else {
+                $res = [
+                    'head' => '',
+                    'msg' => 'Penjelasan Soal berhasil dihapus.',
+                    'icon' => 'success',
+                    'collapse' => 1,
+                    'show_quest' => 1,
+                    'id' => [$req['parent']],
+                    'chid' => $req['id']
+                ];
+            }
+
+            echo json_encode($res);
         }
-        
-        echo json_encode($remove);
+
+        // echo json_encode($sts);
     }
 
     public function get_title_list()
@@ -365,7 +708,7 @@ class AdditionalQuestionBank extends BaseController
             ->where('question_bank_subject_id', $req['subj'])
             ->where('question_bank_grade', $req['grad'])
             ->where('question_bank_parent_id', 0)
-            ->where('question_bank_id <> '. $req['parent'])
+            ->where('question_bank_id <> ' . $req['parent'])
             ->findAll();
 
         echo json_encode($question);
@@ -380,14 +723,14 @@ class AdditionalQuestionBank extends BaseController
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file);
         $spreadsheet = $reader->load($file);
 
-        $success = true;
 
+        // $all_task = [];
         $total_sheet = $spreadsheet->getSheetCount();
-        $all_task = [];
-        for ($i=0; $i < $total_sheet; $i++) { 
+        $ctrue = $cfalse = 0;
+        for ($i = 0; $i < $total_sheet; $i++) {
             $sheetData = $spreadsheet->setActiveSheetIndex($i)->toArray();
             $xlsObj = $spreadsheet->setActiveSheetIndex($i);
-           
+
             $arrImages = [];
             foreach ($xlsObj->getDrawingCollection() as $key => $drawing) {
                 $imagePath = $drawing->getPath();
@@ -401,74 +744,66 @@ class AdditionalQuestionBank extends BaseController
             }
 
             $this->question_bank->db->transBegin();
-            
+
             try {
-                $arr_task = [];
                 $ii = 1;
-                
                 foreach ($sheetData as $k => $v) {
-                if ($v[0] != 'No' && ($v[2] != '' || $v[2] != null) && ($v[3] != '' || $v[3] != null) && ($v[1] != '' || $v[1] != null) ) {
-                        $arr_task[$i.$ii]['question_bank_school_id'] = userdata()['school_id'];
-                        $arr_task[$i.$ii]['question_bank_teacher_id'] = userdata()['id_profile'];
-                        $arr_task[$i.$ii]['question_bank_subject_id'] = $req['subject'];
-                        $arr_task[$i.$ii]['question_bank_grade'] = $req['grade'];
-                        $arr_task[$i.$ii]['question_bank_parent_id'] = $req['id_quest'];
-                        $arr_task[$i.$ii]['question_bank_status'] = 1;
-                        $arr_task[$i.$ii]['question_bank_hint'] = '<p><br></p>';
-                        $arr_task[$i.$ii]['question_bank_explain'] = '<p><br></p>';
-                        $arr_task[$i.$ii]['question_bank_poin'] = $v[1];
-    
-                        $img_q = array_key_exists("C".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["C".$ii].'"></p>' : '';
-                        $arr_task[$i.$ii]['question_bank_question'] = '<p>'.$v[2] .'</p>' . $img_q;
-                        
-    
+                    $arr_task = [];
+                    if (
+                        $v[0] != 'No' &&
+                        ($v[2] != '' || $v[2] != null) &&
+                        ($v[3] != '' || $v[3] != null) &&
+                        ($v[1] != '' || $v[1] != null)
+                    ) {
+                        $arr_task['question_bank_school_id'] = userdata()['school_id'];
+                        $arr_task['question_bank_teacher_id'] = userdata()['id_profile'];
+                        $arr_task['question_bank_subject_id'] = $req['subject'];
+                        $arr_task['question_bank_grade'] = $req['grade'];
+                        $arr_task['question_bank_parent_id'] = $req['id_quest'];
+                        $arr_task['question_bank_status'] = 1;
+                        $arr_task['question_bank_hint'] = '<p><br></p>';
+                        $arr_task['question_bank_explain'] = '<p><br></p>';
+                        $arr_task['question_bank_poin'] = $v[1];
+
+                        $img_q = array_key_exists("C" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["C" . $ii] . '"></p>' : '';
+                        $arr_task['question_bank_question'] = '<p>' . $v[2] . '</p>' . $img_q;
+
+
                         if ($i == 0) {
-                            $arr_task[$i.$ii]['question_bank_type'] = 1;
-    
-                            // $omcx = explode("&", $v[3]);
-                            // foreach ($omcx as $x) {
-                                //     if (isset($v[$x + 2])) {
-                                    //         $arr_ans[] = '<p>'.$v[$x + 2].'</p>';
-                                    //     } else {
-                                        //         throw new \Exception('index tidak ada');
-                                        //     }
-                                        // }
-                                        
-                            
-                            
-                            $img_opt_a = array_key_exists("E".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["E".$ii].'"></p>' : '';
-                            $img_opt_b = array_key_exists("F".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["F".$ii].'"></p>' : '';
-                            $img_opt_c = array_key_exists("G".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["G".$ii].'"></p>' : '';
-                            $img_opt_d = array_key_exists("H".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["H".$ii].'"></p>' : '';
-                            $img_opt_e = array_key_exists("I".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["I".$ii].'"></p>' : '';
+                            $arr_task['question_bank_type'] = 1;
+
+                            $img_opt_a = array_key_exists("E" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["E" . $ii] . '"></p>' : '';
+                            $img_opt_b = array_key_exists("F" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["F" . $ii] . '"></p>' : '';
+                            $img_opt_c = array_key_exists("G" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["G" . $ii] . '"></p>' : '';
+                            $img_opt_d = array_key_exists("H" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["H" . $ii] . '"></p>' : '';
+                            $img_opt_e = array_key_exists("I" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["I" . $ii] . '"></p>' : '';
                             $opt = [
-                                array_key_exists(4,$v) ? '<p>'.$v[4] .'</p>' . $img_opt_a : '<p></p>',
-                                array_key_exists(5,$v) ? '<p>'.$v[5] .'</p>' . $img_opt_b : '<p></p>',
-                                array_key_exists(6,$v) ? '<p>'.$v[6] .'</p>' . $img_opt_c : '<p></p>',
-                                array_key_exists(7,$v) ? '<p>'.$v[7] .'</p>' . $img_opt_d : '<p></p>',
-                                array_key_exists(8,$v) ? '<p>'.$v[8] .'</p>' . $img_opt_e : '<p></p>',
+                                array_key_exists(4, $v) ? '<p>' . $v[4] . '</p>' . $img_opt_a : '<p></p>',
+                                array_key_exists(5, $v) ? '<p>' . $v[5] . '</p>' . $img_opt_b : '<p></p>',
+                                array_key_exists(6, $v) ? '<p>' . $v[6] . '</p>' . $img_opt_c : '<p></p>',
+                                array_key_exists(7, $v) ? '<p>' . $v[7] . '</p>' . $img_opt_d : '<p></p>',
+                                array_key_exists(8, $v) ? '<p>' . $v[8] . '</p>' . $img_opt_e : '<p></p>',
                             ];
 
                             $arr_ans[0] = $opt[$v[3] - 1];
-                            $arr_task[$i.$ii]['question_bank_answer'] = json_encode($arr_ans);
-    
+                            $arr_task['question_bank_answer'] = json_encode($arr_ans);
+
                             $clean_opt = array_diff($opt, ['<p></p>']);
-                            $arr_task[$i.$ii]['question_bank_option'] = json_encode($clean_opt);
-                            
+                            $arr_task['question_bank_option'] = json_encode($clean_opt);
                         } else if ($i == 1) {
-                            $arr_task[$i.$ii]['question_bank_type'] = 2;
-    
-                            $img_opt_a = array_key_exists("E".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["E".$ii].'"></p>' : '';
-                            $img_opt_b = array_key_exists("F".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["F".$ii].'"></p>' : '';
-                            $img_opt_c = array_key_exists("G".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["G".$ii].'"></p>' : '';
-                            $img_opt_d = array_key_exists("H".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["H".$ii].'"></p>' : '';
-                            $img_opt_e = array_key_exists("I".$ii,$arrImages) ? '<p><img src="data:image/png;base64,'.$arrImages["I".$ii].'"></p>' : '';
+                            $arr_task['question_bank_type'] = 2;
+
+                            $img_opt_a = array_key_exists("E" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["E" . $ii] . '"></p>' : '';
+                            $img_opt_b = array_key_exists("F" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["F" . $ii] . '"></p>' : '';
+                            $img_opt_c = array_key_exists("G" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["G" . $ii] . '"></p>' : '';
+                            $img_opt_d = array_key_exists("H" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["H" . $ii] . '"></p>' : '';
+                            $img_opt_e = array_key_exists("I" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["I" . $ii] . '"></p>' : '';
                             $opt = [
-                                array_key_exists(4,$v) ? '<p>'.$v[4] .'</p>' . $img_opt_a : '<p></p>',
-                                array_key_exists(5,$v) ? '<p>'.$v[5] .'</p>' . $img_opt_b : '<p></p>',
-                                array_key_exists(6,$v) ? '<p>'.$v[6] .'</p>' . $img_opt_c : '<p></p>',
-                                array_key_exists(7,$v) ? '<p>'.$v[7] .'</p>' . $img_opt_d : '<p></p>',
-                                array_key_exists(8,$v) ? '<p>'.$v[8] .'</p>' . $img_opt_e : '<p></p>',
+                                array_key_exists(4, $v) ? '<p>' . $v[4] . '</p>' . $img_opt_a : '<p></p>',
+                                array_key_exists(5, $v) ? '<p>' . $v[5] . '</p>' . $img_opt_b : '<p></p>',
+                                array_key_exists(6, $v) ? '<p>' . $v[6] . '</p>' . $img_opt_c : '<p></p>',
+                                array_key_exists(7, $v) ? '<p>' . $v[7] . '</p>' . $img_opt_d : '<p></p>',
+                                array_key_exists(8, $v) ? '<p>' . $v[8] . '</p>' . $img_opt_e : '<p></p>',
                             ];
 
                             $omcx = explode("&", $v[3]);
@@ -480,44 +815,184 @@ class AdditionalQuestionBank extends BaseController
                                     throw new \Exception('index tidak ada');
                                 }
                             }
-                            
-                            $arr_task[$i.$ii]['question_bank_answer'] = json_encode($arr_ans);
-    
+
+                            $arr_task['question_bank_answer'] = json_encode($arr_ans);
+
                             $clean_opt = array_diff($opt, ['<p></p>']);
-                            $arr_task[$i.$ii]['question_bank_option'] = json_encode($clean_opt);
-    
+                            $arr_task['question_bank_option'] = json_encode($clean_opt);
                         } else if ($i == 2) {
-                            $arr_task[$i.$ii]['question_bank_type'] = 3;
-    
+                            $arr_task['question_bank_type'] = 3;
+
                             $tf = $v[3] == 'Benar' ? 1 : 2;
-                            $arr_task[$i.$ii]['question_bank_answer'] = json_encode([$tf]);
-                            $arr_task[$i.$ii]['question_bank_option'] = json_encode([1,2]);
+                            $arr_task['question_bank_answer'] = json_encode([$tf]);
+                            $arr_task['question_bank_option'] = json_encode([1, 2]);
+                        }
+                    }
+                    if (count($arr_task) > 0) {
+                        $this->question_bank->insert($arr_task);
+                        $sts = $this->question_bank->error();
+                        if ($sts['code'] > 0) {
+                            $cfalse++;
+                        } else {
+                            $ctrue++;
                         }
                     }
                     $ii++;
                 }
-                
-                $this->question_bank->insertBatch($arr_task);
                 $this->question_bank->db->transCommit();
             } catch (\Throwable $th) {
-                $success = false;
-                // dd($th);
                 $this->question_bank->db->transRollback();
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'danger');
+                session()->setFlashdata('msg', 'Something went wrong!');
+                session()->setFlashdata('hide', 10000);
+
+                return redirect()->to('/teacher/question-bank/additional/view-content/' . $req['subject'] . '/' . $req['grade']);
             }
         }
 
         session()->setFlashdata('head', 'Sukses!');
-        session()->setFlashdata('icon', 'success');
-        if ($success) {
-            session()->setFlashdata('msg', 'Soal berhasil di unggah');
-        } else {
-            session()->setFlashdata('msg', 'Soal gagal di unggah');
-        }
-        session()->setFlashdata('hide', 3000);
+        session()->setFlashdata('icon', 'info');
+        session()->setFlashdata('msg', $ctrue . ' Soal berhasil diunggah, ' . $cfalse . ' Soal gagal diunggah');
 
-        return redirect()->to('/teacher/question-bank/additional/view-content/' . $req['subject'] .'/'. $req['grade']);
+        session()->setFlashdata('hide', 10000);
 
+        return redirect()->to('/teacher/question-bank/additional/view-content/' . $req['subject'] . '/' . $req['grade']);
     }
 
-}
+    // public function upload_task()
+    // {
+    //     $req = $this->request->getVar();
 
+    //     $file = $_FILES['task_upload']['tmp_name'];
+
+    //     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file);
+    //     $spreadsheet = $reader->load($file);
+
+    //     $success = true;
+
+    //     $total_sheet = $spreadsheet->getSheetCount();
+    //     $all_task = [];
+    //     for ($i = 0; $i < $total_sheet; $i++) {
+    //         $sheetData = $spreadsheet->setActiveSheetIndex($i)->toArray();
+    //         $xlsObj = $spreadsheet->setActiveSheetIndex($i);
+
+    //         $arrImages = [];
+    //         foreach ($xlsObj->getDrawingCollection() as $key => $drawing) {
+    //             $imagePath = $drawing->getPath();
+    //             $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+    //             $imageName = 'image_' . uniqid() . '.' . $extension;
+    //             $imageCoor = $drawing->getCoordinates2();
+    //             copy($imagePath, 'images/temp_upload/' . $imageName);
+    //             $imagedata = file_get_contents('images/temp_upload/' . $imageName);
+    //             $arrImages[$imageCoor] = base64_encode($imagedata);
+    //             unlink('images/temp_upload/' . $imageName);
+    //         }
+
+    //         $this->question_bank->db->transBegin();
+
+    //         try {
+    //             $arr_task = [];
+    //             $ii = 1;
+
+    //             foreach ($sheetData as $k => $v) {
+    //                 if ($v[0] != 'No' && ($v[2] != '' || $v[2] != null) && ($v[3] != '' || $v[3] != null) && ($v[1] != '' || $v[1] != null)) {
+    //                     $arr_task[$i . $ii]['question_bank_school_id'] = userdata()['school_id'];
+    //                     $arr_task[$i . $ii]['question_bank_teacher_id'] = userdata()['id_profile'];
+    //                     $arr_task[$i . $ii]['question_bank_subject_id'] = $req['subject'];
+    //                     $arr_task[$i . $ii]['question_bank_grade'] = $req['grade'];
+    //                     $arr_task[$i . $ii]['question_bank_parent_id'] = $req['id_quest'];
+    //                     $arr_task[$i . $ii]['question_bank_status'] = 1;
+    //                     $arr_task[$i . $ii]['question_bank_hint'] = '<p><br></p>';
+    //                     $arr_task[$i . $ii]['question_bank_explain'] = '<p><br></p>';
+    //                     $arr_task[$i . $ii]['question_bank_poin'] = $v[1];
+
+    //                     $img_q = array_key_exists("C" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["C" . $ii] . '"></p>' : '';
+    //                     $arr_task[$i . $ii]['question_bank_question'] = '<p>' . $v[2] . '</p>' . $img_q;
+
+
+    //                     if ($i == 0) {
+    //                         $arr_task[$i . $ii]['question_bank_type'] = 1;
+
+    //                         $img_opt_a = array_key_exists("E" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["E" . $ii] . '"></p>' : '';
+    //                         $img_opt_b = array_key_exists("F" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["F" . $ii] . '"></p>' : '';
+    //                         $img_opt_c = array_key_exists("G" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["G" . $ii] . '"></p>' : '';
+    //                         $img_opt_d = array_key_exists("H" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["H" . $ii] . '"></p>' : '';
+    //                         $img_opt_e = array_key_exists("I" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["I" . $ii] . '"></p>' : '';
+    //                         $opt = [
+    //                             array_key_exists(4, $v) ? '<p>' . $v[4] . '</p>' . $img_opt_a : '<p></p>',
+    //                             array_key_exists(5, $v) ? '<p>' . $v[5] . '</p>' . $img_opt_b : '<p></p>',
+    //                             array_key_exists(6, $v) ? '<p>' . $v[6] . '</p>' . $img_opt_c : '<p></p>',
+    //                             array_key_exists(7, $v) ? '<p>' . $v[7] . '</p>' . $img_opt_d : '<p></p>',
+    //                             array_key_exists(8, $v) ? '<p>' . $v[8] . '</p>' . $img_opt_e : '<p></p>',
+    //                         ];
+
+    //                         $arr_ans[0] = $opt[$v[3] - 1];
+    //                         $arr_task[$i . $ii]['question_bank_answer'] = json_encode($arr_ans);
+
+    //                         $clean_opt = array_diff($opt, ['<p></p>']);
+    //                         $arr_task[$i . $ii]['question_bank_option'] = json_encode($clean_opt);
+    //                     } else if ($i == 1) {
+    //                         $arr_task[$i . $ii]['question_bank_type'] = 2;
+
+    //                         $img_opt_a = array_key_exists("E" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["E" . $ii] . '"></p>' : '';
+    //                         $img_opt_b = array_key_exists("F" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["F" . $ii] . '"></p>' : '';
+    //                         $img_opt_c = array_key_exists("G" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["G" . $ii] . '"></p>' : '';
+    //                         $img_opt_d = array_key_exists("H" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["H" . $ii] . '"></p>' : '';
+    //                         $img_opt_e = array_key_exists("I" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["I" . $ii] . '"></p>' : '';
+    //                         $opt = [
+    //                             array_key_exists(4, $v) ? '<p>' . $v[4] . '</p>' . $img_opt_a : '<p></p>',
+    //                             array_key_exists(5, $v) ? '<p>' . $v[5] . '</p>' . $img_opt_b : '<p></p>',
+    //                             array_key_exists(6, $v) ? '<p>' . $v[6] . '</p>' . $img_opt_c : '<p></p>',
+    //                             array_key_exists(7, $v) ? '<p>' . $v[7] . '</p>' . $img_opt_d : '<p></p>',
+    //                             array_key_exists(8, $v) ? '<p>' . $v[8] . '</p>' . $img_opt_e : '<p></p>',
+    //                         ];
+
+    //                         $omcx = explode("&", $v[3]);
+    //                         $arr_ans = [];
+    //                         foreach ($omcx as $x) {
+    //                             if (isset($v[$x + 2])) {
+    //                                 $arr_ans[] = $opt[$x - 1];
+    //                             } else {
+    //                                 throw new \Exception('index tidak ada');
+    //                             }
+    //                         }
+
+    //                         $arr_task[$i . $ii]['question_bank_answer'] = json_encode($arr_ans);
+
+    //                         $clean_opt = array_diff($opt, ['<p></p>']);
+    //                         $arr_task[$i . $ii]['question_bank_option'] = json_encode($clean_opt);
+    //                     } else if ($i == 2) {
+    //                         $arr_task[$i . $ii]['question_bank_type'] = 3;
+
+    //                         $tf = $v[3] == 'Benar' ? 1 : 2;
+    //                         $arr_task[$i . $ii]['question_bank_answer'] = json_encode([$tf]);
+    //                         $arr_task[$i . $ii]['question_bank_option'] = json_encode([1, 2]);
+    //                     }
+    //                 }
+    //                 $ii++;
+    //             }
+    //             $this->question_bank->insertBatch($arr_task);
+    //             $this->question_bank->db->transCommit();
+    //         } catch (\Throwable $th) {
+    //             $success = false;
+    //             echo '<pre>';
+    //             print_r($th);
+    //             echo '</pre>';
+    //             die;
+    //             $this->question_bank->db->transRollback();
+    //         }
+    //     }
+
+    //     session()->setFlashdata('head', 'Sukses!');
+    //     session()->setFlashdata('icon', 'success');
+    //     if ($success == true) {
+    //         session()->setFlashdata('msg', 'Soal berhasil di unggah');
+    //     } else {
+    //         session()->setFlashdata('msg', 'Soal gagal di unggah');
+    //     }
+    //     session()->setFlashdata('hide', 3000);
+
+    //     return redirect()->to('/teacher/question-bank/additional/view-content/' . $req['subject'] . '/' . $req['grade']);
+    // }
+}

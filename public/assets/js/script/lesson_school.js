@@ -435,7 +435,7 @@ function generate_treeview2(e, chap) {
                                     <div class="mb-2 my-2">
                                         <div class="form-check form-check-custom form-check-solid form-check-sm">
                                             <input class="form-check-input" type="radio" data-source="${v.ind}" data-chapter="${chap}" data-grade="${value.grade}" data-subject="${value.subject}" value="${value.lesson_id}" id="sch_topic_${i}${ind}${index}" name="sch_topic">
-                                            <label class="form-check-label" for="sch_topic_${i}${ind}${index}">
+                                            <label class="form-check-label fs-5" for="sch_topic_${i}${ind}${index}">
                                             ${value.text}
                                             </label>
                                         </div>
@@ -446,7 +446,7 @@ function generate_treeview2(e, chap) {
                 }
 
                 child1 += `
-                    <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-1${i}${ind}" style="padding-left:2.5rem;" aria-level="2"><i class="state-icon fa fa-angle-right fa-fw"></i>${val.text}</div>
+                    <div role="treeitem" class="parent_list fs-3 my-2" data-bs-toggle="collapse" data-bs-target="#child_list-1${i}${ind}" style="padding-left:2.5rem;" aria-level="2"><a href="#" style="color: black"><i class="state-icon fa fa-angle-right fa-fw"></i>${val.text}</a></div>
                     <div role="group" class="hide" id="child_list-1${i}${ind}">
                         ${child2}
                     </div>
@@ -456,7 +456,7 @@ function generate_treeview2(e, chap) {
         }
         
         content += `
-            <div role="treeitem" class="parent_list my-2" data-bs-toggle="collapse" data-bs-target="#child_list-0${i}" style="padding-left:1.25rem" aria-level="1"><i class="state-icon fa fa-angle-right fa-fw"></i>${v.text}</div>
+            <div role="treeitem" class="parent_list fw-bold fs-4 my-2" data-bs-toggle="collapse" data-bs-target="#child_list-0${i}" style="padding-left:1.25rem;" aria-level="1"><a href="#" style="color: black"><i class="state-icon fa fa-angle-right fa-fw fs-4"></i>${v.text}</a></div>
             <div role="group" class="hide" id="child_list-0${i}">
                 ${child1}
             </div>
@@ -473,8 +473,6 @@ function save_content() {
     let type = $('input[name=form_type]').val();
     let form = true;
 
-    console.log(type);
-    // return false
     if (type == 1) {
         item = $('input[name=chapter]').val();
         id = $('input[name=lesson_id]').val();

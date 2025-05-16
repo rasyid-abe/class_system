@@ -305,21 +305,45 @@ class AdditionalLesson extends BaseController
     public function update_content()
     {
         $req = $this->request->getVar();
-
-        $update = false;
+  
+        $sts = [];
         if ($req['type'] == 1) {
-            $update = $this->lesson_additional
+            $this->lesson_additional
                 ->set('lesson_additional_chapter', $req['val'][0])
                 ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_chapter', $req['id'])
                 ->update();
+            
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                session()->setFlashdata('msg', 'Judul BAB gagal diubah.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+                
+            } else {
+                session()->setFlashdata('msg', 'Judul BAB berhasil diubah.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         } elseif ($req['type'] == 2) {
-            $update = $this->lesson_additional
+            $this->lesson_additional
                 ->set('lesson_additional_chapter', $req['val'][0])
                 ->set('lesson_additional_subchapter', $req['val'][1])
                 ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
+
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                session()->setFlashdata('msg', 'Judul Topik gagal diubah.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+                
+            } else {
+                session()->setFlashdata('msg', 'Judul Topik berhasil diubah.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         } elseif ($req['type'] == 3) {
             $arr_ins = [
                 'lesson_additional_school_id' => userdata()['school_id'],
@@ -332,7 +356,19 @@ class AdditionalLesson extends BaseController
                 'lesson_additional_status' => 1,
             ];
 
-            $update = $this->lesson_additional->insert($arr_ins);
+            $this->lesson_additional->insert($arr_ins);
+
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                session()->setFlashdata('msg', 'Judul Topik gagal ditambhakan.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+                
+            } else {
+                session()->setFlashdata('msg', 'Judul Topik berhasil ditambhakan.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         } elseif ($req['type'] == 4) {
             $arr_ins = [
                 'lesson_additional_school_id' => userdata()['school_id'],
@@ -344,34 +380,99 @@ class AdditionalLesson extends BaseController
                 'lesson_additional_status' => 1,
             ];
 
-            $update = $this->lesson_additional->insert($arr_ins);
+            $this->lesson_additional->insert($arr_ins);
+
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                session()->setFlashdata('msg', 'Judul BAB gagal ditambhakan.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+                
+            } else {
+                session()->setFlashdata('msg', 'Judul BAB berhasil ditambhakan.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         } elseif ($req['type'] == 5) {
-            $update = $this->lesson_additional
+            $this->lesson_additional
                 ->set('lesson_additional_content', $req['val'][0])
                 ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
+
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => 'Gagal!',
+                    'msg' => 'Konten Pelajaran gagal diperbarui.',
+                    'icon' => 'error',
+                ];
+            } else {
+                $res = [
+                    'head' => 'Sukses!',
+                    'msg' => 'Konten Pelajaran berhasil diperbarui.',
+                    'icon' => 'success',
+                ];
+            }
+
+            echo json_encode($res);
         } elseif ($req['type'] == 6) {
-            $update = $this->lesson_additional
+            $this->lesson_additional
                 ->set('lesson_additional_video_path', $req['val'][0])
                 ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
+
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => 'Gagal!',
+                    'msg' => 'Konten Pelajaran video gagal diperbarui.',
+                    'icon' => 'error',
+                ];
+            } else {
+                $res = [
+                    'head' => 'Sukses!',
+                    'msg' => 'Konten Pelajaran video berhasil diperbarui.',
+                    'icon' => 'success',
+                ];
+            }
+
+            echo json_encode($res);
         } elseif ($req['type'] == 7) {
             $task = [];
             $task['std'] = $req['val'][0];
             $task['me'] = $req['val'][1];
             $task['pub'] = $req['val'][2];
 
-            $update = $this->lesson_additional
+            $this->lesson_additional
                 ->set('lesson_additional_tasks', json_encode($task))
                 ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
+            
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => 'Gagal!',
+                    'msg' => 'Soal Latihan gagal diperbarui.',
+                    'icon' => 'error',
+                ];
+            } else {
+                $res = [
+                    'head' => 'Sukses!',
+                    'msg' => 'Soal Latihan berhasil diperbarui.',
+                    'icon' => 'success',
+                ];
+            }
+
+            echo json_encode($res);
         }
 
-
-        echo json_encode($update);
+        
+        if ($req['type'] < 5) {
+            echo json_encode($sts['code'] < 1 ? true : false);
+        }
     }
 
     public function upload_content()
@@ -470,30 +571,91 @@ class AdditionalLesson extends BaseController
     public function remove_content()
     {
         $req = $this->request->getVar();
-        $update = false;
+        // echo '<pre>';
+        // print_r($req);
+        // echo '</pre>';
+        // die;
+        $sts = [];
         if ($req['type'] == 1) {
-            $update = $this->lesson_additional
+           $this->lesson_additional
                 ->where('lesson_additional_chapter', $req['file'])
                 ->set('lesson_additional_status', 9)
                 ->update();
+
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                session()->setFlashdata('msg', 'BAB Pelajaran gagal dihapus.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+                
+            } else {
+                session()->setFlashdata('msg', 'BAB Pelajaran berhasil dihapus.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         } elseif ($req['type'] == 2) {
-            $update = $this->lesson_additional
+           $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
                 ->set('lesson_additional_status', 9)
                 ->update();
+
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                session()->setFlashdata('msg', 'Topik Pelajaran gagal dihapus.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+                
+            } else {
+                session()->setFlashdata('msg', 'Topik Pelajaran berhasil dihapus.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         } elseif ($req['type'] == 3) {
         } elseif ($req['type'] == 4) {
         } elseif ($req['type'] == 5) {
-            $update = $this->lesson_additional
+           $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
                 ->set('lesson_additional_content', null)
                 ->update();
+            
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => 'Gagal!',
+                    'msg' => 'Konten Pelajaran gagal dihapus.',
+                    'icon' => 'error',
+                ];
+            } else {
+                $res = [
+                    'head' => 'Sukses!',
+                    'msg' => 'Konten Pelajaran berhasil dihapus.',
+                    'icon' => 'success',
+                ];
+            }
+
+            echo json_encode($res);
         } elseif ($req['type'] == 6) {
-            $update = $this->lesson_additional
+           $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
                 ->set('lesson_additional_video_path', null)
                 ->update();
+            
+                $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => 'Gagal!',
+                    'msg' => 'Konten Pelajaran video gagal dihapus.',
+                    'icon' => 'error',
+                ];
+            } else {
+                $res = [
+                    'head' => 'Sukses!',
+                    'msg' => 'Konten Pelajaran video berhasil dihapus.',
+                    'icon' => 'success',
+                ];
+            }
 
+            echo json_encode($res);
         } elseif ($req['type'] == 7) {
            
             $old = $this->lesson_additional
@@ -517,7 +679,7 @@ class AdditionalLesson extends BaseController
 
                 $files = count($arr_file) > 0 ? json_encode($arr_file) : null;
                 
-                $update = $this->lesson_additional
+               $this->lesson_additional
                     ->set('lesson_additional_attachment_path', $files)
                     ->where('lesson_additional_id', $req['id'])
                     ->update();
@@ -535,7 +697,7 @@ class AdditionalLesson extends BaseController
                     }
                 }
 
-                $update = $this->lesson_additional
+               $this->lesson_additional
                     ->set('lesson_additional_attachment_path', null)
                     ->where('lesson_additional_id', $req['id'])
                     ->update();
@@ -543,20 +705,39 @@ class AdditionalLesson extends BaseController
         } elseif ($req['type'] == 8) {
             s3_unlink($req['file']);
 
-            $update = $this->lesson_additional
+           $this->lesson_additional
                 ->set('lesson_additional_content_path', null)
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
 
             // session()->setFlashdata('file_id', $req['lesson_id']);
         } elseif ($req['type'] == 9) {
-            $update = $this->lesson_additional
+           $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
                 ->set('lesson_additional_tasks', null)
                 ->update();
+
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => 'Gagal!',
+                    'msg' => 'Soal Latihan gagal dihapus.',
+                    'icon' => 'error',
+                ];
+            } else {
+                $res = [
+                    'head' => 'Sukses!',
+                    'msg' => 'Soal Latihan berhasil dihapus.',
+                    'icon' => 'success',
+                ];
+            }
+
+            echo json_encode($res);
         }
 
-        echo json_encode($update);
+        if ($req['type'] < 5) {
+            echo json_encode($sts['code'] < 1 ? true : false);
+        }
     }
 
     public function share_topic()

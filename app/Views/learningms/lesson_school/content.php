@@ -64,16 +64,16 @@
                     <div class="d-grid mb-2">
                         <div class="btn-group" role="group" aria-label="Basic outlined example">
                             <a href="#" onclick="form_chapter(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran &nbsp;</a>
-                            <a href="#" onclick="form_chapter(-1, '', '', '', '<?= $grade ?>')"class="btn btn-icon btn-active-primary" type="button"><i class="mb-1 fs-2 fa fa-sort"></i></a>
+                            <a href="#" onclick="form_chapter(-1, '', '', '', '<?= $grade ?>')"class="btn btn-icon btn-outline btn-outline-primary" type="button"><i class="text-dark mb-1 fs-2 fa fa-sort"></i></a>
                         </div>
                     </div>
                     <?php endif ?>
                     <?php foreach ($chapters as $k => $v) : ?>
                         <?php $parent = $v['lesson_school_parent_id'] != 0 ? $v['lesson_school_parent_id'] : $v['lesson_school_id'] ?>
                         <div class="accordion-item">
-                            <div class="accordion-body bg-light">
+                            <div class="accordion-body bg-secondary">
                                 <div class="d-flex justify-content-between">
-                                    <a href="#" class="d-grid text-wrap" style="font-weight: 500;width: 80%" onclick="toggle_collapse('<?= $v['lesson_school_id'] ?>');"><?= $v['lesson_school_chapter'] ?></a>
+                                    <a href="#" class="d-grid text-wrap d-grid fs-4 fw-bold" style=";width: 80%" onclick="toggle_collapse('<?= $v['lesson_school_id'] ?>');"><?= $v['lesson_school_chapter'] ?></a>
                                     <?php if(session()->get('c_role') == 11): ?>
                                     <div class="d-flex align-items-center">
                                         <a href="#" class="" onclick="form_chapter(3, '<?= $v['lesson_school_chapter'] ?>', '', '<?= $parent ?>')">
@@ -105,12 +105,12 @@
                                 </div>
                             </div>
                             <div id="coll_body_<?= $v['lesson_school_id'] ?>" class="hide body_collapse">
-                                <div class="accordion-body bg-secondary">
+                                <div class="accordion-body bg-white">
                                     <?php if(isset($v['sub_chapter'])): ?>
                                         <?php foreach ($v['sub_chapter'] as $key => $val): ?>
                                             <?php $lesson_id = $val['lesson_additional_id'] > 0 ? $val['lesson_additional_id'] : $val['lesson_standart_id']; ?>
                                             <div class="d-flex justify-content-between">
-                                                <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold text-wrap" style="width: 80%" onclick="view_content(<?= $lesson_id ?>, '<?= $val['lesson_source'] ?>');"><?= $val['lesson_subchapter'] ?></a>
+                                                <a href="#" class="text-primary opacity-75-hover fs-4 fw-semibold text-wrap" style="width: 80%" onclick="view_content(<?= $lesson_id ?>, '<?= $val['lesson_source'] ?>');"><?= $val['lesson_subchapter'] ?></a>
                                                 <?php if(session()->get('c_role') == 11): ?>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
@@ -145,23 +145,21 @@
     </div>
 
     <div class="col-sm-9 hide" id="content_tab_sch">
-        <div class="hover-scroll-x">
-            <div class="d-grid">
-                <ul class="nav nav-tabs flex-nowrap text-nowrap">
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic active" id="tab_topic_content" data-bs-toggle="tab" href="#tab_content">Materi</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_video" data-bs-toggle="tab" href="#tab_video">Video</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_attachment" data-bs-toggle="tab" href="#tab_attachment">Lampiran</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_task" data-bs-toggle="tab" href="#tab_task">Latihan</a>
-                    </li>
-                </ul>
-            </div>
+        <div class="d-grid">
+            <ul class="nav nav-tabs flex-nowrap text-nowrap">
+                <li class="nav-item">
+                    <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic active" id="tab_topic_content" data-bs-toggle="tab" href="#tab_content">Materi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_video" data-bs-toggle="tab" href="#tab_video">Video</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_attachment" data-bs-toggle="tab" href="#tab_attachment">Lampiran</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic" id="tab_topic_task" data-bs-toggle="tab" href="#tab_task">Latihan</a>
+                </li>
+            </ul>
         </div>
 
         <div class="card p-5 hide" id="content_value_sch">

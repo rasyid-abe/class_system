@@ -18,6 +18,8 @@ $(document).ready(function () {
     }
 })
 
+
+
 jQuery('.input_share_a').on('click', function (e) {
     const chks = $(this).val();
     if (chks == 4) {
@@ -68,7 +70,8 @@ function act_share_a(clear = null) {
             },
             success: function (e) {
                 close_share_les()
-                al_swal('Pembatalan berhasil.', 'success')
+                toast_act('', 'Pembatalan berhasil.', 'success')
+                $('.isshrls').html('')
                 hide_loading()
             }
         })
@@ -92,7 +95,7 @@ function act_share_a(clear = null) {
                         show_loading()
                     },
                     success: function (e) {
-                        al_swal('Soal berhasil di bagikan.', 'success')
+                        toast_act('', 'Soal berhasil di bagikan.', 'success')
                         hide_loading()
                     }
                 })
@@ -103,13 +106,6 @@ function act_share_a(clear = null) {
         }
     }
 }
-
-// $('#multiple-select-field-a').select2({
-//     theme: "bootstrap-5",
-//     width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-//     placeholder: $(this).data('placeholder'),
-//     closeOnSelect: false,
-// });
 
 $(document.body).on('click', '#btn_update_content_file', function () {
     let id = $('#btn_update_attach').data('id');
@@ -415,7 +411,6 @@ function generate_view_video_a(e) {
                 </div>
             </div>
         `;
-    console.log(btn_conf);
     
     $('#btn_conf_vid_a').html(btn_conf)
 }
@@ -459,8 +454,6 @@ function generate_view_attachment_a(e) {
 }
 
 function generate_view_task_a(e, id, subj, grad) {
-    console.log(e);
-    
     let btn_conf = `
             <div class="d-flex justify-content-begin mb-5">
                 <div class="btn_task_content">
@@ -575,7 +568,11 @@ function remove_content_a(id, type, file = null) {
     });
 }
 
-function view_content_a(id, type = null) {
+function view_content_a(id, type = null, notif = null) {
+    if (notif != null) {
+        toast_act(notif.head, notif.msg, notif.icon)
+    }
+
     $.ajax({
         url: base_url + '/teacher/lesson/additional/grab-content',
         data: {
@@ -683,8 +680,6 @@ function form_chapter_a(e, chap = null, subchap = null, id = null) {
 function save_content_a() {
     let type = $('input[name=form_type]').val();
     let form = true;
-    console.log(type);
-    // return false;
     
     if (type == 1) {
         item = $('input[name=chapter]').val();
@@ -766,9 +761,9 @@ function store_content_a(type, id, val) {
         },
         success: function (e) {
             if (type == 5) {
-                view_content_a(id)
+                view_content_a(id, null, e)
             } else if (type == 6) {
-                view_content_a(id)
+                view_content_a(id, null, e)
                 $('.tab_topic_a').removeClass('active')
                 $('.content_topic_a').removeClass('active')
                 $('.content_topic_a').removeClass('show')
@@ -776,6 +771,17 @@ function store_content_a(type, id, val) {
                 $('#tab_video_a').addClass('show')
                 $('#tab_video_a').addClass('active')
                 $('#tab_topic_a_video').addClass('active')
+            } else if (type  == 7) {
+                view_content_a(id, null, e)
+                $('.tab_topic_a').removeClass('active')
+                $('.content_topic_a').removeClass('active')
+                $('.content_topic_a').removeClass('show')
+
+                $('#tab_task').addClass('show')
+                $('#tab_task').addClass('active')
+                $('#tab_topic_a_task').addClass('active')
+
+                $('#modal_task_a').modal("hide")
             } else {
                 location.reload()
             }
@@ -829,9 +835,9 @@ function act_remove_a(id, type, file) {
         },
         success: function (e) {
             if (type == 5) {
-                view_content_a(id)
+                view_content_a(id, null, e)
             } else if (type == 6) {
-                view_content_a(id)
+                view_content_a(id, null, e)
                 $('.tab_topic_a').removeClass('active')
                 $('.content_topic_a').removeClass('active')
                 $('.content_topic_a').removeClass('show')
@@ -839,15 +845,15 @@ function act_remove_a(id, type, file) {
                 $('#tab_video_a').addClass('show')
                 $('#tab_video_a').addClass('active')
                 $('#tab_topic_a_video').addClass('active')
-            } else if (type == 7) {
-                view_content_a(id)
+            } else if (type == 9) {
+                view_content_a(id, null, e)
                 $('.tab_topic_a').removeClass('active')
                 $('.content_topic_a').removeClass('active')
                 $('.content_topic_a').removeClass('show')
 
-                $('#tab_attachment_a').addClass('show')
-                $('#tab_attachment_a').addClass('active')
-                $('#tab_topic_a_attachment').addClass('active')
+                $('#tab_task').addClass('show')
+                $('#tab_task').addClass('active')
+                $('#tab_topic_a_task').addClass('active')
             } else {
                 location.reload()
             }
@@ -933,7 +939,7 @@ function treeview_task(e, id) {
                 child += `
                 <div class="form-check my-2">
                     <input class="form-check-input" type="checkbox" name="task_${i1}" value="${value.id}" />
-                    <label class="form-check-label" onclick="view_task(${i1}, ${value.id})">
+                    <label class="form-check-label lblquestadd" onclick="view_task(${i1}, ${value.id})">
                         Soal ${ii}
                     </label>
                 </div>
@@ -949,7 +955,7 @@ function treeview_task(e, id) {
             `
             
             ch1 += `
-                <li class="list-group-item parent2" data-source="${i1}${i2}">${val.title}</li>
+                <li class="list-group-item parent2" data-source="${i1}${i2}"><a href="#" style="color: black">${val.title}</a></li>
                 ${val.child.length > 0 ? child_body : ''}    
             `
 
@@ -962,8 +968,8 @@ function treeview_task(e, id) {
             </ul>
         `
         content += `
-            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${v.head}</h6></li>
-            ${v.content.length > 0 ? ch1_body : ''}
+            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px"><a href="#" style="color: black">${v.head}</a></h6></li>
+            ${v.content.length > 0 ? ch1_body : `<ul class="list-group list-group-flush hide task_child p-2" id="i${i1}">Soal tidak tersedia</ul>`}
         `
 
         i1++
@@ -1011,8 +1017,8 @@ $(document.body).on('click', '.parent2', function() {
 })
 
 function view_task(type, id, act = null){
+    
     let l_url = level == 11 ? 'teacher' : 'student'
-    console.log(l_url);
     
     $.ajax({
         url: base_url + l_url + '/lesson/additional/get-question',
@@ -1034,9 +1040,6 @@ function generate_preview(e, act){
     let opt = ``
     let html = ``
     let num = 1
-
-    console.log(e);
-    
 
     if (e != null) {
         $.each(JSON.parse(e.option), function(i,v) {

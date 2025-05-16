@@ -54,17 +54,17 @@
 
                     <?php foreach ($chapters as $k => $v) : ?>
                         <div class="accordion-item" style="background-color: red">
-                            <div class="accordion-body bg-white">
+                            <div class="accordion-body bg-secondary">
                                 <div class="d-flex justify-content-between">
-                                    <a href="#" class="d-grid" style="font-weight: 500;" onclick="toggle_collapse(<?= $k ?>);"><?= $v['lesson_standart_chapter'] ?></a>
+                                    <a href="#" class="d-grid text-wrap fs-4 fw-bold" onclick="toggle_collapse(<?= $k ?>);"><?= $v['lesson_standart_chapter'] ?></a>
                                 </div>
                             </div>
                             <div id="coll_body_<?= $k ?>" class="hide body_collapse">
-                                <div class="accordion-body bg-secondary">
+                                <div class="accordion-body bg-white">
                                     <?php foreach ($v['sub_chapter'] as $key => $val): ?>
                                         <?php if ($val['lesson_standart_subchapter'] != '') : ?>
                                             <div class="d-flex justify-content-between">
-                                                <a href="#" class="text-primary opacity-75-hover fs-6 fw-semibold" onclick="view_content_s(<?= $val['lesson_standart_id'] ?>);"><?= $val['lesson_standart_subchapter'] ?></a>
+                                                <a href="#" class="text-primary opacity-75-hover fs-4 fw-semibold" onclick="view_content_s(<?= $val['lesson_standart_id'] ?>);"><?= $val['lesson_standart_subchapter'] ?></a>
                                             </div>
                                             <?= count($v['sub_chapter']) > 1 ? '<div class="separator separator-dashed my-3"></div>' : '' ?>
                                         <?php endif; ?>
@@ -79,7 +79,7 @@
     </div>
 
     <div class="col-sm-9 hide" id="content_tab">
-        <div class="hover-scroll-x">
+        <!-- <div class="hover-scroll-x"> -->
             <div class="d-grid">
                 <ul class="nav nav-tabs flex-nowrap text-nowrap">
                     <li class="nav-item">
@@ -96,7 +96,7 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        <!-- </div> -->
 
         <div class="card p-5 hide" id="content_value_std">
             <div class="tab-content" id="myTabContent">
