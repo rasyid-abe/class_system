@@ -56,7 +56,7 @@ function preview_qb(e, subj, subjname, grad, gradname) {
         let cch = "";
 
         $.each(value, function (a, b) {
-          cch += `<a href="#" onclick="view_task(${i1}, ${b})" class="m-1 btn btn-icon btn-sm btn-outline btn-outline-primary">${chi}</a>`;
+          cch += `<a href="#" onclick="view_task(${i1}, ${b})" class="viewtaskassperquest m-1 btn btn-icon btn-sm btn-outline btn-outline-primary">${chi}</a>`;
           chi++;
         });
 
@@ -94,7 +94,7 @@ function preview_qb(e, subj, subjname, grad, gradname) {
       `;
 
     content += `
-            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${v.head}</h6></li>
+            <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px"><a href="#" style="color: black">${v.head}</a></h6></li>
             ${v.content.length > 0 ? ch1_body : `<ul class="list-group list-group-flush hide task_child p-2" id="i${i1}">Soal tidak tersedia</ul>`}
         `;
 
@@ -1706,11 +1706,24 @@ function runtimer() {
   }
 }
 
-// let cl = [
-//   { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
-//   { field: "lists", formatter: "html", headerFilter: "input", headerSort: false },
-// ]
+$(document).on('click', '.viewtaskassperquest', function(e) {
+  e.preventDefault();
+    $(".viewtaskassperquest").each(function () {
+      if ($(this).hasClass("btn-primary")) {
+        $(this).removeClass("btn-primary");
+        $(this).addClass('btn-outline btn-outline-primary')
+      }
+    });
+    $(this).removeClass('btn-outline btn-outline-primary')
+    $(this).addClass('btn-primary')
+})
 
-// tbconf.columns = cl
-// tbconf.selectableRows = false;
-// var student_act = new Tabulator('#ass_student_act', tbconf)
+$(document).on('click', '.lblquestadd', function(e) {
+  e.preventDefault();
+    $(".lblquestadd").each(function () {
+      if ($(this).hasClass("fw-bold text-primary underline")) {
+        $(this).removeClass("fw-bold text-primary underline");
+      }
+    });
+    $(this).addClass('fw-bold text-primary underline')
+})

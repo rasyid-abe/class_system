@@ -236,20 +236,33 @@ class SchoolLesson extends BaseController
     {
         $req = $this->request->getVar();
 
-        $update = false;
+        $sts = '';
         if ($req['type'] == 1) {
-            $update = $this->lesson_school
+            $this->lesson_school
                 ->set('lesson_school_chapter', $req['val'][0])
                 ->set('lesson_school_updated_by', userdata()['user_id'])
                 ->where('lesson_school_chapter', $req['id'])
                 ->update();
+
+            $sts = $this->lesson_school->error();
+            if ($sts['code'] > 0) {
+                session()->setFlashdata('msg', 'BAB Pelajaran Sekolah gagal diubah.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+            } else {
+                session()->setFlashdata('msg', 'BAB Pelajaran Sekolah berhasil diubah.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         } elseif ($req['type'] == 2) {
-            $update = $this->lesson_school
+            $this->lesson_school
                 ->set('lesson_school_chapter', $req['val'][0])
                 ->set('lesson_school_subchapter', $req['val'][1])
                 ->set('lesson_school_updated_by', userdata()['user_id'])
                 ->where('lesson_school_id', $req['id'])
                 ->update();
+            
+            $sts = $this->lesson_school->error();
         } elseif ($req['type'] == 3) {
             $runnum = $this->lesson_school
                 ->selectMax('lesson_school_order_child')
@@ -287,7 +300,17 @@ class SchoolLesson extends BaseController
 
             if (empty($chk)) {
                 $arr_ins['lesson_school_order_child'] = $runnum['lesson_school_order_child'] + 1;
-                $update = $this->lesson_school->insert($arr_ins);
+                $this->lesson_school->insert($arr_ins);
+                $sts = $this->lesson_school->error();
+                if ($sts['code'] > 0) {
+                    session()->setFlashdata('msg', 'Topik Pelajaran Sekolah gagal ditambahkan.');
+                    session()->setFlashdata('head', 'Gagal!');
+                    session()->setFlashdata('icon', 'error');
+                } else {
+                    session()->setFlashdata('msg', 'Topik Pelajaran Sekolah berhasil ditambahkan.');
+                    session()->setFlashdata('head', 'Sukses!');
+                    session()->setFlashdata('icon', 'success');
+                }
             }
 
         } elseif ($req['type'] == 4) {
@@ -316,7 +339,17 @@ class SchoolLesson extends BaseController
             ];
 
             if ($runnum['lesson_school_chapter'] != htmlspecialchars($req['val'][0])) {
-                $update = $this->lesson_school->insert($arr_ins);
+                $this->lesson_school->insert($arr_ins);
+                $sts = $this->lesson_school->error();
+                if ($sts['code'] > 0) {
+                    session()->setFlashdata('msg', 'BAB Pelajaran Sekolah gagal dibuat.');
+                    session()->setFlashdata('head', 'Gagal!');
+                    session()->setFlashdata('icon', 'error');
+                } else {
+                    session()->setFlashdata('msg', 'BAB Pelajaran Sekolah berhasil dibuat.');
+                    session()->setFlashdata('head', 'Sukses!');
+                    session()->setFlashdata('icon', 'success');
+                }
             }
 
         } else if ($req['type'] == -1) {
@@ -325,32 +358,54 @@ class SchoolLesson extends BaseController
             
             $upp = [];
             for ($i=0; $i < count($ids); $i++) { 
-                $up = $this->lesson_school
+                $this->lesson_school
                     ->set('lesson_school_order_parent', $sort[$i])
                     ->where('lesson_school_id', $ids[$i])
                     ->update();       
-                $upp[] = false;
+                $arr_sts = $this->lesson_school->error();
+                $upp[] = $arr_sts['code'] < 1;
             }
 
-            $update = in_array("", $upp) ? false : true;
+            if (in_array(0, $upp)) {
+                $sts = ['code' => 1];
+                session()->setFlashdata('msg', 'BAB Pelajaran gagal diurutkan.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+            } else {
+                $sts = ['code' => 1];
+                session()->setFlashdata('msg', 'BAB Pelajaran berhasil diurutkan.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         } else if ($req['type'] == -2) {
             $ids = $req['val'][1];
             $sort = $req['val'][0];
             
             $upp = [];
             for ($i=0; $i < count($ids); $i++) { 
-                $up = $this->lesson_school
+                $this->lesson_school
                     ->set('lesson_school_order_child', $sort[$i])
                     ->where('lesson_school_id', $ids[$i])
-                    ->update();       
-                $upp[] = false;
+                    ->update();   
+                $arr_sts = $this->lesson_school->error();    
+                $upp[] = $arr_sts['code'] < 1;
             }
 
-            $update = in_array("", $upp) ? false : true;
+            if (in_array(0, $upp)) {
+                $sts = ['code' => 1];
+                session()->setFlashdata('msg', 'BAB Pelajaran gagal diurutkan.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+            } else {
+                $sts = ['code' => 1];
+                session()->setFlashdata('msg', 'BAB Pelajaran berhasil diurutkan.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         }
 
 
-        echo json_encode($update);
+        echo json_encode($sts);
     }
 
     public function grab_all_subchap()
@@ -551,19 +606,43 @@ class SchoolLesson extends BaseController
     {
         $req = $this->request->getVar();
 
-        $update = false;
+        $sts = [];
         if ($req['type'] == 1) {
-            $update = $this->lesson_school
+            $this->lesson_school
                 ->where('lesson_school_id', $req['id'])
                 ->orWhere('lesson_school_parent_id', $req['id'])
-                ->delete();
+                ->set('lesson_school_status', 9)
+                ->update();
+
+            $sts = $this->lesson_school->error();
+            if ($sts['code'] > 0) {
+                session()->setFlashdata('msg', 'BAB Pelajaran gagal dihapus.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+            } else {
+                session()->setFlashdata('msg', 'BAB Pelajaran berhasil dihapus.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         } elseif ($req['type'] == 2) {
-            $update = $this->lesson_school
+            $this->lesson_school
                 ->where('lesson_school_id', $req['id'])
-                ->delete();
+                ->set('lesson_school_status', 9)
+                ->update();
+
+            $sts = $this->lesson_school->error();
+            if ($sts['code'] > 0) {
+                session()->setFlashdata('msg', 'Topik Pelajaran gagal dihapus.');
+                session()->setFlashdata('head', 'Gagal!');
+                session()->setFlashdata('icon', 'error');
+            } else {
+                session()->setFlashdata('msg', 'Topik Pelajaran berhasil dihapus.');
+                session()->setFlashdata('head', 'Sukses!');
+                session()->setFlashdata('icon', 'success');
+            }
         }
 
-        echo json_encode($update);
+        echo json_encode($sts);
     }
 
 

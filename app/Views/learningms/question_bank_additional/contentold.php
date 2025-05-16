@@ -14,7 +14,7 @@
     
 </style>
 
-<input type="hidden" name="form_type" value="" />
+
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_update_question_quest">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" id="content_modal">
@@ -508,6 +508,69 @@
             </div>
             <div class="accordion-item rounded-border">
                 <div class="treequest" id="treequest"></div>
+                <?php foreach ($questions as $k => $v): ?>
+                    <div class="accordion-body bg-secondary p-5">
+                        <div class="d-flex justify-content-between">
+                            <div class="shared-info" style="width: 70%">
+                                <a href="#" class="d-grid fs-bold" style="font-weight: 500; padding-right: 10px;" onclick="toggle_collapse('<?= $v['question_bank_id'] ?>');"><?= $v['question_bank_title'] ?></a>
+                                <?php if ($v['question_bank_shared_type'] > 0): ?>
+                                    <small class="fw-bold text-info">Dibagikan</small>
+                                <?php endif ?>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <a href="#" class="fw-bold" onclick="form_chapter_quest(-2, '<?= $v['question_bank_title'] ?>', '<?= $v['question_bank_id'] ?>')">
+                                    <i class="bi bi-arrow-up-square fs-2 text-primary"></i>
+                                </a>
+                                <a href="#" class="fw-bold p-1" onclick="form_chapter_quest(-1, '<?= $v['question_bank_title'] ?>', '<?= $v['question_bank_id'] ?>')">
+                                    <i class="bi bi-plus-square fs-2 text-primary"></i>
+                                </a>
+                                <a href="#" class="menu-dropdown" data-kt-menu-trigger="click"
+                                    data-kt-menu-placement="bottom-end">
+                                    <i class="bi bi-arrow-down-right-square-fill fs-2 text-primary"></i>
+                                </a>
+                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
+                                    data-kt-menu="true" data-popper-placement="bottom-end"
+                                    style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);">
+                                    <div class="menu-item px-3">
+                                        <?php if ($v['question_bank_shared_type'] < 1): ?>
+                                            <span onclick="share_task(<?= $v['question_bank_id'] ?>, '<?= $v['question_bank_title'] ?>');" class="menu-link px-3">
+                                                Bagikan
+                                            </span>
+                                        <?php else: ?>
+                                            <span onclick="view_shared_quest(<?= $v['question_bank_id'] ?>)" class="menu-link px-3">
+                                                Lihat Pambagian
+                                            </span>
+                                        <?php endif ?>
+                                    </div>
+                                    <div class="menu-item px-3">
+                                        <span onclick="form_chapter_quest(2, '<?= $v['question_bank_title'] ?>', <?= $v['question_bank_id'] ?>);" class="menu-link px-3">
+                                            Ubah
+                                        </span>
+                                    </div>
+                                    <div class="menu-item px-3">
+                                        <a href="#" class="menu-link px-3" onclick="remove_content_quest(<?= $v['question_bank_id'] ?>, '<?= $v['question_bank_title'] ?>', 2)"
+                                            data-kt-users-table-filter="delete_row">
+                                            Hapus
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="coll_body_<?= $v['question_bank_id'] ?>" class="hide body_collapse">
+                        <div class="accordion-body bg-light">
+                            <?php $i = 0;
+                            foreach ($v['child'] as $x): ?>
+                                <div class="d-flex justify-content-start">
+                                    <?php foreach ($x as $y): ?>
+                                        <a href="#" onclick="view_question(<?= $y['question_bank_id'] ?>)" class="m-1 btn btn-icon btn-outline btn-outline-primary qtact"><?= $i + 1 ?></a>
+                                    <?php $i++;
+                                    endforeach ?>
+                                </div>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                <?php endforeach ?>
             </div>
         </div>
     </div>

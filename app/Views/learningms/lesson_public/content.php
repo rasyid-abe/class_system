@@ -3,7 +3,7 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <div class="hover-scroll-x">
+        <!-- <div class="hover-scroll-x"> -->
             <div class="d-grid">
                 <ul class="nav nav-tabs flex-nowrap text-nowrap">
                     <li class="nav-item">
@@ -20,7 +20,7 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        <!-- </div> -->
 
         <div class="card p-5" id="content_value">
             <div class="tab-content" id="myTabContent">

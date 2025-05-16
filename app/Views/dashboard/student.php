@@ -93,7 +93,7 @@
 <div class="row gx-5 gx-xl-10 mb-xl-10">
 
     <div class="col-md-6 col-xl-12">
-        <div class="card bg-light-success">
+        <div class="card bg-white">
             <div class="card-header align-items-center border-0">
                 <h3 class="fw-bold text-gray-900 fs-2 m-0">Informasi Terkini</h3>
 
@@ -179,7 +179,7 @@
 
                     </div>
 
-                    <div class="p-5 rounded bg-white text-gray-900 fw-semibold text-start" data-kt-element="message-text">
+                    <div class="p-5 rounded bg-light-danger text-gray-900 fw-semibold text-start" data-kt-element="message-text">
                         <h4>Judul Informasi</h4>
                         How likely are you to recommend our company How likely are you to recommend our company to your friends and family ? Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis, obcaecati, cum culpa facilis provident corrupti distinctio accusantium rem reiciendis ea, natus iure at labore laudantium quae eligendi excepturi? Voluptatum, enim?
                         <a href="">Selengkapnya</a>
@@ -197,7 +197,7 @@
 
                     </div>
 
-                    <div class="p-5 rounded bg-white text-gray-900 fw-semibold text-start" data-kt-element="message-text">
+                    <div class="p-5 rounded bg-light-danger text-gray-900 fw-semibold text-start" data-kt-element="message-text">
                         <h4>Judul Informasi</h4>
                         How likely are you to recommend our company How likely are you to recommend our company to your friends and family ?
                         <a href="">Selengkapnya</a>

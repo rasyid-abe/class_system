@@ -40,74 +40,75 @@
       <div class="modal-body">
         <div class="" id="select_qb_alert">
           <div class="alert alert-info d-flex align-items-center p-2 mb-5">
-          <i class="bi bi-shield-fill-exclamation fs-2hx text-info me-4"></i>
+            <i class="bi bi-shield-fill-exclamation fs-2hx text-info me-4"></i>
             <div class="d-flex flex-column">
-            <h4 class="mb-1 text-info">Informasi</h4>
-            <span>Untuk mengubah data materi dapat melalui menu <span class="fw-bolder">Materi Pelajaran > Materi Saya</span></span>
-            <span>Latihan dapat ditambahkan ketika tugas berhasil berhasil dibuat.</span>
+              <h4 class="mb-1 text-info">Informasi</h4>
+              <span>Untuk mengubah data materi dapat melalui menu <span class="fw-bolder">Materi Pelajaran > Materi Saya</span></span>
+              <span>Latihan dapat ditambahkan ketika tugas berhasil berhasil dibuat.</span>
             </div>
           </div>
-        <div class="hide" id="select_tk_alert">
-          <div class="alert alert-danger d-flex align-items-center p-2 mb-5">
-            <i class="bi bi-shield-fill-x fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i>
-            <div class="d-flex flex-column">
-              <h6 class="mb-1 text-danger">Materi belum dipilih!</h6>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-3">
-           <div id="treeview_task__"></div>
-          </div>
-
-          <div class="col-sm-9 hide" id="content_tab_ct">
-            <div class="hover-scroll-x">
-              <div class="d-grid">
-                <ul class="nav nav-tabs flex-nowrap text-nowrap">
-                  <li class="nav-item">
-                    <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a active" id="tab_topic_a_content" data-bs-toggle="tab" href="#tab_content">Materi</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_video" data-bs-toggle="tab" href="#tab_video_a">Video</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_attachment" data-bs-toggle="tab" href="#tab_attachment_a">Lampiran</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_task" data-bs-toggle="tab" href="#tab_task">Latihan</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="card p-5 hide" id="content_value_ct">
-              <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade content_topic_a show active" id="tab_content" role="tabpanel">
-                  <div id="content_lesson"></div>
-                </div>
-                <div class="tab-pane fade content_topic_a" id="tab_video_a" role="tabpanel">
-                  <div id="btn_conf_vid_"></div>
-                  <div id="video_lesson"></div>
-                </div>
-                <div class="tab-pane fade content_topic_a" id="tab_attachment_a" role="tabpanel">
-                  <div id="btn_conf_attach_"></div>
-                  <div id="attachment_lesson"></div>
-                </div>
-                <div class="tab-pane fade content_topic_a" id="tab_task" role="tabpanel">
-                  <div id="btn_conf_task_"></div>
-                  <div id="task_lesson"></div>
-                </div>
+          <div class="hide" id="select_tk_alert">
+            <div class="alert alert-danger d-flex align-items-center p-2 mb-5">
+              <i class="bi bi-shield-fill-x fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i>
+              <div class="d-flex flex-column">
+                <h6 class="mb-1 text-danger">Materi belum dipilih!</h6>
               </div>
             </div>
           </div>
 
-        </div>
-      </div>
+          <div class="row">
+            <div class="col-sm-3">
+              <div id="treeview_task__"></div>
+            </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light-danger btn-sm" onclick="hide_modal();">Tutup</button>
-        <button type="button" class="btn btn-primary btn-sm" onclick="choose_task();">Pilih</button>
+            <div class="col-sm-9 hide" id="content_tab_ct">
+              <div class="hover-scroll-x">
+                <div class="d-grid">
+                  <ul class="nav nav-tabs flex-nowrap text-nowrap">
+                    <li class="nav-item">
+                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a active" id="tab_topic_a_content" data-bs-toggle="tab" href="#tab_content">Materi</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_video" data-bs-toggle="tab" href="#tab_video_a">Video</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_attachment" data-bs-toggle="tab" href="#tab_attachment_a">Lampiran</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link btn btn-secondary btn-color-gray-600 btn-active-info rounded-bottom-0 tab_topic_a" id="tab_topic_a_task" data-bs-toggle="tab" href="#tab_task">Latihan</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="card p-5 hide" id="content_value_ct">
+                <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade content_topic_a show active" id="tab_content" role="tabpanel">
+                    <div id="content_lesson"></div>
+                  </div>
+                  <div class="tab-pane fade content_topic_a" id="tab_video_a" role="tabpanel">
+                    <div id="btn_conf_vid_"></div>
+                    <div id="video_lesson"></div>
+                  </div>
+                  <div class="tab-pane fade content_topic_a" id="tab_attachment_a" role="tabpanel">
+                    <div id="btn_conf_attach_"></div>
+                    <div id="attachment_lesson"></div>
+                  </div>
+                  <div class="tab-pane fade content_topic_a" id="tab_task" role="tabpanel">
+                    <div id="btn_conf_task_"></div>
+                    <div id="task_lesson"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light-danger btn-sm" onclick="hide_modal();">Tutup</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="choose_task();">Pilih</button>
+        </div>
       </div>
     </div>
   </div>
@@ -124,7 +125,7 @@
         <form id="kt_account_profile_details_form" class="form fv-plugins-bootstrap5 fv-plugins-framework" novalidate="novalidate">
           <div class="card-body">
 
-          <div class="row mb-6">
+            <div class="row mb-6">
               <label class="col-lg-3 col-form-label fw-semibold fs-6">Mata Pelajaran</label>
 
               <div class="col-lg-9">
@@ -206,9 +207,9 @@
                   <div class="col-lg-4 fv-row fv-plugins-icon-container mt-2">
                     <div class="col-lg-9 d-flex align-items-center">
                       <div class="form-check form-check-solid form-switch form-check-custom fv-row">
-                      <div class="inpsubm">
-                        <input class="form-check-input asscheck w-45px h-30px" type="checkbox" id="autosumbit">
-                      </div>
+                        <div class="inpsubm">
+                          <input class="form-check-input asscheck w-45px h-30px" type="checkbox" id="autosumbit">
+                        </div>
                         <label class="form-check-label" style="margin-left: 16px">Batas Waktu Aktif</label>
                       </div>
                     </div>

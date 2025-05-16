@@ -47,7 +47,8 @@ function act_share_task(clear = null) {
       },
       success: function (e) {
         hide_loading()
-        al_swal("Pembatalan berhasil.", "success");
+        ajax_content_qb(e)
+        toast_act("", "Pembatalan berhasil.", "success");
       },
     });
   } else {
@@ -57,7 +58,7 @@ function act_share_task(clear = null) {
 
     if (val != undefined) {
       if (val == 4 && thc.length < 1) {
-        al_swal("Guru belum dipilih!", "error");
+        toast_act("", "Guru belum dipilih!", "error");
       } else {
         $("#modal_share_task").modal("hide");
         $.ajax({
@@ -70,7 +71,8 @@ function act_share_task(clear = null) {
           },
           success: function (e) {
             hide_loading()
-            al_swal("Soal berhasil di bagikan.", "success");
+            ajax_content_qb(e)
+            toast_act("", "Soal berhasil di bagikan.", "success");
           },
         });
       }
@@ -132,8 +134,14 @@ const toolbarOptions = [
   ["clean", "code-block"], // remove formatting button
 ];
 
-function view_question(id, type = null) {
-  $("#quest_cont").removeClass("hide");
+function view_question(id, type = null, notif = null) {
+  if (notif != null) {
+    toast_act(notif.head, notif.msg, notif.icon)
+  }
+
+  if (type != 'shr') {
+    $("#quest_cont").removeClass("hide");
+  }
   $.ajax({
     url: base_url + "/teacher/question-bank/additional/get-question",
     data: { id, type },
@@ -186,11 +194,10 @@ function generate_task(e) {
     }
     opt += `
         <div class="col-sm-6">
-            <div class="alert alert-dismissible bg-light-${
-              e.keys.includes(i)
-                ? "success border border-success"
-                : "secondary border border-dark"
-            } d-flex flex-column flex-sm-row p-5 mb-5">
+            <div class="alert alert-dismissible bg-light-${e.keys.includes(i)
+        ? "success border border-success"
+        : "secondary border border-dark"
+      } d-flex flex-column flex-sm-row p-5 mb-5">
                 <div class="d-flex flex-column pe-0 pe-sm-10">
                     <h4 class="fw-semibold">Pilihan Jawaban ${num}</h4>
                     ${val}
@@ -209,8 +216,8 @@ function generate_task(e) {
       <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
       </svg> Salin</button>
       <button type="button" class="btn btn-sm btn-info" onclick="show_form_edit(-14, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><i class="bi bi-arrows-move"></i> Pindah</button>
-      <button type="button" class="btn btn-sm btn-warning mx-2" onclick="show_form_edit(-11, ${e.id})"><i class="bi bi-pencil fs-5"></i> Ubah</button>
-      <button type="button" class="btn btn-sm btn-danger" onclick="remove_content_quest(${e.id}, '${e.tilte}', 2)"><i class="bi bi-trash fs-5"></i> Hapus</button>
+      <button type="button" class="btn btn-sm btn-warning mx-2" onclick="show_form_edit(-11, ${e.id}, ${null}, ${null}, ${e.parent})"><i class="bi bi-pencil fs-5"></i> Ubah</button>
+      <button type="button" class="btn btn-sm btn-danger" onclick="remove_content_quest(${e.id}, '${e.tilte}', 1, ${null}, ${e.parent})"><i class="bi bi-trash fs-5"></i> Hapus</button>
       </div>
     `;
   } else if (url.includes("question-bank/standart")) {
@@ -224,7 +231,7 @@ function generate_task(e) {
   } else {
     btnn = `
         <div class="btn-qb">
-        <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-15, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+        <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-15, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent}, 1)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
         <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
         </svg> Salin</button>
         </div>
@@ -277,8 +284,8 @@ function generate_hint(e) {
   let btnn = "";
   if (url.includes("question-bank/additional")) {
     btnn = `
-      <button type="button" class="btn btn-sm btn-warning" onclick="show_form_edit(-12, ${e.id}, ${e.subj}, ${e.grad})"><i class="bi bi-pencil fs-5"></i> Ubah</button>
-      <button type="button" class="btn btn-sm btn-danger mx-5" onclick="remove_content_quest(${e.id}, '${e.title}', 3)"><i class="bi bi-trash fs-5"></i> Hapus</button>
+      <button type="button" class="btn btn-sm btn-warning" onclick="show_form_edit(-12, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><i class="bi bi-pencil fs-5"></i> Ubah</button>
+      <button type="button" class="btn btn-sm btn-danger mx-5" onclick="remove_content_quest(${e.id}, '${e.title}', 3, ${null}, ${e.parent})"><i class="bi bi-trash fs-5"></i> Hapus</button>
     `;
   }
 
@@ -321,8 +328,8 @@ function generate_explain(e) {
   let btnn = "";
   if (url.includes("question-bank/additional")) {
     btnn = `
-      <button type="button" class="btn btn-sm btn-warning" onclick="show_form_edit(-13, ${e.id}, ${e.subj}, ${e.grad})"><i class="bi bi-pencil fs-5"></i> Ubah</button>
-      <button type="button" class="btn btn-sm btn-danger mx-5" onclick="remove_content_quest(${e.id}, '${e.title}', 4)"><i class="bi bi-trash fs-5"></i> Hapus</button>
+      <button type="button" class="btn btn-sm btn-warning" onclick="show_form_edit(-13, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><i class="bi bi-pencil fs-5"></i> Ubah</button>
+      <button type="button" class="btn btn-sm btn-danger mx-5" onclick="remove_content_quest(${e.id}, '${e.title}', 4, ${null}, ${e.parent})"><i class="bi bi-trash fs-5"></i> Hapus</button>
     `;
   }
 
@@ -333,9 +340,8 @@ function generate_explain(e) {
       <div class="alert alert-dismissible bg-light-info border border-info d-flex flex-column flex-sm-row p-5 mb-5">
           <div class="d-flex flex-column pe-0 pe-sm-10">
               <h4 class="fw-semibold">Penjelasan Penyelesaian</h4>
-              ${
-                e.explain == "<p><br></p>" ? "<p>Tidak ada data</p>" : e.explain
-              }
+              ${e.explain == "<p><br></p>" ? "<p>Tidak ada data</p>" : e.explain
+      }
           </div>
       </div>
       </div>
@@ -351,9 +357,8 @@ function generate_explain(e) {
       <div class="alert alert-dismissible bg-light-info border border-info d-flex flex-column flex-sm-row p-5 mb-5">
           <div class="d-flex flex-column pe-0 pe-sm-10">
               <h4 class="fw-semibold">Penjelasan Penyelesaian</h4>
-              ${
-                e.explain == "<p><br></p>" ? "<p>Tidak ada data</p>" : e.explain
-              }
+              ${e.explain == "<p><br></p>" ? "<p>Tidak ada data</p>" : e.explain
+      }
           </div>
       </div>
       </div>
@@ -364,7 +369,8 @@ function generate_explain(e) {
   $("#tab_explain").html(html);
 }
 
-function show_form_edit(type, id, subj = null, grad = null, parent = null) {
+function show_form_edit(type, id, subj = null, grad = null, parent = null, src_pub = null) {
+  $('input[name=form_type]').val(type)
   if (type == -14 || type == -15 || type == -16) {
     let urls =
       type == -16
@@ -406,11 +412,11 @@ function show_form_edit(type, id, subj = null, grad = null, parent = null) {
         }
 
         $("#head_content_modal_std").html(`
-              <input type="hidden" name="form_type" value="${type}" />
               <input type="hidden" name="quest_id" value="${id}" />
-              <h3 class="modal-title">${
-                type == -14 ? "Pindahkan" : "Salin"
-              } Soal Ke</h3>
+              <input type="hidden" name="old_parent" value="${parent}" />
+              <input type="hidden" name="src_pub" value="${src_pub}" />
+              <h3 class="modal-title">${type == -14 ? "Pindahkan" : "Salin"
+          } Soal Ke</h3>
           `);
         $("#body_content_modal_quest").html(form);
 
@@ -421,35 +427,38 @@ function show_form_edit(type, id, subj = null, grad = null, parent = null) {
   } else {
     $.ajax({
       url: base_url + "/teacher/question-bank/additional/get-question",
-      data: { id, type:null},
+      data: { id, type: null },
       method: "post",
       dataType: "json",
       beforeSend: function () {
         show_loading()
       },
       success: function (e) {
-        show_edit_task(e, type, id);
+        show_edit_task(e, type, id, parent);
         hide_loading()
       },
     });
   }
 }
 
-function show_edit_task(e, type, id) {
+function show_edit_task(e, type, id, parent) {
+  $('input[name=form_type]').val(type)
+  console.log(type);
+  console.log('show edit task');
+  
   if (type == -11) {
     $('#task_edit').html("");
     $('#task_edit_mcx').html("");
-    
+
     $('.title-update-task').html('Ubah Data Soal');
     let opt = `<option value="0">Pilih Tipe Soal</option>`;
     $.each(e.list_quest, function (i, v) {
-      opt += `<option value="${i}" ${
-        i == e.type ? "selected" : ""
-      }>${v}</option>`;
+      opt += `<option value="${i}" ${i == e.type ? "selected" : ""
+        }>${v}</option>`;
     });
 
     let choose = "";
-    
+
     for (let i = 0; i < e.option.length; i++) {
       if (e.type == 1) {
         choose += `
@@ -457,11 +466,9 @@ function show_edit_task(e, type, id) {
               <div class="position-relative">
                   <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
                       <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
-                          <input class="form-check-input mc_option_edit ${
-                            e.keys.includes(i) ? "checked_mc" : ""
-                          }" type="radio" value="" ${
-                            e.keys.includes(i) ? "checked" : ""
-                          } />
+                          <input class="form-check-input mc_option_edit ${e.keys.includes(i) ? "checked_mc" : ""
+          }" type="radio" value="" ${e.keys.includes(i) ? "checked" : ""
+          } />
                           <label class="form-check-label">
                               Jawaban Benar
                           </label>
@@ -478,11 +485,9 @@ function show_edit_task(e, type, id) {
               <div class="position-relative">
                   <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
                       <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
-                          <input class="form-check-input mcx_option_edit ${
-                            e.keys.includes(i) ? "checked_mcx" : ""
-                          }" type="checkbox" value="" ${
-                            e.keys.includes(i) ? "checked" : ""
-                          } />
+                          <input class="form-check-input mcx_option_edit ${e.keys.includes(i) ? "checked_mcx" : ""
+          }" type="checkbox" value="" ${e.keys.includes(i) ? "checked" : ""
+          } />
                           <label class="form-check-label">
                               Jawaban Benar
                           </label>
@@ -495,7 +500,7 @@ function show_edit_task(e, type, id) {
         `;
       } else if (e.type == 3) {
         $('.repeater').addClass('hide')
-        
+
         choose += `
           <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
               <input class="form-check-input tf_option" type="radio" name="tfopt_edit" value="${e.option[i]}" id="ctrue_edit" ${e.keys.includes(i) ? "checked" : ""} />
@@ -577,7 +582,7 @@ function show_edit_task(e, type, id) {
 
     let task = `
         <input type="hidden" name="id_quest_edit" value="${id}" />
-        <input type="hidden" name="form_type" value="${type}" />
+        <input type="hidden" name="parent_question" value="${parent}" />
         <div class="card" id="content_value">
             <div class="px-5">
                 <div class="mb-3 row">
@@ -655,7 +660,8 @@ function show_edit_task(e, type, id) {
     $("#repeater_edit").addClass("hide");
     let hint = `
     <input type="hidden" name="id_quest_edit" value="${id}" />
-    <input type="hidden" name="form_type" value="${type}" />
+    <input type="hidden" name="parent_hint" value="${parent}" />
+    
         <div class="card" id="content_value">
             <div id="hint_quest_edit"></div>
         </div>
@@ -676,7 +682,7 @@ function show_edit_task(e, type, id) {
     $("#repeater_edit").addClass("hide");
     let hint = `
     <input type="hidden" name="id_quest_edit" value="${id}" />
-    <input type="hidden" name="form_type" value="${type}" />
+    <input type="hidden" name="parent_hint" value="${parent}" />
         <div class="card" id="content_value">
             <div id="explain_quest_edit"></div>
         </div>
@@ -715,16 +721,17 @@ function rem_elem_id(id) {
 }
 
 function form_chapter_quest(e, chap = null, id = null) {
+  console.log(e);
+  console.log('form_chapter_quest');
+  $('input[name=form_type').val(e)
   if (e == -1) {
     $("#head_content_modal").html(`
-      <input type="hidden" name="form_type" value="${e}" />
       <input type="hidden" name="id_quest" value="${id}" />
       <h3 class="modal-title">Tambah Soal ${chap}</h3>
     `);
     $("#modal_update_question_quest").modal("show");
   } else if (e == -2) {
     form = `
-              <input type="hidden" name="form_type" value="${e}" />
               <input type="hidden" name="id_quest" value="${id}" />
           `;
 
@@ -738,7 +745,6 @@ function form_chapter_quest(e, chap = null, id = null) {
 
     if (e == 1) {
       form = `
-              <input type="hidden" name="form_type" value="${e}" />
               <label for="chapter" class="form-label">Judul Soal</label>
               <input type="text" class="form-control form-control-md" name="chapter" value="" />
           `;
@@ -749,7 +755,6 @@ function form_chapter_quest(e, chap = null, id = null) {
       $("#body_content_modal_quest").html(form);
     } else if (e == 2) {
       form = `
-              <input type="hidden" name="form_type" value="${e}" />
               <input type="hidden" name="id_quest" value="${id}" />
               <label for="chapter" class="form-label">Judul Soal</label>
               <input type="text" class="form-control form-control-md" name="chapter" value="${chap}" />
@@ -779,6 +784,8 @@ function close_modal_content_quest() {
 function save_content_quest() {
   let type = $("input[name=form_type]").val();
   let form = true;
+  console.log(type);
+  console.log('save content quest -- ');
   
   if (type == 1) {
     chap = $("input[name=chapter]").val();
@@ -807,16 +814,20 @@ function save_content_quest() {
     pre_question_edit(type);
   } else if (type == -12) {
     id = $("input[name=id_quest_edit]").val();
+    parent = $("input[name=parent_hint]").val();
     hint = $("#hint_quest_edit > .ql-editor").html();
-    store_content_quest(type, id, [hint]);
+    store_content_quest(type, id, [hint, parent]);
   } else if (type == -13) {
     id = $("input[name=id_quest_edit]").val();
+    parent = $("input[name=parent_hint]").val();
     explain = $("#explain_quest_edit > .ql-editor").html();
-    store_content_quest(type, id, [explain]);
+    store_content_quest(type, id, [explain, parent]);
   } else if (type == -14 || type == -15) {
     id = $("input[name=quest_id]").val();
+    old_parent = $("input[name=old_parent]").val();
     new_id = $('input[name="move_task"]:checked').val();
-    store_content_quest(type, id, [new_id]);
+    src_pub = $('input[name="src_pub"]').val();
+    store_content_quest(type, id, [new_id, old_parent, src_pub]);
   } else if (type == -16) {
     id = $("input[name=quest_id]").val();
     new_id = $('input[name="move_task"]:checked').val();
@@ -831,6 +842,8 @@ function save_content_quest() {
 }
 
 function pre_question(type) {
+  console.log(type);
+  console.log('form tambah');
   let qtype = $("#quest_type").find(":selected").val();
   let idx_a = [];
   let option = [];
@@ -928,23 +941,26 @@ function pre_question(type) {
               explain,
             ]);
           } else {
-            al_swal("Jawaban benar belum dipilih!", "error");
+            toast_act("", "Jawaban benar belum dipilih!", "error");
           }
         } else {
-          al_swal("Pilihan jawaban benar tidak sesuai!", "error");
+          toast_act("", "Pilihan jawaban benar tidak sesuai!", "error");
         }
       } else {
-        al_swal("Kolom pilihan jawaban harus diisi!", "error");
+        toast_act("", "Kolom pilihan jawaban harus diisi!", "error");
       }
     } else {
-      al_swal("Kolom pertanyaan harus diisi!", "error");
+      toast_act("", "Kolom pertanyaan harus diisi!", "error");
     }
   } else {
-    al_swal("Tipe soal harus dipilih!", "error");
+    toast_act("", "Tipe soal harus dipilih!", "error");
   }
 }
 
 function pre_question_edit(type) {
+  console.log(type);
+  console.log('form edit');
+  
   let qtype = $("#quest_type_edit").find(":selected").val();
   let idx_a = [];
   let option = [];
@@ -1020,6 +1036,7 @@ function pre_question_edit(type) {
   subj = $("input[name=subject]").val();
   grad = $("input[name=grade]").val();
   poin = $("input[name=poin_edit]").val();
+  parent = $("input[name=parent_question]").val();
   quest_type = qtype;
   question = $("#task_quest_edit > .ql-editor").html();
 
@@ -1036,21 +1053,22 @@ function pre_question_edit(type) {
               JSON.stringify(option),
               JSON.stringify(answer),
               poin,
+              parent,
             ]);
           } else {
-            al_swal("Jawaban benar belum dipilih!", "error");
+            toast_act("", "Jawaban benar belum dipilih!", "error");
           }
         } else {
-          al_swal("Pilihan jawaban benar tidak sesuai!", "error");
+          toast_act("", "Pilihan jawaban benar tidak sesuai!", "error");
         }
       } else {
-        al_swal("Kolom pilihan jawaban harus diisi!", "error");
+        toast_act("", "Kolom pilihan jawaban harus diisi!", "error");
       }
     } else {
-      al_swal("Kolom pertanyaan harus diisi!", "error");
+      toast_act("", "Kolom pertanyaan harus diisi!", "error");
     }
   } else {
-    al_swal("Tipe soal harus dipilih!", "error");
+    toast_act("", "Tipe soal harus dipilih!", "error");
   }
 }
 
@@ -1103,6 +1121,9 @@ $(document).on("click", ".mcx_option_edit", function () {
 });
 
 function store_content_quest(type, id, val) {
+  // console.log(type);
+  // console.log(id);
+  // console.log(val);
   let urls =
     type == -16
       ? "/teacher/question-bank/standart/update-content"
@@ -1120,18 +1141,31 @@ function store_content_quest(type, id, val) {
       show_loading()
     },
     success: function (e) {
-      location.reload();
+      if (Object.keys(e).includes('src')) {
+        if (e.src == "null") {
+          ajax_content_qb(e)
+        }
+      } else {
+        ajax_content_qb(e)
+      }
+      toast_act(e.head, e.msg, e.icon)
+ 
+      if (type == -1) {
+        $('#modal_update_question_quest').modal('hide')
+      } else if (type == -11 || type == -12 || type == -13) {
+        $('#modal_update_task').modal('hide')
+      }
       hide_loading()
     },
   });
 }
 
-function remove_content_quest(id, title, type = null, file = null) {
+function remove_content_quest(id, title, type = null, file = null, parent = null) {
   let msg = "";
 
-  if (type == 1) {
+  if (type == 2) {
     msg = "soal " + title;
-  } else if (type == 2) {
+  } else if (type == 1) {
     msg = "soal ini";
   } else if (type == 3) {
     msg = "petunjuk soal ini";
@@ -1152,18 +1186,19 @@ function remove_content_quest(id, title, type = null, file = null) {
     },
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
-      act_remove_quest(id, type, file);
+      act_remove_quest(id, type, file, parent);
     }
   });
 }
 
-function act_remove_quest(id, type = null, file = null) {
+function act_remove_quest(id, type = null, file = null, parent = null) {
   $.ajax({
     url: base_url + "/teacher/question-bank/additional/remove-content",
     data: {
       id,
       type,
       file,
+      parent
     },
     method: "post",
     dataType: "json",
@@ -1171,7 +1206,10 @@ function act_remove_quest(id, type = null, file = null) {
       show_loading()
     },
     success: function (e) {
-      location.reload();
+      toast_act(e.head, e.msg, e.icon)
+      ajax_content_qb(e)
+      $("#tab_task").html('')
+      $('#quest_cont').addClass('hide')
       hide_loading()
     },
   });
@@ -1340,9 +1378,164 @@ function act_repeater() {
   });
 }
 
+function ajax_content_qb(res = null) {
+  let sid = $('#subject_idd').val();
+  let gid = $('#grade_idd').val();
+
+  $.ajax({
+    url: base_url + '/teacher/question-bank/additional/grab-list-quest-title',
+    data: { gid, sid },
+    method: 'post',
+    dataType: 'json',
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      generate_tree_question(e, res)
+      hide_loading()
+    }
+  })
+}
+
+function generate_tree_question(e, res) {
+  let content = ''
+  $.each(e.questions, function (i, v) {
+    let show_coll = ''
+    if (res != null && res.collapse == 1) {
+      if (res.id.includes(v.question_bank_id)) {
+        show_coll = ''
+      } else {
+        show_coll = 'hide'
+      }
+    } else {
+      show_coll = 'hide'
+    }
+
+    let btn_shrd = ''
+    if (v.question_bank_shared_type < 1) {
+      btn_shrd = `<span onclick="share_task(${v.question_bank_id}, '${v.question_bank_title}');" class="menu-link px-3">Bagikan</span>`
+    } else {
+      btn_shrd = `<span onclick="view_shared_quest(${v.question_bank_id})" class="menu-link px-3">Lihat Pambagian</span>`
+    }
+
+    let el_child = ''
+    let li = 0
+    $.each(v.child, function(ii,vv) {
+      let cont_child = ''
+      $.each(vv, function(idx, val) {
+        let bbbtn = res != null && res.id.includes(v.question_bank_id) ? 
+          res.chid == val.question_bank_id ? 'btn-primary' : 'btn-outline btn-outline-primary' : 'btn-outline btn-outline-primary'
+        cont_child += `<a href="#" onclick="view_question(${val.question_bank_id})" class="m-1 btn btn-icon ${bbbtn} qtact">${li+1}</a>`
+        li++
+      })
+      el_child += `<div class="d-flex justify-content-start">${cont_child}</div>`
+    })
+
+    content += `
+      <div class="accordion-body bg-secondary p-5">
+        <div class="d-flex justify-content-between">
+          <div class="shared-info" style="width: 95%">
+            <a href="#" class="d-grid fs-4 fw-bold" onclick="toggle_collapse(${v.question_bank_id});">${v.question_bank_title}</a>
+            ${v.question_bank_shared_type > 0 ? '<badge class="badge badge-info">Dibagikan</badge>' : ''}
+          </div>
+          <div class="d-flex align-items-center">
+            <a href="#" class="menu-dropdown drop_parent" data-key="${v.question_bank_id}" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+              <i class="bi bi-three-dots-vertical fs-3 text-primary aact_btnlist" data-id="${v.question_bank_id}"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="bg-light-danger ${res != null && res.coll_act > 0 ? show_coll : 'hide'}" id="btn_act_accord_${v.question_bank_id}">
+        <div class="accordion-body bg-light-danger">
+          <div class="d-flex justify-content-start">
+            <span class="btn btn-info btn-icon m-1 upload-question" data-tooltip="Upload Soal" data-tooltip-location="top" data-title="${v.question_bank_title}" data-id="${v.question_bank_id}">
+              <i class="bi bi-arrow-up fs-3 fw-bold text-white"></i>
+            </span>
+            <span class="btn btn-success btn-icon m-1 add-question" data-tooltip="Tambah Soal" data-tooltip-location="top" data-title="${v.question_bank_title}" data-id="${v.question_bank_id}">
+              <i class="bi bi-plus fs-1 fw-bold text-white"></i>
+            </span>
+            <span class="btn btn-primary btn-icon m-1 share-question" data-tooltip="Bagikan Soal" data-tooltip-location="top" data-shared="${v.question_bank_shared_type}" data-title="${v.question_bank_title}" data-id="${v.question_bank_id}">
+              <i class="bi bi-share fs-2 fw-bold text-white"></i>
+            </span>
+            <span class="btn btn-warning btn-icon m-1 edit-question" data-tooltip="Ubah Judul Soal" data-tooltip-location="top" data-title="${v.question_bank_title}" data-id="${v.question_bank_id}">
+              <i class="bi bi-pencil fs-2 fw-bold text-white"></i>
+            </span>
+            <span class="btn btn-danger btn-icon m-1 delete-question" data-tooltip="Hapus Judul dan Seluruh Soal" data-tooltip-location="top" data-title="${v.question_bank_title}" data-id="${v.question_bank_id}">
+              <i class="bi bi-trash fs-1 fw-bold text-white"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div id="coll_body_${v.question_bank_id}" class="${show_coll} body_collapse">
+        <div class="accordion-body bg-light">
+          ${el_child}
+        </div>
+      </div>
+    `
+
+  })
+  $('#treequest').html(content)
+
+  if (res != null && res.show_quest == 1) {
+    view_question(res.chid)
+  }
+}
+
+$(document).on('click', '.aact_btnlist', function(e) {
+  e.preventDefault()
+  let id = $(this).data('id')
+  $('#btn_act_accord_' + id).toggleClass('hide')
+})
+
+$(document).on('click', '.upload-question', function(e) {
+  e.preventDefault()
+  let id = $(this).data('id')
+  let title = $(this).data('title')
+
+  form_chapter_quest(-2, title, id)
+})
+
+$(document).on('click', '.add-question', function(e) {
+  e.preventDefault()
+  let id = $(this).data('id')
+  let title = $(this).data('title')
+
+  form_chapter_quest(-1, title, id)
+})
+
+$(document).on('click', '.share-question', function(e) {
+  e.preventDefault()
+  let id = $(this).data('id')
+  let title = $(this).data('title')
+  let shared = $(this).data('shared')
+
+  if (shared < 1) {
+    share_task(id, title)
+  } else {
+    view_shared_quest(id)
+  }
+})
+
+$(document).on('click', '.edit-question', function(e) {
+  e.preventDefault()
+  let id = $(this).data('id')
+  let title = $(this).data('title')
+
+  form_chapter_quest(2, title, id)
+})
+
+$(document).on('click', '.delete-question', function(e) {
+  e.preventDefault()
+  let id = $(this).data('id')
+  let title = $(this).data('title')
+
+  remove_content_quest(id, title, 2)
+})
+
 $(document).ready(function () {
   let url = window.location.href;
   if (url.includes("question-bank/additional/view-content")) {
+    ajax_content_qb()
     act_repeater();
   }
 });

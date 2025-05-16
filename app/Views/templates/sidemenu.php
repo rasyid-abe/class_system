@@ -71,9 +71,6 @@
                         <h4 class="fw-semibold text-gray-700 text-center lh-lg">
                             Selamat Datang
                         </h4>
-                        <!-- <h2 class="fw-bolder text-center">
-                            SMA Swasta ABE Jakarta
-                        </h2> -->
                         <br>
                     </div>
                     <div class="me-7 mb-4 d-flex justify-content-center">
@@ -101,19 +98,6 @@
                         <?= $nuptk ?>
                     </div>
 
-                    <!-- <div class="card h-lg-50 bg-secondary my-10">
-
-                        <div class="card-body pt-5">
-                            <h4 class="text-gray-700 text-center">Tugas Mengajar Saya</h4>
-                            <div class="separator separator-dashed my-3"></div>
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-sm btn-light-info">X MB 1</button>
-                                <button class="btn btn-sm btn-light-info">XI IPA 1</button>
-                                <button class="btn btn-sm btn-light-info">XI IPA 2</button>
-                            </div>
-                        </div>
-                    </div> -->
-
                     <div class="separator separator-dashed border-primary my-10"></div>
 
                     <div class="my_duty">
@@ -133,7 +117,7 @@
         </div>
         <div class="tab-pane fade <?= $page == "Lesson" ? 'active show' : '' ?>" id="subjects_menu" role="tabpanel">
             <div class="mx-5">
-                <h3 class="fw-bolder text-dark mb-10 mx-0">Materi Pelajaran</h3>
+                <h3 class="fw-bolder fs-2 text-dark mb-10 mx-0">Materi Pelajaran</h3>
                 <div class="mb-12">
                     <div class="d-flex align-items-center mb-7">
                         <div class="symbol symbol-50px me-5">
@@ -143,7 +127,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/lesson/standart') ?>"
-                                class="<?= $sidebar != 'Standart' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-6 fw-bold">Standar</a>
+                                class="<?= $sidebar != 'Standart' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-4 fw-bold">Standar</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -154,7 +138,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/lesson/additional') ?>"
-                                class="<?= $sidebar != 'Additional' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Saya</a>
+                                class="<?= $sidebar != 'Additional' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-4 fw-bold">Saya</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -165,7 +149,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/lesson/school') ?>"
-                                class="<?= $sidebar != 'School' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Sekolah</a>
+                                class="<?= $sidebar != 'School' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-4 fw-bold">Sekolah</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -176,7 +160,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/lesson/public') ?>"
-                                class="<?= $sidebar != 'Public' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Publik</a>
+                                class="<?= $sidebar != 'Public' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-4 fw-bold">Publik</a>
                         </div>
                     </div>
                 </div>
@@ -184,7 +168,7 @@
         </div>
         <div class="tab-pane fade <?= $page == "Question" ? 'active show' : '' ?>" id="question_bank_menu" role="tabpanel">
             <div class="mx-5">
-                <h3 class="fw-bolder text-dark mb-10 mx-0">Bank Soal</h3>
+                <h3 class="fw-bolder fs-2 text-dark mb-10 mx-0">Bank Soal</h3>
 
                 <div class="mb-12">
                     <div class="d-flex align-items-center mb-7">
@@ -195,7 +179,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/question-bank/standart') ?>"
-                                class="<?= $sidebar != 'QB_Standart' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-6 fw-bold">Standar</a>
+                                class="<?= $sidebar != 'QB_Standart' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-4 fw-bold">Standar</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -206,7 +190,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/question-bank/additional') ?>"
-                                class="<?= $sidebar != 'QB_Additional' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Saya</a>
+                                class="<?= $sidebar != 'QB_Additional' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-4 fw-bold">Saya</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -217,7 +201,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/question-bank/public') ?>"
-                                class="<?= $sidebar != 'QB_Public' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Publik</a>
+                                class="<?= $sidebar != 'QB_Public' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-4 fw-bold">Publik</a>
                         </div>
                     </div>
                 </div>
@@ -225,7 +209,7 @@
         </div>
         <div class="tab-pane fade <?= $page == "Assessment" ? 'active show' : '' ?>" id="evaluation_menu" role="tabpanel">
             <div class="mx-5">
-                <h3 class="fw-bolder text-dark mb-10 mx-0">Penilaian</h3>
+                <h3 class="fw-bolder fs-2 text-dark mb-10 mx-0">Penilaian</h3>
                 <div class="mb-12">
                     <div class="d-flex align-items-center mb-7">
                         <div class="symbol symbol-50px me-5">
@@ -235,7 +219,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-add') ?>"
-                                class="<?= $sidebar != 'Add_Assessment' ? 'text-gray-800' : 'fw-bolder text-primary' ?>  text-hover-primary fs-6 fw-bold">Tambah</a>
+                                class="<?= $sidebar != 'Add_Assessment' ? 'text-gray-800' : 'fw-bolder text-primary' ?>  text-hover-primary fs-4 fw-bold">Tambah</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -246,7 +230,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-draft') ?>"
-                                class="<?= $sidebar != 'Draft_Assessment' ? 'text-gray-800' : 'fw-bolder text-warning' ?>  text-hover-warning fs-6 fw-bold">Draft</a>
+                                class="<?= $sidebar != 'Draft_Assessment' ? 'text-gray-800' : 'fw-bolder text-warning' ?>  text-hover-warning fs-4 fw-bold">Draft</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -257,7 +241,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-scheduled') ?>"
-                                class="<?= $sidebar != 'Scheduled_Assessment' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Terjadwal</a>
+                                class="<?= $sidebar != 'Scheduled_Assessment' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-4 fw-bold">Terjadwal</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -268,7 +252,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-present') ?>"
-                                class="<?= $sidebar != 'Present_Assessment' ? 'text-gray-800' : 'fw-bolder text-info' ?>  text-hover-info fs-6 fw-bold">Saat Ini</a>
+                                class="<?= $sidebar != 'Present_Assessment' ? 'text-gray-800' : 'fw-bolder text-info' ?>  text-hover-info fs-4 fw-bold">Saat Ini</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -279,7 +263,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/assessment/index-done') ?>"
-                                class="<?= $sidebar != 'Done_Assessment' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Selesai</a>
+                                class="<?= $sidebar != 'Done_Assessment' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-4 fw-bold">Selesai</a>
                         </div>
                     </div>
                 </div>
@@ -287,7 +271,7 @@
         </div>
         <div class="tab-pane fade <?= $page == "Tasks" ? 'active show' : '' ?>" id="task_menu" role="tabpanel">
             <div class="mx-5">
-                <h3 class="fw-bolder text-dark mb-10 mx-0">Tugas</h3>
+                <h3 class="fw-bolder fs-2 text-dark mb-10 mx-0">Tugas</h3>
                 <div class="mb-12">
                     <div class="d-flex align-items-center mb-7">
                         <div class="symbol symbol-50px me-5">
@@ -297,7 +281,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/task/index-add') ?>"
-                                class="<?= $sidebar != 'Add_Task' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-6 fw-bold">Tambah</a>
+                                class="<?= $sidebar != 'Add_Task' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-4 fw-bold">Tambah</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -308,7 +292,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/task/index-draft') ?>"
-                                class="<?= $sidebar != 'Draft_Task' ? 'text-gray-800' : 'fw-bolder text-warning' ?> text-hover-warning fs-6 fw-bold">Draft</a>
+                                class="<?= $sidebar != 'Draft_Task' ? 'text-gray-800' : 'fw-bolder text-warning' ?> text-hover-warning fs-4 fw-bold">Draft</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -319,7 +303,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/task/index-scheduled') ?>"
-                                class="<?= $sidebar != 'Scheduled_Task' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Terjadwal</a>
+                                class="<?= $sidebar != 'Scheduled_Task' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-4 fw-bold">Terjadwal</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -330,7 +314,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/task/index-present') ?>"
-                                class="<?= $sidebar != 'Present_Task' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Saat Ini</a>
+                                class="<?= $sidebar != 'Present_Task' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-4 fw-bold">Saat Ini</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -341,7 +325,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/teacher/task/index-done') ?>"
-                                class="<?= $sidebar != 'Done_Task' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Selesai</a>
+                                class="<?= $sidebar != 'Done_Task' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-4 fw-bold">Selesai</a>
                         </div>
                     </div>
                 </div>
@@ -349,7 +333,7 @@
         </div>
         <div class="tab-pane fade <?= $page == "Groups" ? 'active show' : '' ?>" id="group_menu" role="tabpanel">
             <div class="mx-5">
-                <h3 class="fw-bolder text-dark mb-10 mx-0">Mengajar di Kelas</h3>
+                <h3 class="fw-bolder fs-2 text-dark mb-10 mx-0">Mengajar di Kelas</h3>
 
                 <div class="mb-12">
                     <?php if (count(my_groups()) > 0) : ?>
@@ -362,7 +346,7 @@
                                 </div>
                                 <div class="d-flex flex-column">
                                     <a href="<?= base_url('/teacher/groups/view-students/') . $v['student_group_id'] ?>"
-                                        class="<?= $sidebar == $v['student_group_name'] ? 'fw-bolder text-primary' : 'text-gray-800' ?> text-hover-primary fs-6 fw-bold"><?= $v['student_group_name'] ?></a>
+                                        class="<?= $sidebar == $v['student_group_name'] ? 'fw-bolder text-primary' : 'text-gray-800' ?> text-hover-primary fs-4 fw-bold"><?= $v['student_group_name'] ?></a>
                                 </div>
                             </div>
                         <?php endforeach ?>
@@ -374,7 +358,7 @@
                                 </span>
                             </div>
                             <div class="d-flex flex-column">
-                                <p class="fs-6 fw-bold">Tahun Pelajaran belum dipilih.</p>
+                                <p class="fs-4 fw-bold">Tahun Pelajaran belum dipilih.</p>
                             </div>
                         </div>
                     <?php endif ?>
@@ -499,7 +483,7 @@
         </div>
         <div class="tab-pane fade <?= $page == "Self Study" ? 'active show' : '' ?>" id="self_study" role="tabpanel">
             <div class="mx-5">
-                <h3 class="fw-bolder text-dark mb-10 mx-0">Belajar Mandiri</h3>
+                <h3 class="fw-bolder fs-2 text-dark mb-10 mx-0">Belajar Mandiri</h3>
                 <div class="mb-12">
                     <div class="d-flex align-items-center mb-7">
                         <div class="symbol symbol-50px me-5">
@@ -509,7 +493,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/lesson/standart') ?>"
-                                class="<?= $sidebar != 'Standart' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-6 fw-bold">Materi Standar</a>
+                                class="<?= $sidebar != 'Standart' ? 'text-gray-800' : 'fw-bolder text-primary' ?> text-hover-primary fs-4 fw-bold">Materi Standar</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -520,7 +504,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/lesson/school') ?>"
-                                class="<?= $sidebar != 'School' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Materi Sekolah</a>
+                                class="<?= $sidebar != 'School' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-4 fw-bold">Materi Sekolah</a>
                         </div>
                     </div>
                 </div>
@@ -529,7 +513,7 @@
         </div>
         <div class="tab-pane fade <?= $page == "Student Assessment" ? 'active show' : '' ?>" id="student_result" role="tabpanel">
             <div class="mx-5">
-                <h3 class="fw-bolder text-dark mb-10 mx-0">Penilaian</h3>
+                <h3 class="fw-bolder fs-2 text-dark mb-10 mx-0">Penilaian</h3>
                 <div class="mb-12">
                     <div class="d-flex align-items-center mb-7">
                         <div class="symbol symbol-50px me-5">
@@ -539,7 +523,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/assessment/present') ?>"
-                                class="<?= $sidebar != 'Present_Assessment' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Aktif</a>
+                                class="<?= $sidebar != 'Present_Assessment' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-4 fw-bold">Aktif</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -550,7 +534,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/assessment/missed') ?>"
-                                class="<?= $sidebar != 'Missed_Assessment' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-6 fw-bold">Terlewat</a>
+                                class="<?= $sidebar != 'Missed_Assessment' ? 'text-gray-800' : 'fw-bolder text-danger' ?> text-hover-danger fs-4 fw-bold">Terlewat</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -561,7 +545,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/assessment/done') ?>"
-                                class="<?= $sidebar != 'Done_Assessment' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Selesai</a>
+                                class="<?= $sidebar != 'Done_Assessment' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-4 fw-bold">Selesai</a>
                         </div>
                     </div>
                 </div>
@@ -569,7 +553,7 @@
         </div>
         <div class="tab-pane fade <?= $page == "Student Task" ? 'active show' : '' ?>" id="student_task" role="tabpanel">
             <div class="mx-5">
-                <h3 class="fw-bolder text-dark mb-10 mx-0">Tugas</h3>
+                <h3 class="fw-bolder fs-2 text-dark mb-10 mx-0">Tugas</h3>
                 <div class="mb-12">
                     <div class="d-flex align-items-center mb-7">
                         <div class="symbol symbol-50px me-5">
@@ -579,7 +563,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/task/present') ?>"
-                                class="<?= $sidebar != 'Present_Task' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-6 fw-bold">Aktif</a>
+                                class="<?= $sidebar != 'Present_Task' ? 'text-gray-800' : 'fw-bolder text-success' ?> text-hover-success fs-4 fw-bold">Aktif</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -590,7 +574,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/task/missed') ?>"
-                                class="<?= $sidebar != 'Missed_Task' ? 'text-gray-800' : 'fw-bolder text-daner' ?> text-hover-danger fs-6 fw-bold">Terlewat</a>
+                                class="<?= $sidebar != 'Missed_Task' ? 'text-gray-800' : 'fw-bolder text-daner' ?> text-hover-danger fs-4 fw-bold">Terlewat</a>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mb-7">
@@ -601,7 +585,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <a href="<?= base_url('/student/task/done') ?>"
-                                class="<?= $sidebar != 'Done_Task' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-6 fw-bold">Selesai</a>
+                                class="<?= $sidebar != 'Done_Task' ? 'text-gray-800' : 'fw-bolder text-info' ?> text-hover-info fs-4 fw-bold">Selesai</a>
                         </div>
                     </div>
                 </div>

@@ -90,6 +90,7 @@ $routes->post('/teacher/lesson/public/first-page', 'LearningMS\Lessons\PublicLes
 
 $routes->get('/teacher/question-bank/additional', 'LearningMS\QuestionBank\AdditionalQuestionBank::index', ['filter' => 'auth']);
 $routes->get('/teacher/question-bank/additional/view-content/(:num)/(:num)', 'LearningMS\QuestionBank\AdditionalQuestionBank::view_content/$1/$2', ['filter' => 'auth']);
+$routes->post('/teacher/question-bank/additional/grab-list-quest-title', 'LearningMS\QuestionBank\AdditionalQuestionBank::grab_list_quest_title', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/additional/first-page', 'LearningMS\QuestionBank\AdditionalQuestionBank::first_page', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/additional/update-content', 'LearningMS\QuestionBank\AdditionalQuestionBank::update_content', ['filter' => 'auth']);
 $routes->post('/teacher/question-bank/additional/remove-content', 'LearningMS\QuestionBank\AdditionalQuestionBank::remove_content', ['filter' => 'auth']);
