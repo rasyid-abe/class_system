@@ -15,6 +15,7 @@ use App\Models\QuestionBank\StandartQuestionBankModel;
 use App\Models\Tasks\TasksModel;
 use App\Models\Tasks\TasksResultModel;
 use App\Models\Tasks\TasksTempModel;
+use App\Models\Activities\ActivityModel;
 use \Datetime;
 
 class Task extends BaseController
@@ -33,6 +34,7 @@ class Task extends BaseController
     protected $in_group;
     protected $qc_me;
     protected $qc_std;
+    protected $activity;
 
     public function __construct()
     {
@@ -50,6 +52,7 @@ class Task extends BaseController
         $this->task_result = new TasksResultModel();
         $this->task_temp = new TasksTempModel();
         $this->in_group = new StudentInGroupModel();
+        $this->activity = new ActivityModel();
     }
 
     // BEGIN TEACHER FUNCTION
@@ -72,11 +75,11 @@ class Task extends BaseController
 
             $subs[$v['subject_id']]['subjs'] = $v['subject_name'];
             $subs[$v['subject_id']]['subjs_id'] = $v['subject_id'];
-            $subs[$v['subject_id']]['grade'][$v['student_group_grade']] = 'Kelas '.$list_grade[$v['student_group_grade']];
+            $subs[$v['subject_id']]['grade'][$v['student_group_grade']] = 'Kelas ' . $list_grade[$v['student_group_grade']];
 
 
             $group[$v['student_group_id']] = $v['student_group_name'];
-            $grade[$v['student_group_grade']]['grade'] = 'Kelas '.$list_grade[$v['student_group_grade']];
+            $grade[$v['student_group_grade']]['grade'] = 'Kelas ' . $list_grade[$v['student_group_grade']];
             $grade[$v['student_group_grade']]['subjs'][$v['subject_id']] = $v['subject_name'];
         }
 
@@ -91,7 +94,7 @@ class Task extends BaseController
     public function grab_data_lesson()
     {
         $req = $this->request->getVar();
-  
+
         $result = '';
         if ($req['type'] == 1) {
             $grade = $req['grad'];
@@ -127,8 +130,8 @@ class Task extends BaseController
 
                 $private[$k]['nodes'] = $sub_chapter;
             }
-      
-            
+
+
             $standard = $this->lesson_standart
                 ->select('lesson_standart_id, lesson_standart_chapter as text')
                 ->where('lesson_standart_grade', $grade)
@@ -186,9 +189,7 @@ class Task extends BaseController
                     array('nodes' => $standard, 'text' => 'Materi Standar', 'ind' => 2),
                     array('nodes' => $public, 'text' => 'Materi Publik', 'ind' => 3),
                 )
-                ];
-
-            
+            ];
         } else if ($req['type'] == 2) {
 
             if ($req['param'] == 2) {
@@ -225,7 +226,6 @@ class Task extends BaseController
                     ->where('lesson_additional_id', $req['id'])
                     ->where('lesson_additional_status < 9')
                     ->first();
-
             }
 
             $task = json_decode($data['lesson_task']);
@@ -241,11 +241,10 @@ class Task extends BaseController
     public function store_data()
     {
         $req = $this->request->getVar();
-        
+
         if ($req['type'] == 1) {
             $r = json_decode($req['param']);
-          
-            
+
             $lsrc = null;
             if ($r[11] == 2) {
                 $lsrc = $this->lesson_standart
@@ -261,13 +260,16 @@ class Task extends BaseController
                     ->first();
             }
 
-            $should_chk = $this->should_check($lsrc['task']);
+            $should_chk = 1;
+            if (!empty($lsrc['task'])) {
+                $should_chk = $this->should_check($lsrc['task']);
+            }
 
             $group = [];
             foreach ($r[3] as $k => $v) {
-                $group[$k]['id'] = $v->id; 
-                $group[$k]['group'] = $v->text; 
-                $group[$k]['checked_all'] = $should_chk; 
+                $group[$k]['id'] = $v->id;
+                $group[$k]['group'] = $v->text;
+                $group[$k]['checked_all'] = $should_chk;
             }
 
             if ($req['id'] > 0) {
@@ -278,18 +280,21 @@ class Task extends BaseController
                     $upd = $this->task
                         ->where('task_id', $req['id'])
                         ->set('task_title', $r[0])
-                        ->set('task_start', date('Y-m-d H:i:s', strtotime($r[4].':00')))
-                        ->set('task_end', date('Y-m-d H:i:s', strtotime($r[5].':00')))
+                        ->set('task_start', date('Y-m-d H:i:s', strtotime($r[4] . ':00')))
+                        ->set('task_end', date('Y-m-d H:i:s', strtotime($r[5] . ':00')))
                         ->set('task_is_ignored_time_submit', $r[6])
                         ->set('task_religion', $r[14])
                         ->set('task_instruction', $r[7])
                         ->set('task_status', $r[12])
                         ->set('task_group', json_encode($group))
+                        ->set('task_updated_by', userdata()['user_id'])
                         ->update();
+
+                    $this->activity->store_log('Tugas', 'update', 'mengubah tugas "' . $r[0] . '"');
 
                     foreach ($group as $k => $v) {
                         $students = $this->in_group->list_for_assessment($v['id'], userdata()['school_id'], $r[14]);
-                
+
                         $data_exists = [];
                         $data_exists['task_result_task_id'] = $req['id'];
                         $data_exists['task_result_school_id'] = userdata()['school_id'];
@@ -327,9 +332,8 @@ class Task extends BaseController
                         'sts' => $upd,
                         'msg' => $upd ? 'Tugas berhasil diubah' : 'Tugas gagal diubah',
                         'icn' => $upd ? 'success' : 'error',
-                    
-                    ];
 
+                    ];
                 } catch (\Throwable $th) {
                     $this->task->db->transRollback();
                     $res = [
@@ -339,9 +343,8 @@ class Task extends BaseController
                         'icn' => 'error',
                     ];
                 }
-                
-                echo json_encode($res);
 
+                echo json_encode($res);
             } else {
                 $this->task->db->transBegin();
 
@@ -357,19 +360,21 @@ class Task extends BaseController
                         'task_lesson_id' => $r[8],
                         'task_lesson_src' => $r[11],
                         'task_task_ids' => $lsrc['task'],
-                        'task_start' => date('Y-m-d H:i:s', strtotime($r[4].':00')),
-                        'task_end' => date('Y-m-d H:i:s', strtotime($r[5].':00')),
+                        'task_start' => date('Y-m-d H:i:s', strtotime($r[4] . ':00')),
+                        'task_end' => date('Y-m-d H:i:s', strtotime($r[5] . ':00')),
                         'task_is_ignored_time_submit' => $r[6],
                         'task_religion' => $r[14],
                         'task_instruction' => $r[7],
                         'task_status' => $r[12],
+                        'task_created_by' => userdata()['user_id']
                     ];
-        
+
                     $this->task->insert($data);
+                    $this->activity->store_log('Tugas', 'insert', 'menambah tugas "' . $r[0] . '"');
 
                     foreach ($group as $k => $v) {
                         $students = $this->in_group->list_for_assessment($v['id'], userdata()['school_id'], $r[14]);
-                
+
                         foreach ($students as $key => $val) {
                             $data_res = [];
                             $data_res['task_result_id'] = $this->task->getInsertID() . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'];
@@ -394,7 +399,6 @@ class Task extends BaseController
                         'msg' => 'Tugas berhasil ditambahkan',
                         'icn' => 'success'
                     ];
-
                 } catch (\Throwable $th) {
                     $this->task->db->transRollback();
                     $res = [
@@ -407,10 +411,9 @@ class Task extends BaseController
 
                 echo json_encode($res);
             }
-
         } else if ($req['type'] == 2) {
             $success = true;
-            $i = 0;
+            $itrue = $ifalse = 0;
             $message = 'Something went wrong!';
             $ecode = 0;
 
@@ -420,8 +423,26 @@ class Task extends BaseController
                     $this->task
                         ->where('task_id', $v)
                         ->set('task_status', $req['param'])
+                        ->set('task_updated_by', userdata()['user_id'])
                         ->update();
-                    $i++;
+                    $sts_task = $this->task->error();
+
+                    if ($sts_task['code'] > 0) {
+                        $message = $sts_task['message'];
+                        $ecode = $sts_task['code'];
+
+                        $ifalse++;
+                    } else {
+                        if ($req['param'] == 2) {
+                            $this->activity->store_log('Tugas', 'publish', 'menerbitkan penilaian "' . $req['title'][$k] . '"');
+                        } else if ($req['param'] == 1) {
+                            $this->activity->store_log('Tugas', 'unpublish', 'membatalkan penilaian "' . $req['title'][$k] . '"');
+                        } else {
+                            $this->activity->store_log('Tugas', 'delete', 'menghapus penilaian "' . $req['title'][$k] . '"');
+                        }
+
+                        $itrue++;
+                    }
 
                     if ($req['param'] == 9) {
                         $data_exists = [];
@@ -430,25 +451,28 @@ class Task extends BaseController
 
                         $this->task_result->where($data_exists)->delete();
                         $sts_upd = $this->task_result->error();
-                        
-                        // $query = $db->getLastQuery();
-                        // echo (string)$query;
                         if ($sts_upd['code'] > 0) {
                             $message = $sts_upd['message'];
                             $ecode = $sts_upd['code'];
                             throw new \Exception($sts_upd['message']);
                         }
-                    }
+                        // $query = $db->getLastQuery();
+                        // echo (string)$query;
 
+                    }
                 }
                 $this->task->db->transCommit();
             } catch (\Throwable $th) {
+                echo '<pre>';
+                print_r($th);
+                echo '</pre>';
+                die;
                 $this->task->db->transRollback();
                 $success = false;
             }
 
             $msg = 'hapus';
-            if($req['param'] == 2) {
+            if ($req['param'] == 2) {
                 $msg = "terbitkan";
             } else if ($req['param'] == 1) {
                 $msg = 'batalkan';
@@ -465,30 +489,81 @@ class Task extends BaseController
                 $res = [
                     'typ' => $req['type'],
                     'sts' => $success,
-                    'msg' => $success ? $i . ' Tugas berhasil di '.$msg : $i . ' Tugas gagal di '. $msg,
+                    'msg' => $success ? $itrue . ' Tugas berhasil di ' . $msg : $ifalse . ' Tugas gagal di ' . $msg,
                     'icn' => $success ? 'success' : 'error',
                 ];
             }
             echo json_encode($res);
-
         } else if ($req['type'] == 3) {
+
+            $tidd = [];
+            foreach ($req['param'] as $k => $v) {
+                if (is_array($v)) {
+                    if ($k < 1) {
+                        $tidd = array_merge($tidd, $this->qc_std->select('DISTINCT(question_bank_standart_type) as type')->whereIn('question_bank_standart_id', $req['param'][$k])->findAll());
+                    } else {
+                        $tidd = array_merge($tidd, $this->qc_me->select('DISTINCT(question_bank_type) as type')->whereIn('question_bank_id', $req['param'][$k])->findAll());
+                    }
+                }
+            }
+
+            $type = array_column($tidd, 'type');
+            if (in_array(4, $type)) {
+                $t = $this->task->select('task_group')->where('task_id', $req['id'])->first();
+                $groups = [];
+                foreach (json_decode($t['task_group']) as $k => $v) {
+                    $v->checked_all = 'none';
+                    $groups[] = $v;
+                }
+                $this->task
+                    ->where('task_id', $req['id'])
+                    ->set('task_group', json_encode($groups))
+                    ->set('task_updated_by', userdata()['user_id'])
+                    ->update();
+            } else {
+                $t = $this->task->select('task_group')->where('task_id', $req['id'])->first();
+                $groups = [];
+                foreach (json_decode($t['task_group']) as $k => $v) {
+                    $v->checked_all = 1;
+                    $groups[] = $v;
+                }
+                $this->task
+                    ->where('task_id', $req['id'])
+                    ->set('task_group', json_encode($groups))
+                    ->set('task_updated_by', userdata()['user_id'])
+                    ->update();
+            }
+
             $task = [];
             $task['std'] = $req['param'][0];
             $task['me'] = $req['param'][1];
             $task['pub'] = $req['param'][2];
 
-            $upd = $this->task
+            $this->task
                 ->set('task_task_ids', json_encode($task))
                 ->set('task_updated_by', userdata()['user_id'])
                 ->where('task_id', $req['id'])
                 ->update();
 
-            $res = [
-                'typ' => $req['type'],
-                'sts' => $upd,
-                'msg' => $upd ? 'Penilaian berhasil di sesuaikan' : 'Penilaian gagal di sesuaikan',
-                'icn' => $upd ? 'success' : 'error',
-            ];
+            $sts = $this->task->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'typ' => $req['type'],
+                    'sts' => false,
+                    'msg' => 'Latihan gagal di sesuaikan',
+                    'icon' => 'error'
+                ];
+            } else {
+                $this->activity->store_log('Tugas', 'update', 'mengatur ulang latihan tugas "' . $req['param'][3] . '"');
+
+                $res = [
+                    'typ' => $req['type'],
+                    'sts' => true,
+                    'msg' => 'Latihan berhasil di sesuaikan',
+                    'icon' => 'success'
+                ];
+            }
+
             echo json_encode($res);
         }
     }
@@ -501,16 +576,16 @@ class Task extends BaseController
             if ($v != 'empty') {
                 foreach ($v as $key => $val) {
                     if ($k == 'std') {
-                        $arr_task[$k.$val] = $this->qc_std->select('DISTINCT(question_bank_sandart_type) as type')->where('question_bank_standart_id', $val)->first();
+                        $arr_task[$k . $val] = $this->qc_std->select('DISTINCT(question_bank_sandart_type) as type')->where('question_bank_standart_id', $val)->first();
                     } else {
-                        $arr_task[$k.$val] = $this->qc_me->select('DISTINCT(question_bank_type) as type')->where('question_bank_id', $val)->first();
+                        $arr_task[$k . $val] = $this->qc_me->select('DISTINCT(question_bank_type) as type')->where('question_bank_id', $val)->first();
                     }
                 }
             }
         }
 
         $arr_type = array_column($arr_task, 'type');
-        
+
         return in_array(4, $arr_type) ? 'none' : 1;
     }
 
@@ -569,7 +644,7 @@ class Task extends BaseController
     public function list_task()
     {
         $req = $this->request->getVar();
-        
+
         $select = '
                 task_id, 
                 task_group,
@@ -588,11 +663,11 @@ class Task extends BaseController
                 lesson_standart_subchapter
             ';
 
-        
+
         $school_id = userdata()['school_id'];
         $teacher_id = userdata()['id_profile'];
         $date_now = date('Y-m-d H:i:s');
-            
+
         if ($req['page-task'] == 1) {
             $get = $this->task->data_draft($select, $school_id, $teacher_id, $date_now);
         } else if ($req['page-task'] == 2) {
@@ -608,28 +683,28 @@ class Task extends BaseController
             $groups = '';
             foreach (json_decode($v['task_group']) as $key => $val) {
                 if ($req['page-task'] > 2) {
-                    $groups .= '<a href="" data-group_id="'.$val->id.'" data-task_id="'. $v['task_id'] .'" data-task="'.$v['task_title'].'" class="badge badge-info view_student_task">'.$val->group.'</a>&nbsp;';
+                    $groups .= '<a href="#" data-group_id="' . $val->id . '" data-task_id="' . $v['task_id'] . '" data-task="' . $v['task_title'] . '" class="badge badge-info view_student_task">' . $val->group . '</a>&nbsp;';
                 } else {
-                    $groups .= '<a href="'. base_url('teacher/groups/view-students/' . $val->id).'" class="badge badge-info">'.$val->group.'</a>&nbsp;';
+                    $groups .= '<a href="' . base_url('teacher/groups/view-students/' . $val->id) . '" class="badge badge-info">' . $val->group . '</a>&nbsp;';
                 }
             }
 
             $chap_title = '';
             if ($v['task_lesson_src'] == 2) {
-                $chap_title = $v['lesson_standart_chapter'] .' - '. $v['lesson_standart_subchapter'];
+                $chap_title = $v['lesson_standart_chapter'] . ' - ' . $v['lesson_standart_subchapter'];
             } else {
-                $chap_title = $v['lesson_additional_chapter'] .' - '. $v['lesson_additional_subchapter'];
+                $chap_title = $v['lesson_additional_chapter'] . ' - ' . $v['lesson_additional_subchapter'];
             }
 
-            $lesson = '<badge class="badge badge-primary" onclick="lesson_preview('.$v['task_lesson_id'].', '.$v['task_lesson_src'].', '.$v['task_id'].')">'.$chap_title.'</badge>';
+            $lesson = '<a href="#" class="badge badge-primary" onclick="lesson_preview(' . $v['task_lesson_id'] . ', ' . $v['task_lesson_src'] . ', ' . $v['task_id'] . ')">' . $chap_title . '</a>';
 
 
             $lists = '';
             if ($req['page-task'] == 1) {
                 $acts = '
                     <div class="d-flex flex-column">
-                    <badge class="badge badge-success mb-1" data-bs-placement="top" title="Atur Soal" onclick="view_quest_bank('.$v['task_id'].', '.$v['task_subject_id'].', '.$v['task_grade'].')"><i class="bi bi-gear-fill fs-6 text-white"></i></badge>
-                    <badge class="badge badge-dark" data-bs-placement="top" title="Ubah" onclick="edit_task('.$v['task_id'].')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
+                    <badge class="badge badge-success mb-1" data-tooltip="Atur Soal" data-tooltip-location="right" id="tt' . $v['task_id'] . '" data-title="' . $v['task_title'] . '" onclick="view_quest_bank(' . $v['task_id'] . ', ' . $v['task_subject_id'] . ', ' . $v['task_grade'] . ')"><i class="bi bi-gear-fill fs-6 text-white"></i></badge>
+                    <badge class="badge badge-dark" data-tooltip="Ubah Tugas" data-tooltip-location="right" onclick="edit_task(' . $v['task_id'] . ')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
                     </div>
                 ';
 
@@ -638,10 +713,10 @@ class Task extends BaseController
                     <div class="col-lg-4 mx-auto">
                         <div class="d-flex justify-content-between">
                             <div class="d-flex align-items-start">
-                                '.$acts.'
+                                ' . $acts . '
                                 <div class="flex-grow-1 me-2 mx-5 center">
-                                    <h6 class="mb-1">'.$v['task_title'].'</h6>
-                                    <span class="text-gray-700 d-block">'.$lesson.'</span>
+                                    <h6 class="mb-1">' . $v['task_title'] . '</h6>
+                                    <span class="text-gray-700 d-block">' . $lesson . '</span>
                                 </div>
                             </div>
                         </div>
@@ -649,9 +724,9 @@ class Task extends BaseController
                     <div class="col-lg-4 mx-auto">
                         <div class="additional-info">
                             <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                <span class="text-gray-800 fw-semibold">'.$v['subject_name'].'</span>
+                                <span class="text-gray-800 fw-semibold">' . $v['subject_name'] . '</span>
                                 <div class="bdg-group">
-                                '.$groups.'
+                                ' . $groups . '
                                 </div>
                             </div>
                         </div>
@@ -659,8 +734,8 @@ class Task extends BaseController
                     <div class="col-lg-4 mx-auto">
                         <div class="additional-info">
                             <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_start']).'</span>
-                                <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_end']).'</span>
+                                <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_start']) . '</span>
+                                <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_end']) . '</span>
                             </div>
                         </div>
                     </div>
@@ -673,8 +748,8 @@ class Task extends BaseController
                         <div class="d-flex justify-content-between">
                             <div class="d-flex align-items-start">
                                 <div class="flex-grow-1 me-2 center">
-                                    <h6 class="mb-1">'.$v['task_title'].'</h6>
-                                    <span class="text-gray-700 d-block">'.$lesson.'</span>
+                                    <h6 class="mb-1">' . $v['task_title'] . '</h6>
+                                    <span class="text-gray-700 d-block">' . $lesson . '</span>
                                 </div>
                             </div>
                         </div>
@@ -682,9 +757,9 @@ class Task extends BaseController
                     <div class="col-lg-4 mx-auto">
                         <div class="additional-info">
                             <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                <span class="text-gray-800 fw-semibold">'.$v['subject_name'].'</span>
+                                <span class="text-gray-800 fw-semibold">' . $v['subject_name'] . '</span>
                                 <div class="bdg-group">
-                                '.$groups.'
+                                ' . $groups . '
                                 </div>
                             </div>
                         </div>
@@ -692,8 +767,8 @@ class Task extends BaseController
                     <div class="col-lg-4 mx-auto">
                         <div class="additional-info">
                             <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_start']).'</span>
-                                <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_end']).'</span>
+                                <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_start']) . '</span>
+                                <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_end']) . '</span>
                             </div>
                         </div>
                     </div>
@@ -707,7 +782,7 @@ class Task extends BaseController
                 'end_date' => $v['task_end'],
                 'task_ids' => $v['task_task_ids'],
                 'lesson' => $lesson,
-                'period' => datetime_indo($v['task_start']).' - '.datetime_indo($v['task_end']),
+                'period' => datetime_indo($v['task_start']) . ' - ' . datetime_indo($v['task_end']),
                 'group' => $groups,
                 'lists' => $lists
             ];
@@ -738,7 +813,7 @@ class Task extends BaseController
                 ->first();
         }
 
-        $data['attach_arr'] = $data['lesson_additional_attachment_path'] != '' ? array_values(json_decode($data['lesson_additional_attachment_path'], true)) : []; 
+        $data['attach_arr'] = $data['lesson_additional_attachment_path'] != '' ? array_values(json_decode($data['lesson_additional_attachment_path'], true)) : [];
         $task = $this->task->select('task_task_ids')->where('task_id', $req['task_id'])->first();
 
         $res = [
@@ -749,10 +824,10 @@ class Task extends BaseController
         echo json_encode($res);
     }
 
-    public function get_edit() 
+    public function get_edit()
     {
         $id = $this->request->getVar('id');
-        
+
         $select = '
             task_id, 
             task_group,
@@ -814,7 +889,7 @@ class Task extends BaseController
             $submit = $v['submit_datetime'] != null ? '<span class="text-gray-700 fw-bold" style="width: 65px">Selesai </span><badge class="badge badge-success" onclick="lesson_preview(18, 2, 15)"><b>' . datetime_indo($v['submit_datetime']) . '</b></badge>' : '';
 
             // $value = $v['value'] != null ? '<badge class="badge badge-info my-1">Nilai : <b>' . $v['value'] . ' Poin</b></badge> &nbsp;' : '';
-            $value = $v['value'] != null ? '<a href="#" onclick="data_result_student_tsk('.$v['result_id'].')" class="badge badge-info my-1">Periksa</b></a> &nbsp;' : '';
+            $value = $v['value'] != null ? '<a href="#" onclick="data_result_student_tsk(' . $v['result_id'] . ')" class="badge badge-info my-1">Periksa</b></a> &nbsp;' : '';
             $desc = $v['submit_message'] != null ? 'Ket : ' . $v['submit_message'] : '';
 
             if ($v['value'] != null) {
@@ -921,8 +996,8 @@ class Task extends BaseController
         $arr_src = ['me' => 1, 'pub' => 2, 'std' => 3];
         foreach ($all_task as $k => $v) {
             foreach ($v as  $val) {
-                $quests[$k.'_'.$val['id']]['question_id'] = $k.'_'.$val['id'];
-                $quests[$k.'_'.$val['id']]['question'] = $val['question'];
+                $quests[$k . '_' . $val['id']]['question_id'] = $k . '_' . $val['id'];
+                $quests[$k . '_' . $val['id']]['question'] = $val['question'];
 
                 $answ = [];
                 foreach (json_decode($result['task_result_answer']) as $idx => $value) {
@@ -930,13 +1005,13 @@ class Task extends BaseController
                         if ($vv->id == $val['id']) {
                             $answ[] = $vv->student_answer;
                             if (isset($vv->poin)) {
-                                $quests[$k.'_'.$val['id']]['note_check'] = $vv->note_check;
-                                $quests[$k.'_'.$val['id']]['res_poin'] = (float)$vv->poin;
+                                $quests[$k . '_' . $val['id']]['note_check'] = $vv->note_check;
+                                $quests[$k . '_' . $val['id']]['res_poin'] = (float)$vv->poin;
                             } else {
-                                $quests[$k.'_'.$val['id']]['note_check'] = '';
-                                $quests[$k.'_'.$val['id']]['res_poin'] = 0;
+                                $quests[$k . '_' . $val['id']]['note_check'] = '';
+                                $quests[$k . '_' . $val['id']]['res_poin'] = 0;
                             }
-                            $quests[$k.'_'.$val['id']]['checked'] = $vv->checked;
+                            $quests[$k . '_' . $val['id']]['checked'] = $vv->checked;
                         }
                     }
                 }
@@ -947,26 +1022,26 @@ class Task extends BaseController
                         $opts['opt_' . $key + 1] = $value;
                     }
 
-                    $quests[$k.'_'.$val['id']]['option'] = $opts;
+                    $quests[$k . '_' . $val['id']]['option'] = $opts;
                 } else {
-                    $quests[$k.'_'.$val['id']]['option'] = [];
+                    $quests[$k . '_' . $val['id']]['option'] = [];
                 }
 
-                $quests[$k.'_'.$val['id']]['student_answer'] = $answ;
-                $quests[$k.'_'.$val['id']]['right_answer'] = $val['answer'];
-                $quests[$k.'_'.$val['id']]['type'] = $val['type'];
-                $quests[$k.'_'.$val['id']]['poin'] = $val['poin'];
-                $quests[$k.'_'.$val['id']]['hint'] = $val['hint'];
+                $quests[$k . '_' . $val['id']]['student_answer'] = $answ;
+                $quests[$k . '_' . $val['id']]['right_answer'] = $val['answer'];
+                $quests[$k . '_' . $val['id']]['type'] = $val['type'];
+                $quests[$k . '_' . $val['id']]['poin'] = $val['poin'];
+                $quests[$k . '_' . $val['id']]['hint'] = $val['hint'];
             }
         }
 
         $storage['tasks'] = $quests;
-        
+
         $data = [
-            'key' => 'aquacode_' . userdata()['id_profile'] .'_'. $result['task_result_student_id'] .'_'. $result['task_id'],
+            'key' => 'aquacode_' . userdata()['id_profile'] . '_' . $result['task_result_student_id'] . '_' . $result['task_id'],
             'value' => $storage,
             'student_id' => $result['task_result_student_id'],
-            'student_name' => $result['student_first_name'] .' '. $result['student_last_name'],
+            'student_name' => $result['student_first_name'] . ' ' . $result['student_last_name'],
             'result_id' => $result_id,
             'task_id' => $result['task_id'],
             'task_title' => $result['task_title']
@@ -978,7 +1053,11 @@ class Task extends BaseController
     public function submit_check_task()
     {
         $req = $this->request->getVar();
-
+        // echo '<pre>';
+        // print_r($req);
+        // // print_r('logging belum tersedia, created dan updated juga belum');
+        // echo '</pre>';
+        // die;
         $result = $this->task_result
             ->where('task_result_id', $req['res'])->first();
 
@@ -989,9 +1068,9 @@ class Task extends BaseController
                 $arch_ans[$k][$key]['id'] = $key;
                 $arch_ans[$k][$key]['student_answer'] = $val->student_answer;
                 $arch_ans[$k][$key]['checked'] = 1;
-                $arch_ans[$k][$key]['poin'] = $req['result'][$k.'_'.$key]['res_poin'];
-                $arch_ans[$k][$key]['note_check'] = $req['result'][$k.'_'.$key]['note_check'];
-                $total_poin += $req['result'][$k.'_'.$key]['res_poin'];
+                $arch_ans[$k][$key]['poin'] = $req['result'][$k . '_' . $key]['res_poin'];
+                $arch_ans[$k][$key]['note_check'] = $req['result'][$k . '_' . $key]['note_check'];
+                $total_poin += $req['result'][$k . '_' . $key]['res_poin'];
             }
         }
 
@@ -1012,25 +1091,26 @@ class Task extends BaseController
                 ->where('task_result_school_id', $result['task_result_school_id'])
                 ->where('task_result_group_id', $result['task_result_group_id'])
                 ->findAll();
-    
+
             $sts = array_column($data, 'total');
 
-           
+
             if (!in_array(0, $sts)) {
                 $task = $this->task->select('task_group')
                     ->where('task_id', $result['task_result_task_id'])
                     ->first();
-        
+
                 $groups  = json_decode($task['task_group']);
                 foreach ($groups as $k => $v) {
                     if ($v->id == $result['task_result_group_id']) {
                         $groups[$k]->checked_all = 1;
                     }
                 }
-    
+
                 $this->task
-                    ->set('task_group', json_encode($groups))
                     ->where('task_id', $result['task_result_task_id'])
+                    ->set('task_group', json_encode($groups))
+                    ->set('task_updated_by', userdata()['user_id'])
                     ->update();
 
                 $sts_chk = $this->task->error();
@@ -1046,7 +1126,7 @@ class Task extends BaseController
             }
 
             $this->task_result->db->transCommit();
-            
+            $this->activity->store_log('Tugas', 'submit', 'periksa tugas "'. $req['title'] .'" siswa "'. $req['student'] .'"');
             $return = [
                 'sts' => true,
                 'msg' => 'Pemeriksaan berhasil disimpan!',
@@ -1064,7 +1144,6 @@ class Task extends BaseController
 
             echo json_encode($return);
         }
-
     }
 
     // BEGIN STUDENT FUNCTION
@@ -1134,8 +1213,8 @@ class Task extends BaseController
 
         $data = [];
         foreach ($list as $k => $v) {
-            $deg = $v['teacher_degree'] != '' ? ', '.$v['teacher_degree'] : '';
-            $name = $v['teacher_first_name'].' '.$v['teacher_last_name'] . $deg;
+            $deg = $v['teacher_degree'] != '' ? ', ' . $v['teacher_degree'] : '';
+            $name = $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $deg;
 
             if ($req['page-task'] == 1 || $req['page-task'] == 2) {
                 $tmp_exists = in_array($v['task_id'], $arr_temp_task) ? 1 : 0;
@@ -1147,12 +1226,12 @@ class Task extends BaseController
                 }
 
                 if (in_array($v['task_id'], $list_idx)) {
-                    
-                    
+
+
                     $button = '';
                     if ($req['page-task'] == 1) {
                         if ($v['task_end'] > date('Y-m-d H:i:s') || ($v['task_end'] < date('Y-m-d H:i:s') && $v['task_is_ignored_time_submit'] == 1)) {
-                            $button = '<a href="#" class="btn btn-primary pl-10" onclick="begin_task(' . $v['task_id'] . ', '.$tmp_exists.')">Kerjakan</a>';
+                            $button = '<a href="#" class="btn btn-primary pl-10" onclick="begin_task(' . $v['task_id'] . ', ' . $tmp_exists . ')">Kerjakan</a>';
                             $lists = '
                             <div class="row bigrow-tabulator">
                                 <div class="col-lg-4 mx-auto">
@@ -1161,7 +1240,7 @@ class Task extends BaseController
                                             ' . $button . '
                                             <div class="flex-grow-1 mx-5" style="word-wrap: break-word;">
                                                 <h5 class="">' . $v['task_title'] . '</h5>
-                                                '.$bdg_exsists.'
+                                                ' . $bdg_exsists . '
                                             </div>
                                         </div>
                                     </div>
@@ -1177,14 +1256,14 @@ class Task extends BaseController
                                 <div class="col-lg-4 mx-auto">
                                     <div class="additional-info">
                                         <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                            <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_start']).'</span>
-                                            <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_end']).'</span>
+                                            <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_start']) . '</span>
+                                            <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_end']) . '</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             ';
-                
+
                             $data[] = [
                                 'id' => $v['task_id'],
                                 'lists' => $lists
@@ -1198,7 +1277,7 @@ class Task extends BaseController
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1 mx-5" style="word-wrap: break-word;">
                                             <h5 class="">' . $v['task_title'] . '</h5>
-                                            '.$bdg_exsists.'
+                                            ' . $bdg_exsists . '
                                         </div>
                                     </div>
                                 </div>
@@ -1214,26 +1293,25 @@ class Task extends BaseController
                             <div class="col-lg-4 mx-auto">
                                 <div class="additional-info">
                                     <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                        <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_start']).'</span>
-                                        <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_end']).'</span>
+                                        <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_start']) . '</span>
+                                        <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_end']) . '</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         ';
-            
+
                         $data[] = [
                             'id' => $v['task_id'],
                             'lists' => $lists
                         ];
                     }
-
                 }
             } else {
                 if ($v['task_result_submit_datetime'] < $v['task_result_end_datetime']) {
-                    $bdg_exsists = '<badge class="badge badge-success">Waktu Submit : '.datetime_indo($v['task_result_submit_datetime']).'</badge>';
+                    $bdg_exsists = '<badge class="badge badge-success">Waktu Submit : ' . datetime_indo($v['task_result_submit_datetime']) . '</badge>';
                 } else {
-                    $bdg_exsists = '<badge class="badge badge-danger">Waktu Submit : '.datetime_indo($v['task_result_submit_datetime']).'</badge>';
+                    $bdg_exsists = '<badge class="badge badge-danger">Waktu Submit : ' . datetime_indo($v['task_result_submit_datetime']) . '</badge>';
                 }
 
                 $lists = '
@@ -1243,7 +1321,7 @@ class Task extends BaseController
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1 mx-5" style="word-wrap: break-word;">
                                         <h5 class="">' . $v['task_title'] . '</h5>
-                                        '.$bdg_exsists.'
+                                        ' . $bdg_exsists . '
                                     </div>
                                 </div>
                             </div>
@@ -1259,66 +1337,63 @@ class Task extends BaseController
                         <div class="col-lg-4 mx-auto">
                             <div class="additional-info">
                                 <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                    <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_start']).'</span>
-                                    <span class="text-gray-700 fw-semibold">'.datetime_indo($v['task_end']).'</span>
+                                    <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_start']) . '</span>
+                                    <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_end']) . '</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     ';
-        
-                    $data[] = [
-                        'id' => $v['task_id'],
-                        'lists' => $lists
-                    ];
+
+                $data[] = [
+                    'id' => $v['task_id'],
+                    'lists' => $lists
+                ];
             }
-
-
-
         }
 
         echo (json_encode($data));
-   
     }
 
-    public function s_act_get_task() 
+    public function s_act_get_task()
     {
         $id = $this->request->getVar('id');
         $temp = $this->request->getVar('temp');
-        
+        $title = $this->request->getVar('title');
+
         if ($temp < 1) {
             $row = $this->task
                 ->join('master_subject', 'subject_id=task_subject_id', 'left')
                 ->join('profile_teacher', 'teacher_id=task_teacher_id', 'left')
                 ->where('task_id', $id)
                 ->first();
-    
+
             if ($row['task_lesson_src'] == 2) {
                 $less = $this->lesson_standart
-                ->select('
-                    lesson_standart_chapter as chapter,
-                    lesson_standart_subchapter as subchapter,
-                    lesson_standart_content as content,
-                    lesson_standart_content_path as file_content,
-                    lesson_standart_video_path as video,
-                    lesson_standart_attachment_path as attach,
-                ')
-                ->where('lesson_standart_id', $row['task_lesson_id'])->first();
+                    ->select('
+                        lesson_standart_chapter as chapter,
+                        lesson_standart_subchapter as subchapter,
+                        lesson_standart_content as content,
+                        lesson_standart_content_path as file_content,
+                        lesson_standart_video_path as video,
+                        lesson_standart_attachment_path as attach,
+                    ')
+                    ->where('lesson_standart_id', $row['task_lesson_id'])->first();
             } else {
                 $less = $this->lesson_additional
-                ->select('
-                    lesson_additional_chapter as chapter,
-                    lesson_additional_subchapter as subchapter,
-                    lesson_additional_content as content,
-                    lesson_additional_content_path as file_content,
-                    lesson_additional_video_path as video,
-                    lesson_additional_attachment_path as attach,
-                ')
-                ->where('lesson_additional_id', $row['task_lesson_id'])->first();
+                    ->select('
+                        lesson_additional_chapter as chapter,
+                        lesson_additional_subchapter as subchapter,
+                        lesson_additional_content as content,
+                        lesson_additional_content_path as file_content,
+                        lesson_additional_video_path as video,
+                        lesson_additional_attachment_path as attach,
+                    ')
+                    ->where('lesson_additional_id', $row['task_lesson_id'])->first();
             }
-    
+
             $deg = $row['teacher_degree'] != '' ? ', ' . $row['teacher_degree'] : '';
-    
+
             $data = [];
             $data['task_id'] = $row['task_id'];
             $data['title'] = $row['task_title'];
@@ -1331,7 +1406,7 @@ class Task extends BaseController
             $data['end'] = $row['task_end'];
             $data['ignore_time'] = $row['task_is_ignored_time_submit'];
             $data['instruction'] = $row['task_instruction'];
-    
+
             $lesson = [];
             $lesson['lesson_additional_chapter'] = $less['chapter'];
             $lesson['lesson_additional_subchapter'] = $less['subchapter'];
@@ -1340,7 +1415,7 @@ class Task extends BaseController
             $lesson['lesson_additional_video_path'] = $less['video'];
             $lesson['lesson_additional_attachment_path'] = $less['attach'];
             $lesson['attach_arr'] = $less['attach'] != '' ? array_values(json_decode($less['attach'], true)) : [];
-    
+
             $data['lesson'] = $lesson;
 
             $data['tasks'] = [];
@@ -1375,16 +1450,16 @@ class Task extends BaseController
                         }
                     }
                 }
-        
+
                 $quest = [];
-                foreach ($all_task as $k=> $v) {
+                foreach ($all_task as $k => $v) {
                     foreach ($v as $val) {
                         $opt = json_decode($val['question_bank_option']);
                         $opts = [];
                         foreach ($opt as $key => $value) {
                             $opts['opt_' . $key + 1] = $value;
                         }
-        
+
                         $quest[$val['id']]['source'] = $k;
                         $quest[$val['id']]['question_id'] = $val['id'];
                         $quest[$val['id']]['question'] = $val['question_bank_question'];
@@ -1392,10 +1467,9 @@ class Task extends BaseController
                         $quest[$val['id']]['type'] = $val['question_bank_type'];
                         $quest[$val['id']]['hint'] = $val['question_bank_hint'];
                         $quest[$val['id']]['student_answer'] = '[]';
-                        
                     }
                 }
-        
+
                 $data['tasks'] = $quest;
             }
 
@@ -1419,13 +1493,15 @@ class Task extends BaseController
                 'value' => $data,
                 'tasks' => $data['tasks']
             ];
+
+            $this->activity->store_log('Tugas', 'doing', 'mulai mengerjakan tugas "'.$title.'"');
         } else {
             $my_temp = $this->task_temp
-            ->where([
-                'task_temp_school_id' => userdata()['school_id'],
-                'task_temp_student_id' => userdata()['id_profile'],
-                'task_temp_task_id' => $id
-            ])->first();
+                ->where([
+                    'task_temp_school_id' => userdata()['school_id'],
+                    'task_temp_student_id' => userdata()['id_profile'],
+                    'task_temp_task_id' => $id
+                ])->first();
 
             $data = json_decode($my_temp['task_temp_data']);
 
@@ -1435,10 +1511,11 @@ class Task extends BaseController
                 'value' => $data,
                 'tasks' => count((array)$data->tasks) > 0 ? [1] : []
             ];
-        }
-        
-        echo json_encode($storage);
 
+            $this->activity->store_log('Tugas', 'doing', 'mulai mengerjakan kembali tugas "'.$title.'"');
+        }
+
+        echo json_encode($storage);
     }
 
     public function s_save_action_task()
@@ -1462,7 +1539,7 @@ class Task extends BaseController
                 'task_temp_task_id' => $req['task_id'],
                 'task_temp_data' => $req['data']
             ];
-  
+
             try {
                 $this->task_temp->insert($data);
                 $res = [
@@ -1470,6 +1547,8 @@ class Task extends BaseController
                     'msg' => 'Berhasil disimpan.',
                     'icn' => 'success',
                 ];
+
+                $this->activity->store_log('Tugas', 'save', 'menyimpan tugas "'.$req['title'].'"');
             } catch (\Throwable $th) {
                 $res = [
                     'sts' => false,
@@ -1477,7 +1556,7 @@ class Task extends BaseController
                     'icn' => 'error',
                 ];
             }
-  
+
             echo json_encode($res);
         } else {
             $total_poin = 0;
@@ -1504,13 +1583,13 @@ class Task extends BaseController
                             ->where('question_bank_id', $v['question_id'])
                             ->first();
                     }
-    
+
                     $arch_answer[$v['source']][$v['question_id']]['id'] = $v['question_id'];
                     $arch_answer[$v['source']][$v['question_id']]['student_answer'] = $v['answer'];
-                    
+
                     $rans = json_decode($real_ans['answer']);
 
-                    if (count($rans) < 2 ) {
+                    if (count($rans) < 2) {
                         if ($v['answer'] == $rans) {
                             $total_poin += $real_ans['poin'];
                             $arch_answer[$v['source']][$v['question_id']]['poin'] = $real_ans['poin'];
@@ -1520,14 +1599,14 @@ class Task extends BaseController
                     } else {
                         if (count($rans) == count($v['answer'])) {
                             $mcx = [];
-                            for ($i=0; $i < count($rans); $i++) { 
+                            for ($i = 0; $i < count($rans); $i++) {
                                 if (in_array($rans[$i], $v['answer'])) {
                                     $mcx[] = true;
                                 } else {
                                     $mcx[] = false;
                                 }
                             }
-                            
+
                             if (in_array(false, $mcx)) {
                                 $arch_answer[$v['source']][$v['question_id']]['poin'] = 0;
                             } else {
@@ -1542,14 +1621,13 @@ class Task extends BaseController
                 } else {
                     $arch_answer[$v['source']][$v['question_id']]['id'] = $v['question_id'];
                     $arch_answer[$v['source']][$v['question_id']]['checked'] = 0;
-                    // $arch_answer[$v['source']][$v['question_id']]['poin'] = 0;
                 }
                 $arch_answer[$v['source']][$v['question_id']]['student_answer'] = $v['answer'];
                 $arch_answer[$v['source']][$v['question_id']]['note_check'] = '';
                 $arch_answer[$v['source']][$v['question_id']]['question_id'] = $v['question_id'];
             }
 
-            $upd_result = $this->task_result
+            $this->task_result
                 ->where('task_result_student_id', userdata()['id_profile'])
                 ->where('task_result_task_id', $req['task_id'])
                 ->where('task_result_school_id', userdata()['school_id'])
@@ -1562,33 +1640,36 @@ class Task extends BaseController
                 ->set('task_result_submit_message', $req['submit_msg'])
                 ->update();
 
-            $msgsmbt = '';
-            if ($req['autosubmit'] == 1 ) {
-                $msgsmbt = '<h2>Tugas Terkirim Otomatis</h2><br><p>Penilaian <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> terkirim otomatis karena <b>' . $req['submit_msg'] . '</b></p>';
-            } else {
-                $msgsmbt = '<h2>Sukses</h2><br><p>Penilaian <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> berhasil dikirimkan</p>';    
+            $sts = $this->task_result->error();
+
+            $msgsmbt = '<h2>Sukses</h2><br><p>Tugas <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> berhasil dikirimkan</p>';
+            $msglog = 'tugas "'. $req['task_title'] .'" mata pelajaran "' . $req['subject'] .'" dikirimkan';
+            if ($req['autosubmit'] == 1) {
+                $msglog = 'tugas "'. $req['task_title'] .'" mata pelajaran "' . $req['subject'] .'" terkirim otomatis karena "' . $req['submit_msg'] .'"';
+                $msgsmbt = '<h2>Tugas Terkirim Otomatis</h2><br><p>Tugas <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> terkirim otomatis karena <b>' . $req['submit_msg'] . '</b></p>';
             }
-    
-            if ($upd_result) {
+
+            if ($sts['code'] > 0) {
+                $res = [
+                    'sts' => false,
+                    'msg' => '<h2>Oops..</h2><br><p>Tugas <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> gagal dikirimkan</p>',
+                    'icn' => 'error',
+                ];
+            } else {
                 $temp_whr = [
                     'task_temp_school_id' => userdata()['school_id'],
                     'task_temp_student_id' => userdata()['id_profile'],
                     'task_temp_task_id' => $req['task_id']
                 ];
                 $this->task_temp->where($temp_whr)->delete();
+                $this->activity->store_log('Tugas', 'submit', $msglog);
                 $res = [
                     'sts' => true,
                     'msg' => $msgsmbt,
                     'icn' => 'success',
                 ];
-            } else {
-                $res = [
-                    'sts' => false,
-                    'msg' => '<h2>Oops..</h2><br><p>Penilaian <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> gagal dikirimkan</p>',
-                    'icn' => 'error',
-                ];
             }
             echo json_encode($res);
         }
     }
-} 
+}

@@ -231,7 +231,6 @@ function view_content_s(id) {
             show_loading()
         },
         success: function(e) {
-            console.log(e);
             $('#content_value_std').removeClass('hide')
             generate_view_lesson_s(e)
             generate_view_video_s(e)

@@ -10,6 +10,7 @@ use App\Models\QuestionBank\PublicQuestionBankModel;
 use App\Models\Systems\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
+use App\Models\Activities\ActivityModel;
 
 class AdditionalLesson extends BaseController
 {
@@ -24,6 +25,7 @@ class AdditionalLesson extends BaseController
     protected $qb;
     protected $qb_s;
     protected $qb_p;
+    protected $activity;
 
     public function __construct()
     {
@@ -37,6 +39,7 @@ class AdditionalLesson extends BaseController
         $this->qb = new QuestionBankModel();
         $this->qb_s = new StandartQuestionBankModel();
         $this->qb_p = new PublicQuestionBankModel();
+        $this->activity = new ActivityModel();
     }
 
     public function index()
@@ -269,6 +272,7 @@ class AdditionalLesson extends BaseController
             $data = $this->lesson_additional
                 ->select('
                     lesson_additional_id,
+                    lesson_additional_subchapter,
                     lesson_additional_shared_type,
                     lesson_additional_shared_to
                 ')
@@ -305,7 +309,7 @@ class AdditionalLesson extends BaseController
     public function update_content()
     {
         $req = $this->request->getVar();
-  
+
         $sts = [];
         if ($req['type'] == 1) {
             $this->lesson_additional
@@ -321,6 +325,8 @@ class AdditionalLesson extends BaseController
                 session()->setFlashdata('icon', 'error');
                 
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'update', 'mengubah judul bab pelajaran "' . htmlspecialchars($req['val'][0]) .'"');
+
                 session()->setFlashdata('msg', 'Judul BAB berhasil diubah.');
                 session()->setFlashdata('head', 'Sukses!');
                 session()->setFlashdata('icon', 'success');
@@ -340,6 +346,11 @@ class AdditionalLesson extends BaseController
                 session()->setFlashdata('icon', 'error');
                 
             } else {
+                if ($req['val'][0] == $req['val'][2]) {
+                    $this->activity->store_log('Materi Pelajaran Saya', 'update', 'mengubah judul topik pelajaran "' . htmlspecialchars($req['val'][1]) .'" pada bab "' . htmlspecialchars($req['val'][0]) .'"');
+                } else {
+                    $this->activity->store_log('Materi Pelajaran Saya', 'move', 'memindahkan judul topik pelajaran "' . htmlspecialchars($req['val'][1]) .'" dari bab "' . htmlspecialchars($req['val'][0]) .'" ke bab "' . $req['val'][2] .'"');
+                }
                 session()->setFlashdata('msg', 'Judul Topik berhasil diubah.');
                 session()->setFlashdata('head', 'Sukses!');
                 session()->setFlashdata('icon', 'success');
@@ -365,6 +376,8 @@ class AdditionalLesson extends BaseController
                 session()->setFlashdata('icon', 'error');
                 
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'insert', 'menambah topik pelajaran "' . htmlspecialchars($req['val'][3]) .'" pada bab "' . htmlspecialchars($req['val'][0]) .'"' );
+
                 session()->setFlashdata('msg', 'Judul Topik berhasil ditambhakan.');
                 session()->setFlashdata('head', 'Sukses!');
                 session()->setFlashdata('icon', 'success');
@@ -387,8 +400,9 @@ class AdditionalLesson extends BaseController
                 session()->setFlashdata('msg', 'Judul BAB gagal ditambhakan.');
                 session()->setFlashdata('head', 'Gagal!');
                 session()->setFlashdata('icon', 'error');
-                
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'insert', 'menambah bab pelajaran "' . htmlspecialchars($req['val'][0]) .'"');
+
                 session()->setFlashdata('msg', 'Judul BAB berhasil ditambhakan.');
                 session()->setFlashdata('head', 'Sukses!');
                 session()->setFlashdata('icon', 'success');
@@ -408,6 +422,7 @@ class AdditionalLesson extends BaseController
                     'icon' => 'error',
                 ];
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'update', 'memperbarui konten pelajaran pada topik "' . htmlspecialchars($req['val'][1]) .'"');
                 $res = [
                     'head' => 'Sukses!',
                     'msg' => 'Konten Pelajaran berhasil diperbarui.',
@@ -431,6 +446,8 @@ class AdditionalLesson extends BaseController
                     'icon' => 'error',
                 ];
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'update', 'memperbarui video pembelajaran pada topik "' . htmlspecialchars($req['val'][1]) .'"');
+
                 $res = [
                     'head' => 'Sukses!',
                     'msg' => 'Konten Pelajaran video berhasil diperbarui.',
@@ -459,6 +476,8 @@ class AdditionalLesson extends BaseController
                     'icon' => 'error',
                 ];
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'update', 'memperbarui latihan pada topik "' . htmlspecialchars($req['val'][3]) .'"');
+
                 $res = [
                     'head' => 'Sukses!',
                     'msg' => 'Soal Latihan berhasil diperbarui.',
@@ -468,8 +487,7 @@ class AdditionalLesson extends BaseController
 
             echo json_encode($res);
         }
-
-        
+       
         if ($req['type'] < 5) {
             echo json_encode($sts['code'] < 1 ? true : false);
         }
@@ -510,13 +528,21 @@ class AdditionalLesson extends BaseController
                 // }
             }
 
-            $update = $this->lesson_additional
+            $this->lesson_additional
                 ->set('lesson_additional_attachment_path', json_encode($arr_file))
                 ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['lesson_id'])
                 ->update();
 
-            session()->setFlashdata('att_id', $req['lesson_id']);
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                session()->setFlashdata('att_id', $req['lesson_id']);
+                session()->setFlashdata('upload_msg', "Update database gagal.");
+            } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'update', 'memperbarui file lampiran pada topik "' . htmlspecialchars($req['title_topic']) .'"');
+                session()->setFlashdata('att_id', $req['lesson_id']);
+            }
+
         } else if ($req['type'] == 8) {
             $temp_file = $_FILES['file_attach']['tmp_name'];
             $file_name = basename($_FILES['file_attach']['name']);
@@ -536,17 +562,19 @@ class AdditionalLesson extends BaseController
                         s3_unlink($old_file['lesson_additional_content_path']);
                     }
 
-                    $update = $this->lesson_additional
+                    $this->lesson_additional
                         ->set('lesson_additional_content_path', $upload_file_name)
                         ->set('lesson_additional_updated_by', userdata()['user_id'])
                         ->where('lesson_additional_id', $req['lesson_id'])
                         ->update();
 
-                    if ($update) {
-                        session()->setFlashdata('file_id', $req['lesson_id']);
-                    } else {
+                    $sts = $this->lesson_additional->error();
+                    if ($sts['code'] > 0) {
                         session()->setFlashdata('att_id', $req['lesson_id']);
                         session()->setFlashdata('upload_msg', "Update database gagal.");
+                    } else {
+                        $this->activity->store_log('Materi Pelajaran Saya', 'update', 'memperbarui konten file pada topik "' . htmlspecialchars($req['title_topic']) .'"');
+                        session()->setFlashdata('file_id', $req['lesson_id']);
                     }
                 } else {
                     session()->setFlashdata('att_id', $req['lesson_id']);
@@ -571,14 +599,12 @@ class AdditionalLesson extends BaseController
     public function remove_content()
     {
         $req = $this->request->getVar();
-        // echo '<pre>';
-        // print_r($req);
-        // echo '</pre>';
-        // die;
+        
         $sts = [];
         if ($req['type'] == 1) {
            $this->lesson_additional
-                ->where('lesson_additional_chapter', $req['file'])
+                ->where('lesson_additional_chapter', $req['title'])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->set('lesson_additional_status', 9)
                 ->update();
 
@@ -589,6 +615,7 @@ class AdditionalLesson extends BaseController
                 session()->setFlashdata('icon', 'error');
                 
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'delete', 'menghapus bab "' . htmlspecialchars($req['title']) .'" beserta seluruh topik pelajaran');
                 session()->setFlashdata('msg', 'BAB Pelajaran berhasil dihapus.');
                 session()->setFlashdata('head', 'Sukses!');
                 session()->setFlashdata('icon', 'success');
@@ -596,6 +623,7 @@ class AdditionalLesson extends BaseController
         } elseif ($req['type'] == 2) {
            $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->set('lesson_additional_status', 9)
                 ->update();
 
@@ -606,6 +634,7 @@ class AdditionalLesson extends BaseController
                 session()->setFlashdata('icon', 'error');
                 
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'delete', 'menghapus topik pelajaran "' . htmlspecialchars($req['title']) .'"');
                 session()->setFlashdata('msg', 'Topik Pelajaran berhasil dihapus.');
                 session()->setFlashdata('head', 'Sukses!');
                 session()->setFlashdata('icon', 'success');
@@ -615,6 +644,7 @@ class AdditionalLesson extends BaseController
         } elseif ($req['type'] == 5) {
            $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->set('lesson_additional_content', null)
                 ->update();
             
@@ -626,6 +656,7 @@ class AdditionalLesson extends BaseController
                     'icon' => 'error',
                 ];
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'delete', 'menghapus konten pelajaran pada topik "' . htmlspecialchars($req['title']) .'"');
                 $res = [
                     'head' => 'Sukses!',
                     'msg' => 'Konten Pelajaran berhasil dihapus.',
@@ -637,10 +668,11 @@ class AdditionalLesson extends BaseController
         } elseif ($req['type'] == 6) {
            $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->set('lesson_additional_video_path', null)
                 ->update();
             
-                $sts = $this->lesson_additional->error();
+            $sts = $this->lesson_additional->error();
             if ($sts['code'] > 0) {
                 $res = [
                     'head' => 'Gagal!',
@@ -648,6 +680,7 @@ class AdditionalLesson extends BaseController
                     'icon' => 'error',
                 ];
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'delete', 'menghapus video pembelajaran pada topik "' . htmlspecialchars($req['title']) .'"');
                 $res = [
                     'head' => 'Sukses!',
                     'msg' => 'Konten Pelajaran video berhasil dihapus.',
@@ -681,10 +714,9 @@ class AdditionalLesson extends BaseController
                 
                $this->lesson_additional
                     ->set('lesson_additional_attachment_path', $files)
+                    ->set('lesson_additional_updated_by', userdata()['user_id'])
                     ->where('lesson_additional_id', $req['id'])
                     ->update();
-
-                // session()->setFlashdata('att_id', $req['lesson_id']);
 
             } else {
                 foreach ($arr_file as $k => $v) {
@@ -699,21 +731,58 @@ class AdditionalLesson extends BaseController
 
                $this->lesson_additional
                     ->set('lesson_additional_attachment_path', null)
+                    ->set('lesson_additional_updated_by', userdata()['user_id'])
                     ->where('lesson_additional_id', $req['id'])
                     ->update();
             }
+
+            $sts = $this->lesson_additional->error();
+             if ($sts['code'] > 0) {
+                $res = [
+                    'head' => 'Gagal!',
+                    'msg' => 'File lampiran gagal dihapus.',
+                    'icon' => 'error',
+                ];
+            } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'delete', 'menghapus file lampiran pada topik "' . htmlspecialchars($req['title']) .'"');
+                $res = [
+                    'head' => 'Sukses!',
+                    'msg' => 'File lampiran berhasil dihapus.',
+                    'icon' => 'success',
+                ];
+            }
+
+            echo json_encode($res);
         } elseif ($req['type'] == 8) {
             s3_unlink($req['file']);
 
            $this->lesson_additional
                 ->set('lesson_additional_content_path', null)
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->where('lesson_additional_id', $req['id'])
                 ->update();
 
             // session()->setFlashdata('file_id', $req['lesson_id']);
+            $sts = $this->lesson_additional->error();
+            if ($sts['code'] > 0) {
+                $res = [
+                    'head' => 'Gagal!',
+                    'msg' => 'Dokumen Pelajaran gagal dihapus.',
+                    'icon' => 'error',
+                ];
+            } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'delete', 'menghapus dokumen pelajaran pada topik "' . htmlspecialchars($req['title']) .'"');
+                $res = [
+                    'head' => 'Sukses!',
+                    'msg' => 'Dokumen Pelajaran berhasil dihapus.',
+                    'icon' => 'success',
+                ];
+            }
+
         } elseif ($req['type'] == 9) {
            $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->set('lesson_additional_tasks', null)
                 ->update();
 
@@ -725,6 +794,7 @@ class AdditionalLesson extends BaseController
                     'icon' => 'error',
                 ];
             } else {
+                $this->activity->store_log('Materi Pelajaran Saya', 'delete', 'menghapus latihan pada topik "' . htmlspecialchars($req['title']) .'"');
                 $res = [
                     'head' => 'Sukses!',
                     'msg' => 'Soal Latihan berhasil dihapus.',
@@ -743,26 +813,45 @@ class AdditionalLesson extends BaseController
     public function share_topic()
     {
         $req = $this->request->getVar();
+
         if ($req['val'] != 0) {
             $shared_to = '';
             if ($req['val'] == 4) {
                 $shared_to = isset($req['thc']) != '' ? json_encode($req['thc']) : '';
             } 
     
-            $share = $this->lesson_additional
+            $this->lesson_additional
                 ->where('lesson_additional_id', $req['idd'])
                 ->set('lesson_additional_shared_type', $req['val'])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->set('lesson_additional_shared_to', $shared_to)
                 ->update();
         } else {
-            $share = $this->lesson_additional
+            $this->lesson_additional
                 ->where('lesson_additional_id', $req['idd'])
+                ->set('lesson_additional_updated_by', userdata()['user_id'])
                 ->set('lesson_additional_shared_type', $req['val'])
                 ->set('lesson_additional_shared_to', '')
                 ->update();
         }
 
-        echo json_encode($share);
+        $sts = $this->lesson_additional->error();
+        if ($sts['code'] > 0) {
+            $res = [
+                'head' => '',
+                'msg' => $req['val'] != 0 ? 'Materi pelajaran gagal di bagikan.' : 'Pembatalan gagal.',
+                'icon' => 'error'
+            ];
+        } else {
+            $msgg = $req['val'] != 0 ? 'membagi topik pelajaran "' . htmlspecialchars($req['title']) .'"' : 'membatalkan pembagian topik pelajaran "'. htmlspecialchars($req['title']) .'"';
+            $this->activity->store_log('Materi Pelajaran Saya', 'share', $msgg);
+            $res = [
+                'head' => '',
+                'msg' => $req['val'] != 0 ? 'Materi Pelajaran berhasil di bagikan.' : 'Pembatalan berhasil.',
+                'icon' => 'success'
+            ];
+        }
+        echo json_encode($res);
     }
 
     public function edit($id)

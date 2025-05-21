@@ -23,3 +23,10 @@ modal not clear after submit without reload
 cursor click become finger not pipe
 alert publish task check question exists
 autosubmit task not credible (past date now show in present so it can't be submit)
+
+need disscuss : 
+- topic sudah di take untuk tugas, kemudian topik di hapus, apakah tugas masih bisa lihat topik?
+- di lms bisa update profile?
+- fitur lupa password di lms?
+- server sementara?
+

@@ -10,6 +10,7 @@ use App\Models\Lessons\PublicLessonModel;
 use App\Models\Systems\TeacherAssignModel;
 use App\Models\Masters\SubjectModel;
 use PhpParser\Node\Expr\FuncCall;
+use App\Models\Activities\ActivityModel;
 
 class SchoolLesson extends BaseController
 {
@@ -23,6 +24,7 @@ class SchoolLesson extends BaseController
     protected $lesson_public;
     protected $teacher_subject;
     protected $subject;
+    protected $activity;
 
     public function __construct()
     {
@@ -35,6 +37,7 @@ class SchoolLesson extends BaseController
         $this->lesson_public = new PublicLessonModel();
         $this->teacher_subject = new TeacherAssignModel();
         $this->subject = new SubjectModel();
+        $this->activity = new ActivityModel();
     }
 
     // BEGIN TEACHER FUNCTION
@@ -250,6 +253,8 @@ class SchoolLesson extends BaseController
                 session()->setFlashdata('head', 'Gagal!');
                 session()->setFlashdata('icon', 'error');
             } else {
+                $this->activity->store_log('Materi Pelajaran Sekolah', 'update', 'mengubah judul bab pelajaran "' . htmlspecialchars($req['val'][0]) .'"');
+
                 session()->setFlashdata('msg', 'BAB Pelajaran Sekolah berhasil diubah.');
                 session()->setFlashdata('head', 'Sukses!');
                 session()->setFlashdata('icon', 'success');
@@ -307,6 +312,7 @@ class SchoolLesson extends BaseController
                     session()->setFlashdata('head', 'Gagal!');
                     session()->setFlashdata('icon', 'error');
                 } else {
+                    $this->activity->store_log('Materi Pelajaran Sekolah', 'insert', 'menambahkan topik "'.$req['val'][6].'" pada bab "' . htmlspecialchars($req['val'][3]) .'"');
                     session()->setFlashdata('msg', 'Topik Pelajaran Sekolah berhasil ditambahkan.');
                     session()->setFlashdata('head', 'Sukses!');
                     session()->setFlashdata('icon', 'success');
@@ -346,6 +352,8 @@ class SchoolLesson extends BaseController
                     session()->setFlashdata('head', 'Gagal!');
                     session()->setFlashdata('icon', 'error');
                 } else {
+                    $this->activity->store_log('Materi Pelajaran Sekolah', 'insert', 'menambah judul bab pelajaran "' . htmlspecialchars($req['val'][0]) .'"');
+
                     session()->setFlashdata('msg', 'BAB Pelajaran Sekolah berhasil dibuat.');
                     session()->setFlashdata('head', 'Sukses!');
                     session()->setFlashdata('icon', 'success');
@@ -360,6 +368,7 @@ class SchoolLesson extends BaseController
             for ($i=0; $i < count($ids); $i++) { 
                 $this->lesson_school
                     ->set('lesson_school_order_parent', $sort[$i])
+                    ->set('lesson_school_updated_by', userdata()['user_id'])
                     ->where('lesson_school_id', $ids[$i])
                     ->update();       
                 $arr_sts = $this->lesson_school->error();
@@ -372,6 +381,8 @@ class SchoolLesson extends BaseController
                 session()->setFlashdata('head', 'Gagal!');
                 session()->setFlashdata('icon', 'error');
             } else {
+                $this->activity->store_log('Materi Pelajaran Sekolah', 'update', 'mengurutkan bab pelajaran');
+
                 $sts = ['code' => 1];
                 session()->setFlashdata('msg', 'BAB Pelajaran berhasil diurutkan.');
                 session()->setFlashdata('head', 'Sukses!');
@@ -385,6 +396,7 @@ class SchoolLesson extends BaseController
             for ($i=0; $i < count($ids); $i++) { 
                 $this->lesson_school
                     ->set('lesson_school_order_child', $sort[$i])
+                    ->set('lesson_school_updated_by', userdata()['user_id'])
                     ->where('lesson_school_id', $ids[$i])
                     ->update();   
                 $arr_sts = $this->lesson_school->error();    
@@ -397,6 +409,8 @@ class SchoolLesson extends BaseController
                 session()->setFlashdata('head', 'Gagal!');
                 session()->setFlashdata('icon', 'error');
             } else {
+                $this->activity->store_log('Materi Pelajaran Sekolah', 'update', 'mengurutkan topik pelajaran pada bab "' .$req['val'][2] .'"');
+
                 $sts = ['code' => 1];
                 session()->setFlashdata('msg', 'BAB Pelajaran berhasil diurutkan.');
                 session()->setFlashdata('head', 'Sukses!');
@@ -611,6 +625,7 @@ class SchoolLesson extends BaseController
             $this->lesson_school
                 ->where('lesson_school_id', $req['id'])
                 ->orWhere('lesson_school_parent_id', $req['id'])
+                ->set('lesson_school_updated_by', userdata()['user_id'])
                 ->set('lesson_school_status', 9)
                 ->update();
 
@@ -620,6 +635,8 @@ class SchoolLesson extends BaseController
                 session()->setFlashdata('head', 'Gagal!');
                 session()->setFlashdata('icon', 'error');
             } else {
+                $this->activity->store_log('Materi Pelajaran Sekolah', 'delete', 'menghapus bab pelajaran "' . $req['chap'] .'" beserta seluruh topik pelajaran.');
+
                 session()->setFlashdata('msg', 'BAB Pelajaran berhasil dihapus.');
                 session()->setFlashdata('head', 'Sukses!');
                 session()->setFlashdata('icon', 'success');
@@ -627,6 +644,7 @@ class SchoolLesson extends BaseController
         } elseif ($req['type'] == 2) {
             $this->lesson_school
                 ->where('lesson_school_id', $req['id'])
+                ->set('lesson_school_updated_by', userdata()['user_id'])
                 ->set('lesson_school_status', 9)
                 ->update();
 
@@ -636,6 +654,8 @@ class SchoolLesson extends BaseController
                 session()->setFlashdata('head', 'Gagal!');
                 session()->setFlashdata('icon', 'error');
             } else {
+                $this->activity->store_log('Materi Pelajaran Sekolah', 'delete', 'menghapus topik pelajaran "' . $req['subchap'] .'" pada bab "'. $req['chap'] .'"');
+
                 session()->setFlashdata('msg', 'Topik Pelajaran berhasil dihapus.');
                 session()->setFlashdata('head', 'Sukses!');
                 session()->setFlashdata('icon', 'success');

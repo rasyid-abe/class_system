@@ -23,7 +23,7 @@ function show_qb(subj, grad) {
   }
 
   if (chk.includes(false)) {
-    al_swal("Mata Pelajaran dan Kelas harus dipilih terlebih dahulu!", "error");
+    toast_act("", "Mata Pelajaran dan Kelas harus dipilih terlebih dahulu!", "error");
   } else {
     $.ajax({
       url: base_url + "/teacher/assessment/view-question-bank",
@@ -390,15 +390,14 @@ function save_assessment(status = null, save_type = null) {
           ? "Periode awal tidak boleh lebih besar dari periode akhir!"
           : "Periode awal tidak boleh lebih kecil dari hari ini!";
       $(".anom_period").html(msg).removeClass("hide");
-      // al_swal('Periode tidak sesuai!', 'error')
     }
   }
 }
 
-function store_data(type, data, id = null) {
+function store_data(type, data, id = null, title = null) {
   $.ajax({
     url: base_url + "/teacher/assessment/store-data",
-    data: { type, data, id },
+    data: { type, data, id, title },
     method: "post",
     dataType: "json",
     beforeSend: function () {
@@ -502,7 +501,7 @@ function view_edit(e) {
   $("#modal_assessment_edit").modal("show");
 }
 
-function type_assessment(type, ids, sts) {
+function type_assessment(type, ids, sts, titles = []) {
   let msg = sts == 9 ? 'hapus' : sts == 2 ? 'terbitkan' : 'batalkan'
   Swal.fire({
     html:
@@ -520,7 +519,7 @@ function type_assessment(type, ids, sts) {
     },
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
-      store_data(type, sts, ids);
+      store_data(type, sts, ids, titles);
     }
   });
 }
@@ -657,13 +656,14 @@ if (url.includes("teacher/assessment")) {
         let sel_data = draft.getSelectedData();
         let eds = sel_data.map((i) => i.end_date);
         let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
         if (ids.length < 1) {
-          al_swal("Belum ada data terpilih", "error");
+          toast_act("", "Belum ada data terpilih", "error");
         } else {
           if (check_good_date(eds)) {
-            al_swal("Tidak bisa diterbitkan karena terdapat data kedaluarsa", "error")
+            toast_act("", "Tidak bisa diterbitkan karena terdapat data kedaluarsa", "error")
           } else {
-            type_assessment(2, ids, 2);
+            type_assessment(2, ids, 2, titles);
           }
         }
       });
@@ -673,10 +673,11 @@ if (url.includes("teacher/assessment")) {
       .addEventListener("click", function () {
         let sel_data = draft.getSelectedData();
         let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
         if (ids.length < 1) {
-          al_swal("Belum ada data terpilih", "error");
+          toast_act("", "Belum ada data terpilih", "error");
         } else {
-          type_assessment(2, ids, 9);
+          type_assessment(2, ids, 9, titles);
         }
       });
   }
@@ -687,10 +688,11 @@ if (url.includes("teacher/assessment")) {
       .addEventListener("click", function () {
         let sel_data = scheduled.getSelectedData();
         let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
         if (ids.length < 1) {
-          al_swal("Belum ada data terpilih", "error");
+          toast_act("", "Belum ada data terpilih", "error");
         } else {
-          type_assessment(2, ids, 1);
+          type_assessment(2, ids, 1, titles);
         }
       });
   }
@@ -835,29 +837,29 @@ function act_close_chkmdl() {
 }
 
 function close_checking_modal(type = 1) {
-  if (type == 1) {
-    Swal.fire({ 
-      html: `<h3>Anda yakin menutup halaman pemeriksaan?</h3><br><p>Anda akan kehilahan data pemeriksaan jika menutup halamana ini.</p>`,
-      icon: "info",
-      buttonsStyling: false,
-      showCancelButton: true,
-      confirmButtonText: "Ya",
-      cancelButtonText: "Tidak",
-      customClass: {
-        confirmButton: "btn btn-sm btn-primary",
-        cancelButton: "btn btn-sm btn-danger",
-      },
-    }).then(function (confirm) {
-      if (confirm.isConfirmed) {
-        act_close_chkmdl()
-      }
-    });
-  } else {
+  // if (type == 1) {
+  //   Swal.fire({ 
+  //     html: `<h3>Anda yakin menutup halaman pemeriksaan?</h3><br><p>Anda akan kehilahan data pemeriksaan jika menutup halamana ini.</p>`,
+  //     icon: "info",
+  //     buttonsStyling: false,
+  //     showCancelButton: true,
+  //     confirmButtonText: "Ya",
+  //     cancelButtonText: "Tidak",
+  //     customClass: {
+  //       confirmButton: "btn btn-sm btn-primary",
+  //       cancelButton: "btn btn-sm btn-danger",
+  //     },
+  //   }).then(function (confirm) {
+  //     if (confirm.isConfirmed) {
+  //       act_close_chkmdl()
+  //     }
+  //   });
+  // } else {
     act_close_chkmdl()
     if (url.includes("dashboard/teacher")) {
       ajax_dash_teacher()
     }
-  }
+  // }
 
 }
 
@@ -957,19 +959,21 @@ function view_question_act_chk(id, sid) {
   let saws = null;
   if (qtype == 3) {
     saws = student_answer[0].map(function (x) {return parseInt(x, 10)})
+    raws = right_answer.map(function (x) {return parseInt(x, 10)})
   } else {
     saws = student_answer[0]
+    raws = right_answer
   }
   
   $.each(row.option, function (i, v) {     
     let btn_cls = 'btn-outline btn-outline-primary'
     if (saws.includes(v)) {
-      if (right_answer.includes(v)) {
+      if (raws.includes(v)) {
         btn_cls = 'btn-success'
       } else {
         btn_cls = 'btn-warning'
       }
-    } else if (right_answer.includes(v)) {
+    } else if (raws.includes(v)) {
       btn_cls = 'btn-primary'
     }
 
@@ -1008,21 +1012,20 @@ function view_question_act_chk(id, sid) {
     
     let formspoin = ''
     if (ischk == 1) {
-      formspoin = `<input type="number" min="0" max="${poin}" class="form-control" id="percent_essay_poin" placeholder="Persen jawaban benar" value="${parseInt(spoin*100)}" onchange="setpercent(${id}, ${poin}, ${sid}, ${tpoint})" style="border: 2px solid #5014D0">`
+      formspoin = `<input type="hidden" min="0" max="${poin}" class="form-control" id="percent_essay_poin" placeholder="Persen jawaban benar" value="${parseInt(spoin*100)}" onchange="setpercent(${id}, ${poin}, ${sid}, ${tpoint})" style="border: 2px solid #5014D0">`
     } else {
-      formspoin = `<input type="number" min="0" max="${poin}" class="form-control" id="percent_essay_poin" placeholder="Persen jawaban benar" onchange="setpercent(${id}, ${poin}, ${sid}, ${tpoint})" style="border: 2px solid #5014D0">`
+      formspoin = `<input type="hidden" min="0" max="${poin}" class="form-control" id="percent_essay_poin" placeholder="Persen jawaban benar" onchange="setpercent(${id}, ${poin}, ${sid}, ${tpoint})" style="border: 2px solid #5014D0">`
     }
-
+    
     setpoin = `
-      <span class="fw-bold d-block fs-3 text-primary mb-2">Nilai</span>
+      <span class="fw-bold d-block fs-3 text-primary mb-2">Nilai %</span>
       <div class="d-flex justify-content-between">
-        <div class="input-group" style="width: 100%">
-          ${formspoin}
-          <button class="btn btn-primary btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="0" type="button">0</button>
-          <button class="btn btn-primary btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="25" type="button">25</button>
-          <button class="btn btn-primary btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="50" type="button">50</button>
-          <button class="btn btn-primary btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="75" type="button">75</button>
-          <button class="btn btn-primary btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="100" type="button">100</button>
+        <div class="btn-group" style="width: 100%">
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 0 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="0" type="button">0</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 25 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="25" type="button">25</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 50 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="50" type="button">50</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 75 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="75" type="button">75</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 100 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="100" type="button">100</button>
         </div>
       </div>
       <p class="text-danger err_poin hide">Nilai maksimal dibatasi hanya 100!</p>
@@ -1139,6 +1142,8 @@ $('#btn_submit_checking').on('click', function() {
   let sid = $(this).val()
   let resid = $('#result_id').val()
   let asse_id = $('#asse_id').val()
+  let title = $('#checking_subtitle2').html()
+  let student = $('#checking_title').html()
 
   let key_storage = 'limecode_' + teacher_id + '_' + sid + '_' + asse_id;
   let my_data = JSON.parse(localStorage.getItem(key_storage))
@@ -1155,17 +1160,17 @@ $('#btn_submit_checking').on('click', function() {
   if (status_checked.includes(false)) {
     toast_act('Gagal!','Masih ada yang belum diperiksa!', 'error')
   } else {
-    submit_checking_act(my_data, resid, key_storage)
+    submit_checking_act(my_data, resid, key_storage, student, title)
   }
   
 })
 
-function submit_checking_act(e, res, key)
+function submit_checking_act(e, res, key, student, title)
 {
   let result = e.assessment
   $.ajax({
     url: base_url + "/teacher/assessment/submit-check-assessment",
-    data: { res, result },
+    data: { res, result, student, title },
     method: "post",
     dataType: "json",
     beforeSend: function () {
@@ -1640,7 +1645,7 @@ function submit_assessment_act(submit_type, submit_msg) {
         localStorage.removeItem('rcop_' + student_id)
         localStorage.removeItem('tmr_' + student_id)
 
-        // ajax_dash_student()
+        ajax_dash_student()
       } else {
         Swal.fire({
           icon: e.icn,

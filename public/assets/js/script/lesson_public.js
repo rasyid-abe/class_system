@@ -76,8 +76,6 @@ function generate_view_attachment_p(e) {
     $('.btn_attach_content').html('');
     $('#btn_conf_attach_').html('');
 
-    console.log(e);
-    
     let btnn = '';
     if (e.lesson_additional_attachment_path != '') {
         let attach = JSON.parse(e.lesson_additional_attachment_path)

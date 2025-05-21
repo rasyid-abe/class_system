@@ -85,8 +85,8 @@
 <?php endif; ?>
 
 <div class="row" id="block-assessment-task">
-    <div class="col-sm-12 mb-5" id="block-assessment"></div>
-    <div class="col-sm-12 mb-5" id="block-task"></div>
+    <div class="col-sm-12" id="block-assessment"></div>
+    <div class="col-sm-12" id="block-task"></div>
 </div>
 
 

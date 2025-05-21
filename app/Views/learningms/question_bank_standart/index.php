@@ -54,7 +54,7 @@
 <div class="card mb-5 mb-xl-10">
 
   <div class="card-body border-top p-9 hide" id="body_tbl_list_standart">
-    <div id="tbl_list_qbstd"></div>
+    <div id="tbl_list_qbstd" style="max-height: 100%;width: 100%;position: relative;"></div>
   </div>
 
 </div>

@@ -32,6 +32,21 @@
 	<script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
 	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
 	<style>
+		.tabulator-headers, .tabulator-table {
+			width: 100%;
+		}
+		.tabulator .tabulator-col {
+			width: 100% !important;
+			min-width: 40px !important;
+			/* height: 45px; */
+		}
+		
+		.tabulator .tabulator-cell {
+			width: 100% !important;
+			min-width: 40px !important;
+			/* height: 45px; */
+		}
+
 		.underline {
 			border-bottom: 2px solid #5014D0;
 		}

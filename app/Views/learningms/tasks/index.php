@@ -62,7 +62,7 @@
             </div>
 
             <div class="col-sm-9 hide" id="content_tab_ct">
-              <div class="hover-scroll-x">
+              <!-- <div class="hover-scroll-x"> -->
                 <div class="d-grid">
                   <ul class="nav nav-tabs flex-nowrap text-nowrap">
                     <li class="nav-item">
@@ -79,9 +79,9 @@
                     </li>
                   </ul>
                 </div>
-              </div>
+              <!-- </div> -->
 
-              <div class="card p-5 hide" id="content_value_ct">
+              <div class="card p-5 hide bg-light-primary" id="content_value_ct">
                 <div class="tab-content" id="myTabContent">
                   <div class="tab-pane fade content_topic_a show active" id="tab_content" role="tabpanel">
                     <div id="content_lesson"></div>

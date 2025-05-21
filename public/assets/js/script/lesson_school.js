@@ -16,9 +16,6 @@ $(document).on('click', '.parent_list', function(e) {
             $(this).find('i').removeClass('fa-angle-down')
 
         }
-    } else {
-        console.log('no child');
-        
     }
     
 })
@@ -287,6 +284,7 @@ function form_chapter(e, chap = null, subchap = null, id = null, grade = null) {
                         <input type="hidden" name="form_type" value="${e}" />
                         <input type="hidden" name="lesson_id" value="${id}" />
                         <input type="hidden" name="chapter" value="${chap}" />
+                        <input type="hidden" name="subchapt" value="${chap}" />
                         <div id="tree"></div>
                     `;
 
@@ -420,7 +418,6 @@ function form_chapter(e, chap = null, subchap = null, id = null, grade = null) {
 
 function generate_treeview2(e, chap) {
     let content = ''
-    console.log(e);
     
     $.each(e, function (i,v) {
         let child1 = ''
@@ -434,7 +431,7 @@ function generate_treeview2(e, chap) {
                                 <div class="rounded" style="padding-left:3.75rem;">
                                     <div class="mb-2 my-2">
                                         <div class="form-check form-check-custom form-check-solid form-check-sm">
-                                            <input class="form-check-input" type="radio" data-source="${v.ind}" data-chapter="${chap}" data-grade="${value.grade}" data-subject="${value.subject}" value="${value.lesson_id}" id="sch_topic_${i}${ind}${index}" name="sch_topic">
+                                            <input class="form-check-input" type="radio" data-subchap="${value.text}" data-source="${v.ind}" data-chapter="${chap}" data-grade="${value.grade}" data-subject="${value.subject}" value="${value.lesson_id}" id="sch_topic_${i}${ind}${index}" name="sch_topic">
                                             <label class="form-check-label fs-5" for="sch_topic_${i}${ind}${index}">
                                             ${value.text}
                                             </label>
@@ -494,12 +491,13 @@ function save_content() {
         let grd = rdo.data('grade')
         let sbj = rdo.data('subject')
         let chp = rdo.data('chapter')
+        let schp = rdo.data('subchap')
         let yea = $('#school_active_year').data('id')
 
         id = $('input[name=lesson_id]').val();
 
         if (idl != undefined) {
-            store_content(type, id, [typ, sbj, grd, chp, yea, idl])
+            store_content(type, id, [typ, sbj, grd, chp, yea, idl, schp])
         } else {
             form = false;
             $('#msgshareless').html('Materi belum dipilih!')
@@ -520,7 +518,6 @@ function save_content() {
     } else if (type == -1) {
         let sort = $('.nsort').map((_,el) => parseInt(el.value)).get()
         let ids = $('.idd').map((_,el) => el.value).get()
-        console.log(sort);
         
         for (let i = 1; i <= sort.length; i++) {
             
@@ -557,6 +554,7 @@ function save_content() {
     } else if (type == -2) {
         let sort = $('.nsort').map((_,el) => parseInt(el.value)).get()
         let ids = $('.idd').map((_,el) => el.value).get()
+        let chap = $('input[name=chapter]').val()
         
         for (let i = 1; i <= sort.length; i++) {
             
@@ -590,7 +588,7 @@ function save_content() {
             return false;
         }
 
-        store_content(type, '', [sort, ids])
+        store_content(type, '', [sort, ids, chap])
     }
 
     if (form) {
@@ -612,8 +610,6 @@ function store_content(type, id, val) {
         method: 'post',
         dataType: 'json',
         success: function (e) {
-            console.log(e);
-            
             if (type == 5) {
                 view_content(id)
             } else if (type == 6) {
@@ -646,7 +642,7 @@ function toggle_collapse(e) {
 
 }
 
-function remove_content_ss(id, type) {
+function remove_content_ss(id, type, chap = null, subchap = null) {
     let msg = '';
 
     if (type == 1) {
@@ -667,17 +663,19 @@ function remove_content_ss(id, type) {
         }
     }).then(function (confirm) {
         if (confirm.isConfirmed) {
-            act_remove_ss(id, type)
+            act_remove_ss(id, type, chap, subchap)
         }
     });
 }
 
-function act_remove_ss(id, type) {
+function act_remove_ss(id, type, chap, subchap) {
     $.ajax({
         url: base_url + '/teacher/lesson/school/remove-content',
         data: {
             id,
-            type
+            type,
+            chap,
+            subchap
         },
         method: 'post',
         dataType: 'json',

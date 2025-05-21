@@ -12,6 +12,7 @@ use App\Models\Systems\TeacherAssignModel;
 use App\Models\Systems\StudentInGroupModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
+use App\Models\Activities\ActivityModel;
 use \Datetime;
 
 class Assessment extends BaseController
@@ -30,6 +31,7 @@ class Assessment extends BaseController
     protected $assessment_result;
     protected $student;
     protected $in_group;
+    protected $activity;
 
     public function __construct()
     {
@@ -45,6 +47,7 @@ class Assessment extends BaseController
         $this->assessment = new AssessmentModel();
         $this->assessment_result = new AssessmentResultModel();
         $this->in_group = new StudentInGroupModel();
+        $this->activity = new ActivityModel();
     }
 
     // BEGIN TEACHER FUNCTION
@@ -294,7 +297,10 @@ class Assessment extends BaseController
                         ->set('assessment_instruction', $d[10])
                         ->set('assessment_status', $d[15])
                         ->set('assessment_group', json_encode($group))
+                        ->set('assessment_updated_by', session()->get('c_id'))
                         ->update();
+
+                    $this->activity->store_log('Penilaian', 'update', 'mengubah penilaian "'.$d[0].'"');
 
                     foreach ($group as $k => $v) {
                         $students = $this->in_group->list_for_assessment($v['id'], userdata()['school_id'], $d[18]);
@@ -320,10 +326,10 @@ class Assessment extends BaseController
                             $data_res['assessment_result_group_id'] = $v['id'];
                             $data_res['assessment_result_student_id'] = $val['student_in_group_student_id'];
                             $data_res['assessment_result_is_checked'] = $should_chk;
-
+                            
                             $this->assessment_result->insert($data_res);
                             $sts_replace = $this->assessment_result->error();
-
+                           
                             if ($sts_replace['code'] > 0) {
                                 throw new \Exception($sts_replace['message']);
                                 $message = $sts_replace['message'];
@@ -375,9 +381,10 @@ class Assessment extends BaseController
                         'assessment_is_prevent_cheat' => $d[8],
                         'assessment_instruction' => $d[10],
                         'assessment_status' => $d[15],
+                        'assessment_created_by' => session()->get('c_id'),
                     ];
                     $this->assessment->insert($data);
-
+                    $this->activity->store_log('Penilaian', 'insert', 'menambah penilaian "'.$d[0].'"');
                     foreach ($group as $k => $v) {
                         $students = $this->in_group->list_for_assessment($v['id'], userdata()['school_id'], $d[18]);
 
@@ -422,7 +429,7 @@ class Assessment extends BaseController
             }
         } else if ($req['type'] == 2) {
             $success = true;
-            $i = 0;
+            $itrue = $ifalse = 0;
             $message = 'Something went wrong!';
             $ecode = 0;
 
@@ -432,15 +439,28 @@ class Assessment extends BaseController
                     $this->assessment
                         ->where('assessment_id', $v)
                         ->set('assessment_status', $req['data'])
+                        ->set('assessment_updated_by', session()->get('c_id'))
                         ->update();
                     
                     $sts_assess = $this->assessment->error();
                     if ($sts_assess['code'] > 0) {
                         $message = $sts_assess['message'];
                         $ecode = $sts_assess['code'];
-                        throw new \Exception($sts_assess['message']);
+                        
+                        
+                        $ifalse++;
+                    } else {
+                        if ($req['data'] == 2) {
+                            $this->activity->store_log('Penilaian', 'publish', 'menerbitkan penilaian "'.$req['title'][$k].'"');
+                        } else if ($req['data'] == 1) {
+                            $this->activity->store_log('Penilaian', 'unpublish', 'membatalkan penilaian "'.$req['title'][$k].'"');
+                        } else {
+                            $this->activity->store_log('Penilaian', 'delete', 'menghapus penilaian "'.$req['title'][$k].'"');
+                        }
+
+                        $itrue++;
                     }
-                    $i++;
+
 
                     if ($req['data'] == 9) {
                         $data_exists = [];
@@ -466,11 +486,12 @@ class Assessment extends BaseController
                 $success = false;
             }
 
-            $msg = 'hapus';
             if ($req['data'] == 2) {
                 $msg = "terbitkan";
             } else if ($req['data'] == 1) {
                 $msg = 'batalkan';
+            } else {
+                $msg = 'hapus';
             }
 
             if ($ecode > 0) {
@@ -484,7 +505,7 @@ class Assessment extends BaseController
                 $res = [
                     'typ' => $req['type'],
                     'sts' => $success,
-                    'msg' => $success ? $i . ' Penilaian berhasil di ' . $msg : $i . ' Penilaian gagal di ' . $msg,
+                    'msg' => $success ? $itrue . ' Penilaian berhasil di ' . $msg : $ifalse . ' Penilaian gagal di ' . $msg,
                     'icn' => $success ? 'success' : 'error',
                 ];
             }
@@ -617,7 +638,7 @@ class Assessment extends BaseController
             }
 
             $task = '
-                <a href="#" class="badge badge-primary" data-bs-placement="top" title="Ubah" onclick="view_task_assessment(' . $v['assessment_question_bank_id'] . ', ' . $v['assessment_question_bank_src'] . ')">' . $task_title . '</a>
+                <a href="#" class="badge badge-primary" onclick="view_task_assessment(' . $v['assessment_question_bank_id'] . ', ' . $v['assessment_question_bank_src'] . ')">' . $task_title . '</a>
             ';
 
 
@@ -903,11 +924,6 @@ class Assessment extends BaseController
             $quests[$v['id']]['student_poin'] = 0;
         }
 
-        // echo '<pre>';
-        // print_r($quests);
-        // echo '</pre>';
-        // die;
-        
         $storage['assessment'] = $quests;
 
         $data = [
@@ -942,66 +958,75 @@ class Assessment extends BaseController
             $total_poin += $req['result'][$k]['res_poin'];
         }
 
-        $upd = $this->assessment_result
-            ->set('assessment_result_answer', json_encode($arch_ans))
-            ->set('assessment_result_value', $total_poin)
-            ->set('assessment_result_is_checked', 1)
-            ->where('assessment_result_id', $req['res'])
-            ->update();
+        $this->assessment_result->db->transBegin();
 
-        if ($upd) {
-            $this->all_checked_assessment(
-                $result['assessment_result_assessment_id'],
-                $result['assessment_result_school_id'],
-                $result['assessment_result_school_year_id'],
-                $result['assessment_result_group_id']
-            );
+        $ecode = 0;
+        $message = 'Something went wrong!';
+        try {
+            $this->assessment_result
+                ->set('assessment_result_answer', json_encode($arch_ans))
+                ->set('assessment_result_value', $total_poin)
+                ->set('assessment_result_is_checked', 1)
+                ->where('assessment_result_id', $req['res'])
+                ->update();
 
+            $data = $this->assessment_result->select('DISTINCT(assessment_result_is_checked) total')
+                ->where('assessment_result_assessment_id', $result['assessment_result_assessment_id'])
+                ->where('assessment_result_school_id', $result['assessment_result_school_id'])
+                ->where('assessment_result_school_year_id', $result['assessment_result_school_year_id'])
+                ->where('assessment_result_group_id', $result['assessment_result_group_id'])
+                ->findAll();
+
+            $sts = array_column($data, 'total');
+            if (!in_array(0, $sts)) {
+                $assessment = $this->assessment->select('assessment_group')
+                    ->where('assessment_id', $result['assessment_result_assessment_id'])
+                    ->first();
+        
+                $groups  = json_decode($assessment['assessment_group']);
+                foreach ($groups as $k => $v) {
+                    if ($v->id == $result['assessment_result_group_id']) {
+                        $groups[$k]->checked_all = 1;
+                    }
+                }
+
+                $this->assessment
+                    ->set('assessment_group', json_encode($groups))
+                    ->set('assessment_updated_by', session()->get('c_id'))
+                    ->where('assessment_id', $result['assessment_result_assessment_id'])
+                    ->update();
+
+                $sts_chk = $this->assessment->error();
+                if ($sts_chk['code'] > 0) {
+                    $message = $sts_chk['message'];
+                    $ecode = $sts_chk['code'];
+                    throw new \Exception($message);
+                }
+            }
+
+            if ($ecode > 0) {
+                throw new \Exception($message);
+            }
+
+            $this->assessment_result->db->transCommit();
+            $this->activity->store_log('Penilaian', 'submit', 'periksa penilaian "'. $req['title'] .'" siswa "'. $req['student'] .'"');
             $return = [
                 'sts' => true,
                 'msg' => 'Pemeriksaan berhasil disimpan!',
                 'icn' => 'success'
             ];
-        } else {
+
+            echo json_encode($return);
+        } catch (\Throwable $th) {
+            $this->assessment_result->db->transRollback();
             $return = [
                 'sts' => false,
-                'msg' => 'Pemeriksaan gagal disimpan!',
+                'msg' => $message,
                 'icn' => 'error'
             ];
+
+            echo json_encode($return);
         }
-
-        echo json_encode($return);
-    }
-
-    private function all_checked_assessment($assessment_id, $school_id, $year_id, $group_id)
-    {
-        $data = $this->assessment_result->select('DISTINCT(assessment_result_is_checked) total')
-            ->where('assessment_result_assessment_id', $assessment_id)
-            ->where('assessment_result_school_id', $school_id)
-            ->where('assessment_result_school_year_id', $year_id)
-            ->where('assessment_result_group_id', $group_id)
-            ->findAll();
-
-        $sts = array_column($data, 'total');
-        if (!in_array(0, $sts)) {
-            $assessment = $this->assessment->select('assessment_group')
-                ->where('assessment_id', $assessment_id)
-                ->first();
-    
-            $groups  = json_decode($assessment['assessment_group']);
-            foreach ($groups as $k => $v) {
-                if ($v->id == $group_id) {
-                    $groups[$k]->checked_all = 1;
-                }
-            }
-
-            $this->assessment
-                ->set('assessment_group', json_encode($groups))
-                ->where('assessment_id', $assessment_id)
-                ->update();
-        }
-
-
     }
 
     // BEGIN STUDENT FUNCTION
@@ -1281,6 +1306,8 @@ class Assessment extends BaseController
                 'key' => 'redcode_' . $student_id,
                 'value' => $storage
             ];
+
+            $this->activity->store_log('Penilaian', 'doing', 'mulai mengerjakan penilaian "'.$assessment_title.'"');
         }
 
 
@@ -1290,7 +1317,7 @@ class Assessment extends BaseController
     public function s_submit_assessment()
     {
         $row = $this->request->getVar('send');
-
+        
         if ($row['source_qb'] == 1) {
             $question_ = $this->question_bank_standart
                 ->select('
@@ -1376,7 +1403,7 @@ class Assessment extends BaseController
             $arch_ans[$k]['answer']['note_check'] = '';
         }
 
-        $upd_result = $this->assessment_result
+        $this->assessment_result
             ->where('assessment_result_student_id',  userdata()['id_profile'])
             ->where('assessment_result_assessment_id', $row['assessment_id'])
             ->where('assessment_result_school_id', userdata()['school_id'])
@@ -1389,23 +1416,28 @@ class Assessment extends BaseController
             ->set('assessment_result_fault', $row['fault'])
             ->set('assessment_result_submit_message', $row['msg_submit'])
             ->update();
+        
+        $sts = $this->assessment_result->error();
 
         $msgsmbt = '<h2>Sukses</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> berhasil dikirimkan</p>';
+        $msglog = 'penilaian "'. $row['assessment_title'] . '" mata pelajaran "' . $row['subject'] . '" dikirimkan';
         if ($row['submit_type'] != 1) {
+            $msglog = 'penilaian "'. $row['assessment_title'] . '" mata pelajaran "' . $row['subject'] . '" terkirim otomatis karena "'. $row['msg_submit'] .'"';
             $msgsmbt = '<h2>Penilaian Terkirim Otomatis</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> terkirim otomatis karena <b>' . $row['msg_submit'] . '</b></p>';
         }
 
-        if ($upd_result) {
-            $res = [
-                'sts' => true,
-                'msg' => $msgsmbt,
-                'icn' => 'success',
-            ];
-        } else {
+        if ($sts['code'] > 0) {
             $res = [
                 'sts' => false,
                 'msg' => '<h2>Oops..</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> gagal dikirimkan</p>',
                 'icn' => 'error',
+            ];
+        } else {
+            $this->activity->store_log('Penilaian', 'submit', $msglog);
+            $res = [
+                'sts' => true,
+                'msg' => $msgsmbt,
+                'icn' => 'success',
             ];
         }
         echo json_encode($res);

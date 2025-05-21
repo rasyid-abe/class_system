@@ -95,7 +95,7 @@
                                                 </span>
                                             </div>
                                             <div class="menu-item px-3">
-                                                <a href="#" class="menu-link px-3" onclick="remove_content_ss(<?= $parent ?>, 1)" data-kt-users-table-filter="delete_row">
+                                                <a href="#" class="menu-link px-3" onclick="remove_content_ss(<?= $parent ?>, 1, '<?= $v['lesson_school_chapter'] ?>')" data-kt-users-table-filter="delete_row">
                                                     Hapus BAB
                                                 </a>
                                             </div>
@@ -118,7 +118,7 @@
                                                     </a>
                                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);" data-popper-placement="bottom-end">
                                                         <div class="menu-item px-3">
-                                                            <a href="#" class="menu-link px-3" onclick="remove_content_ss(<?= $val['lesson_id'] ?>, 2)" data-kt-users-table-filter="delete_row">
+                                                            <a href="#" class="menu-link px-3" onclick="remove_content_ss(<?= $val['lesson_id'] ?>, 2, '<?= $v['lesson_school_chapter'] ?>', '<?= $val['lesson_subchapter'] ?>')" data-kt-users-table-filter="delete_row">
                                                                 Hapus Topik
                                                             </a>
                                                         </div>
