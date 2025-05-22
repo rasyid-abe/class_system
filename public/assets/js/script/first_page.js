@@ -26,7 +26,7 @@ if (url.includes("lesson/standart") && !url.includes("view-content")) {
   tbconf.columns = c;
   tbconf.selectableRows = false;
   var less_sch_list = new Tabulator("#less_sch_list", tbconf);
-} else if (url.includes("lesson/public")) {
+} else if (url.includes("lesson/public") && !url.includes("view-content")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     {
@@ -40,7 +40,7 @@ if (url.includes("lesson/standart") && !url.includes("view-content")) {
   tbconf.columns = c;
   tbconf.selectableRows = false;
   var less_pub_list = new Tabulator("#tbl_list_lespublic", tbconf);
-} else if (url.includes("question-bank/standart")) {
+} else if (url.includes("question-bank/standart") && !url.includes("view-content")) {
   let c = [
     { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
     {
@@ -275,7 +275,7 @@ $(document).ready(function () {
 
   let all_locstorage = Object.entries(localStorage);
   $.each(all_locstorage, function (i,v) {
-    if (v[0].includes("limecode") || v[0].includes("aquacode")) {
+    if (v[0].includes("limecode") || v[0].includes("aquacode") || v[0].includes("bluecode")) {
       localStorage.removeItem(v[0])
     }
   })
@@ -418,61 +418,64 @@ function gen_dash_student(e) {
   $('#block-assessment').html(list_assessment)
 
   let list_task = ''
-  if (e.task.length > 0) {
-    let card_task = ''
-    $.each(e.task, function (i, v) {
-      if (Object.values(e.list_idx).includes(v.task_id)) {
-        let end = new Date(v.task_end)
-        let now = new Date();
-
-        if ((end > now) || (end < now && v.task_is_ignored_time_submit == 1)) {
-          let deg = v.teacher_degree != '' ? ', ' + v.teacher_degree : ''
-          let name = v.teacher_first_name + ' ' + v.teacher_last_name + deg
-          let temp_exists = e.arr_temp_task.includes(v.task_id) ? 1 : 0
-          let bdg_exists = e.arr_temp_task.includes(v.task_id) ? '<badge class="badge badge-danger">Belum dikirim</badge>' : '<badge class="badge badge-info">Belum dikerjakan</badge>'
-
-          card_task += `
-            <div class="card-task">
-                <div class="card bg-light-info card-bordered">
-                    <div class="card-body container-body">
-                        <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
-                            <div class="mb-auto p-2 bd-highlight">
-                                <p class="fs-3 text-primary fw-bold mb-auto bd-highlight">${v.task_title}</p>
-                                ${bdg_exists}
-                            </div>
-                            <div class="p-2 bd-highlight" style="margin-bottom: -17px;">
-                                <p class="card-text fs-5 text-dark fw-semibold">${v.subject_name}<?= $v['subject_name'] ?></p>
-                                <p class="text-dark">${ind_date(v.task_start)} s/d ${ind_date(v.task_end)}</p>
-                                <p class="card-text fs-6 mb-2">${name}</p>
-                                <button class="btn btn-primary btn-sm" onclick="begin_task(${v.task_id}, ${temp_exists})">Kerjakan</button>
-                            </div>
-                        </div>
-                    </div>
+  
+  if (Object.values(e.list_idx).length > 0) {
+    if (e.task.length > 0) {
+      let card_task = ''
+      $.each(e.task, function (i, v) {
+        if (Object.values(e.list_idx).includes(v.task_id)) {
+          let end = new Date(v.task_end)
+          let now = new Date();
+  
+          if ((end > now) || (end < now && v.task_is_ignored_time_submit == 1)) {
+            let deg = v.teacher_degree != '' ? ', ' + v.teacher_degree : ''
+            let name = v.teacher_first_name + ' ' + v.teacher_last_name + deg
+            let temp_exists = e.arr_temp_task.includes(v.task_id) ? 1 : 0
+            let bdg_exists = e.arr_temp_task.includes(v.task_id) ? '<badge class="badge badge-danger">Belum dikirim</badge>' : '<badge class="badge badge-info">Belum dikerjakan</badge>'
+  
+            card_task += `
+              <div class="card-task">
+                  <div class="card bg-light-info card-bordered">
+                      <div class="card-body container-body">
+                          <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
+                              <div class="mb-auto p-2 bd-highlight">
+                                  <p class="fs-3 text-primary fw-bold mb-auto bd-highlight">${v.task_title}</p>
+                                  ${bdg_exists}
+                              </div>
+                              <div class="p-2 bd-highlight" style="margin-bottom: -17px;">
+                                  <p class="card-text fs-5 text-dark fw-semibold">${v.subject_name}<?= $v['subject_name'] ?></p>
+                                  <p class="text-dark">${ind_date(v.task_start)} s/d ${ind_date(v.task_end)}</p>
+                                  <p class="card-text fs-6 mb-2">${name}</p>
+                                  <button class="btn btn-primary btn-sm" onclick="begin_task(${v.task_id}, ${temp_exists}, '${v.task_title}')">Kerjakan</button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            `
+          }
+        }
+      })
+  
+      list_task += `
+        <div class="alert alert-white" style="border-radius:10px;">
+            <div class="d-flex flex-stack text-white mb-3">
+                <div class="flex-shrink-0">
+                    <span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Tugas Aktif</span>
+                </div>
+  
+                <a href="<?= base_url('student/task/present') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start pt-2 pr-4" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+                    <i class="bi bi-three-dots text-dark fs-1"></i>
+                </a>
+            </div>
+            <div class="container-card">
+                <div class="row-task">
+                    ${card_task}
                 </div>
             </div>
-          `
-        }
-      }
-    })
-
-    list_task += `
-      <div class="alert alert-white" style="border-radius:10px;">
-          <div class="d-flex flex-stack text-white mb-3">
-              <div class="flex-shrink-0">
-                  <span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Tugas Aktif</span>
-              </div>
-
-              <a href="<?= base_url('student/task/present') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start pt-2 pr-4" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
-                  <i class="bi bi-three-dots text-dark fs-1"></i>
-              </a>
-          </div>
-          <div class="container-card">
-              <div class="row-task">
-                  ${card_task}
-              </div>
-          </div>
-      </div>
-    `
+        </div>
+      `
+    }
   }
 
   $('#block-task').html(list_task)
@@ -676,7 +679,7 @@ function gen_list_qb_std(e, act) {
     $(this).removeClass("active");
   });
   $("#body_tbl_list_standart").removeClass("hide");
-  tbl_list_qbstd.replaceData(
+  tbl_list_qbstd.setData(
     base_url + "teacher/question-bank/standart/qb-list/?grade=" + e
   );
   $("#" + act).addClass("active");

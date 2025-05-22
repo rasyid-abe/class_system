@@ -32,6 +32,21 @@
 	<script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
 	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
 	<style>
+		.tabulator-headers, .tabulator-table {
+			width: 100%;
+		}
+		.tabulator .tabulator-col {
+			width: 100% !important;
+			min-width: 40px !important;
+			/* height: 45px; */
+		}
+		
+		.tabulator .tabulator-cell {
+			width: 100% !important;
+			min-width: 40px !important;
+			/* height: 45px; */
+		}
+
 		.underline {
 			border-bottom: 2px solid #5014D0;
 		}
@@ -1172,7 +1187,8 @@
 		let active_year = '<?= year_active() != null ? year_active()['school_year_period'] : '' ?>'
 		let active_year_id = '<?= year_active() != null ? year_active()['school_year_id'] : '' ?>'
 		let level = '<?= session()->get('c_role') ?>'
-		let file_path = 'https://abeaws-bucket.s3.ap-southeast-1.amazonaws.com/'
+		
+		let file_path = 'https://devabe-s3.s3.ap-southeast-1.amazonaws.com/'
 
 
 		let student_id = 0

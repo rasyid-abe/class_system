@@ -366,10 +366,8 @@ if (!function_exists("student_group")) {
     }
 }
 
-
-
 if (!function_exists("s3_uploads")) {
-    function s3_uploads($file_temp, $file_name) 
+    function s3_uploads($file_temp, $file_name, $content_type) 
     {
         $region = getenv()['S3_BUCKET_REGION'];
         $version = getenv()['S3_BUCKET_VERSION'];
@@ -396,8 +394,10 @@ if (!function_exists("s3_uploads")) {
                 $result = $s3->putObject([
                     'Bucket' => $bucket,
                     'Key' => $file_name,
-                    'ACL' => 'public-read',
-                    'SourceFile' => $file_temp_src
+                    'SourceFile' => $file_temp_src,
+                    'ContentType' => $content_type,
+                    'ContentDisposition' => 'inline',
+                    'ACL' => 'public-read'
                 ]);
                 $result_arr = $result->toArray();
 

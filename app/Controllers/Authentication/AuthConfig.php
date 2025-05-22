@@ -6,17 +6,21 @@ use App\Controllers\BaseController;
 use App\Models\Authentication\UserModel;
 use App\Models\Authentication\TokenModel;
 use App\Models\Profiles\SchoolModel;
+use App\Models\Activities\ActivityModel;
 
 class AuthConfig extends BaseController
 {
     protected $user;
     protected $token;
     protected $school;
+    protected $activity;
+
     public function __construct()
     {
         $this->user = new UserModel();
         $this->token = new TokenModel();
         $this->school = new SchoolModel();
+        $this->activity = new ActivityModel();
     }
     public function sign_in()
     {
@@ -68,7 +72,8 @@ class AuthConfig extends BaseController
                             'c_trial' => $user['user_is_trial']
                         ];
                         $session->set($data);
-    
+                        $this->activity->store_log('Login', 'login', 'login to lms system');
+
                         if ($user['user_role_id'] == 11) {
                             return redirect()->to('/dashboard/teacher');
                         } else if ($user['user_role_id'] == 12) {

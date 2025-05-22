@@ -16,9 +16,6 @@ $(document).on('click', '.parent_list', function(e) {
             $(this).find('i').removeClass('fa-angle-down')
 
         }
-    } else {
-        console.log('no child');
-        
     }
     
 })
@@ -86,16 +83,16 @@ function generate_view_lesson(e) {
     $('.btn_content_content').html('');
     $('.btn_conf_topic').html('');
 
-    let file_path = base_url + 'lesson_file/'
+    // let file_path = base_url + 'lesson_file/'
 
     let butn = `
             <div class="accordion accordion-icon-toggle" id="kt_accordion_2">
                 <div class="mt-5">
-                    <div class="bg-secondary accordion-header d-flex p-1" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_1" style="border-radius: 5px;">
+                    <div class="bg-secondary accordion-header d-flex px-2 py-3" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_1" style="border-radius: 5px;">
                         <span class="accordion-icon">
                             <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
                         </span>
-                        <span class="px-2">Konten Teks</span>
+                        <span class="px-2 fs-5 fw-semibold">Konten Teks</span>
                     </div>
 
                     <div id="kt_accordion_2_item_1" class="fs-6 collapse show m-5" data-bs-parent="#kt_accordion_2" style="max-height: 500px; overflow-y: scroll;">
@@ -104,11 +101,11 @@ function generate_view_lesson(e) {
                 </div>
 
                 <div class="mt-5">
-                    <div class="bg-secondary accordion-header p-1 d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_2" style="border-radius: 5px;">
+                    <div class="bg-secondary accordion-header px-2 py-3 d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_2" style="border-radius: 5px;">
                         <span class="accordion-icon">
                             <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
                         </span>
-                        <span class="px-2">Konten File</span>
+                        <span class="px-2 fs-5 fw-semibold">Konten File</span>
                     </div>
 
                     <div id="kt_accordion_2_item_2" class="collapse fs-6 m-5" data-bs-parent="#kt_accordion_2">
@@ -287,6 +284,7 @@ function form_chapter(e, chap = null, subchap = null, id = null, grade = null) {
                         <input type="hidden" name="form_type" value="${e}" />
                         <input type="hidden" name="lesson_id" value="${id}" />
                         <input type="hidden" name="chapter" value="${chap}" />
+                        <input type="hidden" name="subchapt" value="${chap}" />
                         <div id="tree"></div>
                     `;
 
@@ -420,7 +418,6 @@ function form_chapter(e, chap = null, subchap = null, id = null, grade = null) {
 
 function generate_treeview2(e, chap) {
     let content = ''
-    console.log(e);
     
     $.each(e, function (i,v) {
         let child1 = ''
@@ -434,7 +431,7 @@ function generate_treeview2(e, chap) {
                                 <div class="rounded" style="padding-left:3.75rem;">
                                     <div class="mb-2 my-2">
                                         <div class="form-check form-check-custom form-check-solid form-check-sm">
-                                            <input class="form-check-input" type="radio" data-source="${v.ind}" data-chapter="${chap}" data-grade="${value.grade}" data-subject="${value.subject}" value="${value.lesson_id}" id="sch_topic_${i}${ind}${index}" name="sch_topic">
+                                            <input class="form-check-input" type="radio" data-subchap="${value.text}" data-source="${v.ind}" data-chapter="${chap}" data-grade="${value.grade}" data-subject="${value.subject}" value="${value.lesson_id}" id="sch_topic_${i}${ind}${index}" name="sch_topic">
                                             <label class="form-check-label fs-5" for="sch_topic_${i}${ind}${index}">
                                             ${value.text}
                                             </label>
@@ -494,12 +491,13 @@ function save_content() {
         let grd = rdo.data('grade')
         let sbj = rdo.data('subject')
         let chp = rdo.data('chapter')
+        let schp = rdo.data('subchap')
         let yea = $('#school_active_year').data('id')
 
         id = $('input[name=lesson_id]').val();
 
         if (idl != undefined) {
-            store_content(type, id, [typ, sbj, grd, chp, yea, idl])
+            store_content(type, id, [typ, sbj, grd, chp, yea, idl, schp])
         } else {
             form = false;
             $('#msgshareless').html('Materi belum dipilih!')
@@ -520,7 +518,6 @@ function save_content() {
     } else if (type == -1) {
         let sort = $('.nsort').map((_,el) => parseInt(el.value)).get()
         let ids = $('.idd').map((_,el) => el.value).get()
-        console.log(sort);
         
         for (let i = 1; i <= sort.length; i++) {
             
@@ -557,6 +554,7 @@ function save_content() {
     } else if (type == -2) {
         let sort = $('.nsort').map((_,el) => parseInt(el.value)).get()
         let ids = $('.idd').map((_,el) => el.value).get()
+        let chap = $('input[name=chapter]').val()
         
         for (let i = 1; i <= sort.length; i++) {
             
@@ -590,7 +588,7 @@ function save_content() {
             return false;
         }
 
-        store_content(type, '', [sort, ids])
+        store_content(type, '', [sort, ids, chap])
     }
 
     if (form) {
@@ -612,8 +610,6 @@ function store_content(type, id, val) {
         method: 'post',
         dataType: 'json',
         success: function (e) {
-            console.log(e);
-            
             if (type == 5) {
                 view_content(id)
             } else if (type == 6) {
@@ -646,7 +642,7 @@ function toggle_collapse(e) {
 
 }
 
-function remove_content_ss(id, type) {
+function remove_content_ss(id, type, chap = null, subchap = null) {
     let msg = '';
 
     if (type == 1) {
@@ -667,17 +663,19 @@ function remove_content_ss(id, type) {
         }
     }).then(function (confirm) {
         if (confirm.isConfirmed) {
-            act_remove_ss(id, type)
+            act_remove_ss(id, type, chap, subchap)
         }
     });
 }
 
-function act_remove_ss(id, type) {
+function act_remove_ss(id, type, chap, subchap) {
     $.ajax({
         url: base_url + '/teacher/lesson/school/remove-content',
         data: {
             id,
-            type
+            type,
+            chap,
+            subchap
         },
         method: 'post',
         dataType: 'json',

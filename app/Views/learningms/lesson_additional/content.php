@@ -33,8 +33,8 @@
                     <div class="col-sm-12">
                         <input type="hidden" name="subject" value="<?= $subject ?>">
                         <input type="hidden" name="grade" value="<?= $grade ?>">
-                        <small class="text-danger hide" id="rmsg"><span id="msg_err_mdl"></span></small>
                         <div id="body_content_modal_a"></div>
+                        <small class="text-danger hide" id="rmsg"><span id="msg_err_mdl"></span></small>
                     </div>
                 </div>
             </div>
@@ -73,6 +73,7 @@
                 </div>
 
                 <input type="hidden" name="less_id" val="">
+                <input type="hidden" name="title_topic" val="">
                 <div class="form-check form-check-custom form-check-solid me-10 mb-2 form-check-inline">
                     <input class="form-check-input input_share_a" type="radio" name="gender" value="1" id="opt1" />
                     <label class="form-check-label text-dark" for="opt1">
@@ -175,7 +176,7 @@
                                                 </span>
                                             </div>
                                             <div class="menu-item px-3">
-                                                <a href="#" class="menu-link px-3" onclick="remove_content_a(<?= $v['lesson_additional_id'] ?>, 1, '<?= $v['lesson_additional_chapter'] ?>')" data-kt-users-table-filter="delete_row">
+                                                <a href="#" class="menu-link px-3" onclick="remove_content_a(<?= $v['lesson_additional_id'] ?>, 1, null,'<?= $v['lesson_additional_chapter'] ?>')" data-kt-users-table-filter="delete_row">
                                                     Hapus BAB
                                                 </a>
                                             </div>
@@ -216,7 +217,7 @@
                                                             </span>
                                                         </div>
                                                         <div class="menu-item px-3">
-                                                            <a href="#" class="menu-link px-3" onclick="remove_content_a(<?= $val['lesson_additional_id'] ?>, 2)" data-kt-users-table-filter="delete_row">
+                                                            <a href="#" class="menu-link px-3" onclick="remove_content_a(<?= $val['lesson_additional_id'] ?>, 2, null, '<?= $val['lesson_additional_subchapter'] ?>')" data-kt-users-table-filter="delete_row">
                                                                 Hapus Topik
                                                             </a>
                                                         </div>

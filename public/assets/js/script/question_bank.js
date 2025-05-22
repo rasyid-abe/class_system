@@ -212,12 +212,12 @@ function generate_task(e) {
   if (url.includes("question-bank/additional")) {
     btnn = `
       <div class="btn-qb">
-      <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-15, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+      <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-15, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent}, 2)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
       <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
       </svg> Salin</button>
       <button type="button" class="btn btn-sm btn-info" onclick="show_form_edit(-14, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><i class="bi bi-arrows-move"></i> Pindah</button>
       <button type="button" class="btn btn-sm btn-warning mx-2" onclick="show_form_edit(-11, ${e.id}, ${null}, ${null}, ${e.parent})"><i class="bi bi-pencil fs-5"></i> Ubah</button>
-      <button type="button" class="btn btn-sm btn-danger" onclick="remove_content_quest(${e.id}, '${e.tilte}', 1, ${null}, ${e.parent})"><i class="bi bi-trash fs-5"></i> Hapus</button>
+      <button type="button" class="btn btn-sm btn-danger" onclick="remove_content_quest(${e.id}, '${e.title}', 1, ${null}, ${e.parent})"><i class="bi bi-trash fs-5"></i> Hapus</button>
       </div>
     `;
   } else if (url.includes("question-bank/standart")) {
@@ -443,8 +443,6 @@ function show_form_edit(type, id, subj = null, grad = null, parent = null, src_p
 
 function show_edit_task(e, type, id, parent) {
   $('input[name=form_type]').val(type)
-  console.log(type);
-  console.log('show edit task');
   
   if (type == -11) {
     $('#task_edit').html("");
@@ -512,64 +510,6 @@ function show_edit_task(e, type, id, parent) {
       }
     }
 
-    // $.each(e.option, function (i, v) {
-    //   if (e.type == 1) {
-    //     choose += `
-    //       <div class="mt-5" id="opt_mc_rem${iddx}">
-    //           <div class="position-relative">
-    //               <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
-    //                   <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
-    //                       <input class="form-check-input mc_option_edit ${
-    //                         e.keys.includes(i) ? "checked_mc" : ""
-    //                       }" type="radio" value="" ${
-    //                         e.keys.includes(i) ? "checked" : ""
-    //                       } />
-    //                       <label class="form-check-label">
-    //                           Jawaban Benar
-    //                       </label>
-    //                   </div>
-    //                   <button onclick="rem_elem_id('opt_mc_rem${iddx}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
-    //               </div>
-    //               <div id="edit_optmc${iddx}" name="optmc${iddx}" class="optmc_n_edit"></div>
-    //           </div>
-    //       </div>
-    //     `;
-    //   } else if (e.type == 2) {
-    //     choose += `
-    //       <div class="mt-5" id="opt_mcx_rem${iddx}">
-    //           <div class="position-relative">
-    //               <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
-    //                   <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
-    //                       <input class="form-check-input mcx_option_edit ${
-    //                         e.keys.includes(i) ? "checked_mcx" : ""
-    //                       }" type="checkbox" value="" ${
-    //                         e.keys.includes(i) ? "checked" : ""
-    //                       } />
-    //                       <label class="form-check-label">
-    //                           Jawaban Benar
-    //                       </label>
-    //                   </div>
-    //                   <button onclick="rem_elem_id('opt_mcx_rem${iddx}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
-    //               </div>
-    //               <div id="edit_optmcx${iddx}" name="optmcx${iddx}" class="optmcx_n_edit"></div>
-    //           </div>
-    //       </div>
-    //     `;
-    //   } else if (e.type == 3) {
-    //     choose += `
-    //       <div class="form-check form-check-custom form-switch form-check-success form-check-solid m-2">
-    //           <input class="form-check-input tf_option" type="radio" name="tfopt_edit" value="${v}" id="ctrue_edit" ${
-    //       iddx == v ? "checked" : ""
-    //     } />
-    //           <label class="form-check-label" for="ctrue">
-    //               ${v == 1 ? "Benar" : "Salah"}
-    //           </label>
-    //       </div>
-    //     `;
-    //   }
-    //   iddx++;
-    // });
-
     let viewopt = ""
     if (e.type != 4) {
       viewopt = `
@@ -582,6 +522,7 @@ function show_edit_task(e, type, id, parent) {
 
     let task = `
         <input type="hidden" name="id_quest_edit" value="${id}" />
+        <input type="hidden" name="title_quest" value="${e.title}" />
         <input type="hidden" name="parent_question" value="${parent}" />
         <div class="card" id="content_value">
             <div class="px-5">
@@ -721,19 +662,17 @@ function rem_elem_id(id) {
 }
 
 function form_chapter_quest(e, chap = null, id = null) {
-  console.log(e);
-  console.log('form_chapter_quest');
   $('input[name=form_type').val(e)
   if (e == -1) {
     $("#head_content_modal").html(`
       <input type="hidden" name="id_quest" value="${id}" />
+      <input type="hidden" name="title_quest" value="${chap}" />
       <h3 class="modal-title">Tambah Soal ${chap}</h3>
     `);
     $("#modal_update_question_quest").modal("show");
   } else if (e == -2) {
-    form = `
-              <input type="hidden" name="id_quest" value="${id}" />
-          `;
+    form = `<input type="hidden" name="id_quest" value="${id}" />
+            <input type="hidden" name="title_quest" value="${chap}" />`;
 
     $("#head_content_modal_upl").html(
       `<h3 class="modal-title">Upload Soal ke ${chap}</h3>`
@@ -784,8 +723,6 @@ function close_modal_content_quest() {
 function save_content_quest() {
   let type = $("input[name=form_type]").val();
   let form = true;
-  console.log(type);
-  console.log('save content quest -- ');
   
   if (type == 1) {
     chap = $("input[name=chapter]").val();
@@ -831,7 +768,7 @@ function save_content_quest() {
   } else if (type == -16) {
     id = $("input[name=quest_id]").val();
     new_id = $('input[name="move_task"]:checked').val();
-    store_content_quest(type, id, [new_id]);
+    store_content_quest(type, id, [new_id, null, 1]);
   }
 
   if (form) {
@@ -842,8 +779,6 @@ function save_content_quest() {
 }
 
 function pre_question(type) {
-  console.log(type);
-  console.log('form tambah');
   let qtype = $("#quest_type").find(":selected").val();
   let idx_a = [];
   let option = [];
@@ -916,6 +851,7 @@ function pre_question(type) {
   }
 
   id = $("input[name=id_quest]").val();
+  title = $("input[name=title_quest]").val();
   subj = $("input[name=subject]").val();
   grad = $("input[name=grade]").val();
   poin = $("input[name=poin]").val();
@@ -939,6 +875,7 @@ function pre_question(type) {
               poin,
               hint,
               explain,
+              title
             ]);
           } else {
             toast_act("", "Jawaban benar belum dipilih!", "error");
@@ -958,9 +895,6 @@ function pre_question(type) {
 }
 
 function pre_question_edit(type) {
-  console.log(type);
-  console.log('form edit');
-  
   let qtype = $("#quest_type_edit").find(":selected").val();
   let idx_a = [];
   let option = [];
@@ -1033,6 +967,7 @@ function pre_question_edit(type) {
   }
 
   id = $("input[name=id_quest_edit]").val();
+  title = $("input[name=title_quest]").val();
   subj = $("input[name=subject]").val();
   grad = $("input[name=grade]").val();
   poin = $("input[name=poin_edit]").val();
@@ -1054,6 +989,7 @@ function pre_question_edit(type) {
               JSON.stringify(answer),
               poin,
               parent,
+              title,
             ]);
           } else {
             toast_act("", "Jawaban benar belum dipilih!", "error");
@@ -1121,9 +1057,6 @@ $(document).on("click", ".mcx_option_edit", function () {
 });
 
 function store_content_quest(type, id, val) {
-  // console.log(type);
-  // console.log(id);
-  // console.log(val);
   let urls =
     type == -16
       ? "/teacher/question-bank/standart/update-content"
@@ -1186,19 +1119,20 @@ function remove_content_quest(id, title, type = null, file = null, parent = null
     },
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
-      act_remove_quest(id, type, file, parent);
+      act_remove_quest(id, type, file, parent, title);
     }
   });
 }
 
-function act_remove_quest(id, type = null, file = null, parent = null) {
+function act_remove_quest(id, type = null, file = null, parent = null, title = null) {
   $.ajax({
     url: base_url + "/teacher/question-bank/additional/remove-content",
     data: {
       id,
       type,
       file,
-      parent
+      parent,
+      title
     },
     method: "post",
     dataType: "json",

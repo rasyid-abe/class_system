@@ -115,7 +115,7 @@ function treeview_task_ch(e, subj, grad) {
             `;
 
       bd1 += `
-                <li class="list-group-item parent2" data-source="${bdi1}${bdi2}">${val.text}</li>
+                <li class="list-group-item parent2" data-source="${bdi1}${bdi2}"><a href="#" style="color: black">${val.text}</a></li>
                 ${child_body}    
             `;
 
@@ -128,7 +128,7 @@ function treeview_task_ch(e, subj, grad) {
             </ul>
         `;
     content += `
-            <li class="list-group-item bg-secondary parent1" data-source="${bdi1}"><h6 style="margin-top:5px">${v.text}</h6></li>
+            <li class="list-group-item bg-secondary parent1" data-source="${bdi1}"><a href="#"><h6 style="margin-top:5px">${v.text}</h6></a></li>
             ${bd1_body}
         `;
 
@@ -271,22 +271,28 @@ function save_task(status = null, save_type = null) {
           ? "Periode awal tidak boleh lebih besar dari periode akhir!"
           : "Periode awal tidak boleh lebih kecil dari hari ini!";
       $(".anom_period").html(msg).removeClass("hide");
-      // al_swal('Periode tidak sesuai!', 'error')
+      // toast_act('','Periode tidak sesuai!', 'error')
     }
   }
 }
 
-function store_task(type, id, param) {
+function close_mdl_task_choose() {
+  $("#modal_task_choose").modal("hide");
+  $('#preview_task').html('')
+}
+
+function store_task(type, id, param, title = null) {
   $.ajax({
     url: base_url + "/teacher/task/store-data",
-    data: { type, id, param },
+    data: { type, id, param, title },
     method: "post",
     dataType: "json",
     beforeSend: function () {
       show_loading()
     },
     success: function (e) {
-      $("#modal_task_choose").modal("hide");
+      // $("#modal_task_choose").modal("hide");
+      close_mdl_task_choose()
       $("#modal_task_upd").modal("hide");
       $("#modal_task_ch").modal("hide");
       $("#task_prev_less").modal("hide");
@@ -396,6 +402,7 @@ function lesson_preview(id, src, task_id) {
 }
 
 function view_quest_bank(id, subj, grad) {
+  let title = $('#tt'+id).data('title');
   $.ajax({
     url: base_url + "/teacher/lesson/additional/question-bank",
     data: { subj, grad },
@@ -405,14 +412,14 @@ function view_quest_bank(id, subj, grad) {
       show_loading()
     },
     success: function (e) {
-      choose_task_view(e, id);
+      choose_task_view(e, id, title);
       $("#modal_task_choose").modal("show");
       hide_loading()
     },
   });
 }
 
-function choose_task_view(e, id) {
+function choose_task_view(e, id, title) {
   let content = "";
   let i1 = 1;
   $.each(e, function (i, v) {
@@ -441,9 +448,8 @@ function choose_task_view(e, id) {
           `;
 
       ch1 += `
-              <li class="list-group-item parent2" data-source="${i1}${i2}">${val.title
-        }</li>
-              ${val.child.length > 0 ? child_body : ""}    
+              <li class="list-group-item parent2" data-source="${i1}${i2}"><a href="#" style="color: black">${val.title}</a></li>
+              ${val.child.length > 0 ? child_body : ''}    
           `;
 
       i2++;
@@ -455,9 +461,8 @@ function choose_task_view(e, id) {
           </ul>
       `;
     content += `
-          <li class="list-group-item bg-secondary parent1" data-source="${i1}"><h6 style="margin-top:5px">${v.head
-      }</h6></li>
-          ${v.content.length > 0 ? ch1_body : ""}
+          <li class="list-group-item bg-secondary parent1" data-source="${i1}"><a href="#"><h6 style="margin-top:5px">${v.head}</h6></a></li>
+          ${v.content.length > 0 ? ch1_body : `<ul class="list-group list-group-flush hide head_parent2" id="i${i1}"><li class="list-group-item">Soal belum tersedia.</li></ul>`}
       `;
 
     i1++;
@@ -465,6 +470,7 @@ function choose_task_view(e, id) {
 
   let page = `
     <input type="hidden" name="task_id_upd" value="${id}" />
+    <input type="hidden" name="title_task" value="${title}" />
       <ul class="list-group list-group-flush head_parent1">
           ${content}
       </ul>
@@ -474,6 +480,7 @@ function choose_task_view(e, id) {
 }
 
 function selected_task() {
+  let title = $('input[name=title_task]').val()
   let std_task = [];
   $('input[name="task_1"]:checked').each(function () {
     std_task.push(this.value);
@@ -495,10 +502,10 @@ function selected_task() {
   let send_me = me_task.length > 0 ? me_task : "empty";
   let send_pub = pub_task.length > 0 ? pub_task : "empty";
 
-  store_task(3, idt, [send_std, send_me, send_pub]);
+  store_task(3, idt, [send_std, send_me, send_pub, title]);
 }
 
-function type_task(type, ids, sts) {
+function type_task(type, ids, sts, titles = []) {
   let msg = sts == 9 ? "hapus" : sts == 2 ? "terbitkan" : "batalkan";
 
   Swal.fire({
@@ -517,7 +524,7 @@ function type_task(type, ids, sts) {
     },
   }).then(function (confirm) {
     if (confirm.isConfirmed) {
-      store_task(type, ids, sts);
+      store_task(type, ids, sts, titles);
     }
   });
 }
@@ -532,10 +539,10 @@ function reload_tabulator() {
   }
 }
 
-function begin_task(id, temp) {
+function begin_task(id, temp, title) {
   if (temp < 1) {
     Swal.fire({
-      html: `Apakah anda yakin ingin mulai mengerjakan?`,
+      html: `Apakah anda yakin ingin mulai mengerjakan tugas <b>${title}</b>?`,
       icon: "info",
       buttonsStyling: false,
       showCancelButton: true,
@@ -547,18 +554,18 @@ function begin_task(id, temp) {
       },
     }).then(function (confirm) {
       if (confirm.isConfirmed) {
-        get_task(id, temp)
+        get_task(id, temp, title)
       }
     });
   } else {
-    get_task(id, temp)
+    get_task(id, temp, title)
   }
 }
 
-function get_task(id, temp) {  
+function get_task(id, temp, title) {  
   $.ajax({
     url: base_url + "/student/task/act-get-task",
-    data: { id, temp },
+    data: { id, temp, title },
     method: "post",
     dataType: "json",
     beforeSend: function () {
@@ -1139,13 +1146,12 @@ function view_question_act_chk_tsk(id, sid) {
     setpoin = `
       <span class="fw-bold d-block fs-3 text-primary mb-2">Nilai</span>
       <div class="d-flex justify-content-between">
-        <div class="input-group" style="width: 100%">
-          ${formspoin}
-          <button class="btn btn-primary btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="0" type="button">0</button>
-          <button class="btn btn-primary btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="25" type="button">25</button>
-          <button class="btn btn-primary btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="50" type="button">50</button>
-          <button class="btn btn-primary btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="75" type="button">75</button>
-          <button class="btn btn-primary btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="100" type="button">100</button>
+        <div class="btn-group" style="width: 100%">
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 0 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="0" type="button">0</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 25 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="25" type="button">25</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 50 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="50" type="button">50</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 75 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="75" type="button">75</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 100 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="100" type="button">100</button>
         </div>
       </div>
       <p class="text-danger err_poin_tsk hide">Nilai maksimal dibatasi hanya 100!</p>
@@ -1300,6 +1306,8 @@ $('#btn_submit_checking_tsk').on('click', function() {
   let sid = $(this).val()
   let resid = $('#result_id_tsk').val()
   let tsk = $('input[name=taskidd]').val();
+  let student = $('#ctt').html()
+  let title = $('#cstt2').html()
 
   let key_storage = 'aquacode_' + teacher_id + '_' + sid  + '_' + tsk;
   let my_data = JSON.parse(localStorage.getItem(key_storage))
@@ -1316,17 +1324,17 @@ $('#btn_submit_checking_tsk').on('click', function() {
   if (status_checked.includes(false)) {
     toast_act('Gagal!','Masih ada yang belum diperiksa!', 'error')
   } else {
-    submit_checking_act_tsk(my_data, resid)
+    submit_checking_act_tsk(my_data, resid, student, title)
   }
 })
 
-function submit_checking_act_tsk(e, res)
+function submit_checking_act_tsk(e, res, student, title)
 {
   let result = e.tasks
   
   $.ajax({
     url: base_url + "/teacher/task/submit-check-task",
-    data: { res, result },
+    data: { res, result, student, title },
     method: "post",
     dataType: "json",
     beforeSend: function () {
@@ -1459,18 +1467,18 @@ if (url.includes("teacher/task")) {
         let sel_data = task_draft.getSelectedData();
         let ids = sel_data.map((i) => i.id);
         let eds = sel_data.map((i) => i.end_date);
-        // let tasks = sel_data.map((i) => i.task_ids);
+        let titles = sel_data.map((i) => i.title);
 
         if (ids.length < 1) {
-          al_swal("Belum ada data terpilih", "error");
+          toast_act('',"Belum ada data terpilih", "error");
         } else {
           if (check_good_date(eds)) {
-            al_swal(
+            toast_act('',
               "Tidak bisa diterbitkan karena terdapat data kedaluarsa",
               "error"
             );
           } else {
-            type_task(2, ids, 2);
+            type_task(2, ids, 2, titles);
           }
         }
       });
@@ -1480,10 +1488,11 @@ if (url.includes("teacher/task")) {
       .addEventListener("click", function () {
         let sel_data = task_draft.getSelectedData();
         let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
         if (ids.length < 1) {
-          al_swal("Belum ada data terpilih", "error");
+          toast_act('',"Belum ada data terpilih", "error");
         } else {
-          type_task(2, ids, 9);
+          type_task(2, ids, 9, titles);
         }
       });
   }
@@ -1494,10 +1503,11 @@ if (url.includes("teacher/task")) {
       .addEventListener("click", function () {
         let sel_data = task_scheduled.getSelectedData();
         let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
         if (ids.length < 1) {
-          al_swal("Belum ada data terpilih", "error");
+          toast_act('',"Belum ada data terpilih", "error");
         } else {
-          type_task(2, ids, 1);
+          type_task(2, ids, 1, titles);
         }
       });
   }

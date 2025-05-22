@@ -88,10 +88,11 @@
     <div class="col-sm-3">
         <div class="rounded-border">
             <div class="accordion-item rounded-border">
+                <input type="hidden" name="form_type" value="" />
                 <?php foreach ($questions as $k => $v): ?>
                     <div class="accordion-body bg-secondary">
                         <div class="d-flex justify-content-between">
-                            <a href="#" class="d-grid" style="font-weight: 500;" onclick="toggle_collapse('<?= $v['question_bank_standart_id'] ?>');"><?= $v['question_bank_standart_title'] ?></a>
+                            <a href="#" class="d-grid fs-4 fw-bold" onclick="toggle_collapse('<?= $v['question_bank_standart_id'] ?>');"><?= $v['question_bank_standart_title'] ?></a>
                         </div>
                     </div>
                     <div id="coll_body_<?= $v['question_bank_standart_id'] ?>" class="hide body_collapse">
@@ -99,7 +100,7 @@
                             <?php $i = 0; foreach ($v['child'] as $x): ?>
                                 <div class="d-flex justify-content-start">
                                     <?php foreach ($x as $y): ?>
-                                        <a href="#" onclick="view_question_std(<?= $y['question_bank_standart_id'] ?>)" class="m-1 btn btn-icon btn-outline btn-outline-primary btn-active-primary"><?= $i + 1 ?></a>
+                                        <a href="#" onclick="view_question_std(<?= $y['question_bank_standart_id'] ?>)" class="m-1 btn btn-icon btn-outline btn-outline-primary btn-active-primary qtact"><?= $i + 1 ?></a>
                                     <?php $i++;
                                     endforeach ?>
                                 </div>

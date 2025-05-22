@@ -80,7 +80,8 @@ class StandartLessonModel extends Model
             JOIN master_subject ms ON
                 lls.lesson_standart_subject_id = ms.subject_id
             WHERE
-                lls.lesson_standart_grade = $grade
+                 lls.lesson_standart_status < 9
+                and lls.lesson_standart_grade = $grade
         ";
 
         return $this->db->query($query)->getResultArray();

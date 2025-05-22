@@ -7,6 +7,8 @@ use App\Models\QuestionBank\QuestionBankModel;
 use App\Models\Systems\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
+use App\Models\Activities\ActivityModel;
+use PDO;
 use PhpOffice\PhpSpreadsheet\Style\Protection;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -22,6 +24,7 @@ class AdditionalQuestionBank extends BaseController
     protected $question_bank;
     protected $teacher;
     protected $subject;
+    protected $activity;
 
     public function __construct()
     {
@@ -32,6 +35,7 @@ class AdditionalQuestionBank extends BaseController
         $this->teacher_subject = new TeacherAssignModel();
         $this->teacher = new TeacherModel();
         $this->subject = new SubjectModel();
+        $this->activity = new ActivityModel();
     }
 
     public function index()
@@ -173,9 +177,11 @@ class AdditionalQuestionBank extends BaseController
     public function share_task()
     {
         $req = $this->request->getVar();
+        $title = $this->question_bank->select('question_bank_title')->where('question_bank_id', $req['idd'])->first();
         if ($req['val'] == 0) {
             $this->question_bank
                 ->where('question_bank_id', $req['idd'])
+                ->set('question_bank_updated_by', userdata()['user_id'])
                 ->set('question_bank_shared_type', $req['val'])
                 ->set('question_bank_shared_to', '')
                 ->update();
@@ -188,6 +194,8 @@ class AdditionalQuestionBank extends BaseController
                     'id' => [$req['idd']]
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Standar', 'share', 'membatalkan pembagian bank soal "'.$title['question_bank_title'].'"');
+
                 $res = [
                     'collapse' => 0,
                     'show_quest' => 0,
@@ -205,6 +213,7 @@ class AdditionalQuestionBank extends BaseController
             $this->question_bank
                 ->where('question_bank_id', $req['idd'])
                 ->set('question_bank_shared_type', $req['val'])
+                ->set('question_bank_updated_by', userdata()['user_id'])
                 ->set('question_bank_shared_to', $shared_to)
                 ->update();
 
@@ -216,6 +225,8 @@ class AdditionalQuestionBank extends BaseController
                     'id' => [$req['idd']]
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Standar', 'share', 'membagikan bank soal "'.$title['question_bank_title'].'"');
+
                 $res = [
                     'collapse' => 0,
                     'show_quest' => 0,
@@ -225,8 +236,6 @@ class AdditionalQuestionBank extends BaseController
 
             echo json_encode($res);
         }
-
-        // echo json_encode($share);
     }
 
     public function get_question()
@@ -247,6 +256,7 @@ class AdditionalQuestionBank extends BaseController
                 ->where('question_bank_id', $req['id'])
                 ->where('question_bank_status < 9')
                 ->first();
+            $title = $this->question_bank->select('question_bank_title')->where('question_bank_id', $d['question_bank_parent_id'])->first();
 
             $opt = json_decode($d['question_bank_option']);
             $ans = json_decode($d['question_bank_answer']);
@@ -254,22 +264,14 @@ class AdditionalQuestionBank extends BaseController
             $idx_ans = [];
             foreach ($ans as $k => $v) {
                 $idx_ans[] = array_search($v, $opt);
-                // $key = array_search($v, $opt);
-                // $opt['r_' . $k] = $opt[$key];
-                // unset($opt[$key]);
             }
-
-            // echo '<pre>';
-            // print_r($idx_ans);
-            // echo '</pre>';
-            // die;
 
             $res = [
                 'id' => $d['question_bank_id'],
                 'parent' => $d['question_bank_parent_id'],
                 'subj' => $d['question_bank_subject_id'],
                 'grad' => $d['question_bank_grade'],
-                'title' => $d['question_bank_title'],
+                'title' => $title['question_bank_title'],
                 'poin' => $d['question_bank_poin'],
                 'type' => $d['question_bank_type'],
                 'keys' => $idx_ans,
@@ -287,6 +289,7 @@ class AdditionalQuestionBank extends BaseController
     public function update_content()
     {
         $req = $this->request->getVar();
+        $typ_q = [1 => 'Pilihan Ganda', 'Pilihan Ganda Kompleks', 'Benar Salah', 'Uraian'];
 
         if ($req['type'] == 1) {
             $ins = [
@@ -295,7 +298,8 @@ class AdditionalQuestionBank extends BaseController
                 'question_bank_subject_id' => $req['val'][1],
                 'question_bank_grade' => $req['val'][2],
                 'question_bank_title' => htmlspecialchars($req['val'][0]),
-                'question_bank_status' => 1
+                'question_bank_status' => 1,
+                'question_bank_created_by' => userdata()['user_id']
             ];
 
             $this->question_bank->insert($ins);
@@ -309,6 +313,8 @@ class AdditionalQuestionBank extends BaseController
                     'id' => [0]
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Saya', 'insert', 'menambahkan judul bank soal "'. htmlspecialchars($req['val'][0]) .'"');
+
                 $res = [
                     'head' => '',
                     'msg' => 'Judul Bank Soal berhasil ditambahkan.',
@@ -321,7 +327,7 @@ class AdditionalQuestionBank extends BaseController
             echo json_encode($res);
         } else if ($req['type'] == 2) {
             $this->question_bank
-                ->set('question_bank_title', $req['val'][0])
+                ->set('question_bank_title', htmlspecialchars($req['val'][0]))
                 ->set('question_bank_updated_by', userdata()['user_id'])
                 ->where('question_bank_id', $req['id'])
                 ->update();
@@ -336,6 +342,8 @@ class AdditionalQuestionBank extends BaseController
                     'id' => [0]
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Saya', 'update', 'mengubah judul bank soal "'. htmlspecialchars($req['val'][0]) .'"');
+
                 $res = [
                     'head' => '',
                     'msg' => 'Judul Bank Soal berhasil diubah.',
@@ -347,7 +355,6 @@ class AdditionalQuestionBank extends BaseController
 
             echo json_encode($res);
         } else if ($req['type'] == -1) {
-
             $ins = [
                 'question_bank_school_id' => userdata()['school_id'],
                 'question_bank_teacher_id' => userdata()['id_profile'],
@@ -361,7 +368,8 @@ class AdditionalQuestionBank extends BaseController
                 'question_bank_hint' => $req['val'][7],
                 'question_bank_explain' => $req['val'][8],
                 'question_bank_parent_id' => $req['id'],
-                'question_bank_status' => 1
+                'question_bank_status' => 1,
+                'question_bank_created_by' => userdata()["user_id"]
             ];
 
             $this->question_bank->insert($ins);
@@ -377,6 +385,8 @@ class AdditionalQuestionBank extends BaseController
                     'chid' => $this->question_bank->getInsertID()
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Saya', 'insert', 'menambahkan soal "'.$typ_q[$req['val'][2]].'" pada "'. htmlspecialchars($req['val'][9]) .'"');
+
                 $res = [
                     'head' => '',
                     'msg' => 'Soal berhasil ditambahkan.',
@@ -411,6 +421,8 @@ class AdditionalQuestionBank extends BaseController
                     'chid' => $req['id']
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Saya', 'update', 'mengubah soal "'.$typ_q[$req['val'][2]].'" pada "'. htmlspecialchars($req['val'][8]) .'"');
+
                 $res = [
                     'head' => '',
                     'msg' => 'Soal berhasil diubah.',
@@ -442,6 +454,8 @@ class AdditionalQuestionBank extends BaseController
                     'chid' => $req['id']
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Saya', 'update', 'memperbarui petunjuk pengerjaan soal');
+
                 $res = [
                     'head' => '',
                     'msg' => 'Petunjuk Soal berhasil diperbarui.',
@@ -473,6 +487,8 @@ class AdditionalQuestionBank extends BaseController
                     'chid' => $req['id']
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Saya', 'update', 'memperbarui penjelasan pengerjaan soal');
+
                 $res = [
                     'head' => '',
                     'msg' => 'Penjelasan Soal berhasil diperbarui.',
@@ -505,6 +521,12 @@ class AdditionalQuestionBank extends BaseController
                     'coll_act' => 0
                 ];
             } else {
+                $parent = $this->question_bank->select('question_bank_title, question_bank_id')->whereIn('question_bank_id', [$req['val'][1], $req['val'][0]])->findAll();
+                $p = [];
+                foreach ($parent as $v) {
+                    $p[$v['question_bank_id']] = $v['question_bank_title'];
+                }
+                $this->activity->store_log('Bank Soal Saya', 'move', 'memindahkan soal dari "'.$p[$req['val'][1]].'" ke "'.$p[$req['val'][0]].'"');
                 $res = [
                     'head' => '',
                     'msg' => 'Pindah soal berhasil.',
@@ -534,7 +556,8 @@ class AdditionalQuestionBank extends BaseController
                 'question_bank_hint' => $d['question_bank_hint'],
                 'question_bank_explain' => $d['question_bank_explain'],
                 'question_bank_parent_id' => $req['val'][0],
-                'question_bank_status' => 1
+                'question_bank_status' => 1,
+                'question_bank_created_by' => userdata()["user_id"]
             ];
 
             $this->question_bank->insert($ins);
@@ -552,6 +575,21 @@ class AdditionalQuestionBank extends BaseController
                     'src' => $req['val'][2]
                 ];
             } else {
+                if ($req['val'][2] == 2) {
+                    $parent = $this->question_bank->select('question_bank_title, question_bank_id')->whereIn('question_bank_id', [$req['val'][1], $req['val'][0]])->findAll();
+                    $p = [];
+                    foreach ($parent as $v) {
+                        $p[$v['question_bank_id']] = $v['question_bank_title'];
+                    }
+                    $this->activity->store_log('Bank Soal Saya', 'copy', 'salin soal dari "'.$p[$req['val'][1]].'" ke "'.$p[$req['val'][0]].'"');
+                } else {
+                    if ($req['val'][2] != null) {
+                        $this->activity->store_log('Bank Soal Publik', 'copy', 'salin soal dari "Bank Soal Publik" ke "Bank Soal Saya"');
+                    } else  {
+                        $this->activity->store_log('Bank Soal Saya', 'copy', 'salin soal dari "Bank Soal Publik" ke "Bank Soal Saya"');
+                    }
+                }
+
                 $res = [
                     'head' => '',
                     'msg' => 'Salin soal berhasil.',
@@ -573,7 +611,7 @@ class AdditionalQuestionBank extends BaseController
     public function remove_content()
     {
         $req = $this->request->getVar();
-
+  
         $sts = [];
         if ($req['type'] == 1) {
             $this->question_bank
@@ -593,6 +631,8 @@ class AdditionalQuestionBank extends BaseController
                     'id' => [$req['parent']],
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Saya', 'delete', 'menghapus soal pada "' .$req['title'] .'"');
+                
                 $res = [
                     'head' => '',
                     'msg' => 'Soal berhasil dihapus.',
@@ -621,6 +661,8 @@ class AdditionalQuestionBank extends BaseController
                     'id' => [0]
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Saya', 'delete', 'menghapus judul soal "' .$req['title'] .'" beserta selururh soal');
+
                 $res = [
                     'head' => '',
                     'msg' => 'Soal berhasil dihapus.',
@@ -650,6 +692,8 @@ class AdditionalQuestionBank extends BaseController
                     'chid' => $req['id']
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Saya', 'delete', 'menghapus petunjuk pengerjaan soal');
+
                 $res = [
                     'head' => '',
                     'msg' => 'Petunjuk Soal berhasil dihapus.',
@@ -681,6 +725,8 @@ class AdditionalQuestionBank extends BaseController
                     'chid' => $req['id']
                 ];
             } else {
+                $this->activity->store_log('Bank Soal Saya', 'delete', 'menghapus penjelasan pengerjaan soal');
+
                 $res = [
                     'head' => '',
                     'msg' => 'Penjelasan Soal berhasil dihapus.',
@@ -694,8 +740,6 @@ class AdditionalQuestionBank extends BaseController
 
             echo json_encode($res);
         }
-
-        // echo json_encode($sts);
     }
 
     public function get_title_list()
@@ -717,7 +761,6 @@ class AdditionalQuestionBank extends BaseController
     public function upload_task()
     {
         $req = $this->request->getVar();
-
         $file = $_FILES['task_upload']['tmp_name'];
 
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file);
@@ -764,6 +807,7 @@ class AdditionalQuestionBank extends BaseController
                         $arr_task['question_bank_hint'] = '<p><br></p>';
                         $arr_task['question_bank_explain'] = '<p><br></p>';
                         $arr_task['question_bank_poin'] = $v[1];
+                        $arr_task['question_bank_created_by'] = userdata()['user_id'];
 
                         $img_q = array_key_exists("C" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["C" . $ii] . '"></p>' : '';
                         $arr_task['question_bank_question'] = '<p>' . $v[2] . '</p>' . $img_q;
@@ -856,6 +900,8 @@ class AdditionalQuestionBank extends BaseController
         session()->setFlashdata('msg', $ctrue . ' Soal berhasil diunggah, ' . $cfalse . ' Soal gagal diunggah');
 
         session()->setFlashdata('hide', 10000);
+        
+        $this->activity->store_log('Bank Soal Standar', 'upload', 'unggah bank soal excel ke "'.$req['title_quest'].'"');
 
         return redirect()->to('/teacher/question-bank/additional/view-content/' . $req['subject'] . '/' . $req['grade']);
     }

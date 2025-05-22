@@ -8,6 +8,7 @@ use App\Models\QuestionBank\QuestionBankModel;
 use App\Models\Systems\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
+use App\Models\Activities\ActivityModel;
 
 class StandartQuestionBank extends BaseController
 {
@@ -20,6 +21,7 @@ class StandartQuestionBank extends BaseController
     protected $question_bank;
     protected $teacher;
     protected $subject;
+    protected $activity;
 
     public function __construct()
     {
@@ -31,6 +33,7 @@ class StandartQuestionBank extends BaseController
         $this->teacher_subject = new TeacherAssignModel();
         $this->teacher = new TeacherModel();
         $this->subject = new SubjectModel();
+        $this->activity = new ActivityModel();
     }
 
     public function index()
@@ -52,21 +55,21 @@ class StandartQuestionBank extends BaseController
         
         if($req['type'] == 1) {
             $total_title = $this->question_bank_standart
-                ->select('question_bank_standart_id')
+                ->select('count(question_bank_standart_id) as total')
                 ->where('question_bank_standart_status < 9')
-                ->groupBy('question_bank_standart_subject_id, question_bank_standart_grade')
-                ->findAll();
+                ->where('question_bank_standart_parent_id', 0)
+                ->first();
             $total_question = $this->question_bank_standart
-                ->select('question_bank_standart_id')
+                ->select('count(question_bank_standart_id) as total')
                 ->where('question_bank_standart_status < 9')
-                ->groupBy('question_bank_standart_subject_id, question_bank_standart_title, question_bank_standart_grade')
-                ->findAll();
+                ->where('question_bank_standart_parent_id > 0')
+                ->first();
             
             $grades = list_grade(userdata()['school_id']);
             
             $res = [
-                't_title' => count($total_title),
-                't_quest' => count($total_question),
+                't_title' => $total_title['total'],
+                't_quest' => $total_question['total'],
                 'grades' => $grades,
             ];
 
@@ -81,9 +84,12 @@ class StandartQuestionBank extends BaseController
         $subject = $this->question_bank_standart->list_first_page($req['grade']);
 
         $sub_list = [];
+        $tquest = 0;
         foreach ($subject as $k => $v) {
             if ($v['parent'] < 1) {
                 $sub_list[$v['subject_id']]['title'] = $v['title'];
+            } else {
+                $tquest++;
             }
             $sub_list[$v['subject_id']]['subj_id'] = $v['subject_id'];
             $sub_list[$v['subject_id']]['grade'] = $req['grade'];
@@ -94,7 +100,6 @@ class StandartQuestionBank extends BaseController
 
         $data = [];
         foreach ($sub_list as $k => $v) {
-            $tquest = count($v['quest_id']) - 1;
             $lists = '
                 <div class="d-flex justify-content-between rounded">
                     <div class="d-flex align-items-start">
@@ -195,11 +200,12 @@ class StandartQuestionBank extends BaseController
             ->first();
 
         $opt = json_decode($d['question_bank_standart_option']);
-        $ans = $d['question_bank_standart_answer'];
-        $key = array_search($ans, $opt);
+        $ans = json_decode($d['question_bank_standart_answer']);
 
-        $opt['right'] = $opt[$key];
-        unset($opt[$key]);
+        $idx_ans = [];
+        foreach ($ans as $k => $v) {
+            $idx_ans[] = array_search($v, $opt);
+        }
 
         $res = [
             'id' => $d['question_bank_standart_id'],
@@ -209,6 +215,7 @@ class StandartQuestionBank extends BaseController
             'title' => $d['question_bank_standart_title'],
             'poin' => $d['question_bank_standart_poin'],
             'type' => $d['question_bank_standart_type'],
+            'keys' => $idx_ans,
             'question' => $d['question_bank_standart_question'],
             'option' => $opt,
             'explain' => $d['question_bank_standart_explain'],
@@ -253,11 +260,36 @@ class StandartQuestionBank extends BaseController
             'question_bank_hint' => $d['question_bank_standart_hint'],
             'question_bank_explain' => $d['question_bank_standart_explain'],
             'question_bank_parent_id' => $req['val'][0],
-            'question_bank_status' => 1
+            'question_bank_status' => 1,
+            'question_bank_created_by' => 1
         ];
 
-        $update = $this->question_bank->insert($ins);
+        $this->question_bank->insert($ins);
+        $sts = $this->question_bank->error();
+        if ($sts['code'] > 0) {
+            $res = [
+                'head' => '',
+                'msg' => 'Salin soal gagal.',
+                'icon' => 'error',
+                'collapse' => 0,
+                'show_quest' => 0,
+                'coll_act' => 0,
+                'src' => $req['val'][2]
+            ];
+        } else {
+            $this->activity->store_log('Bank Soal Standar', 'copy', 'salin soal dari "Bank Soal Standar" ke "Bank Soal Saya"');
+            $res = [
+                'head' => '',
+                'msg' => 'Salin soal berhasil.',
+                'icon' => 'success',
+                'collapse' => 0,
+                'show_quest' => 0,
+                'coll_act' => 0,
+                'src' => $req['val'][2]
 
-        echo json_encode($update);
+            ];
+        }
+
+        echo json_encode($res);
     }
 }

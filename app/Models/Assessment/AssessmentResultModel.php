@@ -25,6 +25,10 @@ class AssessmentResultModel extends Model
         'assessment_result_is_checked', 
     ];
 
+    protected $useTimestamps = true;
+    protected $createdField  = 'assessment_result_created_date';
+    protected $updatedField  = 'assessment_result_updated_date';
+
     public function getSingle($where = [])
     {
         if (count($where) < 1) {
