@@ -1187,7 +1187,8 @@
 		let active_year = '<?= year_active() != null ? year_active()['school_year_period'] : '' ?>'
 		let active_year_id = '<?= year_active() != null ? year_active()['school_year_id'] : '' ?>'
 		let level = '<?= session()->get('c_role') ?>'
-		let file_path = 'https://abeaws-bucket.s3.ap-southeast-1.amazonaws.com/'
+		
+		let file_path = 'https://devabe-s3.s3.ap-southeast-1.amazonaws.com/'
 
 
 		let student_id = 0

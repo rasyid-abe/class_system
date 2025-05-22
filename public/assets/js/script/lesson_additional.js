@@ -1,6 +1,5 @@
 $(document).ready(function () {
     if (att_id != '') {
-        
         view_content_a(att_id)
         $('.tab_topic_a').removeClass('active')
         $('.content_topic_a').removeClass('active')
@@ -12,10 +11,11 @@ $(document).ready(function () {
     }
 
     if (file_id != '') {
-        view_content_a(file_id)
-        $('#kt_accordion_2_item_1_a').removeClass('show')
-        $('#kt_accordion_2_item_2_a').addClass('show')
+        view_content_a(file_id, null, null, 1)
+        $('#body_ctn').addClass('hide')
+        $('#file_ctn').removeClass('hide')
     }
+    
 })
 
 jQuery('.input_share_a').on('click', function (e) {
@@ -137,6 +137,10 @@ $(document.body).on('click', '#btn_update_content_file', function () {
     $('#submit_upload').attr('disabled', 'disabled')
 })
 
+$('#submit_upload').on('click', function() {
+    show_loading()
+})
+
 $(document.body).on('click', '#btn_update_content', function () {
     $('#body_content_modal_a').html('')
     let id = $('#btn_update_content').data('id');
@@ -243,6 +247,16 @@ $(document.body).on('click', '#btn_update_attach', function () {
     $('#modal_upload_content_a').modal('show')
 })
 
+$(document.body).on('click', '.body_ctn', function () {
+    $('#body_ctn').removeClass('hide')
+    $('#file_ctn').addClass('hide')
+})
+
+$(document.body).on('click', '.file_ctn', function () {
+    $('#body_ctn').addClass('hide')
+    $('#file_ctn').removeClass('hide')
+})
+
 const dt = new DataTransfer(); // Permet de manipuler les fichiers de l'input file
 const sizes = {}
 $(document.body).on('change', '#attachment', function (e) {
@@ -339,58 +353,54 @@ function config_size_a(e) {
     }
 }
 
-function generate_view_lesson_a(e) {
+function generate_view_lesson_a(e, cfile) {
     $('.btn_content_content').html('');
     $('.btn_conf_topic').html('');
 
     let butn = `
-            <div class="accordion accordion-icon-toggle" id="kt_accordion_2">
-                <div class="mt-5">
-                    <div class="bg-secondary accordion-header d-flex p-1" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_1_a" style="border-radius: 5px;">
-                        <span class="accordion-icon">
-                            <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
-                        </span>
-                        <span class="px-2">Konten Teks</span>
-                    </div>
-
-                    <div id="kt_accordion_2_item_1_a" class="fs-6 collapse show m-5" data-bs-parent="#kt_accordion_2" style="max-height: 500px; overflow-y: scroll;">
-                        <div class="d-flex justify-content-end btn_conf_topic">
-                            <div class="btn_content_content">
-                                <button type="button" class="btn btn-sm btn-light-dark" data-topic="${e.lesson_additional_subchapter}" id="btn_update_content" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
-                            </div>&nbsp;
-                            <div class="btn_content_content">
-                                <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 5, ${null}, '${e.lesson_additional_subchapter}')"><i class="fa fa-trash"></i> Hapus</button>
-                            </div>
-                        </div>
-                        ${e.lesson_additional_content != '' ? e.lesson_additional_content : 'Materi belum tersedia'}
-                    </div>
-                </div>
-
-                <div class="mt-5">
-                    <div class="bg-secondary accordion-header p-1 d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_2_a" style="border-radius: 5px;">
-                        <span class="accordion-icon">
-                            <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
-                        </span>
-                        <span class="px-2">Konten File</span>
-                    </div>
-
-                    <div id="kt_accordion_2_item_2_a" class="collapse fs-6 m-5" data-bs-parent="#kt_accordion_2">
-                        <div class="d-flex justify-content-end btn_conf_topic mb-2">
-                            <div class="btn_content_content">
-                                <button type="button" class="btn btn-sm btn-light-dark" data-topic="${e.lesson_additional_subchapter}" id="btn_update_content_file" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
-                            </div>&nbsp;
-                            <div class="btn_content_content">
-                                <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 8, '${e.lesson_additional_content_path}', '${e.lesson_additional_subchapter}')"><i class="fa fa-trash"></i> Hapus</button>
-                            </div>
-                        </div>
-
-                        ${e.lesson_additional_content_path != '' ? `<embed src="${file_path + e.lesson_additional_content_path}" width="100%" height="500px" />` : 'File belum tersedia'}
-                    </div>
-                </div>
-
+        <div class="mt-5">
+            <div class="bg-secondary accordion-header d-flex px-2 py-3 body_ctn" style="border-radius: 5px;">
+                <span class="accordion-icon">
+                    <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
+                </span>
+                <span class="px-2 fs-5 fw-semibold">Konten Teks</span>
             </div>
 
-        `;
+            <div id="body_ctn" class="fs-6 m-5 ${cfile != null ? 'hide' : ''}" style="max-height: 500px; overflow-y: scroll;">
+                <div class="d-flex justify-content-end btn_conf_topic">
+                    <div class="btn_content_content">
+                        <button type="button" class="btn btn-sm btn-light-dark" data-topic="${e.lesson_additional_subchapter}" id="btn_update_content" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+                    </div>&nbsp;
+                    <div class="btn_content_content">
+                        <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 5, ${null}, '${e.lesson_additional_subchapter}')"><i class="fa fa-trash"></i> Hapus</button>
+                    </div>
+                </div>
+                ${e.lesson_additional_content != '' ? e.lesson_additional_content : 'Materi belum tersedia'}
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <div class="bg-secondary accordion-header px-2 py-3 d-flex file_ctn" style="border-radius: 5px;">
+                <span class="accordion-icon">
+                    <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
+                </span>
+                <span class="px-2 fs-5 fw-semibold">Konten File</span>
+            </div>
+
+            <div id="file_ctn" class="fs-6 m-5 ${cfile != null ? '' : 'hide'}">
+                <div class="d-flex justify-content-end btn_conf_topic mb-2">
+                    <div class="btn_content_content">
+                        <button type="button" class="btn btn-sm btn-light-dark" data-topic="${e.lesson_additional_subchapter}" id="btn_update_content_file" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+                    </div>&nbsp;
+                    <div class="btn_content_content">
+                        <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 8, '${e.lesson_additional_content_path}', '${e.lesson_additional_subchapter}')"><i class="fa fa-trash"></i> Hapus</button>
+                    </div>
+                </div>
+
+                ${e.lesson_additional_content_path != '' ? `<embed src="${file_path + e.lesson_additional_content_path}" width="100%" height="500px" />` : 'File belum tersedia'}
+            </div>
+        </div>
+    `;
 
 
     $('#content_lesson').html(butn)
@@ -434,7 +444,7 @@ function generate_view_attachment_a(e) {
             
             btnn += `
                 <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Button group with nested dropdown">
-                    <button onclick="remove_content_a(${e.lesson_additional_id}, 7, '${e.attach_arr[i]}');" type="button" class="btn btn-primary btn-sm btn-icon"><i class="bi bi-x fs-5"></i></button>
+                    <button onclick="remove_content_a(${e.lesson_additional_id}, 7, '${e.attach_arr[i]}', '${e.lesson_additional_subchapter}', '${spl[2]}');" type="button" class="btn btn-primary btn-sm btn-icon"><i class="bi bi-x fs-5"></i></button>
 
                     <div class="btn-group" role="group">
                         <a href="${file_path + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>                
@@ -533,7 +543,7 @@ $(document.body).on('click', '.ltv', function(e) {
     
 })
 
-function remove_content_a(id, type, file = null, title = null) {
+function remove_content_a(id, type, file = null, title = null, filename = null) {
     let msg = '';
 
     if (type == 1) {
@@ -553,6 +563,10 @@ function remove_content_a(id, type, file = null, title = null) {
             msg = 'seluruh file lampiran'
         }
     } else if (type == 8) {
+        if (file == null || file == '') {
+            toast_act('', 'Tidak ada file yang bisa dihapus.', 'error')
+            return false
+        }
         msg = 'file materi'
     } else if (type == 9) {
         msg = 'soal latihan'
@@ -570,12 +584,12 @@ function remove_content_a(id, type, file = null, title = null) {
         }
     }).then(function (confirm) {
         if (confirm.isConfirmed) {
-            act_remove_a(id, type, file, title)
+            act_remove_a(id, type, file, title, filename)
         }
     });
 }
 
-function view_content_a(id, type = null, notif = null) {
+function view_content_a(id, type = null, notif = null, cfile = null) {
     if (notif != null) {
         toast_act(notif.head, notif.msg, notif.icon)
     }
@@ -594,7 +608,7 @@ function view_content_a(id, type = null, notif = null) {
             if (type == 'shr') {
                 modal_view_shared(e)
             } else {
-                generate_view_lesson_a(e)
+                generate_view_lesson_a(e, cfile)
                 generate_view_video_a(e)
                 generate_view_attachment_a(e)
                 generate_view_task_a(e.task, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade, e.lesson_additional_subchapter)
@@ -833,14 +847,15 @@ function toggle_collapse(e) {
 
 }
 
-function act_remove_a(id, type, file, title) {
+function act_remove_a(id, type, file, title, filename) {
     $.ajax({
         url: base_url + '/teacher/lesson/additional/remove-content',
         data: {
             id,
             type,
             file,
-            title
+            title,
+            filename
         },
         method: 'post',
         dataType: 'json',
@@ -848,6 +863,8 @@ function act_remove_a(id, type, file, title) {
             show_loading()
         },
         success: function (e) {
+            console.log(type);
+            
             if (type == 5) {
                 view_content_a(id, null, e)
             } else if (type == 6) {
@@ -868,6 +885,8 @@ function act_remove_a(id, type, file, title) {
                 $('#tab_attachment_a').addClass('show')
                 $('#tab_attachment_a').addClass('active')
                 $('#tab_topic_a_attachment').addClass('active')
+            } else if (type == 8) {
+                view_content_a(id, null, e, 1)
             } else if (type == 9) {
                 view_content_a(id, null, e)
                 $('.tab_topic_a').removeClass('active')

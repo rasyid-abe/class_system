@@ -83,16 +83,16 @@ function generate_view_lesson(e) {
     $('.btn_content_content').html('');
     $('.btn_conf_topic').html('');
 
-    let file_path = base_url + 'lesson_file/'
+    // let file_path = base_url + 'lesson_file/'
 
     let butn = `
             <div class="accordion accordion-icon-toggle" id="kt_accordion_2">
                 <div class="mt-5">
-                    <div class="bg-secondary accordion-header d-flex p-1" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_1" style="border-radius: 5px;">
+                    <div class="bg-secondary accordion-header d-flex px-2 py-3" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_1" style="border-radius: 5px;">
                         <span class="accordion-icon">
                             <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
                         </span>
-                        <span class="px-2">Konten Teks</span>
+                        <span class="px-2 fs-5 fw-semibold">Konten Teks</span>
                     </div>
 
                     <div id="kt_accordion_2_item_1" class="fs-6 collapse show m-5" data-bs-parent="#kt_accordion_2" style="max-height: 500px; overflow-y: scroll;">
@@ -101,11 +101,11 @@ function generate_view_lesson(e) {
                 </div>
 
                 <div class="mt-5">
-                    <div class="bg-secondary accordion-header p-1 d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_2" style="border-radius: 5px;">
+                    <div class="bg-secondary accordion-header px-2 py-3 d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#kt_accordion_2_item_2" style="border-radius: 5px;">
                         <span class="accordion-icon">
                             <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
                         </span>
-                        <span class="px-2">Konten File</span>
+                        <span class="px-2 fs-5 fw-semibold">Konten File</span>
                     </div>
 
                     <div id="kt_accordion_2_item_2" class="collapse fs-6 m-5" data-bs-parent="#kt_accordion_2">
