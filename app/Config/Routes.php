@@ -81,6 +81,7 @@ $routes->delete('/teacher/lesson/additional/destroy', 'LearningMS\Lessons\Additi
 $routes->post('/teacher/lesson/additional/share-topic', 'LearningMS\Lessons\AdditionalLesson::share_topic', ['filter' => 'auth']); #done
 $routes->post('/teacher/lesson/additional/question-bank', 'LearningMS\Lessons\AdditionalLesson::question_bank', ['filter' => 'auth']); #done
 $routes->post('/teacher/lesson/additional/get-question', 'LearningMS\Lessons\AdditionalLesson::get_question', ['filter' => 'auth']); #done
+$routes->post('/teacher/lesson/additional/grab-list-lesson-title', 'LearningMS\Lessons\AdditionalLesson::grab_list_lesson_title', ['filter' => 'auth']); #done
 
 $routes->get('/teacher/lesson/public', 'LearningMS\Lessons\PublicLesson::index', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/public/view-content/(:num)', 'LearningMS\Lessons\PublicLesson::view_content/$1', ['filter' => 'auth']);
@@ -168,6 +169,7 @@ $routes->get('/student/assessment/done', 'LearningMS\Assessment\Assessment::s_in
 $routes->get('/student/assessment/list-assessment', 'LearningMS\Assessment\Assessment::s_list_assessment', ['filter' => 'auth']);
 $routes->post('/student/assessment/get-assessment', 'LearningMS\Assessment\Assessment::s_get_assessment', ['filter' => 'auth']);
 $routes->post('/student/assessment/submit-assessment', 'LearningMS\Assessment\Assessment::s_submit_assessment', ['filter' => 'auth']);
+$routes->post('/student/assessment/get-assessment-done', 'LearningMS\Assessment\Assessment::s_get_assessment_done', ['filter' => 'auth']);
 
 $routes->get('/student/task/present', 'LearningMS\Tasks\Task::s_index_present', ['filter' => 'auth']);
 $routes->get('/student/task/missed', 'LearningMS\Tasks\Task::s_index_missed', ['filter' => 'auth']);
@@ -175,3 +177,4 @@ $routes->get('/student/task/done', 'LearningMS\Tasks\Task::s_index_done', ['filt
 $routes->get('/student/task/list-task', 'LearningMS\Tasks\Task::s_list_task', ['filter' => 'auth']);
 $routes->post('/student/task/act-get-task', 'LearningMS\Tasks\Task::s_act_get_task', ['filter' => 'auth']);
 $routes->post('/student/task/save-action-task', 'LearningMS\Tasks\Task::s_save_action_task', ['filter' => 'auth']);
+$routes->post('/student/task/get-task-done', 'LearningMS\Tasks\Task::s_get_task_done', ['filter' => 'auth']);

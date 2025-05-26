@@ -1,21 +1,206 @@
 $(document).ready(function () {
-    if (att_id != '') {
-        view_content_a(att_id)
-        $('.tab_topic_a').removeClass('active')
-        $('.content_topic_a').removeClass('active')
-        $('.content_topic_a').removeClass('show')
 
-        $('#tab_attachment_a').addClass('show')
-        $('#tab_attachment_a').addClass('active')
-        $('#tab_topic_a_attachment').addClass('active')
+    let res = null
+    if (url.includes("teacher/lesson/additional/view-content/")) {
+        res = Object()
+        res.collapse = file_coll
+        res.child = file_chd
+
+        if (att_id != '') {
+            view_content_a(att_id)
+            $('.tab_topic_a').removeClass('active')
+            $('.content_topic_a').removeClass('active')
+            $('.content_topic_a').removeClass('show')
+
+            $('#tab_attachment_a').addClass('show')
+            $('#tab_attachment_a').addClass('active')
+            $('#tab_topic_a_attachment').addClass('active')
+        }
+
+        if (file_id != '') {
+            view_content_a(file_id, null, null, 1)
+            $('#body_ctn').addClass('hide')
+            $('#file_ctn').removeClass('hide')
+
+
+        }
+
+        ajax_tree_mylessons(res)
     }
 
-    if (file_id != '') {
-        view_content_a(file_id, null, null, 1)
-        $('#body_ctn').addClass('hide')
-        $('#file_ctn').removeClass('hide')
+
+})
+
+function ajax_tree_mylessons(res = null) {
+    let sid = $('input[name=subject]').val();
+    let gid = $('input[name=grade]').val();
+
+    $.ajax({
+        url: base_url + '/teacher/lesson/additional/grab-list-lesson-title',
+        data: { gid, sid },
+        method: 'post',
+        dataType: 'json',
+        beforeSend: function () {
+            show_loading()
+        },
+        success: function (e) {
+            $('#treeslesson').html('')
+            generate_tree_mylessons(e, res)
+            hide_loading()
+        }
+    })
+}
+
+function generate_tree_mylessons(e, res) {
+    console.log(res);
+
+    let trees = ''
+    if (Object.keys(e).length > 0) {
+        $.each(e, function (i, v) {
+
+            let topics = ''
+            $.each(v.sub_chapter, function (idx, val) {
+                if (val.lesson_additional_subchapter != '') {
+                    let shrbtn = `
+                    <li class="menu-item px-3">
+                        <span onclick="share_topic_a(${val.lesson_additional_id}, '${val.lessson_addtional_chapter}', '${val.lesson_additional_subchapter}');" class="menu-link px-3">
+                            Bagikan
+                        </span>
+                    </li>
+                    `
+                    if (val.lesson_additional_shared_type > 0) {
+                        shrbtn = `
+                        <li class="menu-item px-3">
+                            <span onclick="view_shared_lesson(${val.lesson_additional_id})" class="menu-link px-3">
+                                Lihat Pambagian
+                            </span>
+                        </li>
+                        `
+                    }
+
+                    let underline = ''
+                    let text_dec = 'fw-semibold text-dark'
+                    if (res != null && res.child == val.lesson_additional_id) {
+                        text_dec = 'text-primary fw-bolder'
+                        underline = 'underline'
+
+                    }
+
+                    topics += `
+                    <div class="d-flex justify-content-between pr-5 py-2">
+                        <div class="shared-info text-wrap ${underline} chudl" id="child__${val.lesson_additional_id}" style="width: 90%">
+                            ${val.lesson_additional_shared_type > 0 ? '<div class="text-info fw-semibold fs-7 isshrls">Dibagikan</div>' : ''}
+                            <div class="${text_dec} fs-4 lschd hand" data-id="${val.lesson_additional_id}" onclick="view_content_a(${val.lesson_additional_id});">${val.lesson_additional_subchapter}</div>
+                        </div>
+                        <div class="d-flex align-items-center btnleft">
+                            <span class="dropdownButton_ hand" id="dropdownButton_${val.lesson_additional_id}" data-id="${val.lesson_additional_id}">
+                                <i class="bi bi-three-dots-vertical fs-3 text-gray-600"></i>
+                            </span>
+                            <ul id="ul_${val.lesson_additional_id}" class="fw-semibold fs-7 w-125px py-4 hide ddm" style="
+                                border-radius: 5px; 
+                                position: absolute; 
+                                background: white; 
+                                border: 1px solid #ccc; 
+                                padding: 0; 
+                                margin-left: 15px; 
+                                margin-top: 100px; 
+                                list-style: none; 
+                                z-index: 999;
+                            ">
+                                ${shrbtn}
+                                <li class="menu-item px-3">
+                                    <span onclick="form_chapter_a(2, '${v.lesson_additional_chapter}', '${val.lesson_additional_subchapter}', '${val.lesson_additional_id}');" class="menu-link px-3 hand">
+                                        Ubah
+                                    </span>
+                                </li>
+                                <li class="menu-item px-3">
+                                    <span class="menu-link px-3 hand" onclick="remove_content_a(${val.lesson_additional_id}, 2, null, '${val.lesson_additional_subchapter}', '', '${val.lesson_additional_chapter}')" >
+                                        Hapus Topik
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    `
+                }
+            })
+
+            trees += `
+            <div class="accordion-body bg-secondary">
+                <div class="d-flex justify-content-between pr-5">
+                    <span class="hand d-grid text-wrap fs-4 fw-bold oncollapse" style="width: 90%" data-collapse="${i}">${v.lesson_additional_chapter}</span>
+                    <div class="btnleft d-flex align-items-center">
+                        <span class="dropdownButton_ hand" id="dropdownButton_${v.lesson_additional_id}" data-id="${v.lesson_additional_id}">
+                            <i class="bi bi-three-dots-vertical fs-2 text-primary"></i>
+                        </span>
+                        <ul id="ul_${v.lesson_additional_id}" class="fw-semibold fs-7 w-125px py-4 hide ddm" style="
+                            border-radius: 5px; 
+                            position: absolute; 
+                            background: white; 
+                            border: 1px solid #ccc; 
+                            padding: 0; 
+                            margin-left: 15px; 
+                            margin-top: 100px; 
+                            list-style: none; 
+                            z-index: 999;
+                        ">
+                            <li class="menu-item px-3">
+                                <span style="color: black;" onclick="form_chapter_a(3, '${v.lesson_additional_chapter}', '', ${v.lesson_additional_id});" class="menu-link px-3 hand">
+                                    Tambah
+                                </span>
+                            </li>
+                            <li class="menu-item px-3">
+                                <span style="color: black;" onclick="form_chapter_a(1, '${v.lesson_additional_chapter}', '', ${v.lesson_additional_id});" class="menu-link px-3 hand">
+                                    Ubah
+                                </span>
+                            </li>
+                            <li class="menu-item px-3">
+                                <span style="color: black;" class="menu-link px-3 hand" onclick="remove_content_a(${v.lesson_additional_id}, 1, null,'${v.lesson_additional_chapter}')">
+                                    Hapus BAB
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="t_coll_body_${i}" class="body_collapse ${res != null && res.collapse == v.lesson_additional_chapter ? '' : 'hide'}">
+                <div class="accordion-body bg-white">
+                    ${topics}
+                </div>
+            </div>
+            `
+        })
     }
-    
+
+    $('#treeslesson').html(trees)
+}
+
+$(document).on('click', '.dropdownButton_', function (e) {
+    let id = $(this).data('id')
+    $('.ddm').addClass('hide')
+    $('#ul_' + id).toggleClass('hide');
+})
+
+$(document).on('click', function (e) {
+    if (!$(e.target).closest('.btnleft').length) {
+        $('.ddm').addClass('hide')
+    }
+});
+
+$(document).on('click', '.lschd', function (e) {
+    $('.chudl').removeClass('underline')
+    $('.lschd').each(function (e) {
+        $(this).addClass('fw-semibold text-dark').removeClass('text-primary fw-bolder')
+    })
+
+    let id = $(this).data('id')
+    $(this).removeClass('fw-semibold text-dark').addClass('text-primary fw-bolder')
+    $('#child__' + id).addClass('underline')
+})
+
+$(document).on('click', '.oncollapse', function () {
+    let coll = $(this).data('collapse');
+    $('#t_coll_body_' + coll).toggleClass('hide')
 })
 
 jQuery('.input_share_a').on('click', function (e) {
@@ -33,7 +218,7 @@ function close_modal_content_a() {
     $('#body_content_modal_a').html('')
 }
 
-function close_share_les(){
+function close_share_les() {
     $('#multiple-select-field-a').val(null).trigger('change');
     $('.input_share_a').prop('checked', false)
     $('#modal_share_a').modal('hide')
@@ -111,9 +296,11 @@ function act_share_a(clear = null) {
 $(document.body).on('click', '#btn_update_content_file', function () {
     let id = $('#btn_update_attach').data('id');
     let topic = $('#btn_update_content_file').data('topic');
+    let chap = $('#btn_update_content_file').data('chapter');
     let form = `
             <input type="hidden" name="lesson_id" value="${id}" />
             <input type="hidden" name="title_topic" value="${topic}" />
+            <input type="hidden" name="chap_topic" value="${chap}" />
             <input type="hidden" name="type" value="8" />
             <p class="mt-2">
                 
@@ -137,7 +324,7 @@ $(document.body).on('click', '#btn_update_content_file', function () {
     $('#submit_upload').attr('disabled', 'disabled')
 })
 
-$('#submit_upload').on('click', function() {
+$('#submit_upload').on('click', function () {
     show_loading()
 })
 
@@ -145,6 +332,7 @@ $(document.body).on('click', '#btn_update_content', function () {
     $('#body_content_modal_a').html('')
     let id = $('#btn_update_content').data('id');
     let topic = $('#btn_update_content').data('topic');
+    let chap = $('#btn_update_content').data('chapter');
     $.ajax({
         url: base_url + '/teacher/lesson/additional/grab-topic-content',
         data: {
@@ -159,11 +347,12 @@ $(document.body).on('click', '#btn_update_content', function () {
             let form = `
                     <input type="hidden" name="lesson_id" value="${id}" />
                     <input type="hidden" name="title_topic" value="${topic}" />
+                    <input type="hidden" name="chap_topic" value="${chap}" />
                     <input type="hidden" name="form_type" value="5" />
                     <div id="editor_content"></div>
                     `;
-                    
-                    // <textarea id="content" name="content" class="tinymce-editor">${e.lesson_additional_content}</textarea>
+
+            // <textarea id="content" name="content" class="tinymce-editor">${e.lesson_additional_content}</textarea>
             $('#body_content_modal_a').html(form)
             $('#head_content_modal').html('<h3 class="modal-title">Update Materi Pembelajaran</h3>')
             $('#modal_update_content_a').modal('show')
@@ -171,7 +360,7 @@ $(document.body).on('click', '#btn_update_content', function () {
 
             var editor_content = new Quill("#editor_content", {
                 modules: {
-                  toolbar: toolbarOptions,
+                    toolbar: toolbarOptions,
                 },
                 theme: "snow", // or 'bubble'
             });
@@ -186,7 +375,8 @@ $(document.body).on('click', '#btn_update_video', function () {
     let id = $('#btn_update_video').data('id');
     let url = $('#btn_update_video').data('url');
     let topic = $('#btn_update_video').data('topic');
-    
+    let chap = $('#btn_update_video').data('chapter');
+
     let id_vid = youtube_parser(url);
     let vid_view = `<iframe width="620" height="315"
             src="https://www.youtube.com/embed/${id_vid}?controls=0">
@@ -195,6 +385,7 @@ $(document.body).on('click', '#btn_update_video', function () {
     let form = `
             <input type="hidden" name="lesson_id" value="${id}" />
             <input type="hidden" name="title_topic" value="${topic}" />
+            <input type="hidden" name="chap_topic" value="${chap}" />
             <input type="hidden" name="form_type" value="6" />
             <label for="videolink" class="form-label">Tautan Video</label>
             <input type="text" class="form-control form-control-md" name="videolink" value="${url}" />
@@ -221,9 +412,11 @@ $(document.body).on('input', 'input[name=videolink]', function () {
 $(document.body).on('click', '#btn_update_attach', function () {
     let id = $('#btn_update_attach').data('id');
     let topic = $('#btn_update_attach').data('topic');
+    let chap = $('#btn_update_attach').data('chapter');
     let form = `
             <input type="hidden" name="lesson_id" value="${id}" />
             <input type="hidden" name="title_topic" value="${topic}" />
+            <input type="hidden" name="chap_topic" value="${chap}" />
             <input type="hidden" name="type" value="7" />
             <p class="mt-2">
                 
@@ -363,16 +556,16 @@ function generate_view_lesson_a(e, cfile) {
                 <span class="accordion-icon">
                     <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
                 </span>
-                <span class="px-2 fs-5 fw-semibold">Konten Teks</span>
+                <span class="px-2 fs-5 fw-bold hand">Konten Teks</span>
             </div>
 
             <div id="body_ctn" class="fs-6 m-5 ${cfile != null ? 'hide' : ''}" style="max-height: 500px; overflow-y: scroll;">
                 <div class="d-flex justify-content-end btn_conf_topic">
                     <div class="btn_content_content">
-                        <button type="button" class="btn btn-sm btn-light-dark" data-topic="${e.lesson_additional_subchapter}" id="btn_update_content" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+                        <button type="button" class="btn btn-sm btn-light-dark" data-topic="${e.lesson_additional_subchapter}" id="btn_update_content" data-id="${e.lesson_additional_id}" data-chapter="${e.lesson_additional_chapter}"><i class="fa fa-pen"></i> Update</button>
                     </div>&nbsp;
                     <div class="btn_content_content">
-                        <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 5, ${null}, '${e.lesson_additional_subchapter}')"><i class="fa fa-trash"></i> Hapus</button>
+                        <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 5, ${null}, '${e.lesson_additional_subchapter}', '', '${e.lesson_additional_chapter}')"><i class="fa fa-trash"></i> Hapus</button>
                     </div>
                 </div>
                 ${e.lesson_additional_content != '' ? e.lesson_additional_content : 'Materi belum tersedia'}
@@ -384,16 +577,16 @@ function generate_view_lesson_a(e, cfile) {
                 <span class="accordion-icon">
                     <i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i>
                 </span>
-                <span class="px-2 fs-5 fw-semibold">Konten File</span>
+                <span class="px-2 fs-5 fw-bold hand">Konten File</span>
             </div>
 
             <div id="file_ctn" class="fs-6 m-5 ${cfile != null ? '' : 'hide'}">
                 <div class="d-flex justify-content-end btn_conf_topic mb-2">
                     <div class="btn_content_content">
-                        <button type="button" class="btn btn-sm btn-light-dark" data-topic="${e.lesson_additional_subchapter}" id="btn_update_content_file" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+                        <button type="button" class="btn btn-sm btn-light-dark" data-topic="${e.lesson_additional_subchapter}" id="btn_update_content_file" data-id="${e.lesson_additional_id}" data-chapter="${e.lesson_additional_chapter}"><i class="fa fa-pen"></i> Update</button>
                     </div>&nbsp;
                     <div class="btn_content_content">
-                        <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 8, '${e.lesson_additional_content_path}', '${e.lesson_additional_subchapter}')"><i class="fa fa-trash"></i> Hapus</button>
+                        <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 8, '${e.lesson_additional_content_path}', '${e.lesson_additional_subchapter}', '', '${e.lesson_additional_chapter}')"><i class="fa fa-trash"></i> Hapus</button>
                     </div>
                 </div>
 
@@ -421,30 +614,30 @@ function generate_view_video_a(e) {
     let btn_conf = `
             <div class="d-flex justify-content-begin mb-3">
                 <div class="btn_video_content">
-                    <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_video" data-topic="${e.lesson_additional_subchapter}" data-url="${e.lesson_additional_video_path}" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+                    <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_video" data-topic="${e.lesson_additional_subchapter}" data-url="${e.lesson_additional_video_path}" data-id="${e.lesson_additional_id}" data-chapter="${e.lesson_additional_chapter}"><i class="fa fa-pen"></i> Update</button>
                 </div>&nbsp;
                 <div class="btn_video_content">
-                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 6 , ${null}, '${e.lesson_additional_subchapter}')"><i class="fa fa-trash"></i> Hapus</button>
+                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 6 , ${null}, '${e.lesson_additional_subchapter}', '', '${e.lesson_additional_chapter}')"><i class="fa fa-trash"></i> Hapus</button>
                 </div>
             </div>
         `;
-    
+
     $('#btn_conf_vid_a').html(btn_conf)
 }
 
 function generate_view_attachment_a(e) {
     $('.btn_attach_content').html('');
     $('#btn_conf_attach_a').html('');
-    
+
     let btnn = '';
-    
+
     if (e.attach_arr != '') {
         for (let i = 0; i < e.attach_arr.length; i++) {
             spl = e.attach_arr[i].split("^");
-            
+
             btnn += `
                 <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Button group with nested dropdown">
-                    <button onclick="remove_content_a(${e.lesson_additional_id}, 7, '${e.attach_arr[i]}', '${e.lesson_additional_subchapter}', '${spl[2]}');" type="button" class="btn btn-primary btn-sm btn-icon"><i class="bi bi-x fs-5"></i></button>
+                    <button onclick="remove_content_a(${e.lesson_additional_id}, 7, '${e.attach_arr[i]}', '${e.lesson_additional_subchapter}', '${spl[2]}', '${e.lesson_additional_chapter}');" type="button" class="btn btn-primary btn-sm btn-icon"><i class="bi bi-x fs-5"></i></button>
 
                     <div class="btn-group" role="group">
                         <a href="${file_path + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>                
@@ -460,24 +653,24 @@ function generate_view_attachment_a(e) {
     let btn_conf_att = `
             <div class="d-flex justify-content-begin btn_conf_attach mb-3">
                 <div class="btn_attach_content">
-                    <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_attach" data-topic="${e.lesson_additional_subchapter}" data-url="${e.attach_arr}" data-id="${e.lesson_additional_id}"><i class="fa fa-pen"></i> Update</button>
+                    <button type="button" class="btn btn-sm btn-light-dark" id="btn_update_attach" data-topic="${e.lesson_additional_subchapter}" data-url="${e.attach_arr}" data-id="${e.lesson_additional_id}" data-chapter="${e.lesson_additional_chapter}"><i class="fa fa-pen"></i> Update</button>
                 </div>&nbsp;
                 <div class="btn_attach_content">
-                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 7, ${null}, '${e.lesson_additional_subchapter}');" ><i class="fa fa-trash"></i> Hapus</button>
+                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${e.lesson_additional_id}, 7, ${null}, '${e.lesson_additional_subchapter}', '', '${e.lesson_additional_chapter}');" ><i class="fa fa-trash"></i> Hapus</button>
                 </div>
             </div>
         `;
     $('#btn_conf_attach_a').html(btn_conf_att)
 }
 
-function generate_view_task_a(e, id, subj, grad, title) {
+function generate_view_task_a(e, id, subj, grad, title, chap) {
     let btn_conf = `
             <div class="d-flex justify-content-begin mb-5">
                 <div class="btn_task_content">
-                    <button type="button" id="view_quest_bank" data-topic="${title}" data-id="${id}" data-grade="${grad}" data-subject="${subj}" class="btn btn-sm btn-light-dark"><i class="fa fa-pen"></i> Update</button>
+                    <button type="button" id="view_quest_bank" data-chapter="${chap}" data-topic="${title}" data-id="${id}" data-grade="${grad}" data-subject="${subj}" class="btn btn-sm btn-light-dark"><i class="fa fa-pen"></i> Update</button>
                 </div>&nbsp;
                 <div class="btn_video_content">
-                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${id}, 9, ${null}, '${title}')"><i class="fa fa-trash"></i> Hapus</button>
+                    <button type="button" class="btn btn-sm btn-light-danger" onclick="remove_content_a(${id}, 9, ${null}, '${title}', '', '${chap}')"><i class="fa fa-trash"></i> Hapus</button>
                 </div>
             </div>
         `;
@@ -489,8 +682,8 @@ function generate_view_task_a(e, id, subj, grad, title) {
         cont = 'Latihan tidak tersedia'
     } else {
         let ii = 1
-        $.each(e, function(i, v) {
-            
+        $.each(e, function (i, v) {
+
             if (v != 'empty') {
                 if (i == 'std') {
                     for (let idx = 0; idx < v.length; idx++) {
@@ -506,7 +699,7 @@ function generate_view_task_a(e, id, subj, grad, title) {
             }
         })
 
-        
+
         cont = `
             <div class="row">
                 <div class="col-sm-3">
@@ -518,32 +711,32 @@ function generate_view_task_a(e, id, subj, grad, title) {
             </div>
         `
     }
-    
+
     $('#task_lesson').html(cont)
     // $('.btn_task_content').html('');
 }
 
-$(document.body).on('click', '.ltv', function(e) {
+$(document.body).on('click', '.ltv', function (e) {
     e.preventDefault()
 
     let id = $(this).data('idd')
     let type = $(this).data('type') == 'std' ? 1 : 2
     let idd = $(this).data('c')
 
-    $('.ltv').each(function() {
+    $('.ltv').each(function () {
         if ($(this).hasClass('active')) {
             $(this).removeClass('active')
         }
     })
 
-    $('#ltv'+idd).addClass('active')
+    $('#ltv' + idd).addClass('active')
 
     view_task(type, id, 'ltv')
 
-    
+
 })
 
-function remove_content_a(id, type, file = null, title = null, filename = null) {
+function remove_content_a(id, type, file = null, title = null, filename = null, chap = null) {
     let msg = '';
 
     if (type == 1) {
@@ -555,7 +748,7 @@ function remove_content_a(id, type, file = null, title = null, filename = null) 
     } else if (type == 6) {
         msg = 'video pembelajaran';
     } else if (type == 7) {
-        
+
         if (file != null) {
             spl = file.split("^")
             msg = 'file lampiran ' + spl[2];
@@ -584,7 +777,7 @@ function remove_content_a(id, type, file = null, title = null, filename = null) 
         }
     }).then(function (confirm) {
         if (confirm.isConfirmed) {
-            act_remove_a(id, type, file, title, filename)
+            act_remove_a(id, type, file, title, filename, chap)
         }
     });
 }
@@ -611,15 +804,15 @@ function view_content_a(id, type = null, notif = null, cfile = null) {
                 generate_view_lesson_a(e, cfile)
                 generate_view_video_a(e)
                 generate_view_attachment_a(e)
-                generate_view_task_a(e.task, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade, e.lesson_additional_subchapter)
-                
+                generate_view_task_a(e.task, e.lesson_additional_id, e.lesson_additional_subject_id, e.lesson_additional_grade, e.lesson_additional_subchapter, e.lesson_additional_chapter)
+
                 if ($('#content_tab_add').hasClass('hide')) {
                     $('#content_tab_add').removeClass('hide')
                     $('#content_value_add').removeClass('hide')
                 }
             }
             hide_loading()
-        
+
         }
     })
 }
@@ -703,7 +896,7 @@ function form_chapter_a(e, chap = null, subchap = null, id = null) {
 function save_content_a() {
     let type = $('input[name=form_type]').val();
     let form = true;
-    
+
     if (type == 1) {
         item = $('input[name=chapter]').val();
         id = $('input[name=lesson_id]').val();
@@ -715,7 +908,7 @@ function save_content_a() {
         }
     } else if (type == 2) {
         chap = $('#sel_chapter').find(":selected").val();
-        old_chap = $('input[name=old_chapter]').val(); 
+        old_chap = $('input[name=old_chapter]').val();
         subchap = $('input[name=sub_chapter]').val();
         id = $('input[name=lesson_id]').val();
         if (subchap != '') {
@@ -751,19 +944,22 @@ function save_content_a() {
     } else if (type == 5) {
         id = $('input[name=lesson_id]').val();
         title = $('input[name=title_topic]').val();
+        chap = $('input[name=chap_topic]').val();
         topic = $("#editor_content > .ql-editor").html();
-        store_content_a(type, id, [topic, title])
+        store_content_a(type, id, [topic, title, chap])
     } else if (type == 6) {
         id = $('input[name=lesson_id]').val();
         title = $('input[name=title_topic]').val();
+        chap = $('input[name=chap_topic]').val();
         video = $('input[name=videolink]').val();
-        store_content_a(type, id, [video, title])
+        store_content_a(type, id, [video, title, chap])
     } else if (type == 7) {
         id = $('input[name=lesson_id]').val();
         title = $('input[name=title_topic]').val();
+        chap = $('input[name=chap_topic]').val();
         var fd = new FormData();
         var files = $("#attachment").get(0).files;
-        store_content_a(type, id, [files, title])
+        store_content_a(type, id, [files, title, chap])
     }
 
     if (form) {
@@ -787,6 +983,11 @@ function store_content_a(type, id, val) {
             show_loading()
         },
         success: function (e) {
+            $('#msg_err_mdl').addClass('hide')
+
+            toast_act(e.head, e.msg, e.icon)
+            ajax_tree_mylessons(e)
+
             if (type == 5) {
                 view_content_a(id, null, e)
             } else if (type == 6) {
@@ -798,7 +999,7 @@ function store_content_a(type, id, val) {
                 $('#tab_video_a').addClass('show')
                 $('#tab_video_a').addClass('active')
                 $('#tab_topic_a_video').addClass('active')
-            } else if (type  == 7) {
+            } else if (type == 7) {
                 view_content_a(id, null, e)
                 $('.tab_topic_a').removeClass('active')
                 $('.content_topic_a').removeClass('active')
@@ -827,7 +1028,7 @@ function download_attach(file) {
         beforeSend: function () {
             show_loading()
         },
-        success: function (e) {hide_loading()}
+        success: function (e) { hide_loading() }
     })
 }
 
@@ -847,7 +1048,7 @@ function toggle_collapse(e) {
 
 }
 
-function act_remove_a(id, type, file, title, filename) {
+function act_remove_a(id, type, file, title, filename, chap) {
     $.ajax({
         url: base_url + '/teacher/lesson/additional/remove-content',
         data: {
@@ -855,7 +1056,8 @@ function act_remove_a(id, type, file, title, filename) {
             type,
             file,
             title,
-            filename
+            filename,
+            chap
         },
         method: 'post',
         dataType: 'json',
@@ -863,10 +1065,16 @@ function act_remove_a(id, type, file, title, filename) {
             show_loading()
         },
         success: function (e) {
-            console.log(type);
-            
-            if (type == 5) {
-                view_content_a(id, null, e)
+            if (type < 5) {
+                res = Object()
+                res.collapse = e.collapse
+                res.child = e.child
+                
+                ajax_tree_mylessons(res)
+
+                $('#content_tab_add').addClass('hide')
+            } else if (type == 5) {
+                view_content_a(id, type, e)
             } else if (type == 6) {
                 view_content_a(id, null, e)
                 $('.tab_topic_a').removeClass('active')
@@ -896,8 +1104,8 @@ function act_remove_a(id, type, file, title, filename) {
                 $('#tab_task').addClass('show')
                 $('#tab_task').addClass('active')
                 $('#tab_topic_a_task').addClass('active')
-            } else {
-                location.reload()
+                // } else {
+                //     location.reload()
             }
             hide_loading()
         }
@@ -946,39 +1154,40 @@ $('.delete').on('click', function (e) {
     });
 })
 
-$(document.body).on('click', '#view_quest_bank', function() {
+$(document.body).on('click', '#view_quest_bank', function () {
     let subj = $(this).data('subject')
     let grad = $(this).data('grade')
     let id = $(this).data('id')
     let topic = $(this).data('topic')
-    
+    let chap = $(this).data('chapter')
+
     $.ajax({
         url: base_url + '/teacher/lesson/additional/question-bank',
-        data: {subj, grad},
+        data: { subj, grad },
         method: 'post',
         dataType: 'json',
         beforeSend: function () {
             show_loading()
         },
         success: function (e) {
-            treeview_task(e, id, topic)
+            treeview_task(e, id, topic, chap)
             $('#modal_task_a').modal('show')
             hide_loading()
         }
     })
-    
+
 })
 
-function treeview_task(e, id, topic) {
+function treeview_task(e, id, topic, chap) {
     let content = ''
     let i1 = 1
-    $.each(e, function(i,v) {
+    $.each(e, function (i, v) {
         let ch1 = ''
         let i2 = 1
-        $.each(v.content, function(idx, val) {
+        $.each(v.content, function (idx, val) {
             let child = ''
             let ii = 1
-            $.each(val['child'], function(index, value) {
+            $.each(val['child'], function (index, value) {
                 child += `
                 <div class="form-check my-2">
                     <input class="form-check-input" type="checkbox" name="task_${i1}" value="${value.id}" />
@@ -996,13 +1205,13 @@ function treeview_task(e, id, topic) {
                     ${child}
                 </ul>
             `
-            
+
             ch1 += `
                 <li class="list-group-item parent2" data-source="${i1}${i2}"><a href="#" style="color: black">${val.title}</a></li>
                 ${val.child.length > 0 ? child_body : ''}    
             `
 
-            i2++ 
+            i2++
         })
 
         let ch1_body = `
@@ -1020,7 +1229,8 @@ function treeview_task(e, id, topic) {
 
     let page = `
         <input type="hidden" name="lesson_id" value="${id}" />
-        <input type="hidden" name="title_topic" value="${topic}" />
+        <input type="hidden" name="title_topic_t" value="${topic}" />
+        <input type="hidden" name="chap_topic" value="${chap}" />
         <ul class="list-group list-group-flush head_parent1">
             ${content}
         </ul>
@@ -1029,7 +1239,7 @@ function treeview_task(e, id, topic) {
     $('#view_select_task').html(page)
 }
 
-$(document.body).on('click', '.parent1', function() {
+$(document.body).on('click', '.parent1', function () {
     id = $(this).data('source')
 
     if ($('#i' + id).hasClass('hide')) {
@@ -1045,7 +1255,7 @@ $(document.body).on('click', '.parent1', function() {
     }
 })
 
-$(document.body).on('click', '.parent2', function() {
+$(document.body).on('click', '.parent2', function () {
     id = $(this).data('source')
     if ($('#i' + id).hasClass('hide')) {
         $('#i' + id).removeClass('hide')
@@ -1055,18 +1265,18 @@ $(document.body).on('click', '.parent2', function() {
         //         $(this).addClass('hide') 
         //     }
         // });
-    
+
         $('#i' + id).addClass('hide')
     }
 })
 
-function view_task(type, id, act = null){
-    
+function view_task(type, id, act = null) {
+
     let l_url = level == 11 ? 'teacher' : 'student'
-    
+
     $.ajax({
         url: base_url + l_url + '/lesson/additional/get-question',
-        data: {type, id},
+        data: { type, id },
         method: 'post',
         dataType: 'json',
         beforeSend: function () {
@@ -1077,16 +1287,16 @@ function view_task(type, id, act = null){
             hide_loading()
         }
     })
-    
+
 }
 
-function generate_preview(e, act){
+function generate_preview(e, act) {
     let opt = ``
     let html = ``
     let num = 1
 
     if (e != null) {
-        $.each(JSON.parse(e.option), function(i,v) {
+        $.each(JSON.parse(e.option), function (i, v) {
             let lab = v
             if (e.type == 3) {
                 lab = v == 1 ? 'Benar' : 'Salah'
@@ -1103,7 +1313,7 @@ function generate_preview(e, act){
             `
             num++
         })
-    
+
         html = `
             <div class="card">
                 <div class="alert alert-dismissible bg-light-primary border border-primary d-flex flex-column flex-sm-row p-5 mb-5">
@@ -1127,38 +1337,48 @@ function generate_preview(e, act){
     }
 }
 
-function act_task_a(){
+function act_task_a() {
     let std_task = []
-    $('input[name="task_1"]:checked').each(function() {
+    $('input[name="task_1"]:checked').each(function () {
         std_task.push(this.value)
     });
-    
+
     let me_task = []
-    $('input[name="task_2"]:checked').each(function() {
+    $('input[name="task_2"]:checked').each(function () {
         me_task.push(this.value)
     });
-    
+
     let pub_task = []
-    $('input[name="task_3"]:checked').each(function() {
+    $('input[name="task_3"]:checked').each(function () {
         pub_task.push(this.value)
     });
 
     let less_id = $('input[name=lesson_id]').val()
-    let topic = $('input[name=title_topic]').val()
+    let topic = $('input[name=title_topic_t]').val()
+    let chap = $('input[name=chap_topic]').val()
 
     let send_std = std_task.length > 0 ? std_task : 'empty'
     let send_me = me_task.length > 0 ? me_task : 'empty'
     let send_pub = pub_task.length > 0 ? pub_task : 'empty'
 
-    store_content_a(7, less_id, [send_std, send_me, send_pub, topic])
-    
+    let i = 0;
+    send_me != 'empty' ? i++ : 0
+    send_pub != 'empty' ? i++ : 0
+    send_std != 'empty' ? i++ : 0
+    if (i > 0) {
+        store_content_a(7, less_id, [send_std, send_me, send_pub, topic, chap])
+    } else {
+        $('#select_quest_alert').removeClass('hide')
+    }
+
+
 }
 
 function view_shared_lesson(id) {
     view_content_a(id, 'shr')
 }
 
-function modal_view_shared(e){
+function modal_view_shared(e) {
     if (e.lesson_additional_shared_type == 1) {
         $('#opt1').prop('checked', true)
     } else if (e.lesson_additional_shared_type == 2) {

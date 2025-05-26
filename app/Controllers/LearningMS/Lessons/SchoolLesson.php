@@ -812,7 +812,10 @@ class SchoolLesson extends BaseController
     public function s_view_content($subject, $grade)
     {
         $subs = $this->subject->where('subject_id', $subject)->first();
-
+        echo '<pre>';
+        print_r($subs);
+        echo '</pre>';
+        die;
         $data["title"] = $subs['subject_name'] . ' - Kelas ' . $grade;
         $data["page"] = 'Self Study';
         $data["sidebar"] = $this->sidebar;

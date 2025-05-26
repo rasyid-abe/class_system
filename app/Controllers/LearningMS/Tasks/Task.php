@@ -1053,11 +1053,7 @@ class Task extends BaseController
     public function submit_check_task()
     {
         $req = $this->request->getVar();
-        // echo '<pre>';
-        // print_r($req);
-        // // print_r('logging belum tersedia, created dan updated juga belum');
-        // echo '</pre>';
-        // die;
+
         $result = $this->task_result
             ->where('task_result_id', $req['res'])->first();
 
@@ -1316,9 +1312,10 @@ class Task extends BaseController
 
                 $lists = '
                     <div class="row bigrow-tabulator">
-                        <div class="col-lg-4 mx-auto">
+                        <div class="col-lg-5 mx-auto">
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
+                                    <button data-id="'.$v['task_id'] .'" data-student="'.userdata()['id_profile'].'" data-school="'.userdata()['school_id'].'" class="view_done_task btn btn-primary pl-10">Lihat Hasil</button>
                                     <div class="flex-grow-1 mx-5" style="word-wrap: break-word;">
                                         <h5 class="">' . $v['task_title'] . '</h5>
                                         ' . $bdg_exsists . '
@@ -1334,7 +1331,7 @@ class Task extends BaseController
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 mx-auto">
+                        <div class="col-lg-3 mx-auto">
                             <div class="additional-info">
                                 <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
                                     <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_start']) . '</span>
@@ -1671,5 +1668,113 @@ class Task extends BaseController
             }
             echo json_encode($res);
         }
+    }
+
+    public function s_get_task_done()
+    {
+        $req = $this->request->getVar();
+
+        $result = $this->task_result
+            ->join('lms_task', 'task_id=task_result_task_id', 'left')
+            ->join('master_subject', 'subject_id=task_subject_id', 'left')
+            ->join('profile_student', 'student_id=task_result_student_id', 'left')
+            ->where('task_result_task_id', $req['taskid'])
+            ->where('task_result_student_id', $req['studentid'])
+            ->where('task_result_school_id', $req['schoolid'])
+            ->first();
+
+        $all_task = [];
+        foreach (json_decode($result['task_result_answer']) as $k => $v) {
+            foreach ($v as $val) {
+                if ($k == 'std') {
+                    $all_task[$k][] = $this->qc_std
+                        ->select('
+                            question_bank_standart_id as id,
+                            question_bank_standart_question as question,
+                            question_bank_standart_option as option,
+                            question_bank_standart_answer as answer,
+                            question_bank_standart_hint as hint,
+                            question_bank_standart_type as type,                               
+                            question_bank_standart_poin as poin                               
+                        ')
+                        ->where('question_bank_standart_id', $val->id)
+                        ->first();
+                } else {
+                    $all_task[$k][] = $this->qc_me
+                        ->select('
+                            question_bank_id as id,
+                            question_bank_question as question,
+                            question_bank_option as option,
+                            question_bank_answer as answer,
+                            question_bank_hint as hint,
+                            question_bank_type as type,
+                            question_bank_poin as poin
+                        ')
+                        ->where('question_bank_id', $val->id)
+                        ->first();
+                }
+            }
+        }
+
+        $storage = [];
+        $storage['task_id'] = $result['task_id'];
+        $storage['task_title'] = $result['task_title'];
+        $storage['subject'] = $result['subject_name'];
+
+        $quests = [];
+        $arr_src = ['me' => 1, 'pub' => 2, 'std' => 3];
+        foreach ($all_task as $k => $v) {
+            foreach ($v as  $val) {
+                $quests[$k . '_' . $val['id']]['question_id'] = $k . '_' . $val['id'];
+                $quests[$k . '_' . $val['id']]['question'] = $val['question'];
+
+                $answ = [];
+                foreach (json_decode($result['task_result_answer']) as $idx => $value) {
+                    foreach ($value as $kk => $vv) {
+                        if ($vv->id == $val['id']) {
+                            $answ[] = $vv->student_answer;
+                            if (isset($vv->poin)) {
+                                $quests[$k . '_' . $val['id']]['note_check'] = $vv->note_check;
+                                $quests[$k . '_' . $val['id']]['res_poin'] = (float)$vv->poin;
+                            } else {
+                                $quests[$k . '_' . $val['id']]['note_check'] = '';
+                                $quests[$k . '_' . $val['id']]['res_poin'] = 0;
+                            }
+                            $quests[$k . '_' . $val['id']]['checked'] = $vv->checked;
+                        }
+                    }
+                }
+
+                if ($val['type'] < 4) {
+                    $opts = [];
+                    foreach (json_decode($val['option']) as $key => $value) {
+                        $opts['opt_' . $key + 1] = $value;
+                    }
+
+                    $quests[$k . '_' . $val['id']]['option'] = $opts;
+                } else {
+                    $quests[$k . '_' . $val['id']]['option'] = [];
+                }
+
+                $quests[$k . '_' . $val['id']]['student_answer'] = $answ;
+                $quests[$k . '_' . $val['id']]['right_answer'] = $val['answer'];
+                $quests[$k . '_' . $val['id']]['type'] = $val['type'];
+                $quests[$k . '_' . $val['id']]['poin'] = $val['poin'];
+                $quests[$k . '_' . $val['id']]['hint'] = $val['hint'];
+            }
+        }
+
+        $storage['tasks'] = $quests;
+
+        $data = [
+            'key' => 'browncode_' . userdata()['id_profile'] . '_' . $result['task_id'],
+            'value' => $storage,
+            'student_id' => $result['task_result_student_id'],
+            'student_name' => $result['student_first_name'] . ' ' . $result['student_last_name'],
+            'task_id' => $result['task_id'],
+            'task_title' => $result['task_title']
+        ];
+
+        echo json_encode($data);
     }
 }

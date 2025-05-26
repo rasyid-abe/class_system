@@ -645,7 +645,7 @@ class Assessment extends BaseController
             $lists = '';
             if ($req['page-ass'] == 1) {
                 $acts = '
-                    <badge class="badge badge-dark mt-2" data-bs-placement="top" title="Ubah" onclick="edit_draft(' . $v['assessment_id'] . ')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
+                    <badge class="badge badge-dark mt-2" data-tooltip="Ubah Penilaian" data-tooltip-location="right" onclick="edit_draft(' . $v['assessment_id'] . ')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
                 ';
 
 
@@ -1147,6 +1147,7 @@ class Assessment extends BaseController
                     <div class="col-lg-5 mx-auto">
                         <div class="d-flex justify-content-between">
                             <div class="d-flex align-items-center">
+                            <button data-id="'.$v['assessment_id'] .'" data-student="'.userdata()['id_profile'].'" data-school="'.userdata()['school_id'].'" class="view_done_ass btn btn-primary pl-10">Lihat Hasil</button>
                                 <div class="flex-grow-1 mx-5" style="word-wrap: break-word;">
                                     <h5 class="">' . $v['assessment_title'] . '</h5>
                                     <badge class="badge badge-info"><i class="bi-alarm text-white"></i> ' . $duration . '</badge>
@@ -1441,5 +1442,104 @@ class Assessment extends BaseController
             ];
         }
         echo json_encode($res);
+    }
+
+    public function s_get_assessment_done()
+    {
+        $req = $this->request->getVar();
+
+        // $result_id = $this->request->getVar('result_id');
+        $result = $this->assessment_result
+            ->join('lms_assessment', 'assessment_id=assessment_result_assessment_id', 'left')
+            ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
+            ->join('profile_student', 'student_id=assessment_result_student_id', 'left')
+            ->where('assessment_result_assessment_id', $req['assessment'])
+            ->where('assessment_result_school_id', $req['schoolid'])
+            ->where('assessment_result_student_id', $req['studentid'])
+            ->first();
+
+        if ($result['assessment_question_bank_src'] == 1) {
+            $question_ = $this->question_bank_standart
+                ->select('
+                    question_bank_standart_id as id,
+                    question_bank_standart_question as question,
+                    question_bank_standart_option as option,
+                    question_bank_standart_answer as answer,
+                    question_bank_standart_hint as hint,
+                    question_bank_standart_type as type,
+                    question_bank_standart_poin as poin
+                ')
+                ->where('question_bank_standart_parent_id', $result['assessment_question_bank_id'])
+                ->findAll();
+        } else {
+            $question_ = $this->question_bank
+                ->select('
+                    question_bank_id as id,
+                    question_bank_question as question,
+                    question_bank_option as option,
+                    question_bank_answer as answer,
+                    question_bank_hint as hint,
+                    question_bank_type as type,
+                    question_bank_poin as poin
+                ')
+                ->where('question_bank_parent_id', $result['assessment_question_bank_id'])
+                ->findAll();
+        }
+
+        $storage = [];
+        $storage['assessment_id'] = $result['assessment_id'];
+        $storage['assessment_title'] = $result['assessment_title'];
+        $storage['sch_year_id'] = $result['assessment_school_year_id'];
+        $storage['subject'] = $result['subject_name'];
+        $storage['source_qb'] = $result['assessment_question_bank_src'];
+        $storage['qb_parent_id'] = $result['assessment_question_bank_id'];
+
+        $quests = [];
+        foreach ($question_ as $k => $v) {
+            $quests[$v['id']]['question_id'] = $v['id'];
+            $quests[$v['id']]['question'] = $v['question'];
+            $opt = json_decode($v['option']);
+
+            $opts = [];
+            foreach ($opt as $key => $val) {
+                $opts['optt_' . $key + 1] = $val;
+            }
+
+            $answ = [];
+            foreach (json_decode($result['assessment_result_answer']) as $idx => $value) {
+                if ($value->answer->id == $v['id']) {
+                    $answ[] = $v['type'] == 3 ? str_replace('"', '', $value->answer->student_answer) : $value->answer->student_answer;
+                    if (isset($value->answer->poin)) {
+                        $quests[$v['id']]['note_check'] = $value->answer->note_check;
+                        $quests[$v['id']]['res_poin'] = (float)$value->answer->poin;
+                    } else {
+                        $quests[$v['id']]['res_poin'] = 0;
+                        $quests[$v['id']]['note_check'] = '';
+                    }
+                    $quests[$v['id']]['checked'] = $value->answer->checked;;
+                }
+            }
+
+            $quests[$v['id']]['option'] = $opts;
+            $quests[$v['id']]['type'] = $v['type'];
+            $quests[$v['id']]['hint'] = $v['hint'];
+            $quests[$v['id']]['student_answer'] = $answ;
+            $quests[$v['id']]['right_answer'] = $v['answer'];
+            $quests[$v['id']]['poin'] = $v['poin'];
+            $quests[$v['id']]['student_poin'] = 0;
+        }
+
+        $storage['assessment'] = $quests;
+
+        $data = [
+            'key' => 'yellowcode_' . $result['assessment_result_student_id'] .'_'. $result['assessment_id'],
+            'value' => $storage,
+            'student_name' => $result['student_first_name'] .' '. $result['student_last_name'],
+            'student_id' => $result['assessment_result_student_id'],
+            'assessment_title' => $result['assessment_title'],
+            'assessment_id' => $result['assessment_id']
+        ];
+
+        echo json_encode($data);
     }
 }

@@ -32,6 +32,9 @@
 	<script src="<?= base_url() ?>assets/js/jquery.3.2.1.min.js"></script>
 	<script src="<?= base_url() ?>assets/plugins/global/plugins.bundle.js"></script>
 	<style>
+		.hand {
+			cursor: pointer;
+		}
 		.tabulator-headers, .tabulator-table {
 			width: 100%;
 		}
@@ -375,8 +378,8 @@
 		}
 
 		/* 
-  Arrow slide down effect only on mouseenter (NOT on mouseleave)
-*/
+		Arrow slide down effect only on mouseenter (NOT on mouseleave)
+		*/
 		[data-tooltip]:hover:after {
 			transition-delay: 0.5s;
 			/* Starting after the grow effect */
@@ -385,11 +388,11 @@
 		}
 
 		/*
-  That's it for the basic tooltip.
+		That's it for the basic tooltip.
 
-  If you want some adjustability
-  here are some orientation settings you can use:
-*/
+		If you want some adjustability
+		here are some orientation settings you can use:
+		*/
 
 		/* LEFT */
 		/* Tooltip + arrow */
@@ -1182,12 +1185,16 @@
 		const base_url = document.getElementById('base').value;
 		let idc_public = '<?= session()->getFlashdata('id_content') ?>'
 		let att_id = '<?= session()->getFlashdata('att_id') ?>'
-		let file_id = '<?= session()->getFlashdata('file_id') ?>'
 		let hostUrl = "<?= base_url() ?>assets/";
 		let active_year = '<?= year_active() != null ? year_active()['school_year_period'] : '' ?>'
 		let active_year_id = '<?= year_active() != null ? year_active()['school_year_id'] : '' ?>'
 		let level = '<?= session()->get('c_role') ?>'
 		
+		let file_id = '<?= session()->getFlashdata('file_id') ?>'
+		let file_coll = '<?= session()->getFlashdata('file_coll') ?>'
+		let file_chd = '<?= session()->getFlashdata('file_chd') ?>'
+
+
 		let file_path = 'https://devabe-s3.s3.ap-southeast-1.amazonaws.com/'
 
 
