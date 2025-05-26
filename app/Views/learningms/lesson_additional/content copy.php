@@ -126,14 +126,6 @@
                 </h3>
             </div>
             <div class="modal-body">
-                <div class="hide" id="select_quest_alert">
-                    <div class="alert alert-danger d-flex align-items-center p-2 mb-5">
-                        <i class="bi bi-shield-fill-x fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i>
-                        <div class="d-flex flex-column">
-                            <div id="">Belum ada soal yang dipilih!</div>
-                        </div>
-                    </div>
-                </div>
                 <input type="hidden" name="less_id" val="">
                 <div class="row">
                     <div class="col-sm-3">
@@ -159,10 +151,93 @@
         <div class="rounded border">
             <div class="" id="kt_accordion_1">
 
-                <div class="d-grid mb-2">
-                    <a href="#" onclick="form_chapter_a(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran</a>
-                </div>
-                <div class="treeslesson" id="treeslesson"></div>
+                <?php if (count($chapters) > 0) : ?>
+
+                    <div class="d-grid mb-2">
+                        <a href="#" onclick="form_chapter_a(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran</a>
+                    </div>
+                    <?php foreach ($chapters as $k => $v) : ?>
+                        <div class="treeslesson" id="treeslesson"></div>
+                        <div class="accordion-item">
+                            <div class="accordion-body bg-secondary">
+                                <div class="d-flex justify-content-between pr-5">
+                                    <a href="#" class="d-grid text-wrap fs-4 fw-bold" style="width: 90%" onclick="toggle_collapse(<?= $k ?>);"><?= $v['lesson_additional_chapter'] ?></a>
+                                    <div class="btnleft d-flex align-items-center">
+                                        <a href="#" class="" onclick="form_chapter_a(3, '<?= $v['lesson_additional_chapter'] ?>', '', '<?= $v['lesson_additional_id'] ?>')">
+                                            <i class="bi bi-plus-square-fill fs-2 text-primary"></i>
+                                        </a>
+                                        <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                            <i class="bi bi-three-dots-vertical fs-2 text-primary"></i>
+                                        </a>
+                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" data-popper-placement="bottom-end"
+                                            style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);">
+                                            <div class="menu-item px-3">
+                                                <span onclick="form_chapter_a(1, '<?= $v['lesson_additional_chapter'] ?>', '', '<?= $v['lesson_additional_id'] ?>');" class="menu-link px-3">
+                                                    Ubah
+                                                </span>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" onclick="remove_content_a(<?= $v['lesson_additional_id'] ?>, 1, null,'<?= $v['lesson_additional_chapter'] ?>')" data-kt-users-table-filter="delete_row">
+                                                    Hapus BAB
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="coll_body_<?= $k ?>" class="hide body_collapse">
+                                <div class="accordion-body bg-white">
+                                    <?php foreach ($v['sub_chapter'] as $key => $val): ?>
+                                        <?php if ($val['lesson_additional_subchapter'] != '') : ?>
+                                            <div class="d-flex justify-content-between pr-5">
+                                                <div class="shared-info text-wrap" style="width: 80%">
+                                                    <a href="#" class="text-primary opacity-75-hover fs-4 fw-semibold" onclick="view_content_a(<?= $val['lesson_additional_id'] ?>);"><?= $val['lesson_additional_subchapter'] ?></a>
+                                                    <?php if ($val['lesson_additional_shared_type'] > 0): ?>
+                                                        <br><small class="fw-bold text-info isshrls">Dibagikan</small>
+                                                    <?php endif ?>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                        <i class="bi bi-three-dots-vertical fs-3 text-gray-600"></i>
+                                                    </a>
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-13.75px, 308.75px);" data-popper-placement="bottom-end">
+                                                    <div class="menu-item px-3">
+                                                        <?php if ($val['lesson_additional_shared_type'] < 1): ?>
+                                                            <span onclick="share_topic_a(<?= $val['lesson_additional_id'] ?>, '<?= $val['lesson_additional_chapter'] ?>', '<?= $val['lesson_additional_subchapter'] ?>');" class="menu-link px-3">
+                                                                Bagikan
+                                                            </span>
+                                                        <?php else: ?>
+                                                            <span onclick="view_shared_lesson(<?= $val['lesson_additional_id'] ?>)" class="menu-link px-3">
+                                                                Lihat Pambagian
+                                                            </span>
+                                                        <?php endif ?>
+                                                    </div>
+                                                        <div class="menu-item px-3">
+                                                            <span onclick="form_chapter_a(2, '<?= $val['lesson_additional_chapter'] ?>', '<?= $val['lesson_additional_subchapter'] ?>', '<?= $val['lesson_additional_id'] ?>');" class="menu-link px-3">
+                                                                Ubah
+                                                            </span>
+                                                        </div>
+                                                        <div class="menu-item px-3">
+                                                            <a href="#" class="menu-link px-3" onclick="remove_content_a(<?= $val['lesson_additional_id'] ?>, 2, null, '<?= $val['lesson_additional_subchapter'] ?>')" data-kt-users-table-filter="delete_row">
+                                                                Hapus Topik
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?= count($v['sub_chapter']) > 1 ? '<div class="separator separator-dashed my-3"></div>' : '' ?>
+                                        <?php endif; ?>
+                                    <?php endforeach ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach ?>
+                <?php else : ?>
+                    <div class="d-grid mb-2">
+                        <a href="#" onclick="form_chapter_a(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran</a>
+                    </div>
+                <?php endif ?>
+
             </div>
         </div>
     </div>

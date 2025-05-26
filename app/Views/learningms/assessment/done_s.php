@@ -9,6 +9,40 @@
 
 </div>
 
+<div class="modal bg-body fade task_modal_act" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="checking_mydone_assessment">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content shadow-none">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h5 id="doneassname"></h5>
+          <badge id="donesubjectass" class="badge badge-info mt-2"></badge>
+        </div>
+        <div class="buttonn">
+          <button type="button" class="btn btn-danger" onclick="close_checking_mydone_ass()">Tutup</button>
+          <!-- <input type="hidden" name="doneresult_id_ass" id="doneresult_id_ass"> -->
+          <input type="hidden" name="donestu_id_ass" id="donestu_id_ass">
+          <input type="hidden" name="doneassid" id="doneassid">
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-3" style="overflow-y: scroll; max-height:690px;">
+            <div class="list_questions_ass_done" id="list_questions_ass_done"></div>
+          </div>
+          <div class="col-sm-6">
+            <div id="check_question_assdone"></div>
+            <div id="check_answer_assdone"></div>
+            <div id="check_answer_essay_assdone"></div>
+          </div>
+          <div class="col-sm-3">
+            <div id="checkpoin_assdone"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_look_question">
   <div class="modal-dialog modal-xl">

@@ -1008,7 +1008,7 @@ function actview_checking_tsk(sid, e, idx = 0, fix = false) {
     if (!fix) {
       if (num > 1) {
         if (v.checked != 0) {
-          btnn = 'btn-success iss'
+          btnn = v.res_poin > 0 ? 'btn-success iss' : 'btn-danger isw'
         } else {
           btnn = 'btn-outline btn-outline-dark'
         }
@@ -1020,14 +1020,14 @@ function actview_checking_tsk(sid, e, idx = 0, fix = false) {
         btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
       } else {
         if (v.checked != 0) {
-          btnn = 'btn-success iss'
+          btnn = v.res_poin > 0 ? 'btn-success iss' : 'btn-danger isw'
         } else {
           btnn = 'btn-outline btn-outline-dark'
         }
       }
     }
 
-    number_quest += `<a href="#" onclick="view_question_act_chk_tsk('${v.question_id}', ${sid})" class="m-1 btn btn-icon  ${btnn} actbtn">${num}</a>`
+    number_quest += `<a href="#" onclick="view_question_act_chk_tsk('${v.question_id}', ${sid})" class="m-1 btn btn-icon  ${btnn} actbtn_s">${num}</a>`
       num++
   })
 
@@ -1048,7 +1048,6 @@ function actview_checking_tsk(sid, e, idx = 0, fix = false) {
   `
   $('#list_questions_tsk').html(nquest);
 }
-
 
 function view_question_act_chk_tsk(id, sid) {
   $('#check_answer_essay_tsk').html('')
@@ -1092,27 +1091,32 @@ function view_question_act_chk_tsk(id, sid) {
   let ras = qtype == 3 ? right_answer.map(function (x) {return parseInt(x, 10)}) : right_answer;
   
   $.each(row.option, function (i, v) {   
-    let btn_cls = 'btn-outline btn-outline-primary'
+    let btn_cls = 'bg-light-primary border border-primary'
+    let txt_cls = "text-primary"
     if (sas.includes(v)) {
+      txt_cls = "text-white"
       if (ras.includes(v)) {
-        btn_cls = 'btn-success'
+        btn_cls = 'bg-success border border-success'
       } else {
-        btn_cls = 'btn-warning'
+        btn_cls = 'bg-warning border border-warning'
       }
     } else if (ras.includes(v)) {
-      btn_cls = 'btn-primary'
+      txt_cls = "text-white"
+      btn_cls = 'bg-primary border border-primary'
     }
 
     let opt_val = row.type == 3 ? (v == 1 ? 'Benar' : 'Salah') : v
     option += `
+    
     <div class="col-sm-6">
-      
-      <label class="btn ${btn_cls} p-7 d-flex align-items-center mb-5" for="kt_choose_${num}">
-        <span class="d-block fw-semibold text-start">
-          <span class="fw-bold d-block fs-3 mb-2">Pilihan Jawaban ${num}</span>
-          <span class="fs-3">${opt_val}</span>
+      <div class="alert ${btn_cls} d-flex flex-column flex-sm-row mb-5">
+        <span class="d-block fw-semibold text-start py-2 px-3">
+          <span class="fw-bold d-block fs-3 ${txt_cls} mb-2">Pilihan Jawaban ${num}</span>
+          <span class="fw-bold fs-3 ${txt_cls}">
+            ${opt_val}
+          </span>
         </span>
-      </label>
+      </div>
     </div>
     `
     num++;
@@ -1144,14 +1148,14 @@ function view_question_act_chk_tsk(id, sid) {
     }
 
     setpoin = `
-      <span class="fw-bold d-block fs-3 text-primary mb-2">Nilai</span>
+      <span class="fw-bold d-block fs-3 text-primary mb-2">Nilai %</span>
       <div class="d-flex justify-content-between">
         <div class="btn-group" style="width: 100%">
-          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 0 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="0" type="button">0</button>
-          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 25 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="25" type="button">25</button>
-          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 50 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="50" type="button">50</button>
-          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 75 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="75" type="button">75</button>
-          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 100 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="100" type="button">100</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 0 ? 'btn-primary' : 'btn-dark' : 'btn-dark'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="0" type="button">0</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 25 ? 'btn-primary' : 'btn-dark' : 'btn-dark'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="25" type="button">25</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 50 ? 'btn-primary' : 'btn-dark' : 'btn-dark'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="50" type="button">50</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 75 ? 'btn-primary' : 'btn-dark' : 'btn-dark'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="75" type="button">75</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 100 ? 'btn-primary' : 'btn-dark' : 'btn-dark'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="100" type="button">100</button>
         </div>
       </div>
       <p class="text-danger err_poin_tsk hide">Nilai maksimal dibatasi hanya 100!</p>
@@ -1203,7 +1207,6 @@ function view_question_act_chk_tsk(id, sid) {
 
   $("#checked_note_tsk > .ql-editor").html(nchk != '' ? nchk : '<p><br></p>');
 }
-
 
 $(document).on('click', '.btn_vlchk_tsk', function (e) {
   e.preventDefault()
@@ -1545,7 +1548,6 @@ $(document).ready(function () {
   }
 });
 
-
 function close_view_task_student() {
   $('#modal_look_student_act_task').modal('hide')
   $('#bd_list_task_student').html('<div id="task_student_act"></div>')
@@ -1558,3 +1560,273 @@ function close_view_task_student() {
   tbconf.selectableRows = false;
   student_act_tsk = new Tabulator('#task_student_act', tbconf)
 }
+
+$(document).on('click', '.view_done_task', function(e) {
+  e.preventDefault();
+
+  let taskid = $(this).data('id');
+  let studentid = $(this).data('student');
+  let schoolid = $(this).data('school');
+  $.ajax({
+    url: base_url + "/student/task/get-task-done",
+    data: { taskid,studentid,schoolid },
+    method: "post",
+    dataType: "json",
+    beforeSend: function () {
+      show_loading()
+    },
+    success: function (e) {
+      $('#doneresult_id_tsk').val(e.result_id)
+      $('#donestu_id_tsk').val(e.student_id)
+      $('#donetaskid').val(e.task_id)
+      checking_page_done_tsk(e)
+      hide_loading()
+    },
+  })
+})
+
+function close_checking_mydone_task() {
+  let tsk = $('input[name=donetaskid]').val();
+  localStorage.removeItem('browncode_' + student_id + '_' + tsk)
+   $('#checking_mydone_task').modal('hide')
+}
+
+function checking_page_done_tsk(e) {  
+  let my_task = localStorage.getItem(e.key)
+  if (!my_task) {
+    if (e.value) {
+      localStorage.setItem(e.key, JSON.stringify(e.value))
+
+      my_task = localStorage.getItem(e.key)
+      actview_checking_done_tsk(e.student_id, my_task, 0, false)
+      $('#checking_mydone_task').modal('show')
+    }
+  } else {
+    actview_checking_done_tsk(e.student_id, my_task, 0, false)
+    $('#checking_mydone_task').modal('show')
+  }
+  
+  $('#donetaskname').html(e.task_title)
+}
+
+function actview_checking_done_tsk(sid, e, idx = 0, fix = false) {
+  let data = JSON.parse(e)
+  console.log(data);
+  
+  $('#donesubject').html(data.subject)
+
+  let number_quest = ''
+  let num = 1
+  $.each(data.tasks, function (i, v) {
+    let btnn = ''
+    if (!fix) {
+      if (num > 1) {
+        if (v.checked != 0) {
+          btnn = v.res_poin > 0 ? 'btn-success iss' : 'btn-danger isw'
+        } else {
+          btnn = 'btn-outline btn-outline-dark'
+        }
+      } else {
+        btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
+      }
+    } else {
+      if (idx == v.question_id) {
+        btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
+      } else {
+        if (v.checked != 0) {
+          btnn = v.res_poin > 0 ? 'btn-success iss' : 'btn-danger isw'
+        } else {
+          btnn = 'btn-outline btn-outline-dark'
+        }
+      }
+    }
+
+    number_quest += `<a href="#" onclick="view_question_act_chk_done_tsk('${v.question_id}', ${sid})" class="m-1 btn btn-icon  ${btnn} actbtn_s">${num}</a>`
+      num++
+  })
+
+  if (!fix) {
+    if (idx > 0) {
+      view_question_act_chk_done_tsk(Object.keys(data.tasks[idx]), sid)
+    } else {
+      view_question_act_chk_done_tsk(Object.keys(data.tasks)[0], sid)
+    }
+  }
+
+  let nquest = `
+    <div class="alert bg-light border border-primary" style="min-height: 550px;">
+    <span class="d-block fw-semibold text-start py-2 px-3">
+    <span class="fw-bold d-block fs-3 text-primary mb-2">Nomor Soal</span>
+    ${number_quest}
+    </div>
+  `
+  $('#list_questions_tsk_done').html(nquest);
+}
+
+function view_question_act_chk_done_tsk(id, sid) {
+  $('#check_answer_essay_tskdone').html('')
+  $('#checkpoin_tskdone').html('')
+  
+  let tsk = $('input[name=donetaskid]').val();
+  
+  let my_tasks = localStorage.getItem('browncode_' + student_id + '_' + tsk)
+  let data = JSON.parse(my_tasks)
+  
+  let row = data.tasks[id]
+  let qtype = data.tasks[id].type
+  let spoin = data.tasks[id].res_poin
+  let poin = data.tasks[id].poin
+  let student_answer = data.tasks[id].student_answer
+  let right_answer = JSON.parse(data.tasks[id].right_answer)
+  let nchk = data.tasks[id].note_check
+  let ischk = data.tasks[id].checked
+  
+  let tpoint = 0;
+  $.each(data.tasks, function(i,v) {
+    tpoint += parseFloat(v.res_poin)
+  })
+
+  let question = `
+    <div class="alert bg-light-info border border-info d-flex flex-column flex-sm-row mb-5">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-info mb-2">Pertanyaan</span>
+        <span class="fw-bold fs-3 text-info">
+          ${row.question}
+        </span>
+      </span>
+    </div>
+  `;
+
+  let option = ''
+  let num = 1
+  let type = qtype == 2 ? 'checkbox' : 'radio'
+
+  let sas = qtype == 3 ? student_answer[0].map(function (x) {return parseInt(x, 10)}) : student_answer[0];
+  let ras = qtype == 3 ? right_answer.map(function (x) {return parseInt(x, 10)}) : right_answer;
+  
+  $.each(row.option, function (i, v) {   
+    let btn_cls = 'bg-light-primary border border-primary'
+    let txt_cls = "text-primary"
+    if (sas.includes(v)) {
+      txt_cls = "text-white"
+      if (ras.includes(v)) {
+        btn_cls = 'bg-success border border-success'
+      } else {
+        btn_cls = 'bg-warning border border-warning'
+      }
+    } else if (ras.includes(v)) {
+      txt_cls = "text-white"
+      btn_cls = 'bg-primary border border-primary'
+    }
+
+    let opt_val = row.type == 3 ? (v == 1 ? 'Benar' : 'Salah') : v
+    option += `
+    
+    <div class="col-sm-6">
+      <div class="alert ${btn_cls} d-flex flex-column flex-sm-row mb-5">
+        <span class="d-block fw-semibold text-start py-2 px-3">
+          <span class="fw-bold d-block fs-3 ${txt_cls} mb-2">Pilihan Jawaban ${num}</span>
+          <span class="fw-bold fs-3 ${txt_cls}">
+            ${opt_val}
+          </span>
+        </span>
+      </div>
+    </div>
+    `
+    num++;
+  })
+
+  $('#check_question_tskdone').html(question)
+  let setpoin = ''
+  let colorcode = ''
+  if (qtype < 4) {
+    $('#check_answer_essay_tskdone').html('')
+    $('#check_answer_tskdone').html(`<div class="row">${option}</div>`)
+
+  //   colorcode = `
+  //   <div id="code_color my-2" style="margin-top: 10px;">
+  //     <span class="fw-bold d-block fs-3 text-primary mb-2">Kode Warna</span>
+  //     <span class="btn btn-sm btn-warning">Jawaban Siswa</span><br>
+  //     <span class="btn btn-sm btn-primary my-2">Jawaban Benar</span><br>
+  //     <span class="btn btn-sm btn-success">Jawaban Tepat</span>
+  //   </div>
+  // `
+  } else {
+    $('#check_answer_tskdone').html('')
+    
+    let formspoin = ''
+    if (ischk == 1) {
+      formspoin = `<input type="number" min="0" max="${poin}" class="form-control" id="percent_essay_poin_tsk" placeholder="Persen jawaban benar" value="${parseInt(spoin*100)}" onchange="setpercent_tsk(${id}, ${poin}, ${sid}, ${tpoint})" style="border: 2px solid #5014D0">`
+    } else {
+      formspoin = `<input type="number" min="0" max="${poin}" class="form-control" id="percent_essay_poin_tsk" placeholder="Persen jawaban benar" onchange="setpercent(${id}, ${poin}, ${sid}, ${tpoint})" style="border: 2px solid #5014D0">`
+    }
+
+    setpoin = `
+      <span class="fw-bold d-block fs-3 text-primary mb-2">Nilai</span>
+      <div class="d-flex justify-content-between">
+        <div class="btn-group" style="width: 100%">
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 0 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="0" type="button">0</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 25 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="25" type="button">25</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 50 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="50" type="button">50</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 75 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="75" type="button">75</button>
+          <button class="btn ${ischk == 1 ? spoin / poin * 100 == 100 ? 'btn-info' : 'btn-primary' : 'btn-primary'} btn_vlchk_tsk" data-key="${id}" data-poin="${poin}" data-sid="${sid}" data-val="100" type="button">100</button>
+        </div>
+      </div>
+      <p class="text-danger err_poin_tsk hide">Nilai maksimal dibatasi hanya 100!</p>
+      `
+
+    let essay = `
+    <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row mb-5">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-dark mb-2">Jawaban Uraian</span>
+        <span class="fw-semibold fs-3 text-dark">
+          ${student_answer}
+        </span>
+      </span>
+    </div>
+    `;
+    $('#check_answer_essay_tskdone').html(essay)
+  }
+
+  let checkpoin = `
+  <div class="alert bg-light border border-primary" style="min-height: 550px;">
+    <span class="d-block fw-semibold text-start py-2 px-3">
+      <div class="d-flex justify-content-between mb-3">
+        <badge class="badge badge-info fs-3 p-5">Poin : ${poin}<span class="fw-bold fs-6">/${spoin}</span></badge>
+        <badge class="badge badge-success fs-3 p-5"><b id="allpoint_tsk">Total Poin : ${tpoint % 1 == 0 ? tpoint : tpoint.toFixed(2)}</b></badge>
+        <input type="hidden" name="allpoint_tsk" value="${tpoint}"/>
+      </div>
+      <span class="fw-bold d-block fs-3 text-dark mb-2">Catatan</span>
+      <span class="fw-semibold fs-3 text-dark">
+        <div id="checked_note_tskdone"></div>
+      </span>
+    </span>
+  </div>  
+  `;
+
+  $('#checkpoin_tskdone').html(checkpoin)
+  $("#checked_note_tskdone").html(nchk != '' ? nchk : '-');
+}
+
+$(document).on("click", ".actbtn_s", function (e) {
+  e.preventDefault();
+  $(".actbtn_s").each(function () {
+    if ($(this).hasClass("btn-primary")) {
+      $(this).removeClass("btn-primary");
+      if ($(this).hasClass('iss')) {
+        $(this).addClass("btn-success");
+      } else if ($(this).hasClass('isw')){
+        $(this).addClass("btn-danger");
+      } else {
+        $(this).addClass("btn-outline btn-outline-primary");
+      }
+    }
+  });
+  if ($(this).hasClass('btn-success') || $(this).hasClass('btn-danger')) {
+    $(this).addClass("btn-primary");
+    $(this).removeClass("btn-success").removeClass("btn-danger");
+  } else {
+    $(this).addClass("btn-primary");
+    $(this).removeClass("btn-outline btn-outline-primary");
+  }
+});

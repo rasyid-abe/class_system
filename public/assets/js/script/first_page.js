@@ -275,7 +275,7 @@ $(document).ready(function () {
 
   let all_locstorage = Object.entries(localStorage);
   $.each(all_locstorage, function (i,v) {
-    if (v[0].includes("limecode") || v[0].includes("aquacode") || v[0].includes("bluecode")) {
+    if (v[0].includes("limecode") || v[0].includes("aquacode") || v[0].includes("browncode") || v[0].includes("yellowcode")) {
       localStorage.removeItem(v[0])
     }
   })

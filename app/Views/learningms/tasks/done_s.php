@@ -62,6 +62,41 @@
   </div>
 </div>
 
+<div class="modal bg-body fade task_modal_act" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="checking_mydone_task">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content shadow-none">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h5 id="donetaskname"></h5>
+          <badge id="donesubject" class="badge badge-info mt-2"></badge>
+        </div>
+        <div class="buttonn">
+          <span class="fw-bold mx-5 fs-3"><span id="left_time_task" class="hide"></span></span>
+          <button type="button" class="btn btn-danger" onclick="close_checking_mydone_task()">Tutup</button>
+          <input type="hidden" name="doneresult_id_tsk" id="doneresult_id_tsk">
+          <input type="hidden" name="donestu_id_tsk" id="donestu_id_tsk">
+          <input type="hidden" name="donetaskid" id="donetaskid">
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-3" style="overflow-y: scroll; max-height:690px;">
+            <div class="list_questions_tsk_done" id="list_questions_tsk_done"></div>
+          </div>
+          <div class="col-sm-6">
+            <div id="check_question_tskdone"></div>
+            <div id="check_answer_tskdone"></div>
+            <div id="check_answer_essay_tskdone"></div>
+          </div>
+          <div class="col-sm-3">
+            <div id="checkpoin_tskdone"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <?php $this->endSection(); ?>
