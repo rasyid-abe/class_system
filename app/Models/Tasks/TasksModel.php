@@ -21,7 +21,6 @@ class TasksModel extends Model
         'task_start', 
         'task_end', 
         'task_is_show_hint', 
-        'task_is_show_hint_done', 
         'task_is_show_explain', 
         'task_is_show_right_answer', 
         'task_is_ignored_time_submit', 

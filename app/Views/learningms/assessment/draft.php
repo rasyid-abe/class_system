@@ -8,6 +8,10 @@
       <button type="button" id="select-all" class="btn btn-sm btn-dark">Pilih Semua</button>
       <button type="button" id="deselect-all" class="btn btn-sm btn-dark">Batal Pilih</button>
       <button type="button" id="publish-btn" class="btn btn-sm btn-dark">Terbitkan</button>
+      <button type="button" id="shuffle-btn" class="btn btn-sm btn-dark">Acak Soal</button>
+      <button type="button" id="unshuffle-btn" class="btn btn-sm btn-dark">Batalkan Acak</button>
+      <button type="button" id="show-hint-btn" class="btn btn-sm btn-dark">Tampilkan Petunjuk</button>
+      <button type="button" id="hide-hint-btn" class="btn btn-sm btn-dark">Sembunyikan Petunjuk</button>
       <button type="button" id="delete-btn" class="btn btn-sm btn-dark">Hapus</button>
     </div>
     <div id="ass_draft_table"></div>
@@ -149,6 +153,13 @@
 
               <div class="col-lg-9 fv-row fv-plugins-icon-container">
                 <div class="d-flex align-items-center mt-3">
+                  <label class="form-check form-check-custom form-check-inline form-check-solid me-5">
+                    <input class="form-check-input asscheck" name="show_hint" id="ass_show_hint" type="checkbox" value="1">
+                    <span class="fw-semibold ps-2 fs-6">
+                      Tapilkan Petunjuk
+                    </span>
+                  </label>
+
                   <label class="form-check form-check-custom form-check-inline form-check-solid me-5">
                     <input class="form-check-input asscheck" name="random" id="ass_random" type="checkbox" value="1">
                     <span class="fw-semibold ps-2 fs-6">

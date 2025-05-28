@@ -309,7 +309,7 @@
 		[data-tooltip] {
 			--arrow-size: 5px;
 			position: relative;
-			z-index: 100;
+			z-index: 9999999999999;
 		}
 
 		/* Positioning and visibility settings of the tooltip */
@@ -328,7 +328,7 @@
 		/* The actual tooltip with a dynamic width */
 		[data-tooltip]:before {
 			content: attr(data-tooltip);
-			padding: 10px 18px;
+			padding: 10px 10px;
 			min-width: 50px;
 			max-width: 300px;
 			width: max-content;
@@ -345,6 +345,7 @@
 			text-align: center;
 			white-space: pre-wrap;
 			transform: translate(-50%, calc(0px - var(--arrow-size))) scale(0.5);
+			z-index: 9999;
 		}
 
 		/* Tooltip arrow */
@@ -500,19 +501,15 @@
 
 				<div class="modal-body">
 					<div class="row">
-						<div class="col-sm-3" style="overflow-y: scroll; max-height:690px;">
+						<div class="col-sm-12">
 							<div class="list_assact" id="list_assact"></div>
 						</div>
-						<div class="col-sm-9">
+						<div class="col-sm-12" id="col_questansw_ass">
 							<div id="actass_question"></div>
 							<div id="actass_option"></div>
 							<div id="actass_essay_answer"></div>
-
-							<!-- <div class="d-flex justify-content-between">
-								<button class="btn btn-warning">Batalkan Pilihan</button>
-								<button class="btn btn-success">Simpan Pilihan</button>
-							</div> -->
 						</div>
+						<div class="col_hintass" id="col_hintass"></div>
 					</div>
 				</div>
 			</div>
@@ -613,10 +610,10 @@
 
 				<div class="modal-body">
 					<div class="row">
-						<div class="col-sm-2" style="overflow-y: scroll; max-height:690px;">
+						<div class="col-sm-12">
 							<div class="list_questions" id="list_questions"></div>
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-8">
 							<div id="check_question"></div>
 							<div id="check_answer"></div>
 							<div id="check_answer_essay"></div>
@@ -733,6 +730,7 @@
 					<div class="autosubmit hide"></div>
 					<div class="random hide"></div>
 					<div class="no_cheat hide"></div>
+					<div class="show_hint hide"></div>
 					<div class="assesst_id hide"></div>
 					<div class="sch_year_id hide"></div>
 					<br>
@@ -875,9 +873,9 @@
 						<!--begin::Activities-->
 						<div class="d-flex align-items-center mb-3">
 							<!--begin::Drawer toggle-->
-							<div class="btn btn-icon btn-custom" data-kt-menu-trigger="click"
+							<a href="<?= session()->get('c_role') == 11 ? base_url('teacher/activity') : base_url('student/activity') ?>" class="btn btn-icon btn-custom" data-kt-menu-trigger="click"
 								data-kt-menu-overflow="true" data-kt-menu-placement="top-start" data-bs-toggle="tooltip"
-								data-bs-placement="right" data-bs-dismiss="click" title="Activity Logs"
+								data-bs-placement="right" data-bs-dismiss="click" title="Aktivitas Saya"
 								id="kt_activities_toggle">
 								<!--begin::Svg Icon | path: icons/duotune/general/gen032.svg-->
 								<span class="svg-icon svg-icon-2 svg-icon-lg-1">
@@ -890,7 +888,7 @@
 									</svg>
 								</span>
 								<!--end::Svg Icon-->
-							</div>
+							</a>
 							<!--end::drawer toggle-->
 						</div>
 						<!--end::Activities-->

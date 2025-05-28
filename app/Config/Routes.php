@@ -21,17 +21,8 @@ $routes->post('/config-teacher-student/active-year/set-year', 'Configs\ActiveYea
 
 $routes->get('/dashboard/admin', 'Dashboard\DashboardAdmin::index', ['filter' => 'auth']);
 $routes->get('/dashboard/admin/change-password', 'Dashboard\DashboardAdmin::change_password', ['filter' => 'auth']); #done
-$routes->post('/dashboard/admin/update-password', 'Dashboard\DashboardAdmin::update_password', ['filter' => 'auth']); #done
+$routes->post('/dashboard/admin/update-password', 'Dashboard\DashboardAdmin::update_password', ['filter' => 'auth']); 
 
-$routes->get('/dashboard/school', 'Dashboard\DashboardSchool::index', ['filter' => 'auth']);
-$routes->get('/dashboard/school/show/(:num)', 'Dashboard\DashboardSchool::show/$1', ['filter' => 'auth']);
-$routes->get('/dashboard/school/edit/(:num)', 'Dashboard\DashboardSchool::edit/$1', ['filter' => 'auth']); #done
-$routes->post('/dashboard/school/list_area', 'Dashboard\DashboardSchool::list_area', ['filter' => 'auth']);
-$routes->post('/dashboard/school/update', 'Dashboard\DashboardSchool::update', ['filter' => 'auth']); #done
-$routes->get('/dashboard/school/change-password', 'Dashboard\DashboardSchool::change_password', ['filter' => 'auth']); #done
-$routes->post('/dashboard/school/update-password', 'Dashboard\DashboardSchool::update_password', ['filter' => 'auth']); #done
-$routes->post('/dashboard/school/email-verify', 'Dashboard\DashboardSchool::email_verify', ['filter' => 'auth']); #done
-$routes->get('/dashboard/school/validate-email/(:any)/(:any)', 'Dashboard\DashboardSchool::validate_email/$1/$2', ['filter' => 'auth']);
 
 $routes->get('/dashboard/teacher', 'Dashboard\DashboardTeacher::index', ['filter' => 'auth']);
 $routes->get('/dashboard/teacher/change-password', 'Dashboard\DashboardTeacher::change_password', ['filter' => 'auth']); #done
@@ -44,6 +35,9 @@ $routes->post('/dashboard/student/update-password', 'Dashboard\DashboardStudent:
 $routes->post('/dashboard/student/data-dashboard', 'Dashboard\DashboardStudent::data_dashboard', ['filter' => 'auth']); #done
 
 ## BEGIN TEACHER ROUTE
+$routes->get('/teacher/activity', 'Activity\ActivityTeacher::index', ['filter' => 'auth']);
+$routes->get('/teacher/activity/get-data', 'Activity\ActivityTeacher::get_data', ['filter' => 'auth']);
+
 $routes->get('/teacher/lesson/standart', 'LearningMS\Lessons\StandartLesson::index', ['filter' => 'auth']);
 $routes->post('/teacher/lesson/standart/first-page', 'LearningMS\Lessons\StandartLesson::first_page', ['filter' => 'auth']);
 $routes->get('/teacher/lesson/standart/lesson-list', 'LearningMS\Lessons\StandartLesson::lesson_list', ['filter' => 'auth']);
@@ -149,6 +143,9 @@ $routes->get('/teacher/groups/get-list-student', 'LearningMS\Groups\Groups::get_
 $routes->post('/teacher/groups/get-summary', 'LearningMS\Groups\Groups::get_summary', ['filter' => 'auth']);
 
 ## BEGIN STUDENT ROUTE
+$routes->get('/student/activity', 'Activity\ActivityStudent::index', ['filter' => 'auth']);
+$routes->get('/student/activity/get-data', 'Activity\ActivityStudent::get_data', ['filter' => 'auth']);
+
 $routes->get('/student/lesson/standart', 'LearningMS\Lessons\StandartLesson::s_index', ['filter' => 'auth']);
 $routes->get('/student/lesson/standart/subject-list', 'LearningMS\Lessons\StandartLesson::s_list_subject', ['filter' => 'auth']);
 $routes->post('/student/lesson/standart/first-page', 'LearningMS\Lessons\StandartLesson::s_first_page', ['filter' => 'auth']);

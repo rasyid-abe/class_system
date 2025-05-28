@@ -337,6 +337,7 @@ function save_assessment(status = null, save_type = null) {
   let insass = $("#instruction_assessment > .ql-editor").html();
   let sch_year_id = $("input[name=schoolyearid]").val();
   let reli_sel = $('#select_religion_test').val();
+  let show_hint = $("#ass_show_hint").hasClass("checked");
 
   let timer_sts = istimer ? (timer != 0 ? true : false) : true;
   let reli_sts = isreli ? (reli_sel != 0 ? true : false) : true;
@@ -380,6 +381,7 @@ function save_assessment(status = null, save_type = null) {
         save_type,
         sch_year_id,
         reli_sel,
+        show_hint,
       ];
 
       clear_form_assessment()
@@ -489,6 +491,9 @@ function view_edit(e) {
     $("#ass_timer").removeClass("checked").prop("checked", false);
   }
 
+  e.assessment_is_show_hint == 1
+    ? $("#ass_show_hint").addClass("checked").prop("checked", true)
+    : $("#ass_show_hint").removeClass("checked").prop("checked", false);
   e.assessment_is_random == 1
     ? $("#ass_random").addClass("checked").prop("checked", true)
     : $("#ass_random").removeClass("checked").prop("checked", false);
@@ -502,17 +507,38 @@ function view_edit(e) {
 }
 
 function type_assessment(type, ids, sts, titles = []) {
-  let msg = sts == 9 ? 'hapus' : sts == 2 ? 'terbitkan' : 'batalkan'
+  let msg = ''
+  if (sts == 9) {
+    msg = 'hapus'
+  } else if (sts == 2) {
+    msg = 'terbitkan'
+  } else if (sts == 1) {
+    msg = 'batalkan'
+  } else if (sts == 3) {
+    msg = 'tampilkan petunjuk'
+  } else if (sts == 4) {
+    msg = 'sembunyikan petunjuk'
+  } else if (sts == 5) {
+    msg = 'tampilkan penjelasan'
+  } else if (sts == 6) {
+    msg = 'sembunyikan penjelasan'
+  } else if (sts == 7) {
+    msg = 'tampilkan jawaban benar'
+  } else if (sts == 8) {
+    msg = 'sembunyikan jawaban benar'
+  } else if (sts == 10) {
+    msg = 'acak soal'
+  } else if (sts == 11) {
+    msg = 'batalkan acak soal'
+  } 
+  
   Swal.fire({
-    html:
-      sts == 2
-        ? `Apakah anda yakin ${msg} ${ids.length} penilaian terpilih?`
-        : `Apakah anda yakin ${msg} ${ids.length} penilaian terpilih?`,
+    html: `Apakah anda yakin ${msg} ${ids.length} penilaian terpilih?`,
     icon: "info",
     buttonsStyling: false,
     showCancelButton: true,
-    confirmButtonText: "Ya",
-    cancelButtonText: "Tidak",
+    confirmButtonText: "Ya, Saya Mengerti",
+    cancelButtonText: "Batalkan",
     customClass: {
       confirmButton: "btn btn-sm btn-primary",
       cancelButton: "btn btn-sm btn-danger",
@@ -525,12 +551,17 @@ function type_assessment(type, ids, sts, titles = []) {
 }
 
 function reload_tabulator_ass() {
-  if (url.includes("assessment/index-draft")) {
+  if (url.includes("teacher/assessment/index-draft")) {
     draft.replaceData();
-
-  } else if (url.includes("assessment/index-scheduled")) {
+  } else if (url.includes("teacher/assessment/index-scheduled")) {
     scheduled.replaceData();
-  }
+  } else if (url.includes("teacher/assessment/index-present")) {
+    present.replaceData();
+  } else if (url.includes("teacher/assessment/index-done")) {
+    done.replaceData();
+  } else if (url.includes("student/assessment/present")) {
+    ass_present_table.replaceData();
+  } 
 }
 
 if (url.includes("teacher/assessment/index-draft")) {
@@ -573,7 +604,7 @@ if (url.includes("teacher/assessment/index-draft")) {
   ];
 
   tbconf.columns = c;
-  tbconf.selectableRows = false;
+  tbconf.selectableRows = true;
   var done = new Tabulator("#ass_done_table", tbconf);
 
   let cl = [
@@ -626,30 +657,13 @@ if (url.includes("teacher/assessment")) {
       .addEventListener("click", function () {
         draft.selectRow();
       });
-  }
-  if (url.includes("assessment/index-scheduled")) {
-    document
-      .getElementById("select-all")
-      .addEventListener("click", function () {
-        scheduled.selectRow();
-      });
-  }
-  if (url.includes("assessment/index-draft")) {
+
     document
       .getElementById("deselect-all")
       .addEventListener("click", function () {
         draft.deselectRow();
       });
-  }
-  if (url.includes("assessment/index-scheduled")) {
-    document
-      .getElementById("deselect-all")
-      .addEventListener("click", function () {
-        scheduled.deselectRow();
-      });
-  }
 
-  if (url.includes("assessment/index-draft")) {
     document
       .getElementById("publish-btn")
       .addEventListener("click", function () {
@@ -669,6 +683,58 @@ if (url.includes("teacher/assessment")) {
       });
 
     document
+      .getElementById("shuffle-btn")
+      .addEventListener("click", function () {
+        let sel_data = draft.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 10, titles);
+        }
+      });
+
+    document
+      .getElementById("unshuffle-btn")
+      .addEventListener("click", function () {
+        let sel_data = draft.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 11, titles);
+        }
+      });
+
+    document
+      .getElementById("show-hint-btn")
+      .addEventListener("click", function () {
+        let sel_data = draft.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 3, titles);
+        }
+      });
+
+    document
+      .getElementById("hide-hint-btn")
+      .addEventListener("click", function () {
+        let sel_data = draft.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 4, titles);
+        }
+      });
+
+    document
       .getElementById("delete-btn")
       .addEventListener("click", function () {
         let sel_data = draft.getSelectedData();
@@ -684,6 +750,18 @@ if (url.includes("teacher/assessment")) {
 
   if (url.includes("assessment/index-scheduled")) {
     document
+      .getElementById("select-all")
+      .addEventListener("click", function () {
+        scheduled.selectRow();
+      });
+    
+    document
+      .getElementById("deselect-all")
+      .addEventListener("click", function () {
+        scheduled.deselectRow();
+      });
+
+    document
       .getElementById("unpublish-btn")
       .addEventListener("click", function () {
         let sel_data = scheduled.getSelectedData();
@@ -695,7 +773,194 @@ if (url.includes("teacher/assessment")) {
           type_assessment(2, ids, 1, titles);
         }
       });
+
+    document
+      .getElementById("shuffle-btn")
+      .addEventListener("click", function () {
+        let sel_data = scheduled.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 10, titles);
+        }
+      });
+
+    document
+      .getElementById("unshuffle-btn")
+      .addEventListener("click", function () {
+        let sel_data = scheduled.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 11, titles);
+        }
+      });
+
+    document
+      .getElementById("show-hint-btn")
+      .addEventListener("click", function () {
+        let sel_data = scheduled.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 3, titles);
+        }
+      });
+
+    document
+      .getElementById("hide-hint-btn")
+      .addEventListener("click", function () {
+        let sel_data = scheduled.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 4, titles);
+        }
+      });
+
   }
+
+  // if (url.includes("assessment/index-present")) {
+  //   document
+  //     .getElementById("select-all")
+  //     .addEventListener("click", function () {
+  //       present.selectRow();
+  //     });
+    
+  //   document
+  //     .getElementById("deselect-all")
+  //     .addEventListener("click", function () {
+  //       present.deselectRow();
+  //     });
+
+  //   document
+  //     .getElementById("show-hint-btn")
+  //     .addEventListener("click", function () {
+  //       let sel_data = present.getSelectedData();
+  //       let ids = sel_data.map((i) => i.id);
+  //       let titles = sel_data.map((i) => i.title);
+  //       if (ids.length < 1) {
+  //         toast_act("", "Belum ada data terpilih", "error");
+  //       } else {
+  //         type_assessment(2, ids, 3, titles);
+  //       }
+  //     });
+
+  //   document
+  //     .getElementById("hide-hint-btn")
+  //     .addEventListener("click", function () {
+  //       let sel_data = present.getSelectedData();
+  //       let ids = sel_data.map((i) => i.id);
+  //       let titles = sel_data.map((i) => i.title);
+  //       if (ids.length < 1) {
+  //         toast_act("", "Belum ada data terpilih", "error");
+  //       } else {
+  //         type_assessment(2, ids, 4, titles);
+  //       }
+  //     });
+  // }
+
+  if (url.includes("assessment/index-done")) {
+    document
+      .getElementById("select-all")
+      .addEventListener("click", function () {
+        done.selectRow();
+      });
+    
+    document
+      .getElementById("deselect-all")
+      .addEventListener("click", function () {
+        done.deselectRow();
+      });
+
+    document
+      .getElementById("show-hint-btn")
+      .addEventListener("click", function () {
+        let sel_data = done.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 3, titles);
+        }
+      });
+
+    document
+      .getElementById("hide-hint-btn")
+      .addEventListener("click", function () {
+        let sel_data = done.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 4, titles);
+        }
+      });
+
+    document
+      .getElementById("show-explain-btn")
+      .addEventListener("click", function () {
+        let sel_data = done.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 5, titles);
+        }
+      });
+
+    document
+      .getElementById("hide-explain-btn")
+      .addEventListener("click", function () {
+        let sel_data = done.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 6, titles);
+        }
+      });
+
+    document
+      .getElementById("show-answer-btn")
+      .addEventListener("click", function () {
+        let sel_data = done.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 7, titles);
+        }
+      });
+
+    document
+      .getElementById("hide-answer-btn")
+      .addEventListener("click", function () {
+        let sel_data = done.getSelectedData();
+        let ids = sel_data.map((i) => i.id);
+        let titles = sel_data.map((i) => i.title);
+        if (ids.length < 1) {
+          toast_act("", "Belum ada data terpilih", "error");
+        } else {
+          type_assessment(2, ids, 8, titles);
+        }
+      });
+
+  }
+
 }
 
 function close_view_assess_student() {
@@ -737,13 +1002,9 @@ $(document).ready(function () {
     );
     draft.setData(base_url + "/teacher/assessment/list-assessment?page-ass=1");
   } else if (url.includes("teacher/assessment/index-scheduled")) {
-    scheduled.setData(
-      base_url + "/teacher/assessment/list-assessment?page-ass=2"
-    );
+    scheduled.setData(base_url + "/teacher/assessment/list-assessment?page-ass=2");
   } else if (url.includes("teacher/assessment/index-present")) {
-    present.setData(
-      base_url + "/teacher/assessment/list-assessment?page-ass=3"
-    );
+    present.setData(base_url + "/teacher/assessment/list-assessment?page-ass=3");
   } else if (url.includes("teacher/assessment/index-done")) {
     done.setData(base_url + "/teacher/assessment/list-assessment?page-ass=4");
   } else if (url.includes("groups/view-students")) {
@@ -880,11 +1141,21 @@ function actview_checking(sid, e, idx = 0, fix = false) {
           btnn = 'btn-outline btn-outline-dark'
         }
       } else {
-        btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
+        if (v.checked != 0) {
+          btnn = v.res_poin > 0 ? 'btn-primary iss' : 'btn-primary isw' 
+        } else {
+          btnn = 'btn-primary'
+        }
+        // btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
       }
     } else {
       if (idx == v.question_id) {
-        btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
+        if (v.checked != 0) {
+          btnn = v.res_poin > 0 ? 'btn-primary iss' : 'btn-primary isw' 
+        } else {
+          btnn = 'btn-primary'
+        }
+        // btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
       } else {
         if (v.checked != 0) {
           btnn = v.res_poin > 0 ? 'btn-success iss' : 'btn-danger isw'
@@ -907,7 +1178,7 @@ function actview_checking(sid, e, idx = 0, fix = false) {
   }
 
   let nquest = `
-    <div class="alert bg-light border border-primary" style="min-height: 450px;">
+    <div class="alert bg-light border border-primary">
     <span class="d-block fw-semibold text-start py-2 px-3">
     <span class="fw-bold d-block fs-3 text-primary mb-2">Nomor Soal</span>
     ${number_quest}
@@ -1230,6 +1501,7 @@ function info_begin_assessment(e) {
   $('.autosubmit').html(e.assessment_is_autosubmit)
   $('.random').html(e.assessment_is_random)
   $('.no_cheat').html(e.assessment_is_prevent_cheat)
+  $('.show_hint').html(e.assessment_is_show_hint)
   $('.assesst_id').html(e.assessment_id)
   $('.sch_year_id').html(e.assessment_school_year_id)
 
@@ -1388,7 +1660,7 @@ function actview_assessment(e, idx = 0, fix = false) {
   }
 
   let nquest = `
-    <div class="alert bg-light border border-dark" style="min-height: 450px;">
+    <div class="alert bg-light border border-dark">
     <span class="d-block fw-semibold text-start py-2 px-3">
     <span class="fw-bold d-block fs-3 text-dark mb-2">Nomor Soal</span>
     ${number_assest}
@@ -1404,6 +1676,23 @@ function view_question_act(id) {
   let row = data.assessment[id]
   let qtype = data.assessment[id].type
   let student_answer = data.assessment[id].student_answer
+
+  if (data.show_hint == 1) {
+    $('#view_hint_ass').remove()
+    $('#col_questansw_ass').removeClass('col-sm-12').addClass('col-sm-8')
+    let hint = `
+      <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-dark mb-2">Pentunjuk</span>
+        <span class="fw-semibold fs-3 text-dark">
+          ${row.hint}
+        </span>
+      </span>
+    </div>
+    `
+
+    $('#col_hintass').before(`<div class="col-sm-4" id="view_hint_ass">${hint}</div>`)
+  }
 
   let question = `
     <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row mb-5">
@@ -1566,6 +1855,7 @@ function get_assessment(type, id, src = null) {
       document.querySelector('.source_question_bank').innerHTML,
       document.querySelector('.assesst_id').innerHTML,
       document.querySelector('.sch_year_id').innerHTML,
+      document.querySelector('.show_hint').innerHTML,
     ];
   }
 
@@ -1649,7 +1939,7 @@ function submit_assessment_act(submit_type, submit_msg) {
         localStorage.removeItem('redcode_' + student_id)
         localStorage.removeItem('rcop_' + student_id)
         localStorage.removeItem('tmr_' + student_id)
-
+        reload_tabulator_ass()
         ajax_dash_student()
       } else {
         Swal.fire({
@@ -1738,7 +2028,6 @@ $(document).on('click', '.lblquestadd', function(e) {
     $(this).addClass('fw-bold text-primary underline')
 })
 
-
 $(document).on('click', '.view_done_ass', function(e) {
   e.preventDefault();
 
@@ -1803,11 +2092,21 @@ function actview_checking_done_ass(sid, e, idx = 0, fix = false) {
           btnn = 'btn-outline btn-outline-dark'
         }
       } else {
-        btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
+        if (v.checked != 0) {
+          btnn = v.res_poin > 0 ? 'btn-primary iss' : 'btn-primary isw' 
+        } else {
+          btnn = 'btn-primary'
+        }
+        // btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
       }
     } else {
       if (idx == v.question_id) {
-        btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
+        if (v.checked != 0) {
+          btnn = v.res_poin > 0 ? 'btn-primary iss' : 'btn-primary isw' 
+        } else {
+          btnn = 'btn-primary'
+        }
+        // btnn = v.checked != 0 ? 'btn-primary iss' : 'btn-primary'
       } else {
         if (v.checked != 0) {
           btnn = v.res_poin > 0 ? 'btn-success iss' : 'btn-danger isw'
@@ -1830,7 +2129,7 @@ function actview_checking_done_ass(sid, e, idx = 0, fix = false) {
   }
 
   let nquest = `
-    <div class="alert bg-light border border-primary" style="min-height: 550px;">
+    <div class="alert bg-light border border-primary">
     <span class="d-block fw-semibold text-start py-2 px-3">
     <span class="fw-bold d-block fs-3 text-primary mb-2">Nomor Soal</span>
     ${number_quest}
@@ -1858,6 +2157,40 @@ function view_question_act_chk_done_ass(id, sid) {
   let right_answer = JSON.parse(data.assessment[id].right_answer)
   let nchk = data.assessment[id].note_check
   let ischk = data.assessment[id].checked
+  
+  if (data.show_hint == 1) {
+    let hint = `
+      <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-dark mb-2">Pentunjuk</span>
+        <span class="fw-semibold fs-3 text-dark">
+          ${row.hint}
+        </span>
+      </span>
+    </div>
+    `
+
+    $('#check_hintass').html(hint)
+  } else {
+    $('#check_hintass').html('')
+  }
+  
+  if (data.show_explain == 1) {
+    let explain = `
+      <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row">
+      <span class="d-block fw-semibold text-start py-2 px-3">
+        <span class="fw-bold d-block fs-3 text-dark mb-2">Penjelasan</span>
+        <span class="fw-semibold fs-3 text-dark">
+          ${row.explain}
+        </span>
+      </span>
+    </div>
+    `
+
+    $('#check_explainass').html(explain)
+  } else {
+    $('#check_explainass').html('')
+  }
   
   let tpoint = 0;
   $.each(data.assessment, function(i,v) {
@@ -1893,8 +2226,10 @@ function view_question_act_chk_done_ass(id, sid) {
         btn_cls = 'bg-warning border border-warning'
       }
     } else if (ras.includes(v)) {
-      txt_cls = "text-white"
-      btn_cls = 'bg-primary border border-primary'
+      if (data.show_right_answer == 1) {
+        txt_cls = "text-white"
+        btn_cls = 'bg-primary border border-primary'
+      }
     }
 
     let opt_val = row.type == 3 ? (v == 1 ? 'Benar' : 'Salah') : v
@@ -1918,17 +2253,8 @@ function view_question_act_chk_done_ass(id, sid) {
   let setpoin = ''
   let colorcode = ''
   if (qtype < 4) {
-    $('#check_question_assdone').html('')
+    $('#check_answer_essay_assdone').html('')
     $('#check_answer_assdone').html(`<div class="row">${option}</div>`)
-
-  //   colorcode = `
-  //   <div id="code_color my-2" style="margin-top: 10px;">
-  //     <span class="fw-bold d-block fs-3 text-primary mb-2">Kode Warna</span>
-  //     <span class="btn btn-sm btn-warning">Jawaban Siswa</span><br>
-  //     <span class="btn btn-sm btn-primary my-2">Jawaban Benar</span><br>
-  //     <span class="btn btn-sm btn-success">Jawaban Tepat</span>
-  //   </div>
-  // `
   } else {
     $('#check_answer_assdone').html('')
     
@@ -1967,7 +2293,7 @@ function view_question_act_chk_done_ass(id, sid) {
   }
 
   let checkpoin = `
-  <div class="alert bg-light border border-primary" style="min-height: 550px;">
+  <div class="alert bg-light border border-primary">
     <span class="d-block fw-semibold text-start py-2 px-3">
       <div class="d-flex justify-content-between mb-3">
         <badge class="badge badge-info fs-3 p-5">Poin : ${poin}<span class="fw-bold fs-6">/${spoin}</span></badge>
