@@ -4,10 +4,14 @@
 <div class="card mb-5 mb-xl-10">
 
   <div class="card-body border-top p-9">
-  <div class="btn-group mb-3" role="group" aria-label="Basic example">
+    <div class="btn-group mb-3" role="group" aria-label="Basic example">
       <button type="button" id="select-all" class="btn btn-sm btn-dark">Pilih Semua</button>
       <button type="button" id="deselect-all" class="btn btn-sm btn-dark">Batal Pilih</button>
-      <button type="button" id="unpublish-btn" class="btn btn-sm btn-dark">Batalkan</button>
+      <button type="button" id="shuffle-btn" class="btn btn-sm btn-dark">Acak Soal</button>
+      <button type="button" id="unshuffle-btn" class="btn btn-sm btn-dark">Batalkan Acak</button>
+      <button type="button" id="show-hint-btn" class="btn btn-sm btn-dark">Tampilkan Petunjuk</button>
+      <button type="button" id="hide-hint-btn" class="btn btn-sm btn-dark">Sembunyikan Petunjuk</button>
+      <button type="button" id="unpublish-btn" class="btn btn-sm btn-dark">Kembalikan ke Draft</button>
     </div>
     <div id="ass_scheduled_table"></div>
   </div>
@@ -18,7 +22,7 @@
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_look_question">
   <div class="modal-dialog modal-xl">
     <div class="modal-content" id="content_modal">
-    <div class="modal-header">
+      <div class="modal-header">
         <h3 class="modal-title">Soal Penilaian</h3>
         <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
           <i class="bi bi-x-square fs-2x"></i>
@@ -29,7 +33,7 @@
         <div class="row">
           <div class="col-sm-3">
             <div class="card">
-                <div id="lists_questions"></div>
+              <div id="lists_questions"></div>
             </div>
           </div>
 

@@ -247,6 +247,7 @@ class Assessment extends BaseController
                     assessment_is_random,
                     assessment_is_autosubmit,
                     assessment_is_prevent_cheat,
+                    assessment_is_show_hint,
                     assessment_instruction,
                     subject_name,
                     question_bank_title,
@@ -266,7 +267,7 @@ class Assessment extends BaseController
     public function store_data()
     {
         $req = $this->request->getVar();
-   
+
         if ($req['type'] == 1) {
             $d = json_decode($req['data']);
 
@@ -294,6 +295,7 @@ class Assessment extends BaseController
                         ->set('assessment_is_random', $d[7])
                         ->set('assessment_is_autosubmit', $d[9])
                         ->set('assessment_is_prevent_cheat', $d[8])
+                        ->set('assessment_is_show_hint', $d[19])
                         ->set('assessment_instruction', $d[10])
                         ->set('assessment_status', $d[15])
                         ->set('assessment_group', json_encode($group))
@@ -366,11 +368,9 @@ class Assessment extends BaseController
                         'assessment_teacher_id' => userdata()['id_profile'],
                         'assessment_grade' => $d[2],
                         'assessment_subject_id' => $d[1],
-                        // 'assessment_subject_name' => $d[13],
                         'assessment_group' => json_encode($group),
                         'assessment_title' => $d[0],
                         'assessment_question_bank_id' => $d[11],
-                        // 'assessment_question_bank_title' => $d[12],
                         'assessment_question_bank_src' => $d[14],
                         'assessment_start' => date('Y-m-d H:i:s', strtotime($d[4] . ':00')),
                         'assessment_end' => date('Y-m-d H:i:s', strtotime($d[5] . ':00')),
@@ -379,6 +379,7 @@ class Assessment extends BaseController
                         'assessment_is_random' => $d[7],
                         'assessment_is_autosubmit' => $d[9],
                         'assessment_is_prevent_cheat' => $d[8],
+                        'assessment_is_show_hint' => $d[19],
                         'assessment_instruction' => $d[10],
                         'assessment_status' => $d[15],
                         'assessment_created_by' => session()->get('c_id'),
@@ -436,11 +437,44 @@ class Assessment extends BaseController
             $this->assessment->db->transBegin();
             try {
                 foreach ($req['id'] as $k => $v) {
-                    $this->assessment
-                        ->where('assessment_id', $v)
-                        ->set('assessment_status', $req['data'])
-                        ->set('assessment_updated_by', session()->get('c_id'))
-                        ->update();
+                    if ($req['data'] == 1 || $req['data'] == 2 || $req['data'] == 9) {
+                        $this->assessment
+                            ->where('assessment_id', $v)
+                            ->set('assessment_status', $req['data'])
+                            ->set('assessment_updated_by', session()->get('c_id'))
+                            ->update();
+                    } else if ($req['data'] == 3 || $req['data'] == 4) {
+                        $shint = $req['data'] == 3 ? 1 : 0;
+                        $this->assessment
+                            ->where('assessment_id', $v)
+                            ->set('assessment_is_show_hint', $shint)
+                            ->set('assessment_updated_by', session()->get('c_id'))
+                            ->update();
+                    } else if ($req['data'] == 5 || $req['data'] == 6) {
+                        $shint = $req['data'] == 5 ? 1 : 0;
+                        $this->assessment
+                            ->where('assessment_id', $v)
+                            ->set('assessment_is_show_explain', $shint)
+                            ->set('assessment_updated_by', session()->get('c_id'))
+                            ->update();
+                            
+                    } else if ($req['data'] == 7 || $req['data'] == 8) {
+                        $shint = $req['data'] == 7 ? 1 : 0;
+                        $this->assessment
+                            ->where('assessment_id', $v)
+                            ->set('assessment_is_show_right_answer', $shint)
+                            ->set('assessment_updated_by', session()->get('c_id'))
+                            ->update();
+
+                    } else if ($req['data'] == 10 || $req['data'] == 11) {
+                        $shint = $req['data'] == 10 ? 1 : 0;
+                        $this->assessment
+                            ->where('assessment_id', $v)
+                            ->set('assessment_is_random', $shint)
+                            ->set('assessment_updated_by', session()->get('c_id'))
+                            ->update();
+
+                    }
                     
                     $sts_assess = $this->assessment->error();
                     if ($sts_assess['code'] > 0) {
@@ -454,8 +488,24 @@ class Assessment extends BaseController
                             $this->activity->store_log('Penilaian', 'publish', 'menerbitkan penilaian "'.$req['title'][$k].'"');
                         } else if ($req['data'] == 1) {
                             $this->activity->store_log('Penilaian', 'unpublish', 'membatalkan penilaian "'.$req['title'][$k].'"');
-                        } else {
+                        } else if ($req['data'] == 9) {
                             $this->activity->store_log('Penilaian', 'delete', 'menghapus penilaian "'.$req['title'][$k].'"');
+                        } else if ($req['data'] == 3) {
+                            $this->activity->store_log('Penilaian', 'update', 'menampilkan petunjuk pada penilaian "'.$req['title'][$k].'"');
+                        } else if ($req['data'] == 4) {
+                            $this->activity->store_log('Penilaian', 'update', 'menyembunyikan petunjuk pada penilaian "'.$req['title'][$k].'"');
+                        } else if ($req['data'] == 5) {
+                            $this->activity->store_log('Penilaian', 'update', 'menampilkan penjelasan pada penilaian "'.$req['title'][$k].'"');
+                        } else if ($req['data'] == 6) {
+                            $this->activity->store_log('Penilaian', 'update', 'menyembunyikan penjelasan pada penilaian "'.$req['title'][$k].'"');
+                        } else if ($req['data'] == 7) {
+                            $this->activity->store_log('Penilaian', 'update', 'menampilkan jawaban benar pada penilaian "'.$req['title'][$k].'"');
+                        } else if ($req['data'] == 8) {
+                            $this->activity->store_log('Penilaian', 'update', 'menyembunyikan jawaban benar pada penilaian "'.$req['title'][$k].'"');
+                        } else if ($req['data'] == 10) {
+                            $this->activity->store_log('Penilaian', 'update', 'mengacak soal pada penilaian "'.$req['title'][$k].'"');
+                        } else if ($req['data'] == 11) {
+                            $this->activity->store_log('Penilaian', 'update', 'membatalkan acak soal pada penilaian "'.$req['title'][$k].'"');
                         }
 
                         $itrue++;
@@ -487,11 +537,27 @@ class Assessment extends BaseController
             }
 
             if ($req['data'] == 2) {
-                $msg = "terbitkan";
+                $msg = "di terbitkan";
             } else if ($req['data'] == 1) {
-                $msg = 'batalkan';
-            } else {
-                $msg = 'hapus';
+                $msg = 'di batalkan';
+            } else if ($req['data'] == 9) {
+                $msg = 'di hapus';
+            } else if ($req['data'] == 3) {
+                $msg = 'merubah status tampilkan petunjuk soal';
+            } else if ($req['data'] == 4) {
+                $msg = 'merubah status sembunyikan petunjuk soal';
+            } else if ($req['data'] == 5) {
+                $msg = 'merubah status tampilkan penjelasan soal';
+            } else if ($req['data'] == 6) {
+                $msg = 'merubah status sembunyikan penjelasan soal';
+            } else if ($req['data'] == 7) {
+                $msg = 'merubah status tampilkan jawaban benar';
+            } else if ($req['data'] == 8) {
+                $msg = 'merubah status sembunyikan jawaban benar';
+            } else if ($req['data'] == 10) {
+                $msg = 'acak soal';
+            } else if ($req['data'] == 11) {
+                $msg = 'batalkan acak soal';
             }
 
             if ($ecode > 0) {
@@ -505,7 +571,7 @@ class Assessment extends BaseController
                 $res = [
                     'typ' => $req['type'],
                     'sts' => $success,
-                    'msg' => $success ? $itrue . ' Penilaian berhasil di ' . $msg : $ifalse . ' Penilaian gagal di ' . $msg,
+                    'msg' => $success ? $itrue . ' Penilaian berhasil ' . $msg : $ifalse . ' Penilaian gagal ' . $msg,
                     'icn' => $success ? 'success' : 'error',
                 ];
             }
@@ -603,6 +669,13 @@ class Assessment extends BaseController
             assessment_group,
             assessment_question_bank_src,
             assessment_question_bank_id,
+            assessment_duration,
+            assessment_is_random,
+            assessment_is_autosubmit,
+            assessment_is_prevent_cheat,
+            assessment_is_show_hint,
+            assessment_is_show_explain,
+            assessment_is_show_right_answer,
             subject_name,
             question_bank_title,
             question_bank_standart_title,
@@ -618,15 +691,15 @@ class Assessment extends BaseController
         } else if ($req['page-ass'] == 4) {
             $get = $this->assessment->data_done($select, $date_now, $school_id, $teacher_id);
         }
-
+        
         $data = [];
         foreach ($get as $k => $v) {
             $groups = '';
             foreach (json_decode($v['assessment_group']) as $key => $val) {
                 if ($req['page-ass'] == 3 || $req['page-ass'] == 4) {
-                    $groups .= '<a href="" data-group_id="' . $val->id . '" data-assessment_id="' . $v['assessment_id'] . '" data-title="'.$v['assessment_title'].'" class="badge badge-danger mx-1 view_student">' . $val->group . '</a>';
+                    $groups .= '<a href="" data-group_id="' . $val->id . '" data-assessment_id="' . $v['assessment_id'] . '" data-title="'.$v['assessment_title'].'" class="badge badge-danger mx-1 view_student fs-6">' . $val->group . '</a>';
                 } else {
-                    $groups .= '<a href="' . base_url('teacher/groups/view-students/' . $val->id) . '" class="badge badge-danger mx-1">' . $val->group . '</a>';
+                    $groups .= '<a href="' . base_url('teacher/groups/view-students/' . $val->id) . '" class="badge badge-danger mx-1 fs-6">' . $val->group . '</a>';
                 }
             }
 
@@ -638,30 +711,64 @@ class Assessment extends BaseController
             }
 
             $task = '
-                <a href="#" class="badge badge-primary" onclick="view_task_assessment(' . $v['assessment_question_bank_id'] . ', ' . $v['assessment_question_bank_src'] . ')">' . $task_title . '</a>
+                <badge class="hand badge badge-primary fs-6" onclick="view_task_assessment(' . $v['assessment_question_bank_id'] . ', ' . $v['assessment_question_bank_src'] . ')">' . $task_title . '</badge>
             ';
 
+            $hint = '<badge class="badge badge-secondary" data-tooltip="Petunjuk" data-tooltip-location="top"><i class="bi bi-lightbulb-off text-white fs-4"></i></badge>';
+            if ($v['assessment_is_show_hint'] > 0) {
+                $hint = '<badge class="badge badge-success" data-tooltip="Petunjuk" data-tooltip-location="top"><i class="bi bi-lightbulb text-white fs-4"></i></badge>';
+            }
+            
+            $duration = '<badge class="badge badge-secondary" data-tooltip="Tidak Ada Batas Waktu" data-tooltip-location="top"><i class="bi bi-alarm text-white fs-4"></i></badge>';
+            if ($v['assessment_duration'] > 0) {
+                $duration = '<badge class="badge badge-success" data-tooltip="Batas Waktu '.$v['assessment_duration'].' Menit" data-tooltip-location="top"><i class="bi bi-alarm text-white fs-4"></i></badge>';
+            }
+            
+            $suffle = '<badge class="badge badge-secondary" data-tooltip="Acak" data-tooltip-location="top"><i class="bi bi-shuffle text-white fs-4"></i></badge>';
+            if ($v['assessment_is_random'] > 0) {
+                $suffle = '<badge class="badge badge-success" data-tooltip="Acak" data-tooltip-location="top"><i class="bi bi-shuffle text-white fs-4"></i></badge>';
+            }
+            
+            $shield = '<badge class="badge badge-secondary" data-tooltip="Anti Curang" data-tooltip-location="top"><i class="bi bi-shield-check text-white fs-4"></i></badge>';
+            if ($v['assessment_is_prevent_cheat'] > 0) {
+                $shield = '<badge class="badge badge-success" data-tooltip="Anti Curang" data-tooltip-location="top"><i class="bi bi-shield-check text-white fs-4"></i></badge>';
+            }
+            
+            $send = '<badge class="badge badge-secondary" data-tooltip="Kirim Otomatis" data-tooltip-location="top"><i class="bi bi-cursor text-white fs-4"></i></badge>';
+            if ($v['assessment_is_autosubmit'] > 0) {
+                $send = '<badge class="badge badge-success" data-tooltip="Kirim Otomatis" data-tooltip-location="top"><i class="bi bi-cursor text-white fs-4"></i></badge>';
+            }
+            
+            $explain = '<badge class="badge badge-secondary" data-tooltip="Penjelasan" data-tooltip-location="top"><i class="bi bi-journal-check text-white fs-4"></i></badge>';
+            if ($v['assessment_is_show_explain'] > 0) {
+                $explain = '<badge class="badge badge-success" data-tooltip="Penjelasan" data-tooltip-location="top"><i class="bi bi-journal-check text-white fs-4"></i></badge>';
+            }
+           
+            $right = '<badge class="badge badge-secondary" data-tooltip="Jawaban Benar" data-tooltip-location="top"><i class="bi bi-eye text-white fs-4"></i></badge>';
+            if ($v['assessment_is_show_right_answer'] > 0) {
+                $right = '<badge class="badge badge-success" data-tooltip="Jawaban Benar" data-tooltip-location="top"><i class="bi bi-eye text-white fs-4"></i></badge>';
+            }
 
             $lists = '';
             if ($req['page-ass'] == 1) {
                 $acts = '
-                    <badge class="badge badge-dark mt-2" data-tooltip="Ubah Penilaian" data-tooltip-location="right" onclick="edit_draft(' . $v['assessment_id'] . ')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
+                    <badge class="hand badge badge-dark mt-2" data-tooltip="Ubah Penilaian" data-tooltip-location="right" fs-5 onclick="edit_draft(' . $v['assessment_id'] . ')"><i class="bi bi-pencil-square fs-6 text-white" ></i></badge>
                 ';
 
 
                 $lists = '
                     <div class="row bigrow-tabulator">
-                        <div class="col-lg-4 mx-auto">
+                        <div class="col-lg-5 mx-auto">
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex align-items-start">
-                                    
-                                    <div class="d-flex center">
-                                        ' . $acts . '
-                                    </div>
-                    
-                                    <div class="flex-grow-1 me-2 mx-5 center">
-                                        <h6 class="mb-1">' . $v['assessment_title'] . '</h6>
-                                        <span class="text-gray-700 d-block">' . $task . '</span>
+                                    <div class="flex-grow-1 me-2 center">
+                                        <span class="text-gray-800 fw-bolder fs-4">' . $v['assessment_title'] . $acts .' </span>
+                                        <div class="bdg-group my-1">
+                                        ' . $task . '
+                                        </div>
+                                        <div class="bdg-group my-1">
+                                            '.$suffle.' '.$duration.' '.$shield.' '.$send.' '.$hint.' '.$explain.'
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -671,12 +778,12 @@ class Assessment extends BaseController
                                 <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
                                     <span class="text-gray-800 fw-semibold">' . $v['subject_name'] . '</span>
                                     <div class="bdg-group">
-                                    <badge class="badge badge-info mx-1">T.P ' . $v['school_year_period'] . '</badge>' . $groups . '&nbsp;
+                                    <badge class="badge badge-info mx-1 fs-6">T.P ' . $v['school_year_period'] . '</badge>' . $groups . '&nbsp;
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 mx-auto">
+                        <div class="col-lg-3 mx-auto">
                             <div class="additional-info">
                                 <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
                                     <span class="text-gray-700 fw-semibold">' . datetime_indo($v['assessment_start']) . '</span>
@@ -694,8 +801,13 @@ class Assessment extends BaseController
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex align-items-start">
                                     <div class="flex-grow-1 me-2 center">
-                                        <h6 class="mb-1">' . $v['assessment_title'] . '</h6>
-                                        <span class="text-gray-700 d-block">' . $task . '</span>
+                                        <span class="text-gray-800 fw-bolder fs-4">' . $v['assessment_title'] . '</span>
+                                        <div class="bdg-group">
+                                        ' . $task . '
+                                        </div>
+                                        <div class="bdg-group my-1">
+                                            '.$suffle.' '.$duration.' '.$shield.' '.$send.' '.$hint.' '.$explain.' '.$right.'
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -703,9 +815,9 @@ class Assessment extends BaseController
                         <div class="col-lg-4 mx-auto">
                             <div class="additional-info">
                                 <div class="d-flex align-items-lg-start align-items-sm-center flex-column" style="word-wrap: break-word;">
-                                    <span class="text-gray-800 fw-semibold">' . $v['subject_name'] . '</span>
+                                    <span class="text-gray-800 fw-semibold fs-4">' . $v['subject_name'] . '</span>
                                     <div class="bdg-group">
-                                    <badge class="badge badge-info mx-1">T.P ' . $v['school_year_period'] . '</badge>' . $groups . '&nbsp;
+                                    <badge class="badge badge-info fs-6">T.P ' . $v['school_year_period'] . '</badge>' . $groups . '&nbsp;
                                     </div>
                                 </div>
                             </div>
@@ -1201,6 +1313,7 @@ class Assessment extends BaseController
                     assessment_is_autosubmit,
                     assessment_is_random,
                     assessment_is_prevent_cheat,
+                    assessment_is_show_hint,
                     assessment_question_bank_id,
                     assessment_question_bank_src,
                     subject_name,
@@ -1278,6 +1391,7 @@ class Assessment extends BaseController
             $storage['autosubmit'] = $autosubmit;
             $storage['no_cheat'] = $no_cheat;
             $storage['fault'] = 0;
+            $storage['show_hint'] = $req['src'][10];
             $storage['source_qb'] = $req['src'][7];
             $storage['qb_parent_id'] = $req['id'];
 
@@ -1310,7 +1424,6 @@ class Assessment extends BaseController
 
             $this->activity->store_log('Penilaian', 'doing', 'mulai mengerjakan penilaian "'.$assessment_title.'"');
         }
-
 
         echo json_encode($data);
     }
@@ -1449,6 +1562,7 @@ class Assessment extends BaseController
         $req = $this->request->getVar();
 
         // $result_id = $this->request->getVar('result_id');
+        $ass_row = $this->assessment->where('assessment_id', $req['assessment'])->first();
         $result = $this->assessment_result
             ->join('lms_assessment', 'assessment_id=assessment_result_assessment_id', 'left')
             ->join('master_subject', 'subject_id=assessment_subject_id', 'left')
@@ -1466,6 +1580,7 @@ class Assessment extends BaseController
                     question_bank_standart_option as option,
                     question_bank_standart_answer as answer,
                     question_bank_standart_hint as hint,
+                    question_bank_standart_explain as explain,
                     question_bank_standart_type as type,
                     question_bank_standart_poin as poin
                 ')
@@ -1479,6 +1594,7 @@ class Assessment extends BaseController
                     question_bank_option as option,
                     question_bank_answer as answer,
                     question_bank_hint as hint,
+                    question_bank_explain as explain,
                     question_bank_type as type,
                     question_bank_poin as poin
                 ')
@@ -1493,6 +1609,9 @@ class Assessment extends BaseController
         $storage['subject'] = $result['subject_name'];
         $storage['source_qb'] = $result['assessment_question_bank_src'];
         $storage['qb_parent_id'] = $result['assessment_question_bank_id'];
+        $storage['show_hint'] = $ass_row['assessment_is_show_hint'];
+        $storage['show_explain'] = $ass_row['assessment_is_show_explain'];
+        $storage['show_right_answer'] = $ass_row['assessment_is_show_right_answer'];
 
         $quests = [];
         foreach ($question_ as $k => $v) {
@@ -1523,6 +1642,7 @@ class Assessment extends BaseController
             $quests[$v['id']]['option'] = $opts;
             $quests[$v['id']]['type'] = $v['type'];
             $quests[$v['id']]['hint'] = $v['hint'];
+            $quests[$v['id']]['explain'] = $v['explain'];
             $quests[$v['id']]['student_answer'] = $answ;
             $quests[$v['id']]['right_answer'] = $v['answer'];
             $quests[$v['id']]['poin'] = $v['poin'];

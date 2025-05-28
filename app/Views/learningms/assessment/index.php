@@ -213,6 +213,15 @@
                 <div class="d-flex align-items-center mt-3">
                   <label class="form-check form-check-custom form-check-inline form-check-solid me-5">
                     <div class="inprand">
+                      <input class="form-check-input asscheck" name="show_hind" id="ass_show_hint" type="checkbox" value="1">
+                    </div>
+                    <span class="fw-semibold ps-2 fs-6">
+                      Tampilkan Petunjuk
+                    </span>
+                  </label>
+
+                  <label class="form-check form-check-custom form-check-inline form-check-solid me-5">
+                    <div class="inprand">
                       <input class="form-check-input asscheck" name="random" id="ass_random" type="checkbox" value="1">
                     </div>
                     <span class="fw-semibold ps-2 fs-6">

@@ -4,6 +4,16 @@
 <div class="card mb-5 mb-xl-10">
 
   <div class="card-body border-top p-9">
+    <div class="btn-group mb-3" role="group" aria-label="Basic example">
+      <button type="button" id="select-all" class="btn btn-sm btn-dark">Pilih Semua</button>
+      <button type="button" id="deselect-all" class="btn btn-sm btn-dark">Batal Pilih</button>
+      <button type="button" id="show-hint-btn" class="btn btn-sm btn-dark">Tampilkan Petunjuk</button>
+      <button type="button" id="hide-hint-btn" class="btn btn-sm btn-dark">Sembunyikan Petunjuk</button>
+      <button type="button" id="show-explain-btn" class="btn btn-sm btn-dark">Tampilkan Penjelasan</button>
+      <button type="button" id="hide-explain-btn" class="btn btn-sm btn-dark">Sembunyikan Penjelasan</button>
+      <button type="button" id="show-answer-btn" class="btn btn-sm btn-dark">Tampilkan Jawaban</button>
+      <button type="button" id="hide-answer-btn" class="btn btn-sm btn-dark">Sembunyikan Jawaban</button>
+    </div>
     <div id="ass_done_table"></div>
   </div>
 

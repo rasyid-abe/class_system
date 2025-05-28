@@ -27,16 +27,18 @@
 
       <div class="modal-body">
         <div class="row">
-          <div class="col-sm-3" style="overflow-y: scroll; max-height:690px;">
+          <div class="col-sm-12">
             <div class="list_questions_ass_done" id="list_questions_ass_done"></div>
           </div>
-          <div class="col-sm-6">
+          <div class="col-sm-8">
             <div id="check_question_assdone"></div>
             <div id="check_answer_assdone"></div>
             <div id="check_answer_essay_assdone"></div>
+            <div id="check_hintass"></div>
           </div>
-          <div class="col-sm-3">
+          <div class="col-sm-4">
             <div id="checkpoin_assdone"></div>
+            <div id="check_explainass"></div>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
         'name' => 'codeigniter4/appstarter',
         'pretty_version' => 'dev-devabe',
         'version' => 'dev-devabe',
-        'reference' => 'ca26ac8df88dd732d421e8c711596c835b7eb4fd',
+        'reference' => 'ae6258dd9c0895662c288ba533da30a9c556e826',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'codeigniter4/appstarter' => array(
             'pretty_version' => 'dev-devabe',
             'version' => 'dev-devabe',
-            'reference' => 'ca26ac8df88dd732d421e8c711596c835b7eb4fd',
+            'reference' => 'ae6258dd9c0895662c288ba533da30a9c556e826',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

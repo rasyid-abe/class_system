@@ -72,7 +72,7 @@ class AuthConfig extends BaseController
                             'c_trial' => $user['user_is_trial']
                         ];
                         $session->set($data);
-                        $this->activity->store_log('Login', 'login', 'login to lms system');
+                        $this->activity->store_log('Login', 'login', 'login ke sistem lms');
 
                         if ($user['user_role_id'] == 11) {
                             return redirect()->to('/dashboard/teacher');

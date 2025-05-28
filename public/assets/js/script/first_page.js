@@ -68,6 +68,34 @@ if (url.includes("lesson/standart") && !url.includes("view-content")) {
   tbconf.columns = c;
   tbconf.selectableRows = false;
   var tbl_list_qbpublic = new Tabulator("#tbl_list_qbpublic", tbconf);
+} else if (url.includes("teacher/activity")) {
+  let c = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    {
+      field: "lists",
+      formatter: "html",
+      headerFilter: "input",
+      headerSort: false,
+    },
+  ];
+
+  tbconf.columns = c;
+  tbconf.selectableRows = false;
+  var activity_table_teacher = new Tabulator("#activity_table_teacher", tbconf);
+} else if (url.includes("student/activity")) {
+  let c = [
+    { title: "ID", field: "id", sorter: "string", width: 200, visible: false },
+    {
+      field: "lists",
+      formatter: "html",
+      headerFilter: "input",
+      headerSort: false,
+    },
+  ];
+
+  tbconf.columns = c;
+  tbconf.selectableRows = false;
+  var activity_table_student = new Tabulator("#activity_table_student", tbconf);
 }
 
 function ajax_std_less(type, param = null) {
@@ -292,6 +320,18 @@ $(document).ready(function () {
     student_act_tsk = new Tabulator('#task_student_act', tbconf)
 
     ajax_dash_teacher()
+  } else if (url.includes("teacher/activity")) {
+    activity_table_teacher.replaceData(
+      base_url + "/teacher/activity/get-data"
+    );
+
+    ajax_dash_teacher()
+  } else if (url.includes("student/activity")) {
+    activity_table_student.replaceData(
+      base_url + "/student/activity/get-data"
+    );
+
+    // ajax_dash_student()
   } else if (url.includes("teacher/lesson/standart")) {
     ajax_std_less(1);
   } else if (url.includes("teacher/lesson/additional")) {

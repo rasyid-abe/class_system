@@ -26,7 +26,6 @@ class AssessmentModel extends Model
         'assessment_is_autosubmit', 
         'assessment_is_prevent_cheat', 
         'assessment_is_show_hint', 
-        'assessment_is_show_hint_done', 
         'assessment_is_show_explain', 
         'assessment_is_show_right_answer', 
         'assessment_instruction',
