@@ -81,16 +81,18 @@
 
       <div class="modal-body">
         <div class="row">
-          <div class="col-sm-3" style="overflow-y: scroll; max-height:690px;">
+          <div class="col-sm-12">
             <div class="list_questions_tsk_done" id="list_questions_tsk_done"></div>
           </div>
-          <div class="col-sm-6">
+          <div class="col-sm-8">
             <div id="check_question_tskdone"></div>
             <div id="check_answer_tskdone"></div>
             <div id="check_answer_essay_tskdone"></div>
+            <div id="check_hinttsk"></div>
           </div>
-          <div class="col-sm-3">
+          <div class="col-sm-4">
             <div id="checkpoin_tskdone"></div>
+            <div id="check_explaintsk"></div>
           </div>
         </div>
       </div>

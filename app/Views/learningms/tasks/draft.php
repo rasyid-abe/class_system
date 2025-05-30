@@ -10,11 +10,10 @@
         <button type="button" id="select-all" class="btn btn-sm btn-dark">Pilih Semua</button>
         <button type="button" id="deselect-all" class="btn btn-sm btn-dark">Batal Pilih</button>
         <button type="button" id="publish-btn" class="btn btn-sm btn-dark">Terbitkan</button>
-        <button type="button" id="shuffle-btn" class="btn btn-sm btn-dark">Acak Soal</button>
-        <button type="button" id="unshuffle-btn" class="btn btn-sm btn-dark">Batalkan Acak</button>
+        <button type="button" id="active-time-btn" class="btn btn-sm btn-dark">Batas Waktu</button>
+        <button type="button" id="ignore-time-btn" class="btn btn-sm btn-dark">Abaikan Waktu</button>
         <button type="button" id="show-hint-btn" class="btn btn-sm btn-dark">Tampilkan Petunjuk</button>
         <button type="button" id="hide-hint-btn" class="btn btn-sm btn-dark">Sembunyikan Petunjuk</button>
-        <button type="button" id="delete-btn" class="btn btn-sm btn-dark">Hapus</button>
         <button type="button" id="delete-btn" class="btn btn-sm btn-dark">Hapus</button>
       </div>
       <!-- <div class="p-5 rounded bg-dark text-light fw-bold">Total Data: 123</div> -->

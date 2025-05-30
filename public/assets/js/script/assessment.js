@@ -1680,12 +1680,13 @@ function view_question_act(id) {
   if (data.show_hint == 1) {
     $('#view_hint_ass').remove()
     $('#col_questansw_ass').removeClass('col-sm-12').addClass('col-sm-8')
+    let shint = row.hint != '<p><br></p>' ? row.hint : '-'
     let hint = `
       <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row">
       <span class="d-block fw-semibold text-start py-2 px-3">
         <span class="fw-bold d-block fs-3 text-dark mb-2">Pentunjuk</span>
         <span class="fw-semibold fs-3 text-dark">
-          ${row.hint}
+          ${shint}
         </span>
       </span>
     </div>
@@ -2159,12 +2160,13 @@ function view_question_act_chk_done_ass(id, sid) {
   let ischk = data.assessment[id].checked
   
   if (data.show_hint == 1) {
+    let shint = row.hint != '<p><br></p>' ? row.hint : '-'
     let hint = `
       <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row">
       <span class="d-block fw-semibold text-start py-2 px-3">
         <span class="fw-bold d-block fs-3 text-dark mb-2">Pentunjuk</span>
         <span class="fw-semibold fs-3 text-dark">
-          ${row.hint}
+          ${shint}
         </span>
       </span>
     </div>
@@ -2176,12 +2178,13 @@ function view_question_act_chk_done_ass(id, sid) {
   }
   
   if (data.show_explain == 1) {
+    let expl = row.explain != '<p><br></p>' ? row.explain : '-'
     let explain = `
       <div class="alert bg-light-dark border border-dark d-flex flex-column flex-sm-row">
       <span class="d-block fw-semibold text-start py-2 px-3">
         <span class="fw-bold d-block fs-3 text-dark mb-2">Penjelasan</span>
         <span class="fw-semibold fs-3 text-dark">
-          ${row.explain}
+          ${expl}
         </span>
       </span>
     </div>
