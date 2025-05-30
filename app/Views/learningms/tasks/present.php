@@ -4,6 +4,12 @@
 <div class="card mb-5 mb-xl-10">
 
   <div class="card-body border-top p-9">
+    <div class="btn-group mb-3" role="group" aria-label="Basic example">
+      <button type="button" id="select-all" class="btn btn-sm btn-dark">Pilih Semua</button>
+      <button type="button" id="deselect-all" class="btn btn-sm btn-dark">Batal Pilih</button>
+      <button type="button" id="active-time-btn" class="btn btn-sm btn-dark">Batas Waktu</button>
+      <button type="button" id="ignore-time-btn" class="btn btn-sm btn-dark">Abaikan Waktu</button>
+    </div>
     <div id="task_present_table"></div>
   </div>
 

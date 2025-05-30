@@ -7,8 +7,8 @@
     <div class="btn-group mb-3" role="group" aria-label="Basic example">
       <button type="button" id="select-all" class="btn btn-sm btn-dark">Pilih Semua</button>
       <button type="button" id="deselect-all" class="btn btn-sm btn-dark">Batal Pilih</button>
-      <button type="button" id="shuffle-btn" class="btn btn-sm btn-dark">Acak Soal</button>
-      <button type="button" id="unshuffle-btn" class="btn btn-sm btn-dark">Batalkan Acak</button>
+      <button type="button" id="active-time-btn" class="btn btn-sm btn-dark">Batas Waktu</button>
+      <button type="button" id="ignore-time-btn" class="btn btn-sm btn-dark">Abaikan Waktu</button>
       <button type="button" id="show-hint-btn" class="btn btn-sm btn-dark">Tampilkan Petunjuk</button>
       <button type="button" id="hide-hint-btn" class="btn btn-sm btn-dark">Sembunyikan Petunjuk</button>
       <button type="button" id="unpublish-btn" class="btn btn-sm btn-dark">Kembalikan ke Draft</button>

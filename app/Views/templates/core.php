@@ -570,14 +570,15 @@
 									</div>
 									<div class="tab-pane fade content_topic" id="tab_task_public" role="tabpanel">
 										<div class="row">
-											<div class="col-sm-3" style="overflow-y: scroll; max-height:690px;">
+											<div class="col-sm-12">
 												<div class="list_taskact" id="list_taskact"></div>
 											</div>
-											<div class="col-sm-9">
+											<div class="col-sm-12" id="col_questansw_tsk">
 												<div id="acttask_question"></div>
 												<div id="acttask_option"></div>
 												<div id="acttask_essay_answer"></div>
 											</div>
+											<div class="col_hinttsk" id="col_hinttsk"></div>
 										</div>
 									</div>
 								</div>

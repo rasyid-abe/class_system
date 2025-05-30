@@ -412,6 +412,7 @@ class Task extends BaseController
                 echo json_encode($res);
             }
         } else if ($req['type'] == 2) {
+
             $success = true;
             $itrue = $ifalse = 0;
             $message = 'Something went wrong!';
@@ -420,11 +421,41 @@ class Task extends BaseController
             $this->task->db->transBegin();
             try {
                 foreach ($req['id'] as $k => $v) {
-                    $this->task
-                        ->where('task_id', $v)
-                        ->set('task_status', $req['param'])
-                        ->set('task_updated_by', userdata()['user_id'])
-                        ->update();
+                    if ($req['param'] == 1 || $req['param'] == 2 || $req['param'] == 9) {
+                        $this->task
+                            ->where('task_id', $v)
+                            ->set('task_status', $req['param'])
+                            ->set('task_updated_by', userdata()['user_id'])
+                            ->update();
+                    } else if ($req['param'] == 3 || $req['param'] == 4) {
+                        $shint = $req['param'] == 3 ? 1 : 0;
+                        $this->task
+                            ->where('task_id', $v)
+                            ->set('task_is_show_hint', $shint)
+                            ->set('task_updated_by', session()->get('c_id'))
+                            ->update();
+                    } else if ($req['param'] == 5 || $req['param'] == 6) {
+                        $shint = $req['param'] == 5 ? 1 : 0;
+                        $this->task
+                            ->where('task_id', $v)
+                            ->set('task_is_show_explain', $shint)
+                            ->set('task_updated_by', session()->get('c_id'))
+                            ->update();
+                    } else if ($req['param'] == 7 || $req['param'] == 8) {
+                        $shint = $req['param'] == 7 ? 1 : 0;
+                        $this->task
+                            ->where('task_id', $v)
+                            ->set('task_is_show_right_answer', $shint)
+                            ->set('task_updated_by', session()->get('c_id'))
+                            ->update();
+                    } else if ($req['param'] == 10 || $req['param'] == 11) {
+                        $shint = $req['param'] == 11 ? 1 : 0;
+                        $this->task
+                            ->where('task_id', $v)
+                            ->set('task_is_ignored_time_submit', $shint)
+                            ->set('task_updated_by', session()->get('c_id'))
+                            ->update();
+                    }
                     $sts_task = $this->task->error();
 
                     if ($sts_task['code'] > 0) {
@@ -434,11 +465,27 @@ class Task extends BaseController
                         $ifalse++;
                     } else {
                         if ($req['param'] == 2) {
-                            $this->activity->store_log('Tugas', 'publish', 'menerbitkan penilaian "' . $req['title'][$k] . '"');
+                            $this->activity->store_log('Tugas', 'publish', 'menerbitkan tugas "'.$req['title'][$k].'"');
                         } else if ($req['param'] == 1) {
-                            $this->activity->store_log('Tugas', 'unpublish', 'membatalkan penilaian "' . $req['title'][$k] . '"');
-                        } else {
-                            $this->activity->store_log('Tugas', 'delete', 'menghapus penilaian "' . $req['title'][$k] . '"');
+                            $this->activity->store_log('Tugas', 'unpublish', 'membatalkan tugas "'.$req['title'][$k].'"');
+                        } else if ($req['param'] == 9) {
+                            $this->activity->store_log('Tugas', 'delete', 'menghapus tugas "'.$req['title'][$k].'"');
+                        } else if ($req['param'] == 3) {
+                            $this->activity->store_log('Tugas', 'update', 'menampilkan petunjuk pada tugas "'.$req['title'][$k].'"');
+                        } else if ($req['param'] == 4) {
+                            $this->activity->store_log('Tugas', 'update', 'menyembunyikan petunjuk pada tugas "'.$req['title'][$k].'"');
+                        } else if ($req['param'] == 5) {
+                            $this->activity->store_log('Tugas', 'update', 'menampilkan penjelasan pada tugas "'.$req['title'][$k].'"');
+                        } else if ($req['param'] == 6) {
+                            $this->activity->store_log('Tugas', 'update', 'menyembunyikan penjelasan pada tugas "'.$req['title'][$k].'"');
+                        } else if ($req['param'] == 7) {
+                            $this->activity->store_log('Tugas', 'update', 'menampilkan jawaban benar pada tugas "'.$req['title'][$k].'"');
+                        } else if ($req['param'] == 8) {
+                            $this->activity->store_log('Tugas', 'update', 'menyembunyikan jawaban benar pada tugas "'.$req['title'][$k].'"');
+                        } else if ($req['param'] == 10) {
+                            $this->activity->store_log('Tugas', 'update', 'aktifkan batas waktu pada tugas "'.$req['title'][$k].'"');
+                        } else if ($req['param'] == 11) {
+                            $this->activity->store_log('Tugas', 'update', 'abaikan batas waktu pada tugas "'.$req['title'][$k].'"');
                         }
 
                         $itrue++;
@@ -471,11 +518,29 @@ class Task extends BaseController
                 $success = false;
             }
 
-            $msg = 'hapus';
+            $msg = '';
             if ($req['param'] == 2) {
-                $msg = "terbitkan";
+                $msg = "di terbitkan";
             } else if ($req['param'] == 1) {
-                $msg = 'batalkan';
+                $msg = 'di batalkan';
+            } else if ($req['param'] == 9) {
+                $msg = 'di hapus';
+            } else if ($req['param'] == 3) {
+                $msg = 'merubah status tampilkan petunjuk soal';
+            } else if ($req['param'] == 4) {
+                $msg = 'merubah status sembunyikan petunjuk soal';
+            } else if ($req['param'] == 5) {
+                $msg = 'merubah status tampilkan penjelasan soal';
+            } else if ($req['param'] == 6) {
+                $msg = 'merubah status sembunyikan penjelasan soal';
+            } else if ($req['param'] == 7) {
+                $msg = 'merubah status tampilkan jawaban benar';
+            } else if ($req['param'] == 8) {
+                $msg = 'merubah status sembunyikan jawaban benar';
+            } else if ($req['param'] == 10) {
+                $msg = 'mengaktifkan batas waktu';
+            } else if ($req['param'] == 11) {
+                $msg = 'abaikan batas waktu';
             }
 
             if ($ecode > 0) {
@@ -489,7 +554,7 @@ class Task extends BaseController
                 $res = [
                     'typ' => $req['type'],
                     'sts' => $success,
-                    'msg' => $success ? $itrue . ' Tugas berhasil di ' . $msg : $ifalse . ' Tugas gagal di ' . $msg,
+                    'msg' => $success ? $itrue . ' Tugas berhasil di ' . $msg : $ifalse . ' Tugas gagal ' . $msg,
                     'icn' => $success ? 'success' : 'error',
                 ];
             }
@@ -656,6 +721,10 @@ class Task extends BaseController
                 task_lesson_src,
                 task_task_ids,
                 task_subject_id,
+                task_is_show_hint,
+                task_is_show_explain,
+                task_is_show_right_answer,
+                task_is_ignored_time_submit,
                 subject_name,
                 lesson_additional_chapter,
                 lesson_additional_subchapter,
@@ -683,9 +752,9 @@ class Task extends BaseController
             $groups = '';
             foreach (json_decode($v['task_group']) as $key => $val) {
                 if ($req['page-task'] > 2) {
-                    $groups .= '<a href="#" data-group_id="' . $val->id . '" data-task_id="' . $v['task_id'] . '" data-task="' . $v['task_title'] . '" class="badge badge-info view_student_task">' . $val->group . '</a>&nbsp;';
+                    $groups .= '<a href="#" data-group_id="' . $val->id . '" data-task_id="' . $v['task_id'] . '" data-task="' . $v['task_title'] . '" class="badge badge-danger fs-6 view_student_task">' . $val->group . '</a>&nbsp;';
                 } else {
-                    $groups .= '<a href="' . base_url('teacher/groups/view-students/' . $val->id) . '" class="badge badge-info">' . $val->group . '</a>&nbsp;';
+                    $groups .= '<a href="' . base_url('teacher/groups/view-students/' . $val->id) . '" class="badge badge-danger fs-6">' . $val->group . '</a>&nbsp;';
                 }
             }
 
@@ -696,27 +765,52 @@ class Task extends BaseController
                 $chap_title = $v['lesson_additional_chapter'] . ' - ' . $v['lesson_additional_subchapter'];
             }
 
-            $lesson = '<a href="#" class="badge badge-primary" onclick="lesson_preview(' . $v['task_lesson_id'] . ', ' . $v['task_lesson_src'] . ', ' . $v['task_id'] . ')">' . $chap_title . '</a>';
+            $lesson = '<span class="hand badge badge-primary fs-6" onclick="lesson_preview(' . $v['task_lesson_id'] . ', ' . $v['task_lesson_src'] . ', ' . $v['task_id'] . ')">' . $chap_title . '</span>';
 
+            $hint = '<badge class="badge badge-secondary" data-tooltip="Petunjuk" data-tooltip-location="top"><i class="bi bi-lightbulb-off text-white fs-4"></i></badge>';
+            if ($v['task_is_show_hint'] > 0) {
+                $hint = '<badge class="badge badge-success" data-tooltip="Petunjuk" data-tooltip-location="top"><i class="bi bi-lightbulb text-white fs-4"></i></badge>';
+            }
+
+            $time = '<badge class="badge badge-secondary" data-tooltip="Waktu Diabaikan" data-tooltip-location="top"><i class="bi bi-alarm text-white fs-4"></i></badge>';
+            if ($v['task_is_ignored_time_submit'] < 1) {
+                $time = '<badge class="badge badge-success" data-tooltip="Batas Waktu" data-tooltip-location="top"><i class="bi bi-alarm text-white fs-4"></i></badge>';
+            }
+
+            $explain = '<badge class="badge badge-secondary" data-tooltip="Penjelasan" data-tooltip-location="top"><i class="bi bi-journal-check text-white fs-4"></i></badge>';
+            if ($v['task_is_show_explain'] > 0) {
+                $explain = '<badge class="badge badge-success" data-tooltip="Penjelasan" data-tooltip-location="top"><i class="bi bi-journal-check text-white fs-4"></i></badge>';
+            }
+
+            $right = '<badge class="badge badge-secondary" data-tooltip="Jawaban Benar" data-tooltip-location="top"><i class="bi bi-eye text-white fs-4"></i></badge>';
+            if ($v['task_is_show_right_answer'] > 0) {
+                $right = '<badge class="badge badge-success" data-tooltip="Jawaban Benar" data-tooltip-location="top"><i class="bi bi-eye text-white fs-4"></i></badge>';
+            }
+
+            $badge_t = $hint.' '.$time;
+            if ($req['page-task'] == 4) {
+                $badge_t = $hint.' '.$time.' '.$explain.' '.$right;
+            }
 
             $lists = '';
             if ($req['page-task'] == 1) {
                 $acts = '
                     <div class="d-flex flex-column">
-                    <badge class="badge badge-success mb-1" data-tooltip="Atur Soal" data-tooltip-location="right" id="tt' . $v['task_id'] . '" data-title="' . $v['task_title'] . '" onclick="view_quest_bank(' . $v['task_id'] . ', ' . $v['task_subject_id'] . ', ' . $v['task_grade'] . ')"><i class="bi bi-gear-fill fs-6 text-white"></i></badge>
+                    <badge class="badge badge-info mb-1" data-tooltip="Atur Soal" data-tooltip-location="right" id="tt' . $v['task_id'] . '" data-title="' . $v['task_title'] . '" onclick="view_quest_bank(' . $v['task_id'] . ', ' . $v['task_subject_id'] . ', ' . $v['task_grade'] . ')"><i class="bi bi-gear-fill fs-6 text-white"></i></badge>
                     <badge class="badge badge-dark" data-tooltip="Ubah Tugas" data-tooltip-location="right" onclick="edit_task(' . $v['task_id'] . ')"><i class="bi bi-pencil-square fs-6 text-white"></i></badge>
                     </div>
                 ';
 
                 $lists = '
                 <div class="row bigrow-tabulator">
-                    <div class="col-lg-4 mx-auto">
+                    <div class="col-lg-6 mx-auto">
                         <div class="d-flex justify-content-between">
                             <div class="d-flex align-items-start">
                                 ' . $acts . '
                                 <div class="flex-grow-1 me-2 mx-5 center">
-                                    <h6 class="mb-1">' . $v['task_title'] . '</h6>
-                                    <span class="text-gray-700 d-block">' . $lesson . '</span>
+                                    <span class="fw-bolder fs-4 d-block">' . $v['task_title'] . '</span>
+                                    <span class="text-gray-700 fs-6">' . $lesson . '</span>
+                                        '.$badge_t.'
                                 </div>
                             </div>
                         </div>
@@ -731,7 +825,7 @@ class Task extends BaseController
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 mx-auto">
+                    <div class="col-lg-2 mx-auto">
                         <div class="additional-info">
                             <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
                                 <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_start']) . '</span>
@@ -744,12 +838,13 @@ class Task extends BaseController
             } else {
                 $lists = '
                 <div class="row bigrow-tabulator">
-                    <div class="col-lg-4 mx-auto">
+                    <div class="col-lg-6 mx-auto">
                         <div class="d-flex justify-content-between">
                             <div class="d-flex align-items-start">
                                 <div class="flex-grow-1 me-2 center">
-                                    <h6 class="mb-1">' . $v['task_title'] . '</h6>
-                                    <span class="text-gray-700 d-block">' . $lesson . '</span>
+                                    <span class="fw-bolder fs-4 d-block">' . $v['task_title'] . '</span>
+                                    <span class="text-gray-700 d-block fs-6 mb-1">' . $lesson . '</span>
+                                        '.$badge_t.'
                                 </div>
                             </div>
                         </div>
@@ -764,7 +859,7 @@ class Task extends BaseController
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 mx-auto">
+                    <div class="col-lg-2 mx-auto">
                         <div class="additional-info">
                             <div class="d-flex align-items-lg-end align-items-sm-center flex-column" style="word-wrap: break-word;">
                                 <span class="text-gray-700 fw-semibold">' . datetime_indo($v['task_start']) . '</span>
@@ -1402,6 +1497,7 @@ class Task extends BaseController
             $data['start'] = $row['task_start'];
             $data['end'] = $row['task_end'];
             $data['ignore_time'] = $row['task_is_ignored_time_submit'];
+            $data['show_hint'] = $row['task_is_show_hint'];
             $data['instruction'] = $row['task_instruction'];
 
             $lesson = [];
@@ -1694,6 +1790,7 @@ class Task extends BaseController
                             question_bank_standart_option as option,
                             question_bank_standart_answer as answer,
                             question_bank_standart_hint as hint,
+                            question_bank_standart_explain as explain,
                             question_bank_standart_type as type,                               
                             question_bank_standart_poin as poin                               
                         ')
@@ -1706,6 +1803,7 @@ class Task extends BaseController
                             question_bank_question as question,
                             question_bank_option as option,
                             question_bank_answer as answer,
+                            question_bank_explain as explain,
                             question_bank_hint as hint,
                             question_bank_type as type,
                             question_bank_poin as poin
@@ -1720,6 +1818,9 @@ class Task extends BaseController
         $storage['task_id'] = $result['task_id'];
         $storage['task_title'] = $result['task_title'];
         $storage['subject'] = $result['subject_name'];
+        $storage['show_hint'] = $result['task_is_show_hint'];
+        $storage['show_explain'] = $result['task_is_show_explain'];
+        $storage['show_right_answer'] = $result['task_is_show_right_answer'];
 
         $quests = [];
         $arr_src = ['me' => 1, 'pub' => 2, 'std' => 3];
@@ -1761,6 +1862,7 @@ class Task extends BaseController
                 $quests[$k . '_' . $val['id']]['type'] = $val['type'];
                 $quests[$k . '_' . $val['id']]['poin'] = $val['poin'];
                 $quests[$k . '_' . $val['id']]['hint'] = $val['hint'];
+                $quests[$k . '_' . $val['id']]['explain'] = $val['explain'];
             }
         }
 
