@@ -3,8 +3,8 @@
 namespace App\Controllers\LearningMS\Groups;
 
 use App\Controllers\BaseController;
-use App\Models\Systems\TeacherAssignModel;
-use App\Models\Systems\StudentInGroupModel;
+use App\Models\Management\TeacherAssignModel;
+use App\Models\Management\StudentInGroupModel;
 use App\Models\Masters\StudentGroupModel;
 
 class Groups extends BaseController

@@ -3,8 +3,8 @@
 namespace App\Controllers\Dashboard;
 
 use App\Controllers\BaseController;
-use App\Models\Systems\StudentInGroupModel;
-use App\Models\Systems\TeacherAssignModel;
+use App\Models\Management\StudentInGroupModel;
+use App\Models\Management\TeacherAssignModel;
 use App\Models\Masters\StudentGroupModel;
 use App\Models\QuestionBank\QuestionBankModel;
 use App\Models\Lessons\StandartLessonModel;

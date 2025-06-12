@@ -6,8 +6,8 @@ use App\Controllers\BaseController;
 use App\Models\Lessons\StandartLessonModel;
 use App\Models\Masters\StudentGroupModel;
 use App\Models\Masters\SubjectModel;
-use App\Models\Systems\TeacherAssignModel;
-use App\Models\Systems\StudentInGroupModel;
+use App\Models\Management\TeacherAssignModel;
+use App\Models\Management\StudentInGroupModel;
 
 class StandartLesson extends BaseController
 {
