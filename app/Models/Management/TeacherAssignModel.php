@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models\Systems;
+namespace App\Models\Management;
 
 use CodeIgniter\Model;
 
 class TeacherAssignModel extends Model
 {
-    protected $table      = 'system_teacher_assign';
+    protected $table      = 'manage_teacher_assign';
     protected $primaryKey = 'teacher_assign_id';
     protected $allowedFields = [
         'teacher_assign_school_id', 

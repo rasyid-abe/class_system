@@ -7,7 +7,7 @@ use App\Models\Lessons\SchoolLessonModel;
 use App\Models\Lessons\StandartLessonModel;
 use App\Models\Lessons\AdditionalLessonModel;
 use App\Models\Lessons\PublicLessonModel;
-use App\Models\Systems\TeacherAssignModel;
+use App\Models\Management\TeacherAssignModel;
 use App\Models\Masters\SubjectModel;
 use PhpParser\Node\Expr\FuncCall;
 use App\Models\Activities\ActivityModel;

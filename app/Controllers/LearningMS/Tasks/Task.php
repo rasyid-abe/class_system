@@ -3,12 +3,12 @@
 namespace App\Controllers\LearningMS\Tasks;
 
 use App\Controllers\BaseController;
-use App\Models\Systems\TeacherAssignModel;
+use App\Models\Management\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
 use App\Models\Lessons\StandartLessonModel;
 use App\Models\Lessons\AdditionalLessonModel;
-use App\Models\Systems\StudentInGroupModel;
+use App\Models\Management\StudentInGroupModel;
 use App\Models\Lessons\PublicLessonModel;
 use App\Models\QuestionBank\QuestionBankModel;
 use App\Models\QuestionBank\StandartQuestionBankModel;

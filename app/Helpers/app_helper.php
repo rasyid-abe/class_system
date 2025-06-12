@@ -140,7 +140,7 @@ function major_name($id)
 function teacher_grades($id)
 {
     $db = \Config\Database::connect();
-    $sql = "SELECT DISTINCT teacher_assign_grade FROM system_teacher_assign WHERE teacher_assign_teacher_id = '$id' AND teacher_assign_status < 9";
+    $sql = "SELECT DISTINCT teacher_assign_grade FROM manage_teacher_assign WHERE teacher_assign_teacher_id = '$id' AND teacher_assign_status < 9";
 
     $result = $db->query($sql)->getResultArray();
     return array_column($result, 'teacher_assign_grade');
@@ -149,7 +149,7 @@ function teacher_grades($id)
 function teacher_subjects($id)
 {
     $db = \Config\Database::connect();
-    $sql = "SELECT DISTINCT teacher_assign_subject_id FROM system_teacher_assign WHERE teacher_assign_teacher_id = '$id' AND teacher_assign_status < 9";
+    $sql = "SELECT DISTINCT teacher_assign_subject_id FROM manage_teacher_assign WHERE teacher_assign_teacher_id = '$id' AND teacher_assign_status < 9";
 
     $result = $db->query($sql)->getResultArray();
     return array_column($result, 'teacher_assign_subject_id');
@@ -270,7 +270,7 @@ if (!function_exists("my_groups")) {
         if (isset(year_active()['school_year_id'])) {
             $sql = "
                 SELECT teacher_assign_id, student_group_id, student_group_name
-                FROM system_teacher_assign
+                FROM manage_teacher_assign
                 JOIN master_student_group ON teacher_assign_student_group_id = student_group_id
                 WHERE 
                     teacher_assign_teacher_id = ".userdata()['id_profile']."
@@ -339,7 +339,7 @@ if (!function_exists("student_grade")) {
         $db = \Config\Database::connect();
         $sql = "
             SELECT student_in_group_grade as grade
-            FROM system_student_in_group
+            FROM manage_student_in_group
             WHERE student_in_group_student_id = ".userdata()['id_profile']."
                 AND student_in_group_status < 8
         ";
@@ -355,7 +355,7 @@ if (!function_exists("student_group")) {
         $db = \Config\Database::connect();
         $sql = "
             SELECT student_in_group_student_group_id as group_id, student_group_name as group_name, student_in_group_grade as grade
-            FROM system_student_in_group 
+            FROM manage_student_in_group 
             JOIN master_student_group ON student_in_group_student_group_id = student_group_id
             WHERE student_in_group_student_id = ".userdata()['id_profile']."
                 AND student_in_group_status < 8

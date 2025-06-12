@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models\Systems;
+namespace App\Models\Management;
 
 use CodeIgniter\Model;
 
 class StudentInGroupModel extends Model
 {
-    protected $table      = 'system_student_in_group';
+    protected $table      = 'manage_student_in_group';
     protected $primaryKey = 'student_in_group_id';
     protected $allowedFields = [
         'student_in_group_school_id', 

@@ -5,7 +5,7 @@ namespace App\Controllers\SchoolMS\Users;
 use App\Controllers\BaseController;
 use App\Models\Profiles\StudentModel;
 use App\Models\Masters\StudentGroupModel;
-use App\Models\Systems\StudentInGroupModel;
+use App\Models\Management\StudentInGroupModel;
 use App\Models\Authentication\UserModel;
 use App\Models\Datas\TerritoryModel;
 use PhpOffice\PhpSpreadsheet\Style\Protection;

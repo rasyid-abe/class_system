@@ -5,7 +5,7 @@ namespace App\Controllers\LearningMS\QuestionBank;
 use App\Controllers\BaseController;
 use App\Models\QuestionBank\StandartQuestionBankModel;
 use App\Models\QuestionBank\QuestionBankModel;
-use App\Models\Systems\TeacherAssignModel;
+use App\Models\Management\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
 use App\Models\Activities\ActivityModel;
