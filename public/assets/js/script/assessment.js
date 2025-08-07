@@ -220,6 +220,8 @@ function hide_modal() {
   clear_form_assessment()
   clear_form_task()
 
+  $('#content_tab_ct').addClass('hide')
+
   $('#treeview_task__').html('')
   $("#task_prev_less").modal("hide");
   $("#modal_task_ch").modal("hide");

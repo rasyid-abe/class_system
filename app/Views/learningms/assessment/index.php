@@ -77,7 +77,7 @@
           <div class="alert alert-info d-flex align-items-center p-2 mb-5">
             <i class="bi bi-shield-exclamation fs-2hx text-info me-4"></i>
             <div class="d-flex flex-column">
-              <h5 class="mb-1 text-info">Penilaian akan tersimpan pada T.P <?= isset(year_active()['school_year_period']) ?  year_active()['school_year_period'] : 'N/A' ?></h5>
+              <h5 class="mb-1 text-info">Penilaian akan tersimpan pada T.P <?= school_year()['id'] ?></h5>
             </div>
           </div>
         </div>

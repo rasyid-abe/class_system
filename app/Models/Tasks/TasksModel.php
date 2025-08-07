@@ -95,6 +95,7 @@ class TasksModel extends Model
             $add_join
             WHERE 1=1 
                 $add_where
+                AND task_religion IN (0, ".userdata()['religi'].")
                 AND task_school_id = ".userdata()['school_id']."
                 AND task_group LIKE '%".$my_group['group_name']."%'
             GROUP BY task_id";
@@ -148,6 +149,7 @@ class TasksModel extends Model
             LEFT JOIN profile_teacher ON teacher_id=task_teacher_id
             WHERE 1=1
                 $add_where
+                AND task_religion IN (0, ".userdata()['religi'].")
                 AND task_school_id = ".userdata()['school_id']."
                 AND task_group LIKE '%".$my_group['group_name']."%'
         ";
@@ -168,6 +170,7 @@ class TasksModel extends Model
                 task_status = 1
                 and task_school_id = $school_id
                 and task_teacher_id = $teacher_id
+                and task_religion IN (0, ".userdata()['religi'].")
             order by
                 task_id asc
         ";
@@ -188,6 +191,7 @@ class TasksModel extends Model
                 task_status = 2
                 and task_school_id = $school_id
                 and task_teacher_id = $teacher_id
+                and task_religion in (0, ".userdata()['religi'].")
                 and task_start >= '$date_now'
             order by
                 task_id asc
@@ -209,6 +213,7 @@ class TasksModel extends Model
                 task_status = 2
                 and task_school_id = $school_id
                 and task_teacher_id = $teacher_id
+                and task_religion in (0, ".userdata()['religi'].")
                 and task_start <= '$date_now' 
                 and task_end >= '$date_now'
             order by
@@ -231,6 +236,7 @@ class TasksModel extends Model
                 task_status = 2
                 and task_school_id = $school_id
                 and task_teacher_id = $teacher_id
+                and task_religion in (0, ".userdata()['religi'].")
                 and task_end <= '$date_now'
             order by
                 task_id asc
@@ -248,6 +254,7 @@ class TasksModel extends Model
             where 
                 task_school_id = $school_id and
                 task_teacher_id = $teacher_id and
+                task_religion in (0, ".userdata()['religi'].") and
                 task_status = 2 and
                 task_start <= '$date' and
                 task_group like '%none%'

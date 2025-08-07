@@ -6,8 +6,6 @@ use App\Controllers\BaseController;
 use App\Models\Lessons\StandartLessonModel;
 use App\Models\Masters\StudentGroupModel;
 use App\Models\Masters\SubjectModel;
-use App\Models\Management\TeacherAssignModel;
-use App\Models\Management\StudentInGroupModel;
 
 class StandartLesson extends BaseController
 {
@@ -17,7 +15,6 @@ class StandartLesson extends BaseController
     protected $sidebar;
     protected $subject;
     protected $lesson_standart;
-    protected $teacher_assign;
     protected $student_ingroup;
 
     public function __construct()
@@ -27,7 +24,6 @@ class StandartLesson extends BaseController
         $this->sidebar = "Standart";
         $this->subject = new SubjectModel();
         $this->lesson_standart = new StandartLessonModel();
-        $this->teacher_assign = new TeacherAssignModel();
         $this->student_ingroup = new StudentGroupModel();
     }
 

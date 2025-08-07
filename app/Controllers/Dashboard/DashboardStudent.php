@@ -9,6 +9,7 @@ use App\Models\Tasks\TasksResultModel;
 use App\Models\Tasks\TasksTempModel;
 use App\Models\Lessons\SchoolLessonModel;
 use App\Models\Lessons\StandartLessonModel;
+use App\Models\Management\TeachingSubjectsModel;
 use PDO;
 
 class DashboardStudent extends BaseController
@@ -20,6 +21,7 @@ class DashboardStudent extends BaseController
     protected $task_temp;
     protected $lesson_school;
     protected $lesson_standart;
+    protected $teach_subject;
 
     public function __construct()
     {
@@ -30,6 +32,7 @@ class DashboardStudent extends BaseController
         $this->task_temp = new TasksTempModel();
         $this->lesson_school = new SchoolLessonModel();
         $this->lesson_standart = new StandartLessonModel();
+        $this->teach_subject = new TeachingSubjectsModel();
     }
 
     public function index()
@@ -46,39 +49,11 @@ class DashboardStudent extends BaseController
 
         $data['user'] = userdata();
 
-        // $assess = $this->assessment->get_list_student(1);
-        // $data['assessment'] = $assess;
-        
-        // $task = $this->task->get_list_student_task(1);
-        // $my_task = $this->task_result
-        //     ->select('task_result_task_id task_id')
-        //     ->where('task_result_student_id', userdata()['id_profile'])
-        //     ->findAll();
-
-        // $my_assign = array_column($my_task, 'task_id');
-        // $my_list = array_column($task, 'task_id');
-
-        // $merge_idx = array_merge($my_assign, $my_list);
-        // $list_idx = array_unique(array_diff_assoc($merge_idx, array_unique($merge_idx)));
-        
-        // $my_temp = $this->task_temp
-        //     ->select('task_temp_task_id')
-        //     ->where([
-        //         'task_temp_school_id' => userdata()['school_id'],
-        //         'task_temp_student_id' => userdata()['id_profile'],
-        //     ])->findAll();
-
-        // $arr_temp_task = array_column($my_temp, 'task_temp_task_id');
-        
-        // $data['task'] = $task;
-        // $data['arr_temp_task'] = $arr_temp_task;
-        // $data['list_idx'] = $list_idx;
-
         $my_group = student_group();
         $sub_list = [];
-        if (!empty(year_active())) {
+        // if (!empty(year_active())) {
             $sub_list = $this->lesson_school->student_list_subject($my_group['grade'], $my_group['group_id']);
-        }
+        // }
 
         $std_less = $this->lesson_standart
             ->select('subject_id,subject_name,lesson_standart_id, lesson_standart_chapter, lesson_standart_subchapter')
@@ -97,8 +72,15 @@ class DashboardStudent extends BaseController
 
     public function data_dashboard()
     {
+        $my_group = student_group();
+        $days = [1 => 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $day = array_search(date('l'), $days);
+        $my_religion = student_religion(userdata()['id_profile']);
+
+        $my_lesson = $this->teach_subject->get_student_lesson($day, $my_group['group_id'], $my_religion);
+
         $assess = $this->assessment->get_list_student(1);
-        $data['assessment'] = $assess;
+        // $data['assessment'] = $assess;
         
         $task = $this->task->get_list_student_task(1);
         $my_task = $this->task_result
@@ -137,6 +119,7 @@ class DashboardStudent extends BaseController
 
             
         $data = [];
+        $data['my_lesson'] = $my_lesson;
         $data['assessment'] = $assess;
         $data['task'] = $task;
         $data['arr_temp_task'] = $arr_temp_task;

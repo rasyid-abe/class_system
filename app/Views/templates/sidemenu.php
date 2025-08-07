@@ -394,90 +394,12 @@
             <div class="separator separator-dashed border-primary my-10"></div>
             <div class="mx-1">
                 <div class="mb-12">
-                <div class="text-gray-500 fw-semibold mb-4 lh-lg" style="margin-left: 1rem; margin-right: 1rem;">
+                    <div class="text-gray-500 fw-semibold mb-4 lh-lg" style="margin-left: 1rem; margin-right: 1rem;">
                         <badge class="badge badge-success d-block fs-5 p-2">
                             Pelajaran Hari Ini:
                         </badge>
                     </div>
-                    <ul id="progress" style="padding-left: 1rem; list-style-type: none;">
-                        <li class="li-timeline">
-                            <div class="node green"></div>
-                            <div class="text-content">
-                                <h6>Pendidika Agama Islam & Budi Pekerti</h6>
-                                <p>Guru Agama Islam</p>
-                                <p>10:00 - 11:39 WIB</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="divider green"></div>
-                        </li>
-                        <li class="li-timeline">
-                            <div class="node green"></div>
-                            <div class="text-content">
-                                <h6>Bahasa Indonesia</h6>
-                                <p>Guru Agama Islam</p>
-                                <p>10:00 - 11:39 WIB</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="divider green"></div>
-                        </li>
-                        <li class="li-timeline">
-                            <div class="node green"></div>
-                            <div class="text-content">
-                                <h6>Pendidika Agama Islam & Budi Pekerti</h6>
-                                <p>Guru Agama Islam</p>
-                                <p>10:00 - 11:39 WIB</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="divider green"></div>
-                        </li>
-                        <li class="li-timeline">
-                            <div class="node green"></div>
-                            <div class="text-content">
-                                <h6>Bahasa Indonesia</h6>
-                                <p>Guru Agama Islam</p>
-                                <p>10:00 - 11:39 WIB</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="divider green"></div>
-                        </li>
-                        <li class="li-timeline">
-                            <div class="node grey"></div>
-                            <div class="text-content">
-                                <h6>Matematika</h6>
-                                <p>Guru Agama Islam</p>
-                                <p>10:00 - 11:39 WIB</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="divider grey"></div>
-                        </li>
-                        <li class="li-timeline">
-                            <div class="node grey"></div>
-                            <div class="text-content">
-                                <h6>Pendidika Agama Islam & Budi Pekerti</h6>
-                                <p>Guru Agama Islam</p>
-                                <p>10:00 - 11:39 WIB</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="divider grey"></div>
-                        </li>
-                        <li class="li-timeline">
-                            <div class="node grey"></div>
-                            <div class="text-content">
-                                <h6>Pendidika Agama Islam & Budi Pekerti</h6>
-                                <p>Guru Agama Islam</p>
-                                <p>10:00 - 11:39 WIB</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="divider grey"></div>
-                        </li>
-                    </ul>
+                    <div class="dash_my_lesson" id="dash_my_lesson">memuat ...</div>
                 </div>
             </div>
         </div>

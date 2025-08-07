@@ -3,16 +3,16 @@
 
 
 <?php if (year_active() == null) : ?>
-    <div class="alert alert-danger d-flex align-items-center p-5  my-xl-5">
+    <!-- <div class="alert alert-danger d-flex align-items-center p-5  my-xl-5">
         <i class="bi bi-exclamation-octagon-fill fs-2hx text-danger me4"></i>
-        <!-- <i class="ki-duotone ki-shield-tick fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i> -->
         <div class="d-flex flex-column mx-4">
             <h4 class="mb-1 text-danger">Peringatan</h4>
             <span>Pilih tahun pelajaran untuk mengaktifkan seluruh Fitur</span>
         </div>
-    </div>
+    </div> -->
 <?php endif ?>
 
+<input type="hidden" name="temp_day" value="<?= $days ?>">
 <div class="row gx-5 gx-xl-10 my-xl-5">
 
     <div class="col-md-6 col-xl-3 my-xl-5">

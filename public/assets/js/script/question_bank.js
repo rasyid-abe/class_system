@@ -464,9 +464,7 @@ function show_edit_task(e, type, id, parent) {
               <div class="position-relative">
                   <div class="d-flex justify-content-left" style="min-width: 200px; padding-left:8px">
                       <div class="form-check form-check-custom form-switch form-check-success form-check-solid mb-2" style="margin-right: 4px">
-                          <input class="form-check-input mc_option_edit ${e.keys.includes(i) ? "checked_mc" : ""
-          }" type="radio" value="" ${e.keys.includes(i) ? "checked" : ""
-          } />
+                          <input class="form-check-input mc_option_edit ${e.keys.includes(i) ? "checked_mc" : ""}" type="radio" value="" ${e.keys.includes(i) ? "checked" : ""} />
                           <label class="form-check-label">
                               Jawaban Benar
                           </label>
@@ -1426,6 +1424,8 @@ $(document).on('click', '.upload-question', function(e) {
   let id = $(this).data('id')
   let title = $(this).data('title')
 
+  $('#btn_act_accord_' + id).addClass('hide')
+
   form_chapter_quest(-2, title, id)
 })
 
@@ -1433,6 +1433,8 @@ $(document).on('click', '.add-question', function(e) {
   e.preventDefault()
   let id = $(this).data('id')
   let title = $(this).data('title')
+
+  $('#btn_act_accord_' + id).addClass('hide')
 
   form_chapter_quest(-1, title, id)
 })
@@ -1442,6 +1444,8 @@ $(document).on('click', '.share-question', function(e) {
   let id = $(this).data('id')
   let title = $(this).data('title')
   let shared = $(this).data('shared')
+
+  $('#btn_act_accord_' + id).addClass('hide')
 
   if (shared < 1) {
     share_task(id, title)
@@ -1455,6 +1459,8 @@ $(document).on('click', '.edit-question', function(e) {
   let id = $(this).data('id')
   let title = $(this).data('title')
 
+  $('#btn_act_accord_' + id).addClass('hide')
+
   form_chapter_quest(2, title, id)
 })
 
@@ -1462,6 +1468,8 @@ $(document).on('click', '.delete-question', function(e) {
   e.preventDefault()
   let id = $(this).data('id')
   let title = $(this).data('title')
+
+  $('#btn_act_accord_' + id).addClass('hide')
 
   remove_content_quest(id, title, 2)
 })

@@ -15,6 +15,7 @@ function userdata()
             au.user_name,
             pt.teacher_school_id school_id,
             pt.teacher_id id_profile,
+            pt.teacher_religion religi,
             CONCAT(pt.teacher_first_name, ' ', pt.teacher_last_name) name,
             pt.teacher_degree degree,
             pt.teacher_image image,
@@ -30,6 +31,7 @@ function userdata()
             au.user_name,
             ps.student_school_id school_id,
             ps.student_id id_profile,
+            ps.student_religion religi,
             CONCAT(ps.student_first_name, ' ', ps.student_last_name) name,
             ps.student_image image,
             ps.student_nisn,
@@ -140,19 +142,31 @@ function major_name($id)
 function teacher_grades($id)
 {
     $db = \Config\Database::connect();
-    $sql = "SELECT DISTINCT teacher_assign_grade FROM manage_teacher_assign WHERE teacher_assign_teacher_id = '$id' AND teacher_assign_status < 9";
+    // $sql = "SELECT DISTINCT teacher_assign_grade FROM manage_teacher_assign WHERE teacher_assign_teacher_id = '$id' AND teacher_assign_status < 9";
+    $sql = "
+        select distinct student_group_grade
+        from manage_teaching_subjects
+        left join manage_timetable on timetable_teaching_subjects_id = teaching_subjects_id
+        left join master_student_group on student_group_id = timetable_group_id
+        where teaching_subjects_teacher_id = $id and teaching_subjects_status < 9 
+        and teaching_subjects_school_id = ".userdata()['school_id']." and teaching_subjects_school_year_id = ".school_year()['id']."
+    ";
 
     $result = $db->query($sql)->getResultArray();
-    return array_column($result, 'teacher_assign_grade');
+    return array_column($result, 'student_group_grade');
 }
 
 function teacher_subjects($id)
 {
     $db = \Config\Database::connect();
-    $sql = "SELECT DISTINCT teacher_assign_subject_id FROM manage_teacher_assign WHERE teacher_assign_teacher_id = '$id' AND teacher_assign_status < 9";
+    // $sql = "SELECT DISTINCT teacher_assign_subject_id FROM manage_teacher_assign WHERE teacher_assign_teacher_id = '$id' AND teacher_assign_status < 9";
+    $sql = "
+        select distinct teaching_subjects_subject_id from manage_teaching_subjects where teaching_subjects_teacher_id = $id and teaching_subjects_status < 9
+        and teaching_subjects_school_id = ".userdata()['school_id']." and teaching_subjects_school_year_id = ".school_year()['id']."
+    ";
 
     $result = $db->query($sql)->getResultArray();
-    return array_column($result, 'teacher_assign_subject_id');
+    return array_column($result, 'teaching_subjects_subject_id');
 }
 
 function random_char($length = 10) 
@@ -262,21 +276,36 @@ function subject_rowid($id)
     return $row;
 }
 
+if (!function_exists("student_religion")) {
+    function student_religion($id) 
+    {
+        $db = \Config\Database::connect();
+        
+        $sql = "
+            select student_religion
+            from profile_student where student_id = $id
+        ";
+
+        $row = $db->query($sql)->getRowArray();
+     
+        return $row['student_religion'];
+    }
+}
+
 if (!function_exists("my_groups")) {
     function my_groups() 
     {
         $db = \Config\Database::connect();
         
-        if (isset(year_active()['school_year_id'])) {
+        if (isset(school_year()['id'])) {
             $sql = "
-                SELECT teacher_assign_id, student_group_id, student_group_name
-                FROM manage_teacher_assign
-                JOIN master_student_group ON teacher_assign_student_group_id = student_group_id
-                WHERE 
-                    teacher_assign_teacher_id = ".userdata()['id_profile']."
-                    AND teacher_assign_school_year_id = ".year_active()['school_year_id']."
-                    AND teacher_assign_status < 9
-                GROUP BY student_group_id
+                select distinct student_group_id, student_group_name
+                from manage_teaching_subjects
+                join manage_timetable on timetable_teaching_subjects_id = teaching_subjects_id
+                left join master_student_group on student_group_id = timetable_group_id
+                where teaching_subjects_teacher_id = ".userdata()['id_profile']." and teaching_subjects_status < 9
+                and teaching_subjects_school_id = ".userdata()['school_id']." and teaching_subjects_school_year_id = ".school_year()['id']."
+                order by student_group_name
             ";
     
             $row = $db->query($sql)->getResultArray();
@@ -285,6 +314,43 @@ if (!function_exists("my_groups")) {
         }
      
         return $row;
+    }
+}
+
+if (!function_exists("school_year")) {
+    function school_year() {
+        $now = date('Y-m-d');
+        $role = session()->get('role');
+
+        $db = \Config\Database::connect();
+
+        $filter_school = '';
+        if ($role > 2) {
+            $filter_school = "and school_year_school_id = ".userdata()['school_id'];
+        }
+
+        if ($role < 4) {
+            $sql = "
+                select
+                    school_year_id as id, school_year_period as period
+                from
+                    master_school_year
+                where '$now' < school_year_end_date_two $filter_school
+                order by master_school_year.school_year_start_date_one asc
+                limit 1
+            ";
+        } else {
+            $sql = "
+                SELECT 
+                    school_year_id as id, school_year_period as period
+                FROM master_school_year 
+                WHERE '$now' >= CAST(DATE_FORMAT(school_year_start_date_one ,'%Y-%m-01') as DATE) 
+                    AND '$now' <= CAST(DATE_FORMAT(school_year_end_date_two ,'%Y-%m-31') as DATE)
+                    AND school_year_school_id = " . userdata()['school_id'];
+
+        }
+        
+        return $db->query($sql)->getRowArray();
     }
 }
 

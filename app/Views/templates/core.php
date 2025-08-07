@@ -928,11 +928,11 @@
 								<div class="separator my-2"></div>
 								<!--end::Menu separator-->
 								<!--begin::Menu item-->
-								<div id="school_active_year" data-id="<?= year_active() != null ? year_active()['school_year_id'] : '' ?>"></div>
+								<div id="school_active_year" data-id="<?= school_year() != null ? school_year()['id'] : '' ?>"></div>
 								<<div class="menu-item px-5"
 									data-kt-menu-placement="left-start" data-kt-menu-offset="-15px, 0">
 									<a onclick="show_tp();" class="menu-link px-5">
-										<span class="menu-title position-relative"><?= year_active() != null ? 'T.P ' . year_active()['school_year_period'] : 'T.P [belum dipilih]' ?>
+										<span class="menu-title position-relative"><?= school_year() != null ? 'T.P ' . school_year()['period'] : 'T.P [belum dipilih]' ?>
 											<span class="ms-5 position-absolute translate-middle-y top-50 end-0">
 												<i class="ki-duotone ki-calendar-2 fs-2">
 													<span class="path1"></span>
@@ -992,7 +992,8 @@
 				<div class="aside-workspace my-5 p-5" id="kt_aside_wordspace">
 					<div class="d-flex h-100 flex-column">
 						<!--begin::Wrapper-->
-						<div class="flex-column-fluid" data-kt-scroll="true"
+						
+						<div class="flex-column-fluid hover-scroll-y" data-kt-scroll="true"
 							data-kt-scroll-activate="true" data-kt-scroll-height="auto"
 							data-kt-scroll-wrappers="#kt_aside_wordspace"
 							data-kt-scroll-dependencies="#kt_aside_secondary_footer" data-kt-scroll-offset="0px">
@@ -1093,9 +1094,9 @@
 						<div class="d-flex ms-3">
 							<!-- Example single danger button -->
 							<div class="btn-group">
-								<?php if (year_active() != null) : ?>
+								<?php if (school_year() != null) : ?>
 									<button type="button" class="btn btn-primary" onclick="show_tp()" aria-expanded="false">
-										<?= 'T.P ' . year_active()['school_year_period'] ?>
+										<?= 'T.P ' . school_year()['period'] ?>
 									</button>
 								<?php else: ?>
 									<button type="button" class="btn btn-danger" onclick="show_tp()" aria-expanded="false">
@@ -1185,15 +1186,14 @@
 		let idc_public = '<?= session()->getFlashdata('id_content') ?>'
 		let att_id = '<?= session()->getFlashdata('att_id') ?>'
 		let hostUrl = "<?= base_url() ?>assets/";
-		let active_year = '<?= year_active() != null ? year_active()['school_year_period'] : '' ?>'
-		let active_year_id = '<?= year_active() != null ? year_active()['school_year_id'] : '' ?>'
+		let active_year = '<?= school_year() != null ? school_year()['period'] : '' ?>'
+		let active_year_id = '<?= school_year() != null ? school_year()['id'] : '' ?>'
 		let level = '<?= session()->get('c_role') ?>'
 		
 		let file_id = '<?= session()->getFlashdata('file_id') ?>'
 		let file_coll = '<?= session()->getFlashdata('file_coll') ?>'
 		let file_chd = '<?= session()->getFlashdata('file_chd') ?>'
-
-
+								
 		let file_path = 'https://devabe-s3.s3.ap-southeast-1.amazonaws.com/'
 
 
@@ -1307,7 +1307,7 @@
 
 		function generate_years(e) {
 			let view = ''
-			let active = '<?= year_active() != null ? year_active()['school_year_id'] : '' ?>'
+			let active = '<?= school_year() != null ? school_year()['id'] : '' ?>'
 			console.log(active);
 			$.each(e, function(i, v) {
 				chk = ''

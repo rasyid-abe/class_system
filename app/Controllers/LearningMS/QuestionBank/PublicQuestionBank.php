@@ -14,7 +14,6 @@ class PublicQuestionBank extends BaseController
     protected $title;
     protected $page;
     protected $sidebar;
-    protected $teacher_subject;
     protected $public_question_bank;
     protected $question_bank;
     protected $teacher;
@@ -26,7 +25,6 @@ class PublicQuestionBank extends BaseController
         $this->sidebar = "QB_Public";
         $this->public_question_bank = new PublicQuestionBankModel();
         $this->question_bank = new QuestionBankModel();
-        $this->teacher_subject = new TeacherAssignModel();
         $this->teacher = new TeacherModel();
     }
 

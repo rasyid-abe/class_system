@@ -4,7 +4,7 @@ namespace App\Controllers\LearningMS\QuestionBank;
 
 use App\Controllers\BaseController;
 use App\Models\QuestionBank\QuestionBankModel;
-use App\Models\Management\TeacherAssignModel;
+use App\Models\Management\TeachingSubjectsModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
 use App\Models\Activities\ActivityModel;
@@ -32,7 +32,7 @@ class AdditionalQuestionBank extends BaseController
         $this->page = "Question";
         $this->sidebar = "QB_Additional";
         $this->question_bank = new QuestionBankModel();
-        $this->teacher_subject = new TeacherAssignModel();
+        $this->teacher_subject = new TeachingSubjectsModel();
         $this->teacher = new TeacherModel();
         $this->subject = new SubjectModel();
         $this->activity = new ActivityModel();
@@ -49,19 +49,46 @@ class AdditionalQuestionBank extends BaseController
         ];
 
         $mysubs = $this->teacher_subject
-            ->select('teacher_assign_id, teacher_assign_grade, subject_id, subject_name')
-            ->join('master_subject', 'teacher_assign_subject_id=subject_id', 'left')
-            ->where('teacher_assign_school_id', userdata()['school_id'])
-            ->where('teacher_assign_teacher_id', userdata()['id_profile'])
-            ->where('teacher_assign_status < 9')
-            ->orderBy('teacher_assign_grade')
+            ->select('
+                student_group_name,
+                student_group_grade,
+                subject_name,
+                subject_id,
+                timetable_group_id
+            ')
+            ->join('manage_timetable', 'timetable_teaching_subjects_id = teaching_subjects_id')
+            ->join('master_student_group', 'student_group_id = teaching_subjects_student_group_id', 'left')
+            ->join('master_subject', 'subject_id = teaching_subjects_subject_id', 'left')
+            ->join('master_teaching_schedule', 'teaching_schedule_id = timetable_teaching_schedule_id', 'left')
+            ->where([
+                'teaching_subjects_school_id' => userdata()['school_id'],
+                'teaching_subjects_school_year_id' => school_year()['id'],
+                'teaching_subjects_teacher_id' => userdata()['id_profile'],
+                'teaching_subjects_status < 9',
+            ])
+            ->groupBy('student_group_id')
             ->findAll();
+        // $mysubs = $this->teacher_subject
+        //     ->select('student_group_id, student_group_name, student_group_grade, subject_id, subject_name')
+        //     ->join('manage_timetable', 'timetable_teaching_subjects_id = teaching_subjects_id', 'left')
+        //     ->join('master_student_group', 'student_group_id = timetable_group_id', 'left')
+        //     ->join('master_subject', 'subject_id = teaching_subjects_subject_id', 'left')
+        //     ->where('teaching_subjects_school_id', userdata()['school_id'])
+        //     ->where('teaching_subjects_teacher_id', userdata()['id_profile'])
+        //     ->where('teaching_subjects_status < 9')
+        //     ->orderBy('student_group_grade')
+        //     ->findAll();
+
+        // echo '<pre>';
+        // print_r($mysubs);
+        // echo '</pre>';
+        // die;
 
         $subs = [];
         foreach ($mysubs as $k => $v) {
             $subs[$v['subject_id']]['subj_id'] = $v['subject_id'];
             $subs[$v['subject_id']]['subj_name'] = $v['subject_name'];
-            $subs[$v['subject_id']]['grade'][$v['teacher_assign_grade']] = $v['teacher_assign_grade'];
+            $subs[$v['subject_id']]['grade'][$v['student_group_grade']] = $v['student_group_grade'];
         }
 
         $data['mysubs'] = $subs;
@@ -86,7 +113,7 @@ class AdditionalQuestionBank extends BaseController
             ->where('question_bank_status < 9')
             ->where('question_bank_school_id', userdata()['school_id'])
             ->where('question_bank_teacher_id', userdata()['id_profile'])
-            ->where('question_bank_parent_id > 1')
+            ->where('question_bank_parent_id > 0')
             // ->groupBy('question_bank_title')
             ->first();
 

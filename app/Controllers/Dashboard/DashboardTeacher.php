@@ -4,7 +4,7 @@ namespace App\Controllers\Dashboard;
 
 use App\Controllers\BaseController;
 use App\Models\Management\StudentInGroupModel;
-use App\Models\Management\TeacherAssignModel;
+use App\Models\Management\TeachingSubjectsModel;
 use App\Models\Masters\StudentGroupModel;
 use App\Models\QuestionBank\QuestionBankModel;
 use App\Models\Lessons\StandartLessonModel;
@@ -33,7 +33,7 @@ class DashboardTeacher extends BaseController
     {
         $this->title = "Dashboard";
         $this->tgroup = new StudentInGroupModel();
-        $this->tassign = new TeacherAssignModel();
+        $this->tassign = new TeachingSubjectsModel();
         $this->qb_public = new PublicQuestionBankModel();
         $this->qb_addition = new QuestionBankModel();
         $this->less_addition = new AdditionalLessonModel();
@@ -41,15 +41,15 @@ class DashboardTeacher extends BaseController
         $this->less_school = new SchoolLessonModel();
         $this->assessment = new AssessmentModel();
         $this->task = new TasksModel();
-
     }
     public function index()
     {
         $data["title"] = 'Dashboard';
         $data["page"] = 'Dashboard';
         $data["sidebar"] = 'Dashboard';
-        $data["breadcrumb"] = [
-        ];
+        $data["breadcrumb"] = [];
+
+        $data['days'] = implode(',', get_list('days'));
 
         return view("dashboard/teacher", $data);
     }
@@ -95,7 +95,7 @@ class DashboardTeacher extends BaseController
         ) {
             return redirect()->back()->withInput()->with('valid', $this->validator->getErrors());
         }
-        
+
         $req = $this->request->getVar();
         $upd = change_pass($req);
 
@@ -122,80 +122,86 @@ class DashboardTeacher extends BaseController
         $total_sch_chapter['total'] = 0;
         $total_sch_subchap['total'] = 0;
 
+
+        $year = school_year()['id'];
+        $total_sch_chapter = $this->less_school->total_chapter($school_id, $year, $teacher_id);
+        $total_sch_subchap = $this->less_school->total_subchapter($school_id, $year, $teacher_id);
+
+        $my_duty = $this->tassign
+            ->select([
+                'timetable_group_id',
+                'student_group_name',
+                'subject_id',
+                'subject_name',
+                'CONCAT("[", GROUP_CONCAT(
+                    CONCAT("{\"day\":", teaching_schedule_day, ",\"time\":\"", teaching_schedule_order, "\"}")
+                ), "]") AS teaching_time'
+            ])
+            ->join('manage_timetable', 'timetable_teaching_subjects_id = teaching_subjects_id')
+            ->join('master_student_group', 'student_group_id = teaching_subjects_student_group_id', 'left')
+            ->join('master_subject', 'subject_id = teaching_subjects_subject_id', 'left')
+            ->join('master_teaching_schedule', 'teaching_schedule_id = timetable_teaching_schedule_id', 'left')
+            ->where([
+                'teaching_subjects_school_id' => $school_id,
+                'teaching_subjects_school_year_id' => school_year()['id'],
+                'teaching_subjects_teacher_id' => $teacher_id,
+                'teaching_subjects_status < 9',
+            ])
+            ->groupBy('student_group_id')
+            ->orderBy('timetable_group_id')
+            ->findAll();
+
+
+        $schk = $this->assessment->get_checked_assessment($school_id, $year, $teacher_id, date('Y-m-d H:i:s'));
+        $tchk = $this->task->get_checked_task($school_id, $teacher_id, date('Y-m-d H:i:s'));
+
         $should_check = [];
-        $my_duty = [];
-        if (!empty(year_active())) {
-            $year = year_active()['school_year_id'];
+        foreach ($tchk as $k => $v) {
+            $grp = json_decode($v['task_group']);
 
-            $total_sch_chapter = $this->less_school->total_chapter($school_id, $year, $teacher_id);
-            $total_sch_subchap = $this->less_school->total_subchapter($school_id, $year, $teacher_id);
-    
-            $my_duty = $this->tassign
-                ->select('
-                    subject_id,
-                    subject_name,
-                    teacher_assign_grade,
-                    student_group_name,
-                ')
-                ->join('master_subject', 'subject_id=teacher_assign_subject_id', 'left')
-                ->join('master_student_group', 'student_group_id=teacher_assign_student_group_id', 'left')
-                ->where([
-                    'teacher_assign_school_id' => $school_id,
-                    'teacher_assign_school_year_id' => $year,
-                    'teacher_assign_teacher_id' => $teacher_id,
-                    'teacher_assign_status < 9',
-                ])->findAll();
+            $should_check[$v['task_id']]['id'] = $v['task_id'];
+            $should_check[$v['task_id']]['title'] = $v['task_title'];
+            $should_check[$v['task_id']]['subject'] = $v['subject_name'];
+            $should_check[$v['task_id']]['start'] = $v['task_start'];
+            $should_check[$v['task_id']]['end'] = $v['task_end'];
+            $should_check[$v['task_id']]['type'] = 'Tugas';
+            $should_check[$v['task_id']]['group'] = $grp;
 
-            $schk = $this->assessment->get_checked_assessment($school_id, $year, $teacher_id, date('Y-m-d H:i:s'));
-            $tchk = $this->task->get_checked_task($school_id, $teacher_id, date('Y-m-d H:i:s'));
-
-            foreach ($tchk as $k => $v) {
-                $grp = json_decode($v['task_group']);
-                
-                $should_check[$v['task_id']]['id'] = $v['task_id'];
-                $should_check[$v['task_id']]['title'] = $v['task_title'];
-                $should_check[$v['task_id']]['subject'] = $v['subject_name'];
-                $should_check[$v['task_id']]['start'] = $v['task_start'];
-                $should_check[$v['task_id']]['end'] = $v['task_end'];
-                $should_check[$v['task_id']]['type'] = 'Tugas';
-                $should_check[$v['task_id']]['group'] = $grp;
-                
-                $chkexst = [];
-                foreach ($grp as $key => $val) {
-                    if (isset($val->checked_all)) {
-                        $chkexst[] = $val->checked_all;
-                    }
+            $chkexst = [];
+            foreach ($grp as $key => $val) {
+                if (isset($val->checked_all)) {
+                    $chkexst[] = $val->checked_all;
                 }
-
-                $should_check[$v['task_id']]['check'] = in_array(0, $chkexst) ? 0 : 1;
             }
 
-            foreach ($schk as $k => $v) {
-                $grp = json_decode($v['assessment_group']);
-                
-                $should_check[$v['assessment_id']]['id'] = $v['assessment_id'];
-                $should_check[$v['assessment_id']]['title'] = $v['assessment_title'];
-                $should_check[$v['assessment_id']]['subject'] = $v['subject_name'];
-                $should_check[$v['assessment_id']]['start'] = $v['assessment_start'];
-                $should_check[$v['assessment_id']]['end'] = $v['assessment_end'];
-                $should_check[$v['assessment_id']]['type'] = 'Peniliaian';
-                $should_check[$v['assessment_id']]['group'] = $grp;
-                
-                $chkexst = [];
-                foreach ($grp as $key => $val) {
-                    if (isset($val->checked_all)) {
-                        $chkexst[] = $val->checked_all;
-                    }
-                }
+            $should_check[$v['task_id']]['check'] = in_array(0, $chkexst) ? 0 : 1;
+        }
 
-                $should_check[$v['assessment_id']]['check'] = in_array(0, $chkexst) ? 0 : 1;
+        foreach ($schk as $k => $v) {
+            $grp = json_decode($v['assessment_group']);
+
+            $should_check[$v['assessment_id']]['id'] = $v['assessment_id'];
+            $should_check[$v['assessment_id']]['title'] = $v['assessment_title'];
+            $should_check[$v['assessment_id']]['subject'] = $v['subject_name'];
+            $should_check[$v['assessment_id']]['start'] = $v['assessment_start'];
+            $should_check[$v['assessment_id']]['end'] = $v['assessment_end'];
+            $should_check[$v['assessment_id']]['type'] = 'Peniliaian';
+            $should_check[$v['assessment_id']]['group'] = $grp;
+
+            $chkexst = [];
+            foreach ($grp as $key => $val) {
+                if (isset($val->checked_all)) {
+                    $chkexst[] = $val->checked_all;
+                }
             }
+
+            $should_check[$v['assessment_id']]['check'] = in_array(0, $chkexst) ? 0 : 1;
         }
 
         $grade = teacher_grades($teacher_id);
         $subject_id = teacher_subjects($teacher_id);
         $public_qb = $this->qb_public->get_shared_qb($teacher_id, $subject_id, $grade);
-  
+
         $total_quespub = array_sum(array_column($public_qb, 'qb_total'));
 
         $total_title = $this->qb_addition
@@ -210,11 +216,11 @@ class DashboardTeacher extends BaseController
             ->where('question_bank_status < 9')
             ->where('question_bank_school_id', $school_id)
             ->where('question_bank_teacher_id', $teacher_id)
-            ->where('question_bank_parent_id > 1')
+            ->where('question_bank_parent_id > 0')
             ->first();
 
         $pless = $this->less_public->get_shared($teacher_id, $subject_id, $grade);
-       
+
         $pub = [];
         foreach ($pless as $k => $v) {
             $pub[$v['lesson_additional_subject_id']]['subject_name'] = $v['subject_name'];
@@ -223,7 +229,7 @@ class DashboardTeacher extends BaseController
             $pub[$v['lesson_additional_subject_id']]['subchapter'][$v['lesson_additional_subchapter']] = $v['lesson_additional_subchapter'];
         }
 
-        $pc = $psc = 0; 
+        $pc = $psc = 0;
         foreach ($pub as $v) {
             $pc += count($v['chapter']);
             $psc += count($v['subchapter']);
@@ -281,5 +287,4 @@ class DashboardTeacher extends BaseController
 
         echo json_encode($result);
     }
-   
 }
