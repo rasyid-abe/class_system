@@ -302,7 +302,7 @@ function ajax_dash_student() {
 $(document).ready(function () {
 
   let all_locstorage = Object.entries(localStorage);
-  $.each(all_locstorage, function (i,v) {
+  $.each(all_locstorage, function (i, v) {
     if (v[0].includes("limecode") || v[0].includes("aquacode") || v[0].includes("browncode") || v[0].includes("yellowcode")) {
       localStorage.removeItem(v[0])
     }
@@ -405,6 +405,33 @@ $(document).ready(function () {
 });
 
 function gen_dash_student(e) {
+  let my_lesson = ''
+  $.each(e.my_lesson, function(i,v) {
+    let teacher = v.teacher_degree != '' ? v.teacher_name + ' ,' + v.teacher_degree : v.teacher_name
+
+    my_lesson += `
+      <li class="li-timeline">
+          <div class="node green"></div>
+          <div class="text-content">
+              <h6 style="margin-right: 15px">${v.subject_name}</h6>
+              <p>${teacher}</p>
+              <p>${v.teaching_schedule_time} WIB</p>
+          </div>
+      </li>
+      <li>
+          <div class="divider green"></div>
+      </li>
+    `;
+
+    let all_lesson = `
+      <ul id="progress" style="padding-left: 1rem; list-style-type: none;">
+      ${my_lesson}
+      </ul>
+    `;
+
+    $('#dash_my_lesson').html(all_lesson)
+  })
+  
   let list_assessment = ''
   if (e.assessment.length > 0) {
     let card_assessment = ''
@@ -458,7 +485,7 @@ function gen_dash_student(e) {
   $('#block-assessment').html(list_assessment)
 
   let list_task = ''
-  
+
   if (Object.values(e.list_idx).length > 0) {
     if (e.task.length > 0) {
       let card_task = ''
@@ -466,13 +493,13 @@ function gen_dash_student(e) {
         if (Object.values(e.list_idx).includes(v.task_id)) {
           let end = new Date(v.task_end)
           let now = new Date();
-  
+
           if ((end > now) || (end < now && v.task_is_ignored_time_submit == 1)) {
             let deg = v.teacher_degree != '' ? ', ' + v.teacher_degree : ''
             let name = v.teacher_first_name + ' ' + v.teacher_last_name + deg
             let temp_exists = e.arr_temp_task.includes(v.task_id) ? 1 : 0
             let bdg_exists = e.arr_temp_task.includes(v.task_id) ? '<badge class="badge badge-danger">Belum dikirim</badge>' : '<badge class="badge badge-info">Belum dikerjakan</badge>'
-  
+
             card_task += `
               <div class="card-task">
                   <div class="card bg-light-info card-bordered">
@@ -496,7 +523,7 @@ function gen_dash_student(e) {
           }
         }
       })
-  
+
       list_task += `
         <div class="alert alert-white" style="border-radius:10px;">
             <div class="d-flex flex-stack text-white mb-3">
@@ -523,15 +550,44 @@ function gen_dash_student(e) {
 }
 
 function gen_dash_teacher(e) {
+  let day = $('input[name=temp_day]').val()
+  let days = day.split(',')
+
   let my_duty = ''
   if (e.my_duty.length > 0) {
     $.each(e.my_duty, function (i, v) {
+      let jval = JSON.parse(v.teaching_time)
+      const grouped = {};
+
+      jval.forEach(item => {
+        const day = item.day;
+        const time = parseInt(item.time); // ubah jadi number jika perlu
+
+        if (!grouped[day]) {
+          grouped[day] = [];
+        }
+
+        grouped[day].push(time);
+      });
+
+      // (Optional) urutkan tiap array
+      for (let key in grouped) {
+        grouped[key].sort((a, b) => a - b);
+      }      
+
+      let time_t = ''
+      $.each(grouped, function(idd,vll) {
+        time_t += `
+          <span class="fw-semibold text-gray-500 d-block">${days[idd-1]} Jam Ke ${vll.toString()}</span>
+        `
+      })
+
       my_duty += `
         <div class="timeline-item pb-5">
           <div class="timeline-content m-0">
             <span class="fs-8 fw-bolder text-primary text-uppercase">${v.student_group_name}</span>
-            <a href="#" class="fs-6 text-gray-800 fw-bold d-block text-hover-primary">${v.subject_name}</a>
-            <span class="fw-semibold text-gray-500">n / a</span>
+            <span class="fs-6 text-gray-800 fw-bold d-block text-hover-primary">${v.subject_name}</span>
+            ${time_t}
           </div>
         </div>
       `

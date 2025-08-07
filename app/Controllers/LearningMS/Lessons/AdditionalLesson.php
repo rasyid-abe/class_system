@@ -7,7 +7,7 @@ use App\Models\Lessons\AdditionalLessonModel;
 use App\Models\QuestionBank\QuestionBankModel;
 use App\Models\QuestionBank\StandartQuestionBankModel;
 use App\Models\QuestionBank\PublicQuestionBankModel;
-use App\Models\Management\TeacherAssignModel;
+use App\Models\Management\TeachingSubjectsModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
 use App\Models\Activities\ActivityModel;
@@ -33,7 +33,7 @@ class AdditionalLesson extends BaseController
         $this->page = "Lesson";
         $this->sidebar = "Additional";
         $this->lesson_additional = new AdditionalLessonModel();
-        $this->teacher_subject = new TeacherAssignModel();
+        $this->teacher_subject = new TeachingSubjectsModel();
         $this->teacher = new TeacherModel();
         $this->subject = new SubjectModel();
         $this->qb = new QuestionBankModel();
@@ -53,20 +53,31 @@ class AdditionalLesson extends BaseController
         ];
             
         $mysubs = $this->teacher_subject
-            ->select('teacher_assign_id, teacher_assign_grade, subject_id, subject_name')
-            ->join('master_subject', 'teacher_assign_subject_id=subject_id', 'left')
-            ->where('teacher_assign_school_id', userdata()['school_id'])
-            ->where('teacher_assign_teacher_id', userdata()['id_profile'])
-            ->where('teacher_assign_status < 9')
-            // ->where('teacher_assign_school_year_id', year_active()['school_year_id'])
-            ->orderBy('teacher_assign_grade')
+            ->select('
+                student_group_name,
+                student_group_grade,
+                subject_name,
+                subject_id,
+                timetable_group_id
+            ')
+            ->join('manage_timetable', 'timetable_teaching_subjects_id = teaching_subjects_id')
+            ->join('master_student_group', 'student_group_id = teaching_subjects_student_group_id', 'left')
+            ->join('master_subject', 'subject_id = teaching_subjects_subject_id', 'left')
+            ->join('master_teaching_schedule', 'teaching_schedule_id = timetable_teaching_schedule_id', 'left')
+            ->where([
+                'teaching_subjects_school_id' => userdata()['school_id'],
+                'teaching_subjects_school_year_id' => school_year()['id'],
+                'teaching_subjects_teacher_id' => userdata()['id_profile'],
+                'teaching_subjects_status < 9',
+            ])
+            ->groupBy('student_group_id')
             ->findAll();
 
         $subs = [];
         foreach ($mysubs as $k => $v) {
             $subs[$v['subject_id']]['subj_id'] = $v['subject_id'];
             $subs[$v['subject_id']]['subj_name'] = $v['subject_name'];
-            $subs[$v['subject_id']]['grade'][$v['teacher_assign_grade']] = $v['teacher_assign_grade'];
+            $subs[$v['subject_id']]['grade'][$v['student_group_grade']] = $v['student_group_grade'];
         }
 
         $data['mysubs'] = $subs;
@@ -103,17 +114,20 @@ class AdditionalLesson extends BaseController
         $data['grade'] = $grade;
 
         $chapter = $this->lesson_additional
-            ->select('lesson_additional_id, lesson_additional_chapter')
+            ->select('lesson_additional_id, lesson_additional_chapter,lesson_additional_teacher_id')
+            ->where('lesson_additional_school_id', userdata()['school_id'])
             ->where('lesson_additional_teacher_id', userdata()['id_profile'])
             ->where('lesson_additional_status < 9')
             ->where('lesson_additional_subject_id', $subject)
             ->where('lesson_additional_grade', $grade)
             ->groupBy('lesson_additional_chapter')
             ->findAll();
-            
+
         foreach ($chapter as $k => $v) {
             $sub_chapter = $this->lesson_additional
                 ->where('lesson_additional_chapter', $v['lesson_additional_chapter'])
+                ->where('lesson_additional_school_id', userdata()['school_id'])
+                ->where('lesson_additional_teacher_id', userdata()['id_profile'])
                 ->where('lesson_additional_status < 9')
                 ->findAll();
 
@@ -136,12 +150,11 @@ class AdditionalLesson extends BaseController
 
         $chapter = $this->lesson_additional
             ->select('lesson_additional_id, lesson_additional_chapter, lesson_additional_subchapter')
+            ->where('lesson_additional_school_id', userdata()['school_id'])
             ->where('lesson_additional_teacher_id', userdata()['id_profile'])
             ->where('lesson_additional_status < 9')
-            // ->where('lesson_additional_subchapter != ""')
             ->where('lesson_additional_subject_id', $req['sid'])
             ->where('lesson_additional_grade', $req['gid'])
-            // ->groupBy('lesson_additional_chapter')
             ->findAll();
         
        
@@ -150,6 +163,8 @@ class AdditionalLesson extends BaseController
             if ($v['lesson_additional_subchapter'] == "") {
                 $sub_chapter = $this->lesson_additional
                     ->where('lesson_additional_chapter', $v['lesson_additional_chapter'])
+                    ->where('lesson_additional_school_id', userdata()['school_id'])
+                    ->where('lesson_additional_teacher_id', userdata()['id_profile'])
                     ->where('lesson_additional_status < 9')
                     ->findAll();
     
@@ -175,6 +190,8 @@ class AdditionalLesson extends BaseController
 
         $data['babs'] = $this->lesson_additional
             ->select('lesson_additional_id, lesson_additional_chapter')
+            ->where('lesson_additional_school_id', userdata()['school_id'])
+            ->where('lesson_additional_teacher_id', userdata()['id_profile'])
             ->where('lesson_additional_subject_id', $subject)
             ->where('lesson_additional_grade', $grade)
             ->where('lesson_additional_status < 9')
@@ -193,6 +210,8 @@ class AdditionalLesson extends BaseController
 
         $babs = $this->lesson_additional
             ->select('lesson_additional_id, lesson_additional_chapter')
+            ->where('lesson_additional_school_id', userdata()['school_id'])
+            ->where('lesson_additional_teacher_id', userdata()['id_profile'])
             ->where('lesson_additional_subject_id', $req['subject'])
             ->where('lesson_additional_grade', $req['grade'])
             ->where('lesson_additional_status < 9')
@@ -287,6 +306,7 @@ class AdditionalLesson extends BaseController
         $r = $this->lesson_additional->where('lesson_additional_id', $id)->first();
         $data = $this->lesson_additional
             ->select('lesson_additional_id, lesson_additional_chapter')
+            ->where('lesson_additional_school_id', userdata()['school_id'])
             ->where('lesson_additional_teacher_id', userdata()['id_profile'])
             ->where('lesson_additional_status < 9')
             ->where('lesson_additional_subject_id', $r['lesson_additional_subject_id'])
@@ -308,12 +328,16 @@ class AdditionalLesson extends BaseController
                     lesson_additional_shared_type,
                     lesson_additional_shared_to
                 ')
+                ->where('lesson_additional_school_id', userdata()['school_id'])
+                ->where('lesson_additional_teacher_id', userdata()['id_profile'])
                 ->where('lesson_additional_id', $req['id'])
                 ->where('lesson_additional_status < 9')
                 ->first();
         } else {
             $data = $this->lesson_additional
                 ->where('lesson_additional_id', $req['id'])
+                ->where('lesson_additional_school_id', userdata()['school_id'])
+                ->where('lesson_additional_teacher_id', userdata()['id_profile'])
                 ->where('lesson_additional_status < 9')
                 ->first();
     

@@ -5,7 +5,6 @@ namespace App\Controllers\LearningMS\QuestionBank;
 use App\Controllers\BaseController;
 use App\Models\QuestionBank\StandartQuestionBankModel;
 use App\Models\QuestionBank\QuestionBankModel;
-use App\Models\Management\TeacherAssignModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
 use App\Models\Activities\ActivityModel;
@@ -16,7 +15,6 @@ class StandartQuestionBank extends BaseController
     protected $title;
     protected $page;
     protected $sidebar;
-    protected $teacher_subject;
     protected $question_bank_standart;
     protected $question_bank;
     protected $teacher;
@@ -30,7 +28,6 @@ class StandartQuestionBank extends BaseController
         $this->sidebar = "QB_Standart";
         $this->question_bank_standart = new StandartQuestionBankModel();
         $this->question_bank = new QuestionBankModel();
-        $this->teacher_subject = new TeacherAssignModel();
         $this->teacher = new TeacherModel();
         $this->subject = new SubjectModel();
         $this->activity = new ActivityModel();

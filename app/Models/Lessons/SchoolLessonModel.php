@@ -115,37 +115,76 @@ class SchoolLessonModel extends Model
 
     public function student_list_subject($grade, $group) {
 
+        // $sql = "
+        //     select
+        //         lesson_school_id,
+        //         lesson_school_subject_id, lesson_school_grade, 
+        //         COUNT(distinct lesson_school_chapter) total_chapter,
+        //         SUM(
+        //             CASE
+        //                 WHEN lesson_school_lesson_standart_id > 0 THEN 1
+        //                 WHEN lesson_school_lesson_additional_id > 0 THEN 1
+        //                 WHEN lesson_school_lesson_shared_id > 0 THEN 1
+        //                 ELSE 0
+        //             END
+        //         ) total_subchapter,
+        //         lesson_school_grade,
+        //         teacher_first_name,
+        //         teacher_last_name,
+        //         teacher_degree,
+        //         subject_name,
+        //         subject_id,
+        //         teacher_degree
+        //     from 
+        //         lms_lesson_school
+        //     left join master_subject on subject_id=lesson_school_subject_id
+        //     left join profile_teacher on teacher_id=lesson_school_teacher_id
+        //     right join system_teacher_assign on teacher_assign_teacher_id=teacher_id
+        //     where 
+        //         lesson_school_status < 9 and
+        //         lesson_school_school_id = ".userdata()['school_id']." and
+        //         lesson_school_grade = $grade and
+        //         lesson_school_school_year_id = ".year_active()['school_year_id']." and
+        //         teacher_assign_student_group_id = $group
+        //     group by lesson_school_subject_id
+        // ";
+
         $sql = "
-            select
+            with tbl1 as (select distinct
                 lesson_school_id,
-                lesson_school_subject_id, lesson_school_grade, 
-                COUNT(distinct lesson_school_chapter) total_chapter,
-                SUM(
-                    CASE
-                        WHEN lesson_school_lesson_standart_id > 0 THEN 1
-                        WHEN lesson_school_lesson_additional_id > 0 THEN 1
-                        WHEN lesson_school_lesson_shared_id > 0 THEN 1
-                        ELSE 0
-                    END
-                ) total_subchapter,
+                lesson_school_subject_id,
                 lesson_school_grade,
                 teacher_first_name,
                 teacher_last_name,
                 teacher_degree,
-                subject_name,
                 subject_id,
-                teacher_degree
-            from 
-                lms_lesson_school
-            left join master_subject on subject_id=lesson_school_subject_id
-            left join profile_teacher on teacher_id=lesson_school_teacher_id
-            right join system_teacher_assign on teacher_assign_teacher_id=teacher_id
-            where 
-                lesson_school_status < 9 and
-                lesson_school_school_id = ".userdata()['school_id']." and
-                lesson_school_grade = $grade and
-                lesson_school_school_year_id = ".year_active()['school_year_id']." and
-                teacher_assign_student_group_id = $group
+                subject_name,
+                lesson_school_chapter,
+                lesson_school_lesson_standart_id,
+                lesson_school_lesson_additional_id,
+                lesson_school_lesson_shared_id
+            from lms_lesson_school
+            join master_subject on subject_id = lesson_school_subject_id
+            join profile_teacher on teacher_id = lesson_school_teacher_id
+            join manage_teaching_subjects on teaching_subjects_teacher_id = teacher_id
+            join manage_timetable on timetable_teaching_subjects_id = teaching_subjects_id 
+            where lesson_school_status < 9
+                and timetable_group_id = $group
+                and lesson_school_grade = $grade
+                and lesson_school_school_id = ".userdata()['school_id']."
+                and lesson_school_school_year_id = ".school_year()['id']."
+            )
+
+            select *, COUNT(distinct lesson_school_chapter) total_chapter,
+            SUM(
+                CASE
+                    WHEN lesson_school_lesson_standart_id > 0 THEN 1
+                    WHEN lesson_school_lesson_additional_id > 0 THEN 1
+                    WHEN lesson_school_lesson_shared_id > 0 THEN 1
+                    ELSE 0
+                END
+            ) total_subchapter 
+            from tbl1
             group by lesson_school_subject_id
         ";
 

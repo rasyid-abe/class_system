@@ -116,7 +116,7 @@ function treeview_task_ch(e, subj, grad) {
 
       bd1 += `
                 <li class="list-group-item parent2" data-source="${bdi1}${bdi2}"><a href="#" style="color: black">${val.text}</a></li>
-                ${child_body}    
+                ${val.nodes.length > 0 ? child_body : ''}    
             `;
 
       bdi2++;
@@ -129,7 +129,7 @@ function treeview_task_ch(e, subj, grad) {
         `;
     content += `
             <li class="list-group-item bg-secondary parent1" data-source="${bdi1}"><a href="#"><h6 style="margin-top:5px">${v.text}</h6></a></li>
-            ${bd1_body}
+            ${v.nodes.length > 0 ? bd1_body : `<ul class="list-group list-group-flush hide task_child p-2" id="i${bdi1}">Materi Pelajaran tidak tersedia</ul>`}
         `;
 
     bdi1++;
@@ -176,6 +176,7 @@ function choose_task() {
     get_religion();
     set_datepicker();
     check_group(subj_ass, grad_ass);
+
   } else {
     $("#select_tk_alert").removeClass("hide");
     setTimeout(function () {
@@ -200,6 +201,12 @@ function clear_form_task() {
   $('.group_ass').addClass('hide')
   $('.title_ass').addClass('hide')
   $('.selreli').addClass('hide')
+}
+
+function show_prev () {
+  clear_form_task()
+  $('#modal_task_ch').modal('hide')
+  $('#task_prev_less').modal('show')
 }
 
 function save_task(status = null, save_type = null) {
@@ -265,6 +272,7 @@ function save_task(status = null, save_type = null) {
       ];
       
       store_task(1, id_task_, JSON.stringify(data));
+      $('#content_tab_ct').addClass('hide')
     } else {
       let msg =
         chk_range_task() == 2

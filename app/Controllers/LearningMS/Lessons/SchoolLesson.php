@@ -7,7 +7,7 @@ use App\Models\Lessons\SchoolLessonModel;
 use App\Models\Lessons\StandartLessonModel;
 use App\Models\Lessons\AdditionalLessonModel;
 use App\Models\Lessons\PublicLessonModel;
-use App\Models\Management\TeacherAssignModel;
+use App\Models\Management\TeachingSubjectsModel;
 use App\Models\Masters\SubjectModel;
 use PhpParser\Node\Expr\FuncCall;
 use App\Models\Activities\ActivityModel;
@@ -35,7 +35,7 @@ class SchoolLesson extends BaseController
         $this->lesson_standart = new StandartLessonModel();
         $this->lesson_additional = new AdditionalLessonModel();
         $this->lesson_public = new PublicLessonModel();
-        $this->teacher_subject = new TeacherAssignModel();
+        $this->teacher_subject = new TeachingSubjectsModel();
         $this->subject = new SubjectModel();
         $this->activity = new ActivityModel();
     }
@@ -53,21 +53,22 @@ class SchoolLesson extends BaseController
 
 
         $subs = [];
-        if (isset(year_active()['school_year_id'])) {
+        if (isset(school_year()['id'])) {
             $mysubs = $this->teacher_subject
-                ->select('teacher_assign_id, teacher_assign_grade, subject_id, subject_name')
-                ->join('master_subject', 'teacher_assign_subject_id=subject_id', 'left')
-                ->where('teacher_assign_school_id', userdata()['school_id'])
-                ->where('teacher_assign_teacher_id', userdata()['id_profile'])
-                ->where('teacher_assign_status < 9')
-                ->where('teacher_assign_school_year_id', year_active()['school_year_id'])
-                ->orderBy('teacher_assign_grade')
+                ->select('student_group_id, student_group_name, student_group_grade, subject_id, subject_name')
+                ->join('manage_timetable', 'timetable_teaching_subjects_id = teaching_subjects_id', 'left')
+                ->join('master_student_group', 'student_group_id = timetable_group_id', 'left')
+                ->join('master_subject', 'subject_id = teaching_subjects_subject_id', 'left')
+                ->where('teaching_subjects_school_id', userdata()['school_id'])
+                ->where('teaching_subjects_teacher_id', userdata()['id_profile'])
+                ->where('teaching_subjects_status < 9')
+                ->orderBy('student_group_grade')
                 ->findAll();
        
             foreach ($mysubs as $k => $v) {
                 $subs[$v['subject_id']]['subj_id'] = $v['subject_id'];
                 $subs[$v['subject_id']]['subj_name'] = $v['subject_name'];
-                $subs[$v['subject_id']]['grade'][$v['teacher_assign_grade']] = $v['teacher_assign_grade'];
+                $subs[$v['subject_id']]['grade'][$v['student_group_grade']] = $v['student_group_grade'];
             }
         }
 
@@ -82,21 +83,23 @@ class SchoolLesson extends BaseController
         $sch = userdata()['school_id'];
         $teach = userdata()['id_profile'];
         
-        if (isset(year_active()['school_year_id'])) {
-            $s_year = year_active()['school_year_id'];
+        if (isset(school_year()['id'])) {
+            $s_year = school_year()['id'];
             $total_chapter = $this->lesson_school->total_chapter($sch, $s_year, $teach);
             $total_subchapter = $this->lesson_school->total_subchapter($sch, $s_year, $teach);
   
             $res = [
-                't_chap' => $total_chapter['total'],
-                't_subchap' => $total_subchapter['total'],
+                't_chap' => $total_chapter['total'] != '' ? $total_chapter['total'] : 0 ,
+                't_subchap' => $total_subchapter['total'] != '' ? $total_subchapter['total'] : 0,
             ];
+
         } else {
             $res = [
                 't_chap' => 0,
                 't_subchap' => 0,
             ];
         }
+
 
         echo json_encode($res);
     }
@@ -324,7 +327,7 @@ class SchoolLesson extends BaseController
                 ->select('lesson_school_chapter')
                 ->selectMax('lesson_school_order_parent')
                 ->where('lesson_school_school_id', userdata()['school_id'])
-                ->where('lesson_school_school_year_id', year_active()['school_year_id'])
+                ->where('lesson_school_school_year_id', school_year()['id'])
                 ->where('lesson_school_teacher_id', userdata()['id_profile'],)
                 ->where('lesson_school_subject_id', $req['val'][1])
                 ->where('lesson_school_grade', $req['val'][2])
@@ -334,7 +337,7 @@ class SchoolLesson extends BaseController
 
             $arr_ins = [
                 'lesson_school_school_id' => userdata()['school_id'],
-                'lesson_school_school_year_id' => year_active()['school_year_id'],
+                'lesson_school_school_year_id' => school_year()['id'],
                 'lesson_school_teacher_id' => userdata()['id_profile'],
                 'lesson_school_subject_id' => $req['val'][1],
                 'lesson_school_grade' => $req['val'][2],
@@ -452,6 +455,10 @@ class SchoolLesson extends BaseController
                     lesson_additional_subject_id as subject,
                     lesson_additional_grade as grade,
                 ')
+                ->where('lesson_additional_school_id', $school)
+                ->where('lesson_additional_teacher_id', $teacher)
+                ->where('lesson_additional_grade', $grade)
+                ->where('lesson_additional_subject_id', $subject)
                 ->where('lesson_additional_chapter', $v['text'])
                 ->where('lesson_additional_subchapter != ""')
                 ->where('lesson_additional_status < 9')
@@ -479,6 +486,7 @@ class SchoolLesson extends BaseController
                     lesson_standart_subject_id as subject,
                     lesson_standart_grade as grade,
                 ')
+                ->where('lesson_standart_subject_id', $subject)
                 ->where('lesson_standart_chapter', $v['text'])
                 ->where('lesson_standart_subchapter != ""')
                 ->where('lesson_standart_status < 9')
@@ -500,6 +508,7 @@ class SchoolLesson extends BaseController
                     lesson_additional_subject_id as subject,
                     lesson_additional_grade as grade,
                 ')
+                ->where('lesson_additional_subject_id', $subject)
                 ->where('lesson_additional_chapter', $v['text'])
                 ->where('lesson_additional_subchapter != ""')
                 ->where('lesson_additional_status < 9')
@@ -678,41 +687,41 @@ class SchoolLesson extends BaseController
         ];
 
 
-        $subs = [];
-        if (isset(year_active()['school_year_id'])) {
-            $mysubs = $this->teacher_subject
-                ->select('teacher_assign_id, teacher_assign_grade, subject_id, subject_name')
-                ->join('master_subject', 'teacher_assign_subject_id=subject_id', 'left')
-                ->where('teacher_assign_school_id', userdata()['school_id'])
-                ->where('teacher_assign_teacher_id', userdata()['id_profile'])
-                ->where('teacher_assign_status < 9')
-                ->where('teacher_assign_school_year_id', year_active()['school_year_id'])
-                ->orderBy('teacher_assign_grade')
-                ->findAll();
+        // $subs = [];
+        // // if (isset(school_year()['id'])) {
+        //     $mysubs = $this->teacher_subject
+        //         ->select('teacher_assign_id, teacher_assign_grade, subject_id, subject_name')
+        //         ->join('master_subject', 'teacher_assign_subject_id=subject_id', 'left')
+        //         ->where('teacher_assign_school_id', userdata()['school_id'])
+        //         ->where('teacher_assign_teacher_id', userdata()['id_profile'])
+        //         ->where('teacher_assign_status < 9')
+        //         ->where('teacher_assign_school_year_id', school_year()['id'])
+        //         ->orderBy('teacher_assign_grade')
+        //         ->findAll();
        
-            foreach ($mysubs as $k => $v) {
-                $subs[$v['subject_id']]['subj_id'] = $v['subject_id'];
-                $subs[$v['subject_id']]['subj_name'] = $v['subject_name'];
-                $subs[$v['subject_id']]['grade'][$v['teacher_assign_grade']] = $v['teacher_assign_grade'];
-            }
-        }
+        //     foreach ($mysubs as $k => $v) {
+        //         $subs[$v['subject_id']]['subj_id'] = $v['subject_id'];
+        //         $subs[$v['subject_id']]['subj_name'] = $v['subject_name'];
+        //         $subs[$v['subject_id']]['grade'][$v['teacher_assign_grade']] = $v['teacher_assign_grade'];
+        //     }
+        // // }
 
 
-        $data['mysubs'] = $subs;
+        // $data['mysubs'] = $subs;
         return view("learningms/lesson_school/index_s", $data);
     }
 
     public Function s_first_page()
     {
        
-        if (isset(year_active()['school_year_id'])) {
+        if (isset(school_year()['id'])) {
             $my_group = student_group();
             $total_chapter = $this->lesson_school
                 ->select('count(*)')
                 ->where('lesson_school_status < 9')
                 ->where('lesson_school_grade', $my_group['grade'])
                 ->where('lesson_school_school_id', userdata()['school_id'])
-                ->where('lesson_school_school_year_id', year_active()['school_year_id'])
+                ->where('lesson_school_school_year_id', school_year()['id'])
                 ->groupBy('lesson_school_chapter, lesson_school_grade')
                 ->findAll();
             $total_subchapter = $this->lesson_school
@@ -720,7 +729,7 @@ class SchoolLesson extends BaseController
                 ->where('lesson_school_status < 9')
                 ->where('lesson_school_grade', $my_group['grade'])
                 ->where('lesson_school_school_id', userdata()['school_id'])
-                ->where('lesson_school_school_year_id', year_active()['school_year_id'])
+                ->where('lesson_school_school_year_id', school_year()['id'])
                 ->findAll();
     
             $c = 0;
@@ -748,36 +757,6 @@ class SchoolLesson extends BaseController
     {
         $my_group = student_group();
         $sub_list = $this->lesson_school->student_list_subject($my_group['grade'], $my_group['group_id']);
-        // $sub_list = $this->lesson_school
-        //     ->select('
-        //         lesson_school_id,
-        //         lesson_school_subject_id, lesson_school_grade, 
-        //         COUNT(distinct lesson_school_chapter) total_chapter,
-        //         SUM(
-        //             CASE
-        //                 WHEN lesson_school_lesson_standart_id > 0 THEN 1
-        //                 WHEN lesson_school_lesson_additional_id > 0 THEN 1
-        //                 WHEN lesson_school_lesson_shared_id > 0 THEN 1
-        //                 ELSE 0
-        //             END
-        //         ) total_subchapter,
-        //         lesson_school_grade,
-        //         teacher_first_name,
-        //         teacher_last_name,
-        //         teacher_degree,
-        //         subject_name,
-        //         subject_id,
-        //         teacher_degree,')
-        //     ->join('master_subject', 'subject_id=lesson_school_subject_id', 'left')
-        //     ->join('profile_teacher', 'teacher_id=lesson_school_teacher_id', 'left')
-        //     ->join('system_teacher_assign', 'teacher_assign_teacher_id=teacher_id', 'right')
-        //     ->where('lesson_school_status < 9')
-        //     ->where('lesson_school_school_id', userdata()['school_id'])
-        //     ->where('lesson_school_grade', $my_group['grade'])
-        //     ->where('lesson_school_school_year_id', year_active()['school_year_id'])
-        //     ->where('teacher_assign_student_group_id', $my_group['group_id'])
-        //     ->groupBy('lesson_school_subject_id')
-        //     ->findAll();
 
         $data = [];
         foreach ($sub_list as $k => $v) {
@@ -812,10 +791,7 @@ class SchoolLesson extends BaseController
     public function s_view_content($subject, $grade)
     {
         $subs = $this->subject->where('subject_id', $subject)->first();
-        echo '<pre>';
-        print_r($subs);
-        echo '</pre>';
-        die;
+
         $data["title"] = $subs['subject_name'] . ' - Kelas ' . $grade;
         $data["page"] = 'Self Study';
         $data["sidebar"] = $this->sidebar;

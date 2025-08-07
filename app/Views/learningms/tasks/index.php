@@ -264,7 +264,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-sm btn-light-danger" onclick="hide_modal()">Kembali</button>
+        <button type="button" class="btn btn-sm btn-light-danger" onclick="show_prev()">Kembali</button>
         <button type="sumbit" class="btn btn-sm btn-light-success" onclick="save_task(1, 1);">Simpan</button>
         <button type="sumbit" class="btn btn-sm btn-primary" onclick="save_task(2, 1);">Kirim</button>
       </div>

@@ -81,12 +81,12 @@ class AssessmentModel extends Model
         $add_where = "AND ";
         $add_join = "";
         if ($type == 1) {
-            $add_join .= "left join lms_assessment_result on assessment_id = assessment_result_assessment_id AND assessment_result_student_id = " . userdata()['id_profile'];
+            $add_join .= "join lms_assessment_result on assessment_id = assessment_result_assessment_id AND assessment_result_student_id = " . userdata()['id_profile'];
             $add_where .= "assessment_status = 2 AND assessment_start <= '" . date('Y-m-d H:i:s') . "' AND assessment_end > '" . date('Y-m-d H:i:s') ."' AND assessment_result_submit_datetime is null ";
         } elseif ($type == 2) {
             $add_where .= "assessment_status = 2 AND assessment_end < '" . date('Y-m-d H:i:s') . "'";
         } elseif ($type == 3) {
-            $add_join .= "left join lms_assessment_result on assessment_id = assessment_result_assessment_id";
+            $add_join .= "join lms_assessment_result on assessment_id = assessment_result_assessment_id";
             $add_where .= "assessment_status = 2 AND assessment_result_student_id = ". userdata()['id_profile'] ." AND assessment_result_submit_datetime is not null ";
         }
 
@@ -119,6 +119,7 @@ class AssessmentModel extends Model
             $add_join
             WHERE 1=1 
                 $add_where
+                AND assessment_religion IN (0, ".userdata()['religi'].")
                 AND assessment_school_id = ".userdata()['school_id']."
                 AND assessment_group LIKE '%".$my_group['group_name']."%'
             GROUP BY assessment_id";
@@ -139,6 +140,7 @@ class AssessmentModel extends Model
                 assessment_status = 1
                 and assessment_school_id = $school_id
                 and assessment_teacher_id = $teacher_id
+                and assessment_religion in (0, ".userdata()['religi'].")
             order by
                 assessment_id desc
         ";
@@ -160,6 +162,7 @@ class AssessmentModel extends Model
                 and assessment_start >= '$date_now'
                 and assessment_school_id = $school_id
                 and assessment_teacher_id = $teacher_id
+                and assessment_religion in (0, ".userdata()['religi'].")
             order by
                 assessment_id desc
         ";
@@ -181,6 +184,7 @@ class AssessmentModel extends Model
                 and assessment_start <= '$date_now'
                 and assessment_end >= '$date_now'
                 and assessment_school_id = $school_id
+                and assessment_religion in (0, ".userdata()['religi'].")
                 and assessment_teacher_id = $teacher_id
             order by
                 assessment_id desc
@@ -202,6 +206,7 @@ class AssessmentModel extends Model
                 assessment_status = 2
                 and assessment_end <= '$date_now'
                 and assessment_school_id = $school_id
+                and assessment_religion in (0, ".userdata()['religi'].")
                 and assessment_teacher_id = $teacher_id
             order by
                 assessment_id desc
@@ -220,6 +225,7 @@ class AssessmentModel extends Model
                 assessment_school_id = $school_id and
                 assessment_school_year_id = $year and
                 assessment_teacher_id = $teacher_id and
+                assessment_religion in (0, ".userdata()['religi'].") and
                 assessment_status = 2 and
                 assessment_start <= '$date' and
                 assessment_group like '%none%'

@@ -42,11 +42,11 @@ class StudentInGroupModel extends Model
             SELECT
                 student_in_group_student_id,
                 student_religion
-            FROM system_student_in_group 
-            LEFT JOIN profile_student ON student_id=system_student_in_group.student_in_group_student_id
+            FROM manage_student_in_group 
+            LEFT JOIN profile_student ON student_id=manage_student_in_group.student_in_group_student_id
             WHERE 1=1 
                 AND student_in_group_student_group_id = $group_id 
-                AND system_student_in_group.student_in_group_school_id = $school_id
+                AND manage_student_in_group.student_in_group_school_id = $school_id
                 $whr_religi
         ";
 
@@ -61,7 +61,7 @@ class StudentInGroupModel extends Model
                 student_religion,
                 count(*) total
             from
-                system_student_in_group
+                manage_student_in_group
             left join profile_student on
                 student_id = student_in_group_student_id
                 and student_status < 9

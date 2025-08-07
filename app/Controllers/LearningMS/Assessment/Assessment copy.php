@@ -81,7 +81,7 @@ class Assessment extends BaseController
         $ex = $this->teacher_subject
             ->join('master_student_group', 'student_group_id=teacher_assign_student_group_id')
             ->where('teacher_assign_school_id', userdata()['school_id'])
-            ->where('teacher_assign_school_year_id', year_active()['school_year_id'])
+            ->where('teacher_assign_school_year_id', school_year()['id'])
             ->where('teacher_assign_teacher_id', userdata()['id_profile'])
             ->where('teacher_assign_subject_id', $req['subs'])
             ->where('teacher_assign_grade', $req['grad'])

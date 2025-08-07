@@ -3,7 +3,7 @@
 namespace App\Controllers\LearningMS\Tasks;
 
 use App\Controllers\BaseController;
-use App\Models\Management\TeacherAssignModel;
+use App\Models\Management\TeachingSubjectsModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
 use App\Models\Lessons\StandartLessonModel;
@@ -40,7 +40,7 @@ class Task extends BaseController
     {
         $this->title = "Tugas";
         $this->page = "Tasks";
-        $this->teacher_subject = new TeacherAssignModel();
+        $this->teacher_subject = new TeachingSubjectsModel();
         $this->teacher = new TeacherModel();
         $this->subject = new SubjectModel();
         $this->lesson_standart = new StandartLessonModel();
@@ -123,6 +123,9 @@ class Task extends BaseController
                         lesson_additional_subject_id as subject,
                         lesson_additional_grade as grade,
                     ')
+                    ->where('lesson_additional_school_id', $school)
+                    ->where('lesson_additional_teacher_id', $teacher)
+                    ->where('lesson_additional_subject_id', $subject)
                     ->where('lesson_additional_chapter', $v['text'])
                     ->where('lesson_additional_subchapter != ""')
                     ->where('lesson_additional_status < 9')
@@ -151,6 +154,7 @@ class Task extends BaseController
                         lesson_standart_subject_id as subject,
                         lesson_standart_grade as grade,
                     ')
+                    ->where('lesson_standart_subject_id', $subject)
                     ->where('lesson_standart_grade', $grade)
                     ->where('lesson_standart_chapter', $v['text'])
                     ->where('lesson_standart_subchapter != ""')
@@ -174,6 +178,8 @@ class Task extends BaseController
                         lesson_additional_grade as grade,
                     ')
                     ->where('lesson_additional_chapter', $v['text'])
+                    ->where('lesson_additional_school_id', $school)
+                    ->where('lesson_additional_teacher_id', $teacher)
                     ->where('lesson_additional_subchapter != ""')
                     ->where('lesson_additional_status < 9')
                     ->findAll();
@@ -336,6 +342,10 @@ class Task extends BaseController
                     ];
                 } catch (\Throwable $th) {
                     $this->task->db->transRollback();
+                    echo '<pre>';
+                    print_r($th);
+                    echo '</pre>';
+                    die;
                     $res = [
                         'typ' => $req['type'],
                         'sts' => true,
@@ -401,6 +411,10 @@ class Task extends BaseController
                     ];
                 } catch (\Throwable $th) {
                     $this->task->db->transRollback();
+                    echo '<pre>';
+                    print_r($th);
+                    echo '</pre>';
+                    die;
                     $res = [
                         'typ' => $req['type'],
                         'sts' => true,

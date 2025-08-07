@@ -58,7 +58,7 @@ class Groups extends BaseController
             ')
             ->join('profile_student', 'student_id=student_in_group_student_id', 'left')
             ->where('student_in_group_student_group_id',$req['id'])
-            ->where('student_in_group_school_year_id',year_active()['school_year_id'])
+            ->where('student_in_group_school_year_id',school_year()['id'])
             ->where('student_in_group_status < 9')
             ->findAll();
 

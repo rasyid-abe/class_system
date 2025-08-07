@@ -146,7 +146,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-light-danger" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-light-danger" onclick="close_task_a()">Tutup</button>
                 <button type="button" class="btn btn-primary" onclick="act_task_a();">Kirim</button>
             </div>
         </div>

@@ -1010,6 +1010,7 @@ function store_content_a(type, id, val) {
                 $('#tab_topic_a_task').addClass('active')
 
                 $('#modal_task_a').modal("hide")
+                $('#preview_task').html('')
             } else {
                 location.reload()
             }
@@ -1335,6 +1336,11 @@ function generate_preview(e, act) {
     } else {
         $('#preview_task').html(html)
     }
+}
+
+function close_task_a() {
+    $('#preview_task').html('')
+    $('#modal_task_a').modal('hide')
 }
 
 function act_task_a() {
