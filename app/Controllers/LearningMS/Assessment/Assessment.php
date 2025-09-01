@@ -13,6 +13,7 @@ use App\Models\Management\StudentInGroupModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
 use App\Models\Activities\ActivityModel;
+use App\Models\Result\ResultGradesModel;
 use \Datetime;
 
 class Assessment extends BaseController
@@ -29,6 +30,7 @@ class Assessment extends BaseController
     protected $subject;
     protected $assessment;
     protected $assessment_result;
+    protected $result_grades;
     protected $student;
     protected $in_group;
     protected $activity;
@@ -46,6 +48,7 @@ class Assessment extends BaseController
         $this->subject = new SubjectModel();
         $this->assessment = new AssessmentModel();
         $this->assessment_result = new AssessmentResultModel();
+        $this->result_grades = new ResultGradesModel();
         $this->in_group = new StudentInGroupModel();
         $this->activity = new ActivityModel();
     }
@@ -271,6 +274,7 @@ class Assessment extends BaseController
     public function store_data()
     {
         $req = $this->request->getVar();
+        $semester = semester();
 
         if ($req['type'] == 1) {
             $d = json_decode($req['data']);
@@ -284,12 +288,17 @@ class Assessment extends BaseController
                 $group[$k]['checked_all'] = $should_chk;
             }
 
-
             if ($req['id'] > 0) {
                 $this->assessment->db->transBegin();
 
                 $message = 'Something went wrong!';
                 try {
+                    $teasub = $this->assessment
+                        ->select('assessment_teacher_id teacher, assessment_subject_id subject')
+                        ->where('assessment_id', $req['id'])
+                        ->where('assessment_status < 9')
+                        ->first();
+
                     $upd = $this->assessment
                         ->where('assessment_id', $req['id'])
                         ->set('assessment_title', $d[0])
@@ -325,6 +334,20 @@ class Assessment extends BaseController
                             $message = $sts_del['message'];
                         }
 
+                        $data_exists_gv = [];
+                        $data_exists_gv['result_grades_source_id'] = $req['id'];
+                        $data_exists_gv['result_grades_group_id'] = $v['id'];
+                        $data_exists_gv['result_grades_school_id'] = userdata()['school_id'];
+                        $data_exists_gv['result_grades_school_year_id'] = school_year()['id'];
+                        $data_exists_gv['result_grades_semester'] = $semester;
+
+                        $this->result_grades->where($data_exists_gv)->delete();
+                        $stsdelgv = $this->result_grades->error();
+                        if ($stsdelgv['code'] > 0) {
+                            throw new \Exception($stsdelgv['message']);
+                            $message = $stsdelgv['message'];
+                        }
+
                         foreach ($students as $key => $val) {
                             $data_res = [];
                             $data_res['assessment_result_id'] = $req['id'] . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'];
@@ -341,6 +364,26 @@ class Assessment extends BaseController
                             if ($sts_replace['code'] > 0) {
                                 throw new \Exception($sts_replace['message']);
                                 $message = $sts_replace['message'];
+                            }
+
+                            $resval = [];
+                            $resval['result_grades_id'] = $req['id'] . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'] . $semester;
+                            $resval['result_grades_school_id'] = userdata()['school_id'];
+                            $resval['result_grades_school_year_id'] = school_year()['id'];
+                            $resval['result_grades_semester'] = $semester;
+                            $resval['result_grades_group_id'] = $v['id'];
+                            $resval['result_grades_student_id'] = $val['student_in_group_student_id'];
+                            $resval['result_grades_value_type'] = 2;
+                            $resval['result_grades_source_id'] = $req['id'];
+                            $resval['result_grades_source_title'] = $d[0];
+                            $resval['result_grades_teacher_id'] = $teasub['teacher'];
+                            $resval['result_grades_subject_id'] = $teasub['subject'];
+
+                            $this->result_grades->insert($resval);
+                            $stsrv = $this->result_grades->error();
+                            if ($stsrv['code'] > 0) {
+                                throw new \Exception($stsrv['message']);
+                                $message = $stsrv['message'];
                             }
                         }
                     }
@@ -411,6 +454,26 @@ class Assessment extends BaseController
                             if ($inss['code'] > 0) {
                                 throw new \Exception($inss['message']);
                                 $message = $inss['message'];
+                            }
+
+                            $resval = [];
+                            $resval['result_grades_id'] = $this->assessment->getInsertID() . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'] . $semester;
+                            $resval['result_grades_school_id'] = userdata()['school_id'];
+                            $resval['result_grades_school_year_id'] = school_year()['id'];
+                            $resval['result_grades_semester'] = $semester;
+                            $resval['result_grades_group_id'] = $v['id'];
+                            $resval['result_grades_student_id'] = $val['student_in_group_student_id'];
+                            $resval['result_grades_value_type'] = 2;
+                            $resval['result_grades_source_id'] = $this->assessment->getInsertID();
+                            $resval['result_grades_source_title'] = $d[0];
+                            $resval['result_grades_teacher_id'] = userdata()['id_profile'];
+                            $resval['result_grades_subject_id'] = $d[1];
+
+                            $this->result_grades->insert($resval);
+                            $stsrv = $this->result_grades->error();
+                            if ($stsrv['code'] > 0) {
+                                throw new \Exception($stsrv['message']);
+                                $message = $stsrv['message'];
                             }
                         }
                     }
@@ -529,6 +592,19 @@ class Assessment extends BaseController
                             $message = $sts_upd['message'];
                             $ecode = $sts_upd['code'];
                             throw new \Exception($sts_upd['message']);
+                        }
+
+                        $data_exists_gv = [];
+                        $data_exists_gv['result_grades_source_id'] = $req['id'];
+                        $data_exists_gv['result_grades_school_id'] = userdata()['school_id'];
+                        $data_exists_gv['result_grades_school_year_id'] = school_year()['id'];
+                        $data_exists_gv['result_grades_semester'] = $semester;
+
+                        $this->result_grades->where($data_exists_gv)->delete();
+                        $stsdelgv = $this->result_grades->error();
+                        if ($stsdelgv['code'] > 0) {
+                            throw new \Exception($stsdelgv['message']);
+                            $message = $stsdelgv['message'];
                         }
                     }
                 }
@@ -1432,7 +1508,7 @@ class Assessment extends BaseController
     public function s_submit_assessment()
     {
         $row = $this->request->getVar('send');
-
+        
         if ($row['source_qb'] == 1) {
             $question_ = $this->question_bank_standart
                 ->select('
@@ -1518,43 +1594,72 @@ class Assessment extends BaseController
             $arch_ans[$k]['answer']['note_check'] = '';
         }
 
-        $this->assessment_result
-            ->where('assessment_result_student_id',  userdata()['id_profile'])
-            ->where('assessment_result_assessment_id', $row['assessment_id'])
-            ->where('assessment_result_school_id', userdata()['school_id'])
-            ->where('assessment_result_school_year_id', $row['sch_year_id'])
-            ->set('assessment_result_begin_assignment_datetime', $row['begin_assign'])
-            ->set('assessment_result_submit_datetime', date('Y-m-d H:i:s'))
-            ->set('assessment_result_end_datetime', $row['end_date'])
-            ->set('assessment_result_answer', json_encode($arch_ans))
-            ->set('assessment_result_value', $total_poin)
-            ->set('assessment_result_fault', $row['fault'])
-            ->set('assessment_result_submit_message', $row['msg_submit'])
-            ->update();
+        $this->assessment_result->db->transBegin();
+        try {
+            $calculated = $total_poin / count($row['answer']) * 100;
+            $this->assessment_result
+                ->where('assessment_result_student_id',  userdata()['id_profile'])
+                ->where('assessment_result_assessment_id', $row['assessment_id'])
+                ->where('assessment_result_school_id', userdata()['school_id'])
+                ->where('assessment_result_school_year_id', $row['sch_year_id'])
+                ->set('assessment_result_begin_assignment_datetime', $row['begin_assign'])
+                ->set('assessment_result_submit_datetime', date('Y-m-d H:i:s'))
+                ->set('assessment_result_end_datetime', $row['end_date'])
+                ->set('assessment_result_answer', json_encode($arch_ans))
+                ->set('assessment_result_value', $total_poin)
+                ->set('assessment_result_fault', $row['fault'])
+                ->set('assessment_result_submit_message', $row['msg_submit'])
+                ->update();
 
-        $sts = $this->assessment_result->error();
+            $sts = $this->assessment_result->error();
 
-        $msgsmbt = '<h2>Sukses</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> berhasil dikirimkan</p>';
-        $msglog = 'penilaian "' . $row['assessment_title'] . '" mata pelajaran "' . $row['subject'] . '" dikirimkan';
-        if ($row['submit_type'] != 1) {
-            $msglog = 'penilaian "' . $row['assessment_title'] . '" mata pelajaran "' . $row['subject'] . '" terkirim otomatis karena "' . $row['msg_submit'] . '"';
-            $msgsmbt = '<h2>Penilaian Terkirim Otomatis</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> terkirim otomatis karena <b>' . $row['msg_submit'] . '</b></p>';
+            $msgsmbt = '<h2>Sukses</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> berhasil dikirimkan</p>';
+            $msglog = 'penilaian "' . $row['assessment_title'] . '" mata pelajaran "' . $row['subject'] . '" dikirimkan';
+            if ($row['submit_type'] != 1) {
+                $msglog = 'penilaian "' . $row['assessment_title'] . '" mata pelajaran "' . $row['subject'] . '" terkirim otomatis karena "' . $row['msg_submit'] . '"';
+                $msgsmbt = '<h2>Penilaian Terkirim Otomatis</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> terkirim otomatis karena <b>' . $row['msg_submit'] . '</b></p>';
+            }
+
+            if ($sts['code'] > 0) {
+                $res = [
+                    'sts' => false,
+                    'msg' => '<h2>Oops..</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> gagal dikirimkan</p>',
+                    'icn' => 'error',
+                ];
+            } else {
+                $this->activity->store_log('Penilaian', 'submit', $msglog);
+                $res = [
+                    'sts' => true,
+                    'msg' => $msgsmbt,
+                    'icn' => 'success',
+                ];
+            }
+
+            $this->result_grades
+                ->where('result_grades_school_id', userdata()['school_id'])
+                ->where('result_grades_school_year_id', school_year()['id'])
+                ->where('result_grades_semester', semester())
+                ->where('result_grades_student_id', userdata()['id_profile'])
+                ->where('result_grades_value_type', 2)
+                ->where('result_grades_source_id', $row['assessment_id'])
+                ->set('result_grades_original_value', $calculated)
+                ->set('result_grades_adjust_value', $calculated)
+                ->update();
+
+            $stsrg = $this->result_grades->error();
+            if ($stsrg['code'] > 0) {
+                throw new \Exception($stsrg['message']);
+            }
+
+            $this->assessment_result->db->transCommit();
+        } catch (\Throwable $th) {
+            $this->assessment_result->db->transRollback();
+            echo '<pre>';
+            print_r($th);
+            echo '</pre>';
+            die;
         }
-
-        if ($sts['code'] > 0) {
-            $res = [
-                'sts' => false,
-                'msg' => '<h2>Oops..</h2><br><p>Penilaian <b>' . $row['assessment_title'] . '</b> mata pelajaran <b>' . $row['subject'] . '</b> gagal dikirimkan</p>',
-                'icn' => 'error',
-            ];
-        } else {
-            $this->activity->store_log('Penilaian', 'submit', $msglog);
-            $res = [
-                'sts' => true,
-                'msg' => $msgsmbt,
-                'icn' => 'success',
-            ];
-        }
+        
         echo json_encode($res);
     }
 

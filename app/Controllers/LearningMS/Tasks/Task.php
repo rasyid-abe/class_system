@@ -16,6 +16,7 @@ use App\Models\Tasks\TasksModel;
 use App\Models\Tasks\TasksResultModel;
 use App\Models\Tasks\TasksTempModel;
 use App\Models\Activities\ActivityModel;
+use App\Models\Result\ResultGradesModel;
 use \Datetime;
 
 class Task extends BaseController
@@ -31,6 +32,7 @@ class Task extends BaseController
     protected $task;
     protected $task_result;
     protected $task_temp;
+    protected $result_grades;
     protected $in_group;
     protected $qc_me;
     protected $qc_std;
@@ -51,6 +53,7 @@ class Task extends BaseController
         $this->qc_std = new StandartQuestionBankModel();
         $this->task_result = new TasksResultModel();
         $this->task_temp = new TasksTempModel();
+        $this->result_grades = new ResultGradesModel();
         $this->in_group = new StudentInGroupModel();
         $this->activity = new ActivityModel();
     }
@@ -247,7 +250,7 @@ class Task extends BaseController
     public function store_data()
     {
         $req = $this->request->getVar();
-
+        $semester = semester();
         if ($req['type'] == 1) {
             $r = json_decode($req['param']);
 
@@ -283,6 +286,12 @@ class Task extends BaseController
 
                 $message = 'Something went wrong!';
                 try {
+                    $teasub = $this->task
+                        ->select('task_teacher_id teacher, task_subject_id subject')
+                        ->where('task_id', $req['id'])
+                        ->where('task_status < 9')
+                        ->first();
+
                     $upd = $this->task
                         ->where('task_id', $req['id'])
                         ->set('task_title', $r[0])
@@ -303,6 +312,7 @@ class Task extends BaseController
 
                         $data_exists = [];
                         $data_exists['task_result_task_id'] = $req['id'];
+                        $data_exists['task_result_group_id'] = $v['id'];
                         $data_exists['task_result_school_id'] = userdata()['school_id'];
 
                         $this->task_result->where($data_exists)->delete();
@@ -311,6 +321,20 @@ class Task extends BaseController
                         if ($sts_del['code'] > 0) {
                             throw new \Exception($sts_del['message']);
                             $message = $sts_del['message'];
+                        }
+
+                        $data_exists_gv = [];
+                        $data_exists_gv['result_grades_source_id'] = $req['id'];
+                        $data_exists_gv['result_grades_group_id'] = $v['id'];
+                        $data_exists_gv['result_grades_school_id'] = userdata()['school_id'];
+                        $data_exists_gv['result_grades_school_year_id'] = school_year()['id'];
+                        $data_exists_gv['result_grades_semester'] = $semester;
+
+                        $this->result_grades->where($data_exists_gv)->delete();
+                        $stsdelgv = $this->result_grades->error();
+                        if ($stsdelgv['code'] > 0) {
+                            throw new \Exception($stsdelgv['message']);
+                            $message = $stsdelgv['message'];
                         }
 
                         foreach ($students as $key => $val) {
@@ -327,6 +351,26 @@ class Task extends BaseController
                             if ($sts_replace['code'] > 0) {
                                 throw new \Exception($sts_replace['message']);
                                 $message = $sts_replace['message'];
+                            }
+
+                            $resval = [];
+                            $resval['result_grades_id'] = $req['id'] . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'] . $semester;
+                            $resval['result_grades_school_id'] = userdata()['school_id'];
+                            $resval['result_grades_school_year_id'] = school_year()['id'];
+                            $resval['result_grades_semester'] = $semester;
+                            $resval['result_grades_group_id'] = $v['id'];
+                            $resval['result_grades_student_id'] = $val['student_in_group_student_id'];
+                            $resval['result_grades_value_type'] = 1;
+                            $resval['result_grades_source_id'] = $req['id'];
+                            $resval['result_grades_source_title'] = $r[0];
+                            $resval['result_grades_teacher_id'] = $teasub['teacher'];
+                            $resval['result_grades_subject_id'] = $teasub['subject'];
+
+                            $this->result_grades->insert($resval);
+                            $stsrv = $this->result_grades->error();
+                            if ($stsrv['code'] > 0) {
+                                throw new \Exception($stsrv['message']);
+                                $message = $stsrv['message'];
                             }
                         }
                     }
@@ -398,6 +442,26 @@ class Task extends BaseController
                             if ($inss['code'] > 0) {
                                 throw new \Exception($inss['message']);
                                 $message = $inss['message'];
+                            }
+
+                            $resval = [];
+                            $resval['result_grades_id'] = $this->task->getInsertID() . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'] . $semester;
+                            $resval['result_grades_school_id'] = userdata()['school_id'];
+                            $resval['result_grades_school_year_id'] = school_year()['id'];
+                            $resval['result_grades_semester'] = $semester;
+                            $resval['result_grades_group_id'] = $v['id'];
+                            $resval['result_grades_student_id'] = $val['student_in_group_student_id'];
+                            $resval['result_grades_value_type'] = 1;
+                            $resval['result_grades_source_id'] = $this->task->getInsertID();
+                            $resval['result_grades_source_title'] = $r[0];
+                            $resval['result_grades_teacher_id'] = userdata()['id_profile'];
+                            $resval['result_grades_subject_id'] = $r[1];
+
+                            $this->result_grades->insert($resval);
+                            $stsrv = $this->result_grades->error();
+                            if ($stsrv['code'] > 0) {
+                                throw new \Exception($stsrv['message']);
+                                $message = $stsrv['message'];
                             }
                         }
                     }
@@ -517,8 +581,19 @@ class Task extends BaseController
                             $ecode = $sts_upd['code'];
                             throw new \Exception($sts_upd['message']);
                         }
-                        // $query = $db->getLastQuery();
-                        // echo (string)$query;
+                        
+                        $data_exists_gv = [];
+                        $data_exists_gv['result_grades_source_id'] = $v;
+                        $data_exists_gv['result_grades_school_id'] = userdata()['school_id'];
+                        $data_exists_gv['result_grades_school_year_id'] = school_year()['id'];
+                        $data_exists_gv['result_grades_semester'] = $semester;
+
+                        $this->result_grades->where($data_exists_gv)->delete();
+                        $stsdelgv = $this->result_grades->error();
+                        if ($stsdelgv['code'] > 0) {
+                            throw new \Exception($stsdelgv['message']);
+                            $message = $stsdelgv['message'];
+                        }
 
                     }
                 }
@@ -1628,7 +1703,6 @@ class Task extends BaseController
     public function s_save_action_task()
     {
         $req = $this->request->getVar('send');
-
         if ($req['type'] == 1) {
 
             $data_exists = [];
@@ -1734,48 +1808,74 @@ class Task extends BaseController
                 $arch_answer[$v['source']][$v['question_id']]['question_id'] = $v['question_id'];
             }
 
-            $this->task_result
-                ->where('task_result_student_id', userdata()['id_profile'])
-                ->where('task_result_task_id', $req['task_id'])
-                ->where('task_result_school_id', userdata()['school_id'])
-                ->set('task_result_begin_task_datetime', $req['task_begin'])
-                ->set('task_result_submit_datetime', date('Y-m-d H:i:s'))
-                ->set('task_result_end_datetime', $req['task_end'])
-                ->set('task_result_answer', json_encode(($arch_answer)))
-                ->set('task_result_value', $total_poin)
-                ->set('task_result_submit_type', $req['submit_type'])
-                ->set('task_result_submit_message', $req['submit_msg'])
-                ->update();
+            $this->task_result->db->transBegin();
+            try {
+                $calculated = $total_poin / count($req['answer']) * 100;
+                $this->task_result
+                    ->where('task_result_student_id', userdata()['id_profile'])
+                    ->where('task_result_task_id', $req['task_id'])
+                    ->where('task_result_school_id', userdata()['school_id'])
+                    ->set('task_result_begin_task_datetime', $req['task_begin'])
+                    ->set('task_result_submit_datetime', date('Y-m-d H:i:s'))
+                    ->set('task_result_end_datetime', $req['task_end'])
+                    ->set('task_result_answer', json_encode(($arch_answer)))
+                    ->set('task_result_value', $total_poin)
+                    ->set('task_result_submit_type', $req['submit_type'])
+                    ->set('task_result_submit_message', $req['submit_msg'])
+                    ->update();
 
-            $sts = $this->task_result->error();
+                $sts = $this->task_result->error();
 
-            $msgsmbt = '<h2>Sukses</h2><br><p>Tugas <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> berhasil dikirimkan</p>';
-            $msglog = 'tugas "'. $req['task_title'] .'" mata pelajaran "' . $req['subject'] .'" dikirimkan';
-            if ($req['autosubmit'] == 1) {
-                $msglog = 'tugas "'. $req['task_title'] .'" mata pelajaran "' . $req['subject'] .'" terkirim otomatis karena "' . $req['submit_msg'] .'"';
-                $msgsmbt = '<h2>Tugas Terkirim Otomatis</h2><br><p>Tugas <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> terkirim otomatis karena <b>' . $req['submit_msg'] . '</b></p>';
+                $msgsmbt = '<h2>Sukses</h2><br><p>Tugas <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> berhasil dikirimkan</p>';
+                $msglog = 'tugas "'. $req['task_title'] .'" mata pelajaran "' . $req['subject'] .'" dikirimkan';
+                if ($req['autosubmit'] == 1) {
+                    $msglog = 'tugas "'. $req['task_title'] .'" mata pelajaran "' . $req['subject'] .'" terkirim otomatis karena "' . $req['submit_msg'] .'"';
+                    $msgsmbt = '<h2>Tugas Terkirim Otomatis</h2><br><p>Tugas <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> terkirim otomatis karena <b>' . $req['submit_msg'] . '</b></p>';
+                }
+
+                if ($sts['code'] > 0) {
+                    $res = [
+                        'sts' => false,
+                        'msg' => '<h2>Oops..</h2><br><p>Tugas <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> gagal dikirimkan</p>',
+                        'icn' => 'error',
+                    ];
+                } else {
+                    $temp_whr = [
+                        'task_temp_school_id' => userdata()['school_id'],
+                        'task_temp_student_id' => userdata()['id_profile'],
+                        'task_temp_task_id' => $req['task_id']
+                    ];
+                    $this->task_temp->where($temp_whr)->delete();
+                    $this->activity->store_log('Tugas', 'submit', $msglog);
+                    $res = [
+                        'sts' => true,
+                        'msg' => $msgsmbt,
+                        'icn' => 'success',
+                    ];
+                }
+
+                $this->result_grades
+                    ->where('result_grades_school_id', userdata()['school_id'])
+                    ->where('result_grades_school_year_id', school_year()['id'])
+                    ->where('result_grades_semester', semester())
+                    ->where('result_grades_student_id', userdata()['id_profile'])
+                    ->where('result_grades_value_type', 1)
+                    ->where('result_grades_source_id', $req['task_id'])
+                    ->set('result_grades_original_value', $calculated)
+                    ->set('result_grades_adjust_value', $calculated)
+                    ->update();
+
+                $stsrg = $this->result_grades->error();
+                if ($stsrg['code'] > 0) {
+                    throw new \Exception($stsrg['message']);
+                }
+
+                $this->task_result->db->transCommit();
+            } catch (\Throwable $th) {
+                $this->task_result->db->transRollback();
+                //throw $th;
             }
-
-            if ($sts['code'] > 0) {
-                $res = [
-                    'sts' => false,
-                    'msg' => '<h2>Oops..</h2><br><p>Tugas <b>' . $req['task_title'] . '</b> mata pelajaran <b>' . $req['subject'] . '</b> gagal dikirimkan</p>',
-                    'icn' => 'error',
-                ];
-            } else {
-                $temp_whr = [
-                    'task_temp_school_id' => userdata()['school_id'],
-                    'task_temp_student_id' => userdata()['id_profile'],
-                    'task_temp_task_id' => $req['task_id']
-                ];
-                $this->task_temp->where($temp_whr)->delete();
-                $this->activity->store_log('Tugas', 'submit', $msglog);
-                $res = [
-                    'sts' => true,
-                    'msg' => $msgsmbt,
-                    'icn' => 'success',
-                ];
-            }
+            
             echo json_encode($res);
         }
     }

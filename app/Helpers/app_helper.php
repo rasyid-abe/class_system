@@ -317,6 +317,48 @@ if (!function_exists("my_groups")) {
     }
 }
 
+if (!function_exists("semester")) {
+    function semester() {
+        $now = date('Y-m-d');
+        $db = \Config\Database::connect();
+
+        $sql = "
+        select 
+            school_year_start_date_one begin_s1,
+            school_year_end_date_one end_s1,
+            school_year_start_date_two begin_s2,
+            school_year_end_date_two end_s2
+        from master_school_year 
+        where 
+            school_year_status < 9 and school_year_id = " . school_year()['id'];
+        $res = $db->query($sql)->getRowArray();
+
+        if ($now > $res['begin_s1'] && $now < $res['end_s1']) {
+            return 1;
+        } else if ($now > $res['begin_s2'] && $now < $res['end_s2']) {
+            return 2;
+        }
+    }
+}
+
+if (!function_exists("end_semester")) {
+    function end_semester() {
+        $now = date('Y-m-d');
+        $db = \Config\Database::connect();
+
+        $sql = "
+        select 
+            school_year_end_date_one end_s1,
+            school_year_end_date_two end_s2
+        from master_school_year 
+        where 
+            school_year_status < 9 and school_year_id = " . school_year()['id'];
+        $res = $db->query($sql)->getRowArray();
+
+        return ['end_first' => $res['end_s1'], 'end_second' => $res['end_s2']];
+    }
+}
+
 if (!function_exists("school_year")) {
     function school_year() {
         $now = date('Y-m-d');
@@ -335,7 +377,7 @@ if (!function_exists("school_year")) {
                     school_year_id as id, school_year_period as period
                 from
                     master_school_year
-                where '$now' < school_year_end_date_two $filter_school
+                where school_year_status < 9 and '$now' < school_year_end_date_two $filter_school
                 order by master_school_year.school_year_start_date_one asc
                 limit 1
             ";
@@ -344,7 +386,7 @@ if (!function_exists("school_year")) {
                 SELECT 
                     school_year_id as id, school_year_period as period
                 FROM master_school_year 
-                WHERE '$now' >= CAST(DATE_FORMAT(school_year_start_date_one ,'%Y-%m-01') as DATE) 
+                WHERE school_year_status < 9 and '$now' >= CAST(DATE_FORMAT(school_year_start_date_one ,'%Y-%m-01') as DATE) 
                     AND '$now' <= CAST(DATE_FORMAT(school_year_end_date_two ,'%Y-%m-31') as DATE)
                     AND school_year_school_id = " . userdata()['school_id'];
 
