@@ -354,7 +354,7 @@ class Task extends BaseController
                             }
 
                             $resval = [];
-                            $resval['result_grades_id'] = $req['id'] . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'] . $semester;
+                            $resval['result_grades_id'] = $req['id'] . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'] . $semester . $teasub['subject'] . 1;
                             $resval['result_grades_school_id'] = userdata()['school_id'];
                             $resval['result_grades_school_year_id'] = school_year()['id'];
                             $resval['result_grades_semester'] = $semester;
