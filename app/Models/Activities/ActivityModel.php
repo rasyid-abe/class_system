@@ -31,7 +31,7 @@ class ActivityModel extends Model
     {
         $data = [
             'activity_user_id' => session()->get('c_id'),
-            'activity_role_id' => session()->get('c_role'),
+            'activity_role_id' => json_encode(session()->get('c_role')),
             'activity_platform' => 'lms',
             'activity_page' => $page,
             'activity_log' => $log,

@@ -2,61 +2,116 @@
 use Aws\S3\S3Client;
 use Dotenv\Dotenv;
 
-function userdata()
-{
-    $db = \Config\Database::connect();
+if (!function_exists("session_sets")) {
+    function session_sets($params) {
+        $session = \Config\Services::session();
+        $db = \Config\Database::connect();
 
-    $user = session()->get('c_id');
-    $role = session()->get('c_role');
+        $user = $params['id'];
+        $role = $params['role'];
 
-    if ($role == 11) {
-        $select = "
-            au.user_id,
-            au.user_name,
-            pt.teacher_school_id school_id,
-            pt.teacher_id id_profile,
-            pt.teacher_religion religi,
-            CONCAT(pt.teacher_first_name, ' ', pt.teacher_last_name) name,
-            pt.teacher_degree degree,
-            pt.teacher_image image,
-            pt.teacher_nip,
-            pt.teacher_nuptk,
-            ar.role_name
-        ";
-        $join = "LEFT JOIN profile_teacher pt ON au.user_id = pt.teacher_user_id";
-        $user_role = 'teacher';
-    } else if ($role == 12) {
-        $select = "
-            au.user_id,
-            au.user_name,
-            ps.student_school_id school_id,
-            ps.student_id id_profile,
-            ps.student_religion religi,
-            CONCAT(ps.student_first_name, ' ', ps.student_last_name) name,
-            ps.student_image image,
-            ps.student_nisn,
-            ar.role_name
-        ";
-        $join = "LEFT JOIN profile_student ps ON au.user_id = ps.student_user_id";
-        $user_role = 'student';
-    }
-    
-    $sql = "
+        if (count(array_intersect($role, batch_roles()[3])) > 0) {
+            $select = "
+                au.user_id,
+                au.user_name,
+                pt.teacher_school_id school_id,
+                pt.teacher_id id_profile,
+                pt.teacher_religion religi,
+                CONCAT(pt.teacher_first_name, ' ', pt.teacher_last_name) name,
+                pt.teacher_degree degree,
+                pt.teacher_image image,
+                pt.teacher_nip,
+                pt.teacher_nuptk,
+                ar.role_name
+            ";
+            $join = "LEFT JOIN profile_teacher pt ON au.user_id = pt.teacher_user_id";
+            $user_role = 'teacher';
+        } elseif (count(array_intersect($role, batch_roles()[4])) > 0) {
+            $select = "
+                au.user_id,
+                au.user_name,
+                ps.student_school_id school_id,
+                ps.student_id id_profile,
+                ps.student_religion religi,
+                CONCAT(ps.student_first_name, ' ', ps.student_last_name) name,
+                ps.student_image image,
+                ps.student_nisn,
+                ar.role_name
+            ";
+            $join = "LEFT JOIN profile_student ps ON au.user_id = ps.student_user_id";
+            $user_role = 'student';
+        }
+        
+        $sql = "
         SELECT ".$select." FROM account_user au
         LEFT JOIN account_role ar ON au.user_role_id = ar.role_id 
         $join
         WHERE au.user_id = $user 
     ";
+
+        $row = $db->query($sql)->getRowArray();
+        // $role_name = $db->query("Select * from account_role where role_id in (" . implode(',',$role) . ")")->getResultArray();
+        
+        $row['c_role'] = $role;
+        // $row['role_name'] = $role_name;
+        $row['img_path'] = 'images/'.$user_role.'/';
+        $row['home'] = 'dashboard/'.$user_role.'/';
+        $row['change_password'] = '/dashboard/'.$user_role.'/change-password/'.$row['id_profile'];
+        $row['update_password'] = '/dashboard/'.$user_role.'/update-password';
+        $row['url_profile'] = '/dashboard/'.$user_role.'/show/'.$row['id_profile'];
+        $row['c_id'] = $user;
+        $row['fake_date'] = $params['fake_date'];
+
+        $session->set($row);
+
+        return true;
+    }
+}
+
+
+function userdata()
+{
+    $datas = [
+        'id' => session()->get('c_id'),
+        'user_id' => session()->get('user_id'),
+        'user_name' => session()->get('user_name'),
+        'student_nisn' => session()->get('student_nisn'),
+        'teacher_nip' => session()->get('teacher_nip'),
+        'teacher_nuptk' => session()->get('teacher_nuptk'),
+        'school_id' => session()->get('school_id'),
+        'id_profile' => session()->get('id_profile'),
+        'name' => session()->get('name'),
+        'alias' => session()->get('alias'),
+        'level' => session()->get('level'),
+        'address' => session()->get('address'),
+        'image' => session()->get('image'),
+        'religi' => session()->get('religi'),
+        'role_name' => session()->get('role_name'),
+        'role' => session()->get('c_role'),
+        'img_path' => session()->get('img_path'),
+        'home' => session()->get('home'),
+        'change_password' => session()->get('change_password'),
+        'update_password' => session()->get('update_password'),
+        'url_profile' => session()->get('url_profile'),
+        'student_status' => session()->get('student_status')
+    ];
+
+    // echo '<pre>';
+    // print_r($datas);
+    // echo '</pre>';
+    // die;
     
-    $row = $db->query($sql)->getRowArray();
-    $row['img_path'] = 'images/'.$user_role.'/';
-    $row['home'] = 'dashboard/'.$user_role.'/';
-    $row['change_password'] = '/dashboard/'.$user_role.'/change-password';
-    $row['update_password'] = '/dashboard/'.$user_role.'/update-password';
-    $row['url_profile'] = '/dashboard/'.$user_role.'/show/'.$row['id_profile'];
+    return $datas;
+}
 
-    return $row;
-
+function batch_roles() {
+    return [
+        1 => [1,2],
+        2 => [3],
+        3 => [4,6,7,9,10,11],
+        4 => [12,13],
+        5 => [5,8]
+    ];
 }
 
 function send_email($to, $content, $subject, $title)
@@ -361,38 +416,55 @@ if (!function_exists("end_semester")) {
 
 if (!function_exists("school_year")) {
     function school_year() {
-        $now = date('Y-m-d');
-        $role = session()->get('role');
-
+        $now = datenow();
         $db = \Config\Database::connect();
 
-        $filter_school = '';
-        if ($role > 2) {
+        $exists = active_year_exists();
+        $by_id = $exists ? 'school_year_id = ' . $exists['year_id'] : '';
+
+        $where = $by_id;
+        if (!$exists) {
             $filter_school = "and school_year_school_id = ".userdata()['school_id'];
+            $where = "school_year_status < 9 and  '$now' <= school_year_end_date_two $filter_school";
         }
+        $sql = "
+            select
+                school_year_id as id, school_year_period as period
+            from
+                master_school_year
+            where $where
+            order by master_school_year.school_year_start_date_one asc
+            limit 1
+        ";
+       
 
-        if ($role < 4) {
-            $sql = "
-                select
-                    school_year_id as id, school_year_period as period
-                from
-                    master_school_year
-                where school_year_status < 9 and '$now' < school_year_end_date_two $filter_school
-                order by master_school_year.school_year_start_date_one asc
-                limit 1
-            ";
+        $res = $db->query($sql)->getRowArray();
+
+        if ($res) {
+            return $res;
         } else {
-            $sql = "
-                SELECT 
-                    school_year_id as id, school_year_period as period
-                FROM master_school_year 
-                WHERE school_year_status < 9 and '$now' >= CAST(DATE_FORMAT(school_year_start_date_one ,'%Y-%m-01') as DATE) 
-                    AND '$now' <= CAST(DATE_FORMAT(school_year_end_date_two ,'%Y-%m-31') as DATE)
-                    AND school_year_school_id = " . userdata()['school_id'];
-
+            return ['id' => 0, 'period' => 'n/a'];
         }
+    }
+}
+
+if (!function_exists("active_year_exists")) {
+    function active_year_exists() {
+        $db = \Config\Database::connect();
+
+        $school = userdata()['school_id'];
+        $user = userdata()['id'];
+        $sql = "
+            select active_year_school_year_id year_id
+            from account_active_year 
+            where 
+                active_year_school_id = $school and 
+                active_year_user_id = $user and
+                active_year_type = 2
+        ";
         
         return $db->query($sql)->getRowArray();
+
     }
 }
 
@@ -585,15 +657,17 @@ if (!function_exists("s3_listfile")) {
     }
 }
 
-if (!function_exists("getenv")) {
-    function getenv() 
+if (!function_exists("datenow")) {
+    function datenow() 
     {
-        $dotenv = Dotenv::createImmutable(__DIR__);
-        $dotenv->load();
-
-        return $_ENV;
+        $date = date('Y-m-d');
+        if (getenv()['SOURCE_DATE'] == 3) {
+            $date = session()->get('fake_date') != '' ? session()->get('fake_date') : date('Y-m-d');
+        } else if (getenv()['SOURCE_DATE'] == 2) {
+            $date = isset(getenv()['DATE_NOW']) ? getenv()['DATE_NOW'] : date('Y-m-d');
+        }
+        return $date;
     }
 }
-
 
 

@@ -7,6 +7,7 @@ use App\Models\Authentication\UserModel;
 use App\Models\Authentication\TokenModel;
 use App\Models\Profiles\SchoolModel;
 use App\Models\Activities\ActivityModel;
+use App\Models\Configs\ActiveYearModel;
 
 class AuthConfig extends BaseController
 {
@@ -14,6 +15,7 @@ class AuthConfig extends BaseController
     protected $token;
     protected $school;
     protected $activity;
+    protected $active_year;
 
     public function __construct()
     {
@@ -21,6 +23,7 @@ class AuthConfig extends BaseController
         $this->token = new TokenModel();
         $this->school = new SchoolModel();
         $this->activity = new ActivityModel();
+        $this->active_year = new ActiveYearModel();
     }
     public function sign_in()
     {
@@ -53,47 +56,59 @@ class AuthConfig extends BaseController
 
         $req = $this->request->getVar();
         $user = $this->user->getSingle(['user_name' => $req['username']]);
+
+        $this->active_year
+            ->where('active_year_user_id', $user['user_id'])
+            ->where('active_year_type', 2)
+            ->delete();
+
+        $cly = $this->active_year->error();
         
-        if ($user) {
-            if (strlen($user['user_password']) > 10) {
-                $pass = password_verify($req['password'], $user['user_password']);
-            } else {
-                $pass = $req['password'] === $user['user_password'];
-            }
-            // dd($user);
-            if ($pass) {
-                if ($user['user_status'] == 1) {
-                    if ($user['user_role_id'] == 11 || $user['user_role_id'] == 12) {
-                        
-                        $session = \Config\Services::session();
-                        $data = [
-                            'c_id' => $user['user_id'],
-                            'c_role' => $user['user_role_id'],
-                            'c_trial' => $user['user_is_trial']
-                        ];
-                        $session->set($data);
-                        $this->activity->store_log('Login', 'login', 'login ke sistem lms');
-
-                        if ($user['user_role_id'] == 11) {
-                            return redirect()->to('/dashboard/teacher');
-                        } else if ($user['user_role_id'] == 12) {
-                            return redirect()->to('/dashboard/student');
-                        } 
-
-                    } else {
-                        session()->setFlashdata('msg', 'Akun <b>'.$req['username'].'</b> tidak memiliki wewenang untuk masuk ke sistem!');
-                    }
-                } else if ($user['user_status'] == 9) {
-                    session()->setFlashdata('msg', 'Akun <b>'.$req['username'].'</b> sudah di hapus!');
+        if ($cly['code'] < 1) {
+            if ($user) {
+                if (strlen($user['user_password']) > 10) {
+                    $pass = password_verify($req['password'], $user['user_password']);
                 } else {
-                    session()->setFlashdata('msg', 'Akun <b>'.$req['username'].'</b> belum aktif');
+                    $pass = $req['password'] === $user['user_password'];
+                }
+                // dd($user);
+                if ($pass) {
+                    if ($user['user_status'] == 1) {
+                        $role = json_decode($user['user_role_id']);
+                        
+                        if (in_array(11, $role) || in_array(12, $role)) {
+                            
+                            $data_session = [];
+                            $data_session['id'] = $user['user_id'];
+                            $data_session['role'] = $role;
+                            $data_session['fake_date'] = $req['fake_date'];
+                            session_sets($data_session);
+    
+                            $this->activity->store_log('Login', 'login', 'login ke sistem lms');
+    
+                            if (in_array(11, $role)) {
+                                return redirect()->to('/dashboard/teacher');
+                            } else if (in_array(12, $role)) {
+                                return redirect()->to('/dashboard/student');
+                            } 
+    
+                        } else {
+                            session()->setFlashdata('msg', 'Akun <b>'.$req['username'].'</b> tidak memiliki wewenang untuk masuk ke sistem!');
+                        }
+                    } else if ($user['user_status'] == 9) {
+                        session()->setFlashdata('msg', 'Akun <b>'.$req['username'].'</b> sudah di hapus!');
+                    } else {
+                        session()->setFlashdata('msg', 'Akun <b>'.$req['username'].'</b> belum aktif');
+                    }
+                } else {
+                    session()->setFlashdata('user', $req['username']);
+                    session()->setFlashdata('msg', 'Password salah');
                 }
             } else {
-                session()->setFlashdata('user', $req['username']);
-                session()->setFlashdata('msg', 'Password salah');
+                session()->setFlashdata('msg', 'Akun <b>'.$req['username'].'</b> tidak ditemukan');
             }
         } else {
-            session()->setFlashdata('msg', 'Akun <b>'.$req['username'].'</b> tidak ditemukan');
+            session()->setFlashdata('msg', 'Terjadi kesalahan login');
         }
         session()->setFlashdata('head', 'Gagal!');
         session()->setFlashdata('icon', 'error');

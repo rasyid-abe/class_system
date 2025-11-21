@@ -1,4 +1,4 @@
-<?php if(session()->get('c_role') == 11): ?>
+<?php if(in_array(11, session()->get('c_role'))): ?>
     <div class="aside-nav d-flex flex-column align-items-center flex-column-fluid w-100 pt-5 pt-lg-0" id="kt_aside_nav">
         <!--begin::Wrapper-->
         <!-- <div class="hover-scroll-y mb-10" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" -->
@@ -72,7 +72,7 @@
         </div>
         <!--end::Nav-->
     </div>
-<?php elseif(session()->get('c_role') == 12): ?>
+<?php elseif(in_array(12, session()->get('c_role'))): ?>
     <div class="aside-nav d-flex flex-column align-items-center flex-column-fluid w-100 pt-5 pt-lg-0" id="kt_aside_nav">
         <!--begin::Wrapper-->
         <!-- <div class="hover-scroll-y mb-10" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" -->

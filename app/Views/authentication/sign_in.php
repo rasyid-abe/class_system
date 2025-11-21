@@ -44,6 +44,13 @@
                 </div>
             </div>
 
+            <div class="fv-row mb-10">
+                <label class="form-label fs-6 fw-bold text-dark">QA Date</label>
+
+                <input class="form-control form-control-lg form-control-solid" type="date" name="fake_date"
+                    autocomplete="off" />
+            </div>
+
             <div class="text-center">
                 <button type="submit" id="kt_sign_in_submit" class="btn btn-lg btn-primary w-100 mb-5">
                     <span class="indicator-label">
@@ -58,7 +65,50 @@
             </div>
         </form>
     </div>
+
+    <div class="tbl-request"></div>
 </div>
+
+
+<script>
+    // $(document).ready(function() {
+    //     let val_period = [1000, 850, 765, 688.5, 619.65, 557.69, 501.92]
+
+    //     let rows = ''
+    //     for (let i0 = 0; i0 <= 7; i0++) {
+    //         for (let i1 = 0; i1 < i0; i1++) {
+    //             for (let i2 = 0; i2 < 12; i2++) {
+    //                 rows += `
+    //                     <tr>
+    //                         <td>AMORT_MOTOR_${i1+1}Y</td>
+    //                         <td>${i2}</td>
+    //                         <td>MTH</td>
+    //                         <td>${val_period[i1]}</td>
+    //                     </tr>
+    //                 `
+    //             }
+    //         }
+    //     }
+
+    //     let table = `
+    //         <table class="table">
+    //         <thead>
+    //             <tr>
+    //                 <th>PATTERN</th>
+    //                 <th>PERIOD</th>
+    //                 <th>FREQUENCY</th>
+    //                 <th>RATIO</th>
+    //             </tr>
+    //         </thead>
+    //         <tbody>
+    //             ${rows}
+    //         </tbody>
+    //         </table>
+    //     `
+
+    //     $('.tbl-request').html(table)
+    // })
+</script>
 
 
 <?php $this->endSection(); ?>

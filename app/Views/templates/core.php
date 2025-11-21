@@ -35,15 +35,18 @@
 		.hand {
 			cursor: pointer;
 		}
-		.tabulator-headers, .tabulator-table {
+
+		.tabulator-headers,
+		.tabulator-table {
 			width: 100%;
 		}
+
 		.tabulator .tabulator-col {
 			width: 100% !important;
 			min-width: 40px !important;
 			/* height: 45px; */
 		}
-		
+
 		.tabulator .tabulator-cell {
 			width: 100% !important;
 			min-width: 40px !important;
@@ -782,7 +785,8 @@
 				</div>
 
 				<div class="modal-footer">
-					<button type="button" class="btn btn-info" onclick="reload_tp();">Pilih</button>
+					<button type="button" class="btn btn-light-danger" onclick="close_tp();">Batal</button>
+					<button type="button" class="btn btn-info" onclick="pick_year();">Pilih</button>
 				</div>
 
 			</div>
@@ -992,7 +996,7 @@
 				<div class="aside-workspace my-5 p-5" id="kt_aside_wordspace">
 					<div class="d-flex h-100 flex-column">
 						<!--begin::Wrapper-->
-						
+
 						<div class="flex-column-fluid hover-scroll-y" data-kt-scroll="true"
 							data-kt-scroll-activate="true" data-kt-scroll-height="auto"
 							data-kt-scroll-wrappers="#kt_aside_wordspace"
@@ -1105,6 +1109,13 @@
 								<?php endif ?>
 							</div>
 						</div>
+						<div class="d-flex ms-3">
+							<!-- Example single danger button -->
+							<div class="btn-group">
+								<?= datenow() ?>
+							</div>
+						</div>
+
 						<!--end::Create app-->
 					</div>
 					<!--end::Toolbar wrapper-->
@@ -1188,12 +1199,12 @@
 		let hostUrl = "<?= base_url() ?>assets/";
 		let active_year = '<?= school_year() != null ? school_year()['period'] : '' ?>'
 		let active_year_id = '<?= school_year() != null ? school_year()['id'] : '' ?>'
-		let level = '<?= session()->get('c_role') ?>'
-		
+		let level = '<?= in_array(11, session()->get('c_role')) ? 11 : 12 ?>'
+
 		let file_id = '<?= session()->getFlashdata('file_id') ?>'
 		let file_coll = '<?= session()->getFlashdata('file_coll') ?>'
 		let file_chd = '<?= session()->getFlashdata('file_chd') ?>'
-								
+
 		let file_path = 'https://devabe-s3.s3.ap-southeast-1.amazonaws.com/'
 
 
@@ -1288,7 +1299,24 @@
 		// 	// });
 		// }
 
-		function set_year(e) {
+		// function set_year(e) {
+		// 	$.ajax({
+		// 		url: "<?= base_url('/config-teacher-student/active-year/set-year') ?>",
+		// 		type: "post",
+		// 		data: {
+		// 			'year_id': $('input[name="radio_tp"]:checked').val()
+		// 		},
+		// 		dataType: "json",
+		// 		beforeSend: function() {
+		// 			show_loading()
+		// 		},
+		// 		success: function(data) {
+		// 			hide_loading()
+		// 		}
+		// 	})
+		// }
+
+		function pick_year() {
 			$.ajax({
 				url: "<?= base_url('/config-teacher-student/active-year/set-year') ?>",
 				type: "post",
@@ -1300,6 +1328,11 @@
 					show_loading()
 				},
 				success: function(data) {
+					if (data) {
+						location.reload();
+					} else {
+						toast_act('Gagal', 'Terjadi Kesalahan', 'error')
+					}
 					hide_loading()
 				}
 			})
@@ -1308,7 +1341,7 @@
 		function generate_years(e) {
 			let view = ''
 			let active = '<?= school_year() != null ? school_year()['id'] : '' ?>'
-			console.log(active);
+
 			$.each(e, function(i, v) {
 				chk = ''
 				if (active != '') {
@@ -1328,11 +1361,15 @@
 			$('#active_tp').modal('show');
 		}
 
+		function close_tp() {
+			$('#lists_year').html('')
+			$('#active_tp').modal('hide');
+		}
+
 		function show_tp() {
 			$.ajax({
 				url: "<?= base_url('/config-teacher-student/active-year/list-year') ?>",
 				type: "post",
-				// data: {'menu_id': param},
 				dataType: "json",
 				beforeSend: function() {
 					show_loading()
