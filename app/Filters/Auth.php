@@ -27,11 +27,11 @@ class Auth implements FilterInterface
                     }
                 }
 
-                if ($role == 12) {
+                if (in_array(12, $role)) {
                     if (!str_contains($uri, 'student')) {
                         return redirect()->to("/blocked");
                     }
-                } else if ($role == 11) {
+                } else if (in_array(11, $role)) {
                     if (!str_contains($uri, 'teacher')) {
                         return redirect()->to("/blocked");
                     }

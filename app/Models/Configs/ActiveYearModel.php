@@ -11,10 +11,14 @@ class ActiveYearModel extends Model
     protected $allowedFields = [
         'active_year_school_id', 
         'active_year_user_id', 
+        'active_year_type', 
         'active_year_school_year_id', 
+        'active_year_status', 
         'active_year_created_by', 
         'active_year_updated_by', 
     ];
+
+    protected $useAutoIncrement = false; // penting
     protected $useTimestamps = true;
     protected $createdField  = 'active_year_created_at';
     protected $updatedField  = 'active_year_updated_at';

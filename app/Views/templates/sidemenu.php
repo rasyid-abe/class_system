@@ -63,7 +63,7 @@
 </style>
 
 <div class="tab-content">
-    <?php if (session()->get('c_role') == 11): ?>
+    <?php if (in_array(11, session()->get('c_role'))): ?>
         <div class="tab-pane fade <?= $page == "Dashboard" ? 'active show' : '' ?>" id="home_dashboard" role="tabpanel">
             <div class="mx-5">
                 <div class="mb-12">
@@ -82,7 +82,7 @@
                     <h3 class="fw-semibold text-gray-800 text-center lh-lg">
                         <?php
                         $loginname = '';
-                        if (session()->get('c_role') == 11) {
+                        if (in_array(11, session()->get('c_role'))) {
                             $loginname = isset(userdata()['degree']) ? userdata()['name'] . ', ' . userdata()['degree'] : userdata()['name'];
                             $nip = userdata()['teacher_nip'] != '' ? '<badge class="badge badge-info">NIP : ' . userdata()['teacher_nip'] . '</badge>' : '';
                             $nuptk = userdata()['teacher_nuptk'] != '' ? '<badge class="badge badge-info">NUPTK : ' . userdata()['teacher_nuptk'] . '</badge>' : '';
@@ -365,7 +365,7 @@
                 </div>
             </div>
         </div>
-    <?php elseif (session()->get('c_role') == 12): ?>
+    <?php elseif (in_array(12, session()->get('c_role'))): ?>
         <div class="tab-pane fade <?= $page == "Dashboard" ? 'active show' : '' ?>" id="home_dashboard" role="tabpanel">
             <div class="mx-5">
                 <div class="mb-12">
