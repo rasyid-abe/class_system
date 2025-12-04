@@ -219,7 +219,7 @@
 
     </div>
 
-    <div class="col-lg-12 col-xl-12 col-xxl-8 my-5">
+    <!-- <div class="col-lg-12 col-xl-12 col-xxl-8 my-5">
 
         <div class="card">
             <div class="card-header border-0 pt-5">
@@ -1289,9 +1289,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
-    <div class="col-md-6 col-xl-3 my-xl-5">
+    <div class="col-md-6 col-xl-4 my-xl-5">
         <div class="card h-md-100">
             <div class="card-header align-items-center border-0">
                 <h3 class="fw-bold text-gray-900 m-0">Ringkasan Penilaian</h3>
@@ -1451,7 +1451,7 @@
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-3 my-xl-5">
+    <div class="col-md-6 col-xl-4 my-xl-5">
         <div class="card h-md-100">
             <div class="card-header align-items-center border-0">
                 <h3 class="fw-bold text-gray-900 m-0">Ringkasan Tugas</h3>
@@ -1611,7 +1611,7 @@
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-6 my-xl-5">
+    <div class="col-md-6 col-xl-12 my-xl-5">
         <div class="card h-md-100">
             <div class="card-header align-items-center border-0">
                 <h3 class="fw-bold text-gray-900 m-0">Informasi Terkini</h3>

@@ -824,7 +824,7 @@ class Task extends BaseController
 
         $school_id = userdata()['school_id'];
         $teacher_id = userdata()['id_profile'];
-        $date_now = date('Y-m-d H:i:s');
+        $date_now = datetimenow();
 
         if ($req['page-task'] == 1) {
             $get = $this->task->data_draft($select, $school_id, $teacher_id, $date_now);
@@ -1410,7 +1410,7 @@ class Task extends BaseController
 
                     $button = '';
                     if ($req['page-task'] == 1) {
-                        if ($v['task_end'] > date('Y-m-d H:i:s') || ($v['task_end'] < date('Y-m-d H:i:s') && $v['task_is_ignored_time_submit'] == 1)) {
+                        if ($v['task_end'] > datetimenow() || ($v['task_end'] < datetimenow() && $v['task_is_ignored_time_submit'] == 1)) {
                             $button = '<a href="#" class="btn btn-primary pl-10" onclick="begin_task(' . $v['task_id'] . ', ' . $tmp_exists . ')">Kerjakan</a>';
                             $lists = '
                             <div class="row bigrow-tabulator">
@@ -1582,7 +1582,7 @@ class Task extends BaseController
             $data['teacher_id'] = $row['task_title'];
             $data['subject'] = $row['subject_name'];
             $data['subject_id'] = $row['subject_id'];
-            $data['begin_task'] = date('Y-m-d H:i:s');
+            $data['begin_task'] = datetimenow();
             $data['start'] = $row['task_start'];
             $data['end'] = $row['task_end'];
             $data['ignore_time'] = $row['task_is_ignored_time_submit'];
@@ -1660,7 +1660,7 @@ class Task extends BaseController
                     ->where('task_result_student_id', userdata()['id_profile'])
                     ->where('task_result_task_id', $row['task_id'])
                     ->where('task_result_school_id', userdata()['school_id'])
-                    ->set('task_result_begin_task_datetime', date('Y-m-d H:i:s'))
+                    ->set('task_result_begin_task_datetime', datetimenow())
                     ->update();
             } catch (\Throwable $th) {
                 echo '<pre>';
@@ -1816,7 +1816,7 @@ class Task extends BaseController
                     ->where('task_result_task_id', $req['task_id'])
                     ->where('task_result_school_id', userdata()['school_id'])
                     ->set('task_result_begin_task_datetime', $req['task_begin'])
-                    ->set('task_result_submit_datetime', date('Y-m-d H:i:s'))
+                    ->set('task_result_submit_datetime', datetimenow())
                     ->set('task_result_end_datetime', $req['task_end'])
                     ->set('task_result_answer', json_encode(($arch_answer)))
                     ->set('task_result_value', $total_poin)

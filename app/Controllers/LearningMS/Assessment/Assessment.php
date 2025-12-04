@@ -733,7 +733,7 @@ class Assessment extends BaseController
     {
         $req = $this->request->getVar();
 
-        $date_now = date('Y-m-d H:i:s');
+        $date_now = datetimenow();
         $school_id = userdata()['school_id'];
         $teacher_id = userdata()['id_profile'];
 
@@ -1425,7 +1425,7 @@ class Assessment extends BaseController
                 ->where('assessment_result_assessment_id', $assessment_id)
                 ->where('assessment_result_school_id', userdata()['school_id'])
                 ->where('assessment_result_school_year_id', $sch_year_id)
-                ->set('assessment_result_begin_assignment_datetime', date('Y-m-d H:i:s'))
+                ->set('assessment_result_begin_assignment_datetime', datetimenow())
                 ->update();
 
             $question = ['kosong'];
@@ -1462,7 +1462,7 @@ class Assessment extends BaseController
             $storage['assessment_title'] = $assessment_title;
             $storage['sch_year_id'] = $sch_year_id;
             $storage['subject'] = $subject;
-            $storage['begin_assign'] = date('Y-m-d H:i:s');
+            $storage['begin_assign'] = datetimenow();
             $storage['end_date'] = $end_period;
             $storage['timer'] = $timer;
             $storage['autosubmit'] = $autosubmit;
@@ -1603,7 +1603,7 @@ class Assessment extends BaseController
                 ->where('assessment_result_school_id', userdata()['school_id'])
                 ->where('assessment_result_school_year_id', $row['sch_year_id'])
                 ->set('assessment_result_begin_assignment_datetime', $row['begin_assign'])
-                ->set('assessment_result_submit_datetime', date('Y-m-d H:i:s'))
+                ->set('assessment_result_submit_datetime', datetimenow())
                 ->set('assessment_result_end_datetime', $row['end_date'])
                 ->set('assessment_result_answer', json_encode($arch_ans))
                 ->set('assessment_result_value', $total_poin)

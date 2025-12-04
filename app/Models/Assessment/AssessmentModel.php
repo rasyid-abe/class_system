@@ -82,9 +82,9 @@ class AssessmentModel extends Model
         $add_join = "";
         if ($type == 1) {
             $add_join .= "join lms_assessment_result on assessment_id = assessment_result_assessment_id AND assessment_result_student_id = " . userdata()['id_profile'];
-            $add_where .= "assessment_status = 2 AND assessment_start <= '" . date('Y-m-d H:i:s') . "' AND assessment_end > '" . date('Y-m-d H:i:s') ."' AND assessment_result_submit_datetime is null ";
+            $add_where .= "assessment_status = 2 AND assessment_start <= '" . datetimenow() . "' AND assessment_end > '" . datetimenow() ."' AND assessment_result_submit_datetime is null ";
         } elseif ($type == 2) {
-            $add_where .= "assessment_status = 2 AND assessment_end < '" . date('Y-m-d H:i:s') . "'";
+            $add_where .= "assessment_status = 2 AND assessment_end < '" . datetimenow() . "'";
         } elseif ($type == 3) {
             $add_join .= "join lms_assessment_result on assessment_id = assessment_result_assessment_id";
             $add_where .= "assessment_status = 2 AND assessment_result_student_id = ". userdata()['id_profile'] ." AND assessment_result_submit_datetime is not null ";

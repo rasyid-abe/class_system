@@ -331,6 +331,42 @@ function subject_rowid($id)
     return $row;
 }
 
+if (!function_exists("encryptabe")) {
+    function encryptabe($param)
+    {
+        $ciphering = "AES-128-CTR";
+        $options = 0;
+        $encryption_iv = getenv()['SAFE_CODE'];
+        $encryption_key = getenv()['SAFE_KEY'];
+
+        return openssl_encrypt(
+            $param,
+            $ciphering,
+            $encryption_key,
+            $options,
+            $encryption_iv
+        );
+    }
+}
+
+if (!function_exists("decryptabe")) {
+    function decryptabe($param)
+    {
+        $ciphering = "AES-128-CTR";
+        $options = 0;
+        $encryption_iv = getenv()['SAFE_CODE'];
+        $encryption_key = getenv()['SAFE_KEY'];
+
+        return openssl_decrypt(
+            $param,
+            $ciphering,
+            $encryption_key,
+            $options,
+            $encryption_iv
+        );
+    }
+}
+
 if (!function_exists("student_religion")) {
     function student_religion($id) 
     {
@@ -374,7 +410,7 @@ if (!function_exists("my_groups")) {
 
 if (!function_exists("semester")) {
     function semester() {
-        $now = date('Y-m-d');
+        $now = datenow();
         $db = \Config\Database::connect();
 
         $sql = "
@@ -398,7 +434,7 @@ if (!function_exists("semester")) {
 
 if (!function_exists("end_semester")) {
     function end_semester() {
-        $now = date('Y-m-d');
+        $now = datenow();
         $db = \Config\Database::connect();
 
         $sql = "
@@ -665,6 +701,19 @@ if (!function_exists("datenow")) {
             $date = session()->get('fake_date') != '' ? session()->get('fake_date') : date('Y-m-d');
         } else if (getenv()['SOURCE_DATE'] == 2) {
             $date = isset(getenv()['DATE_NOW']) ? getenv()['DATE_NOW'] : date('Y-m-d');
+        }
+        return $date;
+    }
+}
+
+if (!function_exists("datetimenow")) {
+    function datetimenow() 
+    {
+        $date = date('Y-m-d H:i:s');
+        if (getenv()['SOURCE_DATE'] == 3) {
+            $date = session()->get('fake_date') != '' ? session()->get('fake_date') .' '. date('H:i:s') : date('Y-m-d H:i:s');
+        } else if (getenv()['SOURCE_DATE'] == 2) {
+            $date = isset(getenv()['DATE_NOW']) ? getenv()['DATE_NOW'] .' '. date('H:i:s') : date('Y-m-d H:i:s');
         }
         return $date;
     }

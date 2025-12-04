@@ -63,6 +63,8 @@
 </style>
 
 <div class="tab-content">
+    <span class="badge badge-light-info text-center"><?= datenow() ?></span>
+    <span class="badge badge-light-info text-center"><?= datetimenow() ?></span>
     <?php if (in_array(11, session()->get('c_role'))): ?>
         <div class="tab-pane fade <?= $page == "Dashboard" ? 'active show' : '' ?>" id="home_dashboard" role="tabpanel">
             <div class="mx-5">

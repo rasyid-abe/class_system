@@ -74,7 +74,7 @@ class DashboardStudent extends BaseController
     {
         $my_group = student_group();
         $days = [1 => 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        $day = array_search(date('l'), $days);
+        $day = array_search(date('l', strtotime(datenow())), $days);
         $my_religion = student_religion(userdata()['id_profile']);
 
         $my_lesson = $this->teach_subject->get_student_lesson($day, $my_group['group_id'], $my_religion);
@@ -103,6 +103,33 @@ class DashboardStudent extends BaseController
 
         $arr_temp_task = array_column($my_temp, 'task_temp_task_id');
 
+        $params = [
+            'group' => $my_group['group_id'],
+            'religion' => userdata()['religi']
+        ];
+
+        $matrix = [];
+        $schedule = $this->lesson_school->my_schedule($params);
+        if (count($schedule) > 0) {
+            $day = date('N', strtotime(datenow()));
+            
+            foreach ($schedule as $v) {
+                if ($v['teaching_schedule_day'] == $day) {
+                    $tmp['day'] = $v['teaching_schedule_day'];
+                    $tmp['time'] = $v['teaching_schedule_time'];
+                    $tmp['teacher_id'] = $v['teacher_id'];
+                    $tmp['teacher_name'] = $v['teacher_name'];
+                    $tmp['teacher_degree'] = $v['teacher_degree'];
+                    $tmp['subject_id'] = $v['subject_id'];
+                    $tmp['subject_name'] = $v['subject_name'];
+                
+                    $matrix[$v['teaching_schedule_day']][] = $tmp;
+                }
+            }
+        }
+
+        
+
         // $my_group = student_group();
         // $sub_list = [];
         // if (!empty(year_active())) {
@@ -124,6 +151,7 @@ class DashboardStudent extends BaseController
         $data['task'] = $task;
         $data['arr_temp_task'] = $arr_temp_task;
         $data['list_idx'] = $list_idx;
+        $data['learning_today'] = $matrix;
         // $data['subj_school'] = $sub_list;
         // $data['subj_standart'] = $std_less;
         // $data['grade'] = $my_group['grade'];

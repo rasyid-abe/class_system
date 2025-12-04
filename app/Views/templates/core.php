@@ -1109,13 +1109,6 @@
 								<?php endif ?>
 							</div>
 						</div>
-						<div class="d-flex ms-3">
-							<!-- Example single danger button -->
-							<div class="btn-group">
-								<?= datenow() ?>
-							</div>
-						</div>
-
 						<!--end::Create app-->
 					</div>
 					<!--end::Toolbar wrapper-->
