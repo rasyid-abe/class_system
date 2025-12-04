@@ -190,5 +190,21 @@ class SchoolLessonModel extends Model
 
         return $this->db->query($sql)->getResultArray();
     }
+
+    public function my_schedule($params)
+    {
+        $sql = '
+            select subject_id, subject_name, teaching_schedule_day, teaching_schedule_time, teacher_id, concat(teacher_first_name, " ", teacher_last_name) teacher_name, teacher_degree
+            from manage_timetable 
+            join manage_teaching_subjects on teaching_subjects_id = timetable_teaching_subjects_id
+            join master_teaching_schedule on master_teaching_schedule.teaching_schedule_id = timetable_teaching_schedule_id 
+            join profile_teacher on teacher_id = teaching_subjects_teacher_id
+            join master_subject on subject_id = teaching_subjects_subject_id
+            where timetable_group_id = '.$params['group'].' and subject_religion in (0, '.$params['religion'].')
+            order by teaching_schedule_day, teaching_schedule_time
+        ';
+
+        return $this->db->query($sql)->getResultArray();
+    }
 }
 

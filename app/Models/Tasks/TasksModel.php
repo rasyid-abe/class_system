@@ -52,11 +52,11 @@ class TasksModel extends Model
         if ($type == 1) {
             $add_select .= ", task_is_ignored_time_submit";
             $add_join .= "left join lms_task_result on task_id = task_result_task_id AND task_result_student_id = " . userdata()['id_profile'];
-            $add_where .= "task_status = 2 AND task_start <= '" . date('Y-m-d H:i:s') . "' AND task_result_submit_datetime is null AND task_end + INTERVAL 7 day >= '". date('Y-m-d H:i:s') . "'";
+            $add_where .= "task_status = 2 AND task_start <= '" . datetimenow() . "' AND task_result_submit_datetime is null AND task_end + INTERVAL 7 day >= '". datetimenow() . "'";
         } elseif ($type == 2) {
             $add_select .= ", task_is_ignored_time_submit";
             $add_join .= "left join lms_task_result on task_id = task_result_task_id AND task_result_student_id = " . userdata()['id_profile'];
-            $add_where .= "task_status = 2 AND (task_is_ignored_time_submit = 0 or task_end + INTERVAL 7 day < '".date('Y-m-d H:i:s')."') AND task_end < '" . date('Y-m-d H:i:s') . "' AND task_result_submit_datetime is null";
+            $add_where .= "task_status = 2 AND (task_is_ignored_time_submit = 0 or task_end + INTERVAL 7 day < '".datetimenow()."') AND task_end < '" . datetimenow() . "' AND task_result_submit_datetime is null";
         } elseif ($type == 3) {
             $add_select .= ", task_result_submit_datetime, task_result_end_datetime";
             $add_join .= "left join lms_task_result on task_id = task_result_task_id";
@@ -114,11 +114,11 @@ class TasksModel extends Model
         
         $add_where = "AND ";
         if ($type == 1) {
-            $add_where .= "task_status = 2 AND task_start <= '" . date('Y-m-d H:i:s') . "' AND task_end >= '" . date('Y-m-d H:i:s') ."'";
+            $add_where .= "task_status = 2 AND task_start <= '" . datetimenow() . "' AND task_end >= '" . datetimenow() ."'";
         } elseif ($type == 2) {
-            $add_where .= "task_status = 2 AND task_end < '" . date('Y-m-d H:i:s') . "'";
+            $add_where .= "task_status = 2 AND task_end < '" . datetimenow() . "'";
         } elseif ($type == 3) {
-            $add_where .= "task_status = 2 AND task_end < '" . date('Y-m-d H:i:s') . "'";
+            $add_where .= "task_status = 2 AND task_end < '" . datetimenow() . "'";
         }
 
         $sql = "

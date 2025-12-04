@@ -152,8 +152,8 @@ class DashboardTeacher extends BaseController
             ->findAll();
 
 
-        $schk = $this->assessment->get_checked_assessment($school_id, $year, $teacher_id, date('Y-m-d H:i:s'));
-        $tchk = $this->task->get_checked_task($school_id, $teacher_id, date('Y-m-d H:i:s'));
+        $schk = $this->assessment->get_checked_assessment($school_id, $year, $teacher_id, datetimenow());
+        $tchk = $this->task->get_checked_task($school_id, $teacher_id, datetimenow());
 
         $should_check = [];
         foreach ($tchk as $k => $v) {
@@ -243,7 +243,7 @@ class DashboardTeacher extends BaseController
 
         $qb_shared = $this->qb_addition->my_shared_question($school_id, $teacher_id);
 
-        $date_now = date('Y-m-d H:i:s');
+        $date_now = datetimenow();
         $select_assessement = 'count(assessment_id) as total';
         $select_task = 'count(task_id) as total';
 

@@ -404,22 +404,22 @@ class task extends BaseController
         } else if ($req['page-task'] == 2) {
             $get = $this->task
                 ->where('task_status', 2)
-                ->where('task_start >=', date('Y-m-d H:i:s'))
+                ->where('task_start >=', datetimenow())
                 ->where('task_school_id', userdata()['school_id'])
                 ->where('task_teacher_id', userdata()['id_profile'])
                 ->findAll();
         } else if ($req['page-task'] == 3) {
             $get = $this->task
                 ->where('task_status', 2)
-                ->where('task_start <=', date('Y-m-d H:i:s'))
-                ->where('task_end >=', date('Y-m-d H:i:s'))
+                ->where('task_start <=', datetimenow())
+                ->where('task_end >=', datetimenow())
                 ->where('task_school_id', userdata()['school_id'])
                 ->where('task_teacher_id', userdata()['id_profile'])
                 ->findAll();
         } else if ($req['page-task'] == 4) {
                 $get = $this->task
                 ->where('task_status', 2)
-                ->where('task_end <=', date('Y-m-d H:i:s'))
+                ->where('task_end <=', datetimenow())
                 ->where('task_school_id', userdata()['school_id'])
                 ->where('task_teacher_id', userdata()['id_profile'])
                 ->findAll();

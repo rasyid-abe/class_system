@@ -387,22 +387,22 @@ class Assessment extends BaseController
         } else if ($req['page-ass'] == 2) {
             $get = $this->assessment
                 ->where('assessment_status', 2)
-                ->where('assessment_start >=', date('Y-m-d H:i:s'))
+                ->where('assessment_start >=', datetimenow())
                 ->where('assessment_school_id', userdata()['school_id'])
                 ->where('assessment_teacher_id', userdata()['id_profile'])
                 ->findAll();
         } else if ($req['page-ass'] == 3) {
             $get = $this->assessment
                 ->where('assessment_status', 2)
-                ->where('assessment_start <=', date('Y-m-d H:i:s'))
-                ->where('assessment_end >=', date('Y-m-d H:i:s'))
+                ->where('assessment_start <=', datetimenow())
+                ->where('assessment_end >=', datetimenow())
                 ->where('assessment_school_id', userdata()['school_id'])
                 ->where('assessment_teacher_id', userdata()['id_profile'])
                 ->findAll();
             } else if ($req['page-ass'] == 4) {
                 $get = $this->assessment
                 ->where('assessment_status', 2)
-                ->where('assessment_end <=', date('Y-m-d H:i:s'))
+                ->where('assessment_end <=', datetimenow())
                 ->where('assessment_school_id', userdata()['school_id'])
                 ->where('assessment_teacher_id', userdata()['id_profile'])
                 ->findAll();
