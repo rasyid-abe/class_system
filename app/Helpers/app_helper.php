@@ -334,7 +334,7 @@ function subject_rowid($id)
 if (!function_exists("encryptabe")) {
     function encryptabe($param)
     {
-        $ciphering = "AES-128-CTR";
+        $ciphering = getenv()['SAFE_CHIPER'];
         $options = 0;
         $encryption_iv = getenv()['SAFE_CODE'];
         $encryption_key = getenv()['SAFE_KEY'];
@@ -352,7 +352,7 @@ if (!function_exists("encryptabe")) {
 if (!function_exists("decryptabe")) {
     function decryptabe($param)
     {
-        $ciphering = "AES-128-CTR";
+        $ciphering = getenv()['SAFE_CHIPER'];
         $options = 0;
         $encryption_iv = getenv()['SAFE_CODE'];
         $encryption_key = getenv()['SAFE_KEY'];
