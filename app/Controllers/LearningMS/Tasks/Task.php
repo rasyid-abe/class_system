@@ -17,6 +17,7 @@ use App\Models\Tasks\TasksResultModel;
 use App\Models\Tasks\TasksTempModel;
 use App\Models\Activities\ActivityModel;
 use App\Models\Result\ResultGradesModel;
+use App\Models\System\NotificationLMSModel;
 use \Datetime;
 
 class Task extends BaseController
@@ -37,6 +38,7 @@ class Task extends BaseController
     protected $qc_me;
     protected $qc_std;
     protected $activity;
+    protected $notification;
 
     public function __construct()
     {
@@ -56,6 +58,7 @@ class Task extends BaseController
         $this->result_grades = new ResultGradesModel();
         $this->in_group = new StudentInGroupModel();
         $this->activity = new ActivityModel();
+        $this->notification = new NotificationLMSModel();
     }
 
     // BEGIN TEACHER FUNCTION
@@ -250,9 +253,11 @@ class Task extends BaseController
     public function store_data()
     {
         $req = $this->request->getVar();
+
         $semester = semester();
         if ($req['type'] == 1) {
             $r = json_decode($req['param']);
+            $titlegrade = explode(' - ', $r[10]);
 
             $lsrc = null;
             if ($r[11] == 2) {
@@ -306,6 +311,15 @@ class Task extends BaseController
                         ->update();
 
                     $this->activity->store_log('Tugas', 'update', 'mengubah tugas "' . $r[0] . '"');
+                    if ($r[12] > 1) {
+                        $this->notification->store_notification(
+                            2,
+                            $req['id'],
+                            'Tugas',
+                            "Tugas {$r[0]} mata pelajaran {$titlegrade[0]} telah diterbitkan.",
+                            json_encode($group)
+                        );
+                    }
 
                     foreach ($group as $k => $v) {
                         $students = $this->in_group->list_for_assessment($v['id'], userdata()['school_id'], $r[14]);
@@ -426,6 +440,16 @@ class Task extends BaseController
                     $this->task->insert($data);
                     $this->activity->store_log('Tugas', 'insert', 'menambah tugas "' . $r[0] . '"');
 
+                    if ($r[12] > 1) {
+                        $this->notification->store_notification(
+                            2,
+                            $this->task->getInsertID(),
+                            'Tugas',
+                            "Tugas {$r[0]} mata pelajaran {$titlegrade[0]} telah diterbitkan.",
+                            json_encode($group)
+                        );
+                    }
+
                     foreach ($group as $k => $v) {
                         $students = $this->in_group->list_for_assessment($v['id'], userdata()['school_id'], $r[14]);
 
@@ -505,6 +529,28 @@ class Task extends BaseController
                             ->set('task_status', $req['param'])
                             ->set('task_updated_by', userdata()['user_id'])
                             ->update();
+
+                        if ($req['param'] == 2) {
+                            $r = $this->task->select('task_title, task_group, task_subject_id')->where('task_id', $v)->first();
+                            $s = $this->subject->select('subject_name')->where('subject_id', $r['task_subject_id'])->first();
+
+                            $this->notification->store_notification(
+                                2,
+                                $v,
+                                'Tugas',
+                                "Tugas {$r['task_title']} mata pelajaran {$s['subject_name']} telah diterbitkan.",
+                                $r['task_group']
+                            );
+                        } else {
+                            $prm = [
+                                'notification_lms_school_id' => userdata()['school_id'],
+                                'notification_lms_source_type' => 2,
+                                'notification_lms_source_id' => $v,
+                            ];
+
+                            $this->notification->where($prm)->delete();
+                        }
+
                     } else if ($req['param'] == 3 || $req['param'] == 4) {
                         $shint = $req['param'] == 3 ? 1 : 0;
                         $this->task
@@ -1056,6 +1102,7 @@ class Task extends BaseController
                 task_result_begin_task_datetime as begin_task_datetime,
                 task_result_submit_datetime as submit_datetime,
                 task_result_value as value,
+                task_result_is_checked as is_checked,
                 task_result_submit_message as submit_message,
                 student_nisn,
                 student_first_name,
@@ -1073,7 +1120,8 @@ class Task extends BaseController
             $submit = $v['submit_datetime'] != null ? '<span class="text-gray-700 fw-bold" style="width: 65px">Selesai </span><badge class="badge badge-success" onclick="lesson_preview(18, 2, 15)"><b>' . datetime_indo($v['submit_datetime']) . '</b></badge>' : '';
 
             // $value = $v['value'] != null ? '<badge class="badge badge-info my-1">Nilai : <b>' . $v['value'] . ' Poin</b></badge> &nbsp;' : '';
-            $value = $v['value'] != null ? '<a href="#" onclick="data_result_student_tsk(' . $v['result_id'] . ')" class="badge badge-info my-1">Periksa</b></a> &nbsp;' : '';
+            $txtb = $v['is_checked'] > 0 ? 'Hasil : <b>' . $v['value'] . ' Poin</b>' : 'Periksa';
+            $value = $v['value'] != null ? '<a href="#" onclick="data_result_student_tsk(' . $v['result_id'] . ')" class="badge badge-info my-1">' . $txtb .'</a> &nbsp;' : '';
             $desc = $v['submit_message'] != null ? 'Ket : ' . $v['submit_message'] : '';
 
             if ($v['value'] != null) {
@@ -1304,6 +1352,20 @@ class Task extends BaseController
             if ($ecode > 0) {
                 throw new \Exception($message);
             }
+
+            $s = $this->task->select('subject_name')
+                ->join('master_subject', 'subject_id = task_subject_id')
+                ->where('task_id', $result['task_result_task_id'])
+                ->first();
+            $dt = date('Y-m-d H:i:s');
+
+            $this->notification->store_notification_check(
+                4,
+                $result['task_result_task_id'],
+                "Hasil Tugas",
+                "Tugas {$req['title']} mata pelajaran {$s['subject_name']} telah selesai diperiksa pada {$dt}.",
+                $result['task_result_student_id']
+            );
 
             $this->task_result->db->transCommit();
             $this->activity->store_log('Tugas', 'submit', 'periksa tugas "'. $req['title'] .'" siswa "'. $req['student'] .'"');
