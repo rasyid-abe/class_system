@@ -97,9 +97,10 @@ function treeview_task_ch(e, subj, grad) {
       let child = "";
       let ii = 1;
       $.each(val.nodes, function (index, value) {
+        let tsks = v.tasks != null ? 1 : 0
         child += `
                 <div class="form-check my-2">
-                    <input class="form-check-input" type="radio" name="task_choose" data-lessonsrc=${v.ind} data-taskname="${value.text}" data-taskchapter="${value.chapter}" value="${value.lesson_id}" />
+                    <input class="form-check-input" type="radio" name="task_choose" data-lessonsrc=${v.ind} data-taskname="${value.text}" data-taskchapter="${value.chapter}" data-tasks="${tsks}" value="${value.lesson_id}" />
                     <label class="form-check-label" onclick="getlessonbyid(${value.lesson_id}, ${v.ind})">
                         ${value.text}
                     </label>
@@ -153,11 +154,15 @@ function choose_task() {
   let task_less = $("input[name=task_choose]:checked").val();
   let task_name = $("input[name=task_choose]:checked").data("taskname");
   let task_chap = $("input[name=task_choose]:checked").data("taskchapter");
+  let task_task = $("input[name=task_choose]:checked").data("tasks");
   let lessonsrc = $("input[name=task_choose]:checked").data("lessonsrc");
   let subj_ass = $("#idass_subj").data("subj");
   let subj_name = $("#idass_subj").data("subjname");
   let grad_ass = $("#idass_grad").data("grad");
   let grad_name = $("#idass_grad").data("gradname");
+
+  console.log(task_task);
+  
 
   if (task_less != undefined) {
     $("input[name=selected_task]")
@@ -171,6 +176,12 @@ function choose_task() {
     $("input[name=subjid]").val(subj_ass);
     $("input[name=selected_grad]").val(grad_name).attr("readonly", true);
     $("input[name=gradid]").val(grad_ass);
+
+    if (task_task < 1) {
+      $('#no_tasks_message').html(`Materi ${task_chap + " - " + task_name} tidak memiliki soal latihan!`)
+      $('#no_tasks_alert').removeClass('hide')
+      $('#tsks_ext').remove()
+    }
 
     $("#modal_task_ch").modal("show");
     get_religion();
@@ -1522,18 +1533,28 @@ if (url.includes("teacher/task")) {
         let ids = sel_data.map((i) => i.id);
         let eds = sel_data.map((i) => i.end_date);
         let titles = sel_data.map((i) => i.title);
+        let tasks = sel_data.map((i) => i.task_ext);        
 
         if (ids.length < 1) {
           toast_act('',"Belum ada data terpilih", "error");
         } else {
+          if (tasks.includes(0)) {
+            toast_act('',
+              "Tidak bisa diterbitkan karena terdapat materi yang tidak memiliki soal latihan",
+              "error"
+            );
+            return false;
+          }
+
           if (check_good_date(eds)) {
             toast_act('',
               "Tidak bisa diterbitkan karena terdapat data kedaluarsa",
               "error"
             );
-          } else {
-            type_task(2, ids, 2, titles);
-          }
+            return false;
+          } 
+         
+          type_task(2, ids, 2, titles);
         }
       });
 

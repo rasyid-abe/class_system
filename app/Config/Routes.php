@@ -23,6 +23,10 @@ $routes->get('/dashboard/admin', 'Dashboard\DashboardAdmin::index', ['filter' =>
 $routes->get('/dashboard/admin/change-password', 'Dashboard\DashboardAdmin::change_password', ['filter' => 'auth']); #done
 $routes->post('/dashboard/admin/update-password', 'Dashboard\DashboardAdmin::update_password', ['filter' => 'auth']); 
 
+$routes->post('/system/student/notification/store', 'System\NotificationStudent::store', ['filter' => 'auth']); 
+
+
+
 
 $routes->get('/dashboard/teacher', 'Dashboard\DashboardTeacher::index', ['filter' => 'auth']);
 $routes->get('/dashboard/teacher/change-password', 'Dashboard\DashboardTeacher::change_password', ['filter' => 'auth']); #done

@@ -3,6 +3,7 @@
 namespace App\Controllers\Dashboard;
 
 use App\Controllers\BaseController;
+use App\Models\Activities\ActivityModel;
 use App\Models\Management\StudentInGroupModel;
 use App\Models\Management\TeachingSubjectsModel;
 use App\Models\Masters\StudentGroupModel;
@@ -28,6 +29,7 @@ class DashboardTeacher extends BaseController
     protected $less_school;
     protected $assessment;
     protected $task;
+    protected $activity;
 
     public function __construct()
     {
@@ -41,6 +43,7 @@ class DashboardTeacher extends BaseController
         $this->less_school = new SchoolLessonModel();
         $this->assessment = new AssessmentModel();
         $this->task = new TasksModel();
+        $this->activity = new ActivityModel();
     }
     public function index()
     {
@@ -50,6 +53,14 @@ class DashboardTeacher extends BaseController
         $data["breadcrumb"] = [];
 
         $data['days'] = implode(',', get_list('days'));
+
+        $rows = $this->activity
+            ->where('activity_platform', 'LMS')
+            ->where('activity_user_id', userdata()['id'])
+            ->orderBy('activity_id', 'desc')
+            ->findAll(5);
+
+        $data['activity'] = $rows;
 
         return view("dashboard/teacher", $data);
     }

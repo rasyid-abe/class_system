@@ -14,7 +14,7 @@ class NotificationLMSModel extends Model
         'notification_lms_source_id', 
         'notification_lms_title', 
         'notification_lms_message', 
-        'notification_lms_group', 
+        'notification_lms_group_id', 
         'notification_lms_student_id', 
         'notification_lms_created_by', 
         'notification_lms_updated_by', 
@@ -31,7 +31,7 @@ class NotificationLMSModel extends Model
             'notification_lms_source_id' => $type_id,
             'notification_lms_title' => $title,
             'notification_lms_message' => $message,
-            'notification_lms_group' => $group,
+            'notification_lms_group_id' => $group,
         ];
         
         $this->upsert($data);

@@ -18,6 +18,7 @@ use App\Models\Tasks\TasksTempModel;
 use App\Models\Activities\ActivityModel;
 use App\Models\Result\ResultGradesModel;
 use App\Models\System\NotificationLMSModel;
+use App\Models\System\ReadNotificationLMSModel;
 use \Datetime;
 
 class Task extends BaseController
@@ -39,6 +40,7 @@ class Task extends BaseController
     protected $qc_std;
     protected $activity;
     protected $notification;
+    protected $notification_read;
 
     public function __construct()
     {
@@ -59,6 +61,7 @@ class Task extends BaseController
         $this->in_group = new StudentInGroupModel();
         $this->activity = new ActivityModel();
         $this->notification = new NotificationLMSModel();
+        $this->notification_read = new ReadNotificationLMSModel();
     }
 
     // BEGIN TEACHER FUNCTION
@@ -128,6 +131,7 @@ class Task extends BaseController
                         lesson_additional_subchapter as text,
                         lesson_additional_subject_id as subject,
                         lesson_additional_grade as grade,
+                        lesson_additional_tasks as tasks,
                     ')
                     ->where('lesson_additional_school_id', $school)
                     ->where('lesson_additional_teacher_id', $teacher)
@@ -159,6 +163,7 @@ class Task extends BaseController
                         lesson_standart_subchapter as text,
                         lesson_standart_subject_id as subject,
                         lesson_standart_grade as grade,
+                        lesson_standart_tasks as tasks,
                     ')
                     ->where('lesson_standart_subject_id', $subject)
                     ->where('lesson_standart_grade', $grade)
@@ -182,6 +187,7 @@ class Task extends BaseController
                         lesson_additional_subchapter as text,
                         lesson_additional_subject_id as subject,
                         lesson_additional_grade as grade,
+                        lesson_additional_tasks as tasks,
                     ')
                     ->where('lesson_additional_chapter', $v['text'])
                     ->where('lesson_additional_school_id', $school)
@@ -253,7 +259,6 @@ class Task extends BaseController
     public function store_data()
     {
         $req = $this->request->getVar();
-
         $semester = semester();
         if ($req['type'] == 1) {
             $r = json_decode($req['param']);
@@ -312,13 +317,15 @@ class Task extends BaseController
 
                     $this->activity->store_log('Tugas', 'update', 'mengubah tugas "' . $r[0] . '"');
                     if ($r[12] > 1) {
-                        $this->notification->store_notification(
-                            2,
-                            $req['id'],
-                            'Tugas',
-                            "Tugas {$r[0]} mata pelajaran {$titlegrade[0]} telah diterbitkan.",
-                            json_encode($group)
-                        );
+                        foreach ($group as $k => $v) {
+                            $this->notification->store_notification(
+                                2,
+                                $req['id'],
+                                'Tugas',
+                                "Tugas {$r[0]} mata pelajaran {$titlegrade[0]} telah diterbitkan.",
+                                $v['id'],
+                            );
+                        }
                     }
 
                     foreach ($group as $k => $v) {
@@ -358,6 +365,7 @@ class Task extends BaseController
                             $data_res['task_result_school_id'] = userdata()['school_id'];
                             $data_res['task_result_group_id'] = $v['id'];
                             $data_res['task_result_student_id'] = $val['student_in_group_student_id'];
+                            $data_res['task_result_is_checked'] = $should_chk;
 
                             $this->task_result->insert($data_res);
                             $sts_replace = $this->task_result->error();
@@ -441,13 +449,15 @@ class Task extends BaseController
                     $this->activity->store_log('Tugas', 'insert', 'menambah tugas "' . $r[0] . '"');
 
                     if ($r[12] > 1) {
-                        $this->notification->store_notification(
-                            2,
-                            $this->task->getInsertID(),
-                            'Tugas',
-                            "Tugas {$r[0]} mata pelajaran {$titlegrade[0]} telah diterbitkan.",
-                            json_encode($group)
-                        );
+                        foreach ($group as $k => $v) {
+                            $this->notification->store_notification(
+                                2,
+                                $this->task->getInsertID(),
+                                'Tugas',
+                                "Tugas {$r[0]} mata pelajaran {$titlegrade[0]} telah diterbitkan.",
+                                $v['id'],
+                            );
+                        }
                     }
 
                     foreach ($group as $k => $v) {
@@ -460,6 +470,7 @@ class Task extends BaseController
                             $data_res['task_result_school_id'] = userdata()['school_id'];
                             $data_res['task_result_group_id'] = $v['id'];
                             $data_res['task_result_student_id'] = $val['student_in_group_student_id'];
+                            $data_res['task_result_is_checked'] = $should_chk;
 
                             $this->task_result->insert($data_res);
                             $inss = $this->task_result->error();
@@ -534,13 +545,15 @@ class Task extends BaseController
                             $r = $this->task->select('task_title, task_group, task_subject_id')->where('task_id', $v)->first();
                             $s = $this->subject->select('subject_name')->where('subject_id', $r['task_subject_id'])->first();
 
-                            $this->notification->store_notification(
-                                2,
-                                $v,
-                                'Tugas',
-                                "Tugas {$r['task_title']} mata pelajaran {$s['subject_name']} telah diterbitkan.",
-                                $r['task_group']
-                            );
+                            foreach (json_decode($r['task_group']) as $key => $val) {
+                                $this->notification->store_notification(
+                                    2,
+                                    $v,
+                                    'Tugas',
+                                    "Tugas {$r['task_title']} mata pelajaran {$s['subject_name']} telah diterbitkan.",
+                                    $val->id,
+                                );
+                            }
                         } else {
                             $prm = [
                                 'notification_lms_school_id' => userdata()['school_id'],
@@ -1011,6 +1024,7 @@ class Task extends BaseController
                 'title' => $v['task_title'],
                 'end_date' => $v['task_end'],
                 'task_ids' => $v['task_task_ids'],
+                'task_ext' => $v['task_task_ids'] != null ? 1 : 0,
                 'lesson' => $lesson,
                 'period' => datetime_indo($v['task_start']) . ' - ' . datetime_indo($v['task_end']),
                 'group' => $groups,
@@ -1357,7 +1371,7 @@ class Task extends BaseController
                 ->join('master_subject', 'subject_id = task_subject_id')
                 ->where('task_id', $result['task_result_task_id'])
                 ->first();
-            $dt = date('Y-m-d H:i:s');
+            $dt = datetime_indo(date('Y-m-d H:i:s'));
 
             $this->notification->store_notification_check(
                 4,
@@ -1399,6 +1413,10 @@ class Task extends BaseController
             '##' => 'Aktif',
         ];
 
+        // if ($notif_id != null) {
+        //     $this->notification_read->read_notification($notif_id);
+        // }
+
         return view("learningms/tasks/present_s", $data);
     }
 
@@ -1411,6 +1429,10 @@ class Task extends BaseController
             '#' => $this->title,
             '##' => 'Selesai',
         ];
+
+        // if ($notif_id != null) {
+        //     $this->notification_read->read_notification($notif_id);
+        // }
 
         return view("learningms/tasks/done_s", $data);
     }
@@ -1604,6 +1626,19 @@ class Task extends BaseController
         $temp = $this->request->getVar('temp');
         $title = $this->request->getVar('title');
 
+        $school = userdata()['school_id'];
+        $group = student_group()['group_id'];
+
+        $notif_whr = [
+            'notification_lms_school_id' => $school,
+            'notification_lms_source_type' => 2,
+            'notification_lms_source_id' => $id,
+            'notification_lms_group_id' => $group
+        ];
+
+        $notif = $this->notification->select('notification_lms_id id')->where($notif_whr)->first();
+        $this->notification_read->read_notification($notif['id']);
+
         if ($temp < 1) {
             $row = $this->task
                 ->join('master_subject', 'subject_id=task_subject_id', 'left')
@@ -1765,6 +1800,7 @@ class Task extends BaseController
     public function s_save_action_task()
     {
         $req = $this->request->getVar('send');
+
         if ($req['type'] == 1) {
 
             $data_exists = [];
@@ -1945,6 +1981,19 @@ class Task extends BaseController
     public function s_get_task_done()
     {
         $req = $this->request->getVar();
+
+        $school = userdata()['school_id'];
+        $student = userdata()['id_profile'];
+
+        $notif_whr = [
+            'notification_lms_school_id' => $school,
+            'notification_lms_source_type' => 4,
+            'notification_lms_source_id' => $req['taskid'],
+            'notification_lms_student_id' => $student
+        ];
+
+        $notif = $this->notification->select('notification_lms_id id')->where($notif_whr)->first();
+        $this->notification_read->read_notification($notif['id']);
 
         $result = $this->task_result
             ->join('lms_task', 'task_id=task_result_task_id', 'left')

@@ -3,6 +3,7 @@
 namespace App\Controllers\Dashboard;
 
 use App\Controllers\BaseController;
+use App\Models\Activities\ActivityModel;
 use App\Models\Assessment\AssessmentModel;
 use App\Models\Tasks\TasksModel;
 use App\Models\Tasks\TasksResultModel;
@@ -22,6 +23,7 @@ class DashboardStudent extends BaseController
     protected $lesson_school;
     protected $lesson_standart;
     protected $teach_subject;
+    protected $activity;
 
     public function __construct()
     {
@@ -33,6 +35,7 @@ class DashboardStudent extends BaseController
         $this->lesson_school = new SchoolLessonModel();
         $this->lesson_standart = new StandartLessonModel();
         $this->teach_subject = new TeachingSubjectsModel();
+        $this->activity = new ActivityModel();
     }
 
     public function index()
@@ -66,6 +69,14 @@ class DashboardStudent extends BaseController
         $data['subj_school'] = $sub_list;
         $data['subj_standart'] = $std_less;
         $data['grade'] = $my_group['grade'];
+
+        $rows = $this->activity
+            ->where('activity_platform', 'LMS')
+            ->where('activity_user_id', userdata()['id'])
+            ->orderBy('activity_id', 'desc')
+            ->findAll(5);
+        
+        $data['activity'] = $rows;
 
         return view("dashboard/student", $data);
     }

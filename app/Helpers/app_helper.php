@@ -582,6 +582,37 @@ if (!function_exists("student_group")) {
     }
 }
 
+if (!function_exists("get_notification")) {
+    function get_notification() 
+    {
+        $db = \Config\Database::connect();
+        $school_id = userdata()['school_id'];
+        $student = userdata()['id_profile'];
+        $group = student_group()['group_id'];
+
+        $sql = "
+            with notif as (
+            select * from sys_notification_lms snl 
+            left join sys_read_notification_lms srnl on 
+                snl.notification_lms_id = srnl.read_notification_lms_notification_id 
+                and srnl.read_notification_lms_student_id = $student
+                and srnl.read_notification_lms_school_id = $school_id
+            where
+                snl.notification_lms_school_id = $school_id
+                and snl.notification_lms_student_id = $student
+                or snl.notification_lms_group_id = $group
+            order by
+                notification_lms_id desc
+            )
+
+            select * from notif where read_notification_lms_id is null
+        ";
+
+        $result = $db->query($sql)->getResultArray();
+        return $result;
+    }
+}
+
 if (!function_exists("s3_uploads")) {
     function s3_uploads($file_temp, $file_name, $content_type, $disposition = null) 
     {

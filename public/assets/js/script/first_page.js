@@ -331,7 +331,7 @@ $(document).ready(function () {
 			base_url + "/student/activity/get-data"
 		);
 
-		// ajax_dash_student()
+		ajax_dash_student()
 	} else if (url.includes("teacher/lesson/standart")) {
 		ajax_std_less(1);
 	} else if (url.includes("teacher/lesson/additional")) {
@@ -550,7 +550,7 @@ function gen_dash_student(e) {
 }
 
 function gen_dash_teacher(e) {
-	let day = $('input[name=temp_day]').val()
+	let day = $('input[name=temp_day]').val()	
 	let days = day.split(',')
 
 	let my_duty = ''
@@ -826,3 +826,35 @@ function gen_religion_group(e) {
 	$('#next_').after(content)
 
 }
+
+$(document).on('click', '.close_notification', function() {
+	let ids = $(this).attr('data-id')
+	$('#nn_' + ids).remove()
+	$.ajax({
+		url: base_url + "/system/student/notification/store",
+		data: { ids, type:1 },
+		method: "post",
+		dataType: "json",
+		success: function (e) {},
+	});
+})
+
+$(document).on('click', '.btn_clear_notification', function() {
+	let ids = []
+	$('.clear_notification').each(function() {
+		ids.push($(this).attr('data-id'))
+	})
+
+	$.ajax({
+		url: base_url + "/system/student/notification/store",
+		data: { ids, type:2 },
+		method: "post",
+		dataType: "json",
+		success: function (e) {},
+	});
+	$('.btn_clear_notification').remove()
+	$('.clear_notification').remove()
+	
+})
+
+
