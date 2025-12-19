@@ -854,35 +854,28 @@
 					<!--end::Nav-->
 					<!--begin::Footer-->
 					<div class="aside-footer d-flex flex-column align-items-center flex-column-auto" id="kt_aside_footer">
-						<!--begin::Notifications-->
+						<?php if(in_array(12, session()->get('c_role'))): ?>
 						<div class="d-flex align-items-center mb-2">
 							<!--begin::Menu wrapper-->
-							<div class="btn btn-icon btn-custom" data-kt-menu-trigger="click"
-								data-kt-menu-overflow="true" data-kt-menu-placement="top-start" data-bs-toggle="tooltip"
-								data-bs-placement="right" data-bs-dismiss="click" title="Notifications">
-								<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
-								<span class="svg-icon svg-icon-2 svg-icon-lg-1">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-										fill="none">
-										<rect x="2" y="2" width="9" height="9" rx="2" fill="black" />
-										<rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black" />
-										<rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black" />
-										<rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black" />
-									</svg>
-								</span>
-								<!--end::Svg Icon-->
+							<div class="btn btn-icon btn-custom" id="kt_drawer_chat_toggle">
+								<?php if(count(get_notification()) > 0): ?>
+									<i class="bi bi-bell-fill fs-2x"></i>
+								<?php else: ?>
+									<i class="bi bi-bell fs-2x"></i>
+								<?php endif ?>
 							</div>
 							<!--end::Menu wrapper-->
 						</div>
+						<?php endif; ?>
+						<!--begin::Notifications-->
+						
 						<!--end::Notifications-->
 						<!--begin::Activities-->
-						<div class="d-flex align-items-center mb-3">
-							<!--begin::Drawer toggle-->
-							<a href="<?= session()->get('c_role') == 11 ? base_url('teacher/activity') : base_url('student/activity') ?>" class="btn btn-icon btn-custom" data-kt-menu-trigger="click"
+						<!-- <div class="d-flex align-items-center mb-3">
+							<a href="#" class="btn btn-icon btn-custom" data-kt-menu-trigger="click"
 								data-kt-menu-overflow="true" data-kt-menu-placement="top-start" data-bs-toggle="tooltip"
 								data-bs-placement="right" data-bs-dismiss="click" title="Aktivitas Saya"
 								id="kt_activities_toggle">
-								<!--begin::Svg Icon | path: icons/duotune/general/gen032.svg-->
 								<span class="svg-icon svg-icon-2 svg-icon-lg-1">
 									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
 										fill="none">
@@ -892,10 +885,8 @@
 										<rect x="3" y="13" width="3" height="6" rx="1.5" fill="black" />
 									</svg>
 								</span>
-								<!--end::Svg Icon-->
 							</a>
-							<!--end::drawer toggle-->
-						</div>
+						</div> -->
 						<!--end::Activities-->
 						<!--begin::User-->
 						<div class="d-flex align-items-center mb-10" id="kt_header_user_menu_toggle">
@@ -952,7 +943,7 @@
 							<!--end::Menu item-->
 							<!--begin::Menu item-->
 							<div class="menu-item px-5">
-								<a href="#" class="menu-link px-5">Aktivitas Saya</a>
+								<a href="<?= in_array(11, session()->get('c_role')) ? base_url('teacher/activity') : base_url('student/activity') ?>" class="menu-link px-5">Aktivitas Saya</a>
 							</div>
 							<!--end::Menu item-->
 							<!--begin::Menu separator-->
@@ -1172,6 +1163,10 @@
 	</div>
 	<!--end::Scrolltop-->
 	<!--end::Main-->
+
+	<?php if(in_array(12, session()->get('c_role'))): ?>
+	<?= $this->include('templates/notification') ?>
+	<?php endif; ?>
 
 	<div class="animate_loader" style="display:none;">
 		<div class="spinner">

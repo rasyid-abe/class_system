@@ -124,7 +124,14 @@
       <div class="modal-body">
         <form id="kt_account_profile_details_form" class="form fv-plugins-bootstrap5 fv-plugins-framework" novalidate="novalidate">
           <div class="card-body">
-
+            <div class="hide" id="no_tasks_alert">
+              <div class="alert alert-info d-flex align-items-center p-2 mb-5">
+                <i class="bi bi-shield-fill-exclamation fs-2hx text-info me-4"></i>
+                <div class="d-flex flex-column">
+                  <h6 class="mb-1 text-info" id="no_tasks_message">Materi belum memiliki soal latihan!</h6>
+                </div>
+              </div>
+            </div>
             <div class="row mb-6">
               <label class="col-lg-3 col-form-label fw-semibold fs-6">Mata Pelajaran</label>
 
@@ -266,7 +273,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-sm btn-light-danger" onclick="show_prev()">Kembali</button>
         <button type="sumbit" class="btn btn-sm btn-light-success" onclick="save_task(1, 1);">Simpan</button>
-        <button type="sumbit" class="btn btn-sm btn-primary" onclick="save_task(2, 1);">Kirim</button>
+        <button type="sumbit" class="btn btn-sm btn-primary" id="tsks_ext" onclick="save_task(2, 1);">Kirim</button>
       </div>
     </div>
   </div>

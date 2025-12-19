@@ -90,8 +90,48 @@
 
 
 <div class="row gx-5 gx-xl-10 mb-xl-10">
+     <div class="col-sm-12">
+        <div class="card mb-5 mb-xl-10" data-select2-id="select2-data-149-yjw4">
+            <div class="card-header" data-select2-id="select2-data-148-fypg">
+                <div class="card-title">
+                    <h3>Aktivitas Terakhir</h3>
+                </div>
 
-    <div class="col-md-6 col-xl-12">
+                <div class="card-toolbar">
+                    <a href="<?= base_url('student/activity') ?>" class="btn btn-sm btn-primary my-1">
+                        Lihat
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9">
+                        <thead class="border-gray-200 fs-5 fw-semibold bg-lighten">
+                            <tr>
+                                <th class="min-w-150px">Waktu</th>
+                                <th class="min-w-150px">Halaman</th>
+                                <th class="min-w-150px">Keterangan</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="fw-6 fw-semibold text-gray-600">
+                            <?php foreach($activity as $k => $v): ?>
+                                <tr>
+                                    <td><?= datetime_indo($v['activity_timestamp']) ?></td>
+                                    <td><?= $v['activity_page'] ?></td>
+                                    <td><?= $v['activity_desc'] ?></td>
+                                </tr>
+                            
+                            <?php endforeach ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- 
+    <div class="col-md-6 col-xl-6">
         <div class="card bg-white">
             <div class="card-header align-items-center border-0">
                 <h3 class="fw-bold text-gray-900 fs-2 m-0">Informasi Terkini</h3>
@@ -204,7 +244,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
 </div>
 

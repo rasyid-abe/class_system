@@ -3,6 +3,7 @@
 namespace App\Models\Activities;
 
 use CodeIgniter\Model;
+use Ramsey\Uuid\Uuid;
 
 class ActivityModel extends Model
 {
@@ -17,6 +18,8 @@ class ActivityModel extends Model
         'activity_desc'
     ];
 
+    protected $useAutoIncrement = false; // penting
+
     public function getSingle($where = [])
     {
         if (count($where) < 1) {
@@ -30,8 +33,8 @@ class ActivityModel extends Model
     public function store_log($page, $log, $desc)
     {
         $data = [
+            'activity_id' => Uuid::uuid4()->toString(),
             'activity_user_id' => session()->get('c_id'),
-            'activity_role_id' => json_encode(session()->get('c_role')),
             'activity_platform' => 'lms',
             'activity_page' => $page,
             'activity_log' => $log,

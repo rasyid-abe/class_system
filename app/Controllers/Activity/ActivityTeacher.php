@@ -26,6 +26,8 @@ class ActivityTeacher extends BaseController
             '#' => $this->title,
         ];
 
+        $data['days'] = implode(',', get_list('days'));
+
         return view("activity/teacher", $data);
     } 
 
@@ -33,8 +35,7 @@ class ActivityTeacher extends BaseController
     {
         $rows = $this->activity
             ->where('activity_platform', 'LMS')
-            ->where('activity_user_id', session()->get('c_id'))
-            ->where('activity_role_id', session()->get('c_role'))
+            ->where('activity_user_id', userdata()['id'])
             ->orderBy('activity_id', 'desc')
             ->findAll();
 

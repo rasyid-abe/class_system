@@ -15,6 +15,7 @@ use App\Models\Masters\SubjectModel;
 use App\Models\Activities\ActivityModel;
 use App\Models\Result\ResultGradesModel;
 use App\Models\System\NotificationLMSModel;
+use App\Models\System\ReadNotificationLMSModel;
 use \Datetime;
 use PDO;
 
@@ -37,6 +38,7 @@ class Assessment extends BaseController
     protected $in_group;
     protected $activity;
     protected $notification;
+    protected $notification_read;
 
     public function __construct()
     {
@@ -55,6 +57,7 @@ class Assessment extends BaseController
         $this->in_group = new StudentInGroupModel();
         $this->activity = new ActivityModel();
         $this->notification = new NotificationLMSModel();
+        $this->notification_read = new ReadNotificationLMSModel();
     }
 
     // BEGIN TEACHER FUNCTION
@@ -321,15 +324,17 @@ class Assessment extends BaseController
                         ->update();
 
                     $this->activity->store_log('Penilaian', 'update', 'mengubah penilaian "' . $d[0] . '"');
-
+                    
                     if ($d[15] > 1) {
-                        $this->notification->store_notification(
-                            1,
-                            $req['id'],
-                            'Penilaian',
-                            "Penilaian {$d[0]} mata pelajaran {$titlegrade[0]} telah diterbitkan.",
-                            json_encode($group)
-                        );
+                        foreach ($group as $k => $v) {
+                            $this->notification->store_notification(
+                                1,
+                                $req['id'],
+                                'Penilaian',
+                                "Penilaian {$d[0]} mata pelajaran {$titlegrade[0]} telah diterbitkan.",
+                                $v['id'],
+                            );
+                        }
                     }
 
                     foreach ($group as $k => $v) {
@@ -451,13 +456,15 @@ class Assessment extends BaseController
                     $this->activity->store_log('Penilaian', 'insert', 'menambah penilaian "' . $d[0] . '"');
  
                     if ($d[15] > 1) {
-                        $this->notification->store_notification(
-                            1,
-                            $this->assessment->getInsertID(),
-                            'Penilaian',
-                            "Penilaian {$d[0]} mata pelajaran {$titlegrade[0]} telah diterbitkan.",
-                            json_encode($group)
-                        );
+                        foreach ($group as $k => $v) {
+                            $this->notification->store_notification(
+                                1,
+                                $this->assessment->getInsertID(),
+                                'Penilaian',
+                                "Penilaian {$d[0]} mata pelajaran {$titlegrade[0]} telah diterbitkan.",
+                                $v['id'],
+                            );
+                        }
                     }
 
                     foreach ($group as $k => $v) {
@@ -538,16 +545,20 @@ class Assessment extends BaseController
                             ->set('assessment_updated_by', session()->get('c_id'))
                             ->update();
 
+
                         if ($req['data'] == 2) {
                             $r = $this->assessment->getWhere(['assessment_id' => $v])->getRowArray();
                             $s = $this->subject->getWhere(['subject_id' => $r['assessment_subject_id']])->getRowArray();
-                            $this->notification->store_notification(
-                                1,
-                                $v,
-                                'Penilaian',
-                                "Penilaian {$r['assessment_title']} mata pelajaran {$s['subject_name']} telah diterbitkan.",
-                                $r['assessment_group']
-                            );
+                            
+                            foreach (json_decode($r['assessment_group']) as $key => $val) {
+                                $this->notification->store_notification(
+                                    1,
+                                    $v,
+                                    'Penilaian',
+                                    "Penilaian {$r['assessment_title']} mata pelajaran {$s['subject_name']} telah diterbitkan.",
+                                    $val->id,
+                                );
+                            }
                         } else {
                              $prm = [
                                 'notification_lms_school_id' => userdata()['school_id'],
@@ -1253,7 +1264,7 @@ class Assessment extends BaseController
                 ->join('master_subject', 'subject_id = assessment_subject_id')
                 ->where('assessment_id', $result['assessment_result_assessment_id'])
                 ->first();
-            $dt = date('Y-m-d H:i:s');
+            $dt = datetime_indo(date('Y-m-d H:i:s'));
 
             $this->notification->store_notification_check(
                 3,
@@ -1294,6 +1305,10 @@ class Assessment extends BaseController
             '##' => 'Aktif',
         ];
 
+        // if ($notif_id != null) {
+        //     $this->notification_read->read_notification($notif_id);
+        // }
+
         return view("learningms/assessment/present_s", $data);
     }
 
@@ -1319,6 +1334,10 @@ class Assessment extends BaseController
             '#' => $this->title,
             '##' => 'Selesai',
         ];
+
+        // if ($notif_id != null) {
+        //     $this->notification_read->read_notification($notif_id);
+        // }
 
         return view("learningms/assessment/done_s", $data);
     }
@@ -1470,6 +1489,20 @@ class Assessment extends BaseController
             $data['end_time'] = $data['assessment_end'];
             $data['period'] = datetime_indo($data['assessment_start']) . ' s/d ' . datetime_indo($data['assessment_end']);
             $data['instruction'] = $data['assessment_instruction'] != null && $data['assessment_instruction'] != '<p><br></p>' ? $data['assessment_instruction'] : '-';
+
+            $school = userdata()['school_id'];
+            $group = student_group()['group_id'];
+
+            $notif_whr = [
+                'notification_lms_school_id' => $school,
+                'notification_lms_source_type' => 1,
+                'notification_lms_source_id' => $data['assessment_id'],
+                'notification_lms_group_id' => $group
+            ];
+
+            $notif = $this->notification->select('notification_lms_id id')->where($notif_whr)->first();
+            $this->notification_read->read_notification($notif['id']);
+
         } else if ($req['type'] == 2) {
 
             $student_id = userdata()['id_profile'];
@@ -1729,6 +1762,19 @@ class Assessment extends BaseController
     public function s_get_assessment_done()
     {
         $req = $this->request->getVar();
+
+        $school = userdata()['school_id'];
+        $student = userdata()['id_profile'];
+
+        $notif_whr = [
+            'notification_lms_school_id' => $school,
+            'notification_lms_source_type' => 3,
+            'notification_lms_source_id' => $req['assessment'],
+            'notification_lms_student_id' => $student
+        ];
+
+        $notif = $this->notification->select('notification_lms_id id')->where($notif_whr)->first();
+        $this->notification_read->read_notification($notif['id']);
 
         // $result_id = $this->request->getVar('result_id');
         $ass_row = $this->assessment->where('assessment_id', $req['assessment'])->first();
