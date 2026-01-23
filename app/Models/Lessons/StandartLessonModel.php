@@ -16,6 +16,7 @@ class StandartLessonModel extends Model
         'lesson_standart_subchapter', 
         'lesson_standart_content', 
         'lesson_standart_content_path', 
+        'lesson_standart_video_path',
         'lesson_standart_summary_path', 
         'lesson_standart_attachment_path', 
         'lesson_standart_tasks', 
