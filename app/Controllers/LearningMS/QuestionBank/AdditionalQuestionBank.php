@@ -819,84 +819,110 @@ class AdditionalQuestionBank extends BaseController
                 $ii = 1;
                 foreach ($sheetData as $k => $v) {
                     $arr_task = [];
-                    if (
-                        $v[0] != 'No' &&
-                        ($v[2] != '' || $v[2] != null) &&
-                        ($v[3] != '' || $v[3] != null) &&
-                        ($v[1] != '' || $v[1] != null)
-                    ) {
-                        $arr_task['question_bank_school_id'] = userdata()['school_id'];
-                        $arr_task['question_bank_teacher_id'] = userdata()['id_profile'];
-                        $arr_task['question_bank_subject_id'] = $req['subject'];
-                        $arr_task['question_bank_grade'] = $req['grade'];
-                        $arr_task['question_bank_parent_id'] = $req['id_quest'];
-                        $arr_task['question_bank_status'] = 1;
-                        $arr_task['question_bank_hint'] = '<p><br></p>';
-                        $arr_task['question_bank_explain'] = '<p><br></p>';
-                        $arr_task['question_bank_poin'] = $v[1];
-                        $arr_task['question_bank_created_by'] = userdata()['user_id'];
-
-                        $img_q = array_key_exists("C" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["C" . $ii] . '"></p>' : '';
-                        $arr_task['question_bank_question'] = '<p>' . $v[2] . '</p>' . $img_q;
-
-
-                        if ($i == 0) {
-                            $arr_task['question_bank_type'] = 1;
-
-                            $img_opt_a = array_key_exists("E" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["E" . $ii] . '"></p>' : '';
-                            $img_opt_b = array_key_exists("F" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["F" . $ii] . '"></p>' : '';
-                            $img_opt_c = array_key_exists("G" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["G" . $ii] . '"></p>' : '';
-                            $img_opt_d = array_key_exists("H" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["H" . $ii] . '"></p>' : '';
-                            $img_opt_e = array_key_exists("I" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["I" . $ii] . '"></p>' : '';
-                            $opt = [
-                                array_key_exists(4, $v) ? '<p>' . $v[4] . '</p>' . $img_opt_a : '<p></p>',
-                                array_key_exists(5, $v) ? '<p>' . $v[5] . '</p>' . $img_opt_b : '<p></p>',
-                                array_key_exists(6, $v) ? '<p>' . $v[6] . '</p>' . $img_opt_c : '<p></p>',
-                                array_key_exists(7, $v) ? '<p>' . $v[7] . '</p>' . $img_opt_d : '<p></p>',
-                                array_key_exists(8, $v) ? '<p>' . $v[8] . '</p>' . $img_opt_e : '<p></p>',
-                            ];
-
-                            $arr_ans[0] = $opt[$v[3] - 1];
-                            $arr_task['question_bank_answer'] = json_encode($arr_ans);
-
-                            $clean_opt = array_diff($opt, ['<p></p>']);
-                            $arr_task['question_bank_option'] = json_encode($clean_opt);
-                        } else if ($i == 1) {
-                            $arr_task['question_bank_type'] = 2;
-
-                            $img_opt_a = array_key_exists("E" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["E" . $ii] . '"></p>' : '';
-                            $img_opt_b = array_key_exists("F" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["F" . $ii] . '"></p>' : '';
-                            $img_opt_c = array_key_exists("G" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["G" . $ii] . '"></p>' : '';
-                            $img_opt_d = array_key_exists("H" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["H" . $ii] . '"></p>' : '';
-                            $img_opt_e = array_key_exists("I" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["I" . $ii] . '"></p>' : '';
-                            $opt = [
-                                array_key_exists(4, $v) ? '<p>' . $v[4] . '</p>' . $img_opt_a : '<p></p>',
-                                array_key_exists(5, $v) ? '<p>' . $v[5] . '</p>' . $img_opt_b : '<p></p>',
-                                array_key_exists(6, $v) ? '<p>' . $v[6] . '</p>' . $img_opt_c : '<p></p>',
-                                array_key_exists(7, $v) ? '<p>' . $v[7] . '</p>' . $img_opt_d : '<p></p>',
-                                array_key_exists(8, $v) ? '<p>' . $v[8] . '</p>' . $img_opt_e : '<p></p>',
-                            ];
-
-                            $omcx = explode("&", $v[3]);
-                            $arr_ans = [];
-                            foreach ($omcx as $x) {
-                                if (isset($v[$x + 2])) {
-                                    $arr_ans[] = $opt[$x - 1];
-                                } else {
-                                    throw new \Exception('index tidak ada');
+                    if ($i == 3) {
+                        if (
+                            $v[0] != 'No' &&
+                            ($v[2] != '' || $v[2] != null) &&
+                            ($v[1] != '' || $v[1] != null)
+                        ) {
+                            $arr_task['question_bank_school_id'] = userdata()['school_id'];
+                            $arr_task['question_bank_teacher_id'] = userdata()['id_profile'];
+                            $arr_task['question_bank_subject_id'] = $req['subject'];
+                            $arr_task['question_bank_grade'] = $req['grade'];
+                            $arr_task['question_bank_parent_id'] = $req['id_quest'];
+                            $arr_task['question_bank_status'] = 1;
+                            $arr_task['question_bank_hint'] = '<p><br></p>';
+                            $arr_task['question_bank_explain'] = '<p><br></p>';
+                            $arr_task['question_bank_poin'] = $v[1];
+                            $arr_task['question_bank_created_by'] = userdata()['user_id'];
+    
+                            $img_q = array_key_exists("C" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["C" . $ii] . '"></p>' : '';
+                            $arr_task['question_bank_question'] = '<p>' . $v[2] . '</p>' . $img_q;
+    
+                            $arr_task['question_bank_answer'] = json_encode([]);
+                            $arr_task['question_bank_option'] = json_encode([]);
+                            $arr_task['question_bank_type'] = 4;
+                        }
+                    } else {
+                        if (
+                            $v[0] != 'No' &&
+                            ($v[2] != '' || $v[2] != null) &&
+                            ($v[3] != '' || $v[3] != null) &&
+                            ($v[1] != '' || $v[1] != null)
+                        ) {
+                            $arr_task['question_bank_school_id'] = userdata()['school_id'];
+                            $arr_task['question_bank_teacher_id'] = userdata()['id_profile'];
+                            $arr_task['question_bank_subject_id'] = $req['subject'];
+                            $arr_task['question_bank_grade'] = $req['grade'];
+                            $arr_task['question_bank_parent_id'] = $req['id_quest'];
+                            $arr_task['question_bank_status'] = 1;
+                            $arr_task['question_bank_hint'] = '<p><br></p>';
+                            $arr_task['question_bank_explain'] = '<p><br></p>';
+                            $arr_task['question_bank_poin'] = $v[1];
+                            $arr_task['question_bank_created_by'] = userdata()['user_id'];
+    
+                            $img_q = array_key_exists("C" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["C" . $ii] . '"></p>' : '';
+                            $arr_task['question_bank_question'] = '<p>' . $v[2] . '</p>' . $img_q;
+    
+    
+                            if ($i == 0) {
+                                $arr_task['question_bank_type'] = 1;
+    
+                                $img_opt_a = array_key_exists("E" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["E" . $ii] . '"></p>' : '';
+                                $img_opt_b = array_key_exists("F" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["F" . $ii] . '"></p>' : '';
+                                $img_opt_c = array_key_exists("G" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["G" . $ii] . '"></p>' : '';
+                                $img_opt_d = array_key_exists("H" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["H" . $ii] . '"></p>' : '';
+                                $img_opt_e = array_key_exists("I" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["I" . $ii] . '"></p>' : '';
+                                $opt = [
+                                    array_key_exists(4, $v) ? '<p>' . $v[4] . '</p>' . $img_opt_a : '<p></p>',
+                                    array_key_exists(5, $v) ? '<p>' . $v[5] . '</p>' . $img_opt_b : '<p></p>',
+                                    array_key_exists(6, $v) ? '<p>' . $v[6] . '</p>' . $img_opt_c : '<p></p>',
+                                    array_key_exists(7, $v) ? '<p>' . $v[7] . '</p>' . $img_opt_d : '<p></p>',
+                                    array_key_exists(8, $v) ? '<p>' . $v[8] . '</p>' . $img_opt_e : '<p></p>',
+                                ];
+    
+                                $arr_ans[0] = $opt[$v[3] - 1];
+                                $arr_task['question_bank_answer'] = json_encode($arr_ans);
+    
+                                $clean_opt = array_diff($opt, ['<p></p>']);
+                                $arr_task['question_bank_option'] = json_encode($clean_opt);
+                            } else if ($i == 1) {
+                                $arr_task['question_bank_type'] = 2;
+    
+                                $img_opt_a = array_key_exists("E" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["E" . $ii] . '"></p>' : '';
+                                $img_opt_b = array_key_exists("F" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["F" . $ii] . '"></p>' : '';
+                                $img_opt_c = array_key_exists("G" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["G" . $ii] . '"></p>' : '';
+                                $img_opt_d = array_key_exists("H" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["H" . $ii] . '"></p>' : '';
+                                $img_opt_e = array_key_exists("I" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["I" . $ii] . '"></p>' : '';
+                                $opt = [
+                                    array_key_exists(4, $v) ? '<p>' . $v[4] . '</p>' . $img_opt_a : '<p></p>',
+                                    array_key_exists(5, $v) ? '<p>' . $v[5] . '</p>' . $img_opt_b : '<p></p>',
+                                    array_key_exists(6, $v) ? '<p>' . $v[6] . '</p>' . $img_opt_c : '<p></p>',
+                                    array_key_exists(7, $v) ? '<p>' . $v[7] . '</p>' . $img_opt_d : '<p></p>',
+                                    array_key_exists(8, $v) ? '<p>' . $v[8] . '</p>' . $img_opt_e : '<p></p>',
+                                ];
+    
+                                $omcx = explode("&", $v[3]);
+                                $arr_ans = [];
+                                foreach ($omcx as $x) {
+                                    if (isset($v[$x + 2])) {
+                                        $arr_ans[] = $opt[$x - 1];
+                                    } else {
+                                        throw new \Exception('index tidak ada');
+                                    }
                                 }
+    
+                                $arr_task['question_bank_answer'] = json_encode($arr_ans);
+    
+                                $clean_opt = array_diff($opt, ['<p></p>']);
+                                $arr_task['question_bank_option'] = json_encode($clean_opt);
+                            } else if ($i == 2) {
+                                $arr_task['question_bank_type'] = 3;
+    
+                                $tf = $v[3] == 'Benar' ? 1 : 2;
+                                $arr_task['question_bank_answer'] = json_encode([$tf]);
+                                $arr_task['question_bank_option'] = json_encode([1, 2]);
                             }
-
-                            $arr_task['question_bank_answer'] = json_encode($arr_ans);
-
-                            $clean_opt = array_diff($opt, ['<p></p>']);
-                            $arr_task['question_bank_option'] = json_encode($clean_opt);
-                        } else if ($i == 2) {
-                            $arr_task['question_bank_type'] = 3;
-
-                            $tf = $v[3] == 'Benar' ? 1 : 2;
-                            $arr_task['question_bank_answer'] = json_encode([$tf]);
-                            $arr_task['question_bank_option'] = json_encode([1, 2]);
                         }
                     }
                     if (count($arr_task) > 0) {

@@ -161,6 +161,12 @@ function list_grade($id)
     return get_list('grade')[school_level($id)];
 }
 
+function list_phase()
+{
+    return [
+        1 => 'A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'D', 'E', 'F', 'F'
+    ];
+}
 
 function school_alias($id)
 {
