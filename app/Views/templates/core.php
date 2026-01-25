@@ -893,7 +893,7 @@
 							<!--begin::Menu wrapper-->
 							<div class="cursor-pointer symbol symbol-40px" data-kt-menu-trigger="click"
 								data-kt-menu-overflow="true" data-kt-menu-placement="top-start" title="User profile">
-								<img src="<?= base_url() ?>assets/media/avatars/150-26.jpg" alt="image" />
+								<img src="<?= userdata()['image'] != 'default.png' ? getenv()['S3_BUCKET_LINK'] . userdata()['image'] : base_url('assets/media/avatars/blank.png') ?>" alt="image" />
 							</div>
 							<!--begin::Menu-->
 							<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px"
@@ -1182,6 +1182,8 @@
 	<script>
 		const url = window.location.href;
 		const base_url = document.getElementById('base').value;
+		const s3_url = '<?= getenv()['S3_BUCKET_LINK'] ?>';
+		
 		let idc_public = '<?= session()->getFlashdata('id_content') ?>'
 		let att_id = '<?= session()->getFlashdata('att_id') ?>'
 		let hostUrl = "<?= base_url() ?>assets/";

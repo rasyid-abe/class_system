@@ -634,7 +634,6 @@ function generate_view_attachment_a(e) {
     if (e.attach_arr != '') {
         for (let i = 0; i < e.attach_arr.length; i++) {
             spl = e.attach_arr[i].split("^");
-
             btnn += `
                 <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Button group with nested dropdown">
                     <button onclick="remove_content_a(${e.lesson_additional_id}, 7, '${e.attach_arr[i]}', '${e.lesson_additional_subchapter}', '${spl[2]}', '${e.lesson_additional_chapter}');" type="button" class="btn btn-primary btn-sm btn-icon"><i class="bi bi-x fs-5"></i></button>

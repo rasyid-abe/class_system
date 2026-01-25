@@ -721,13 +721,16 @@ function gen_header_qbpub(e) {
 }
 
 function gen_listpub_qb(e, act) {
+	show_loading()
 	$(".head_tab_group").each(function () {
 		$(this).removeClass("active");
 	});
 	$("#body_tbl_list_standart").removeClass("hide");
 	tbl_list_qbpublic.replaceData(
 		base_url + "teacher/question-bank/public/quest-list/?subject_id=" + e
-	);
+	).then(function(){
+        hide_loading()
+    });
 	$("#" + act).addClass("active");
 }
 
@@ -771,35 +774,44 @@ function gen_header_std(e) {
 }
 
 function gen_list_qb_std(e, act) {
+	show_loading()
 	$(".head_tab_group").each(function () {
 		$(this).removeClass("active");
 	});
 	$("#body_tbl_list_standart").removeClass("hide");
 	tbl_list_qbstd.setData(
 		base_url + "teacher/question-bank/standart/qb-list/?grade=" + e
-	);
+	).then(function(){
+        hide_loading()
+    });
 	$("#" + act).addClass("active");
 }
 
 function gen_list_lesson(e, act) {
+	show_loading()
 	$(".head_tab_group").each(function () {
 		$(this).removeClass("active");
 	});
 	$("#body_tbl_list_standart").removeClass("hide");
 	less_std_list.replaceData(
 		base_url + "/teacher/lesson/standart/lesson-list/?grade=" + e
-	);
+	).then(function(){
+        hide_loading()
+    });
 	$("#" + act).addClass("active");
 }
 
 function gen_listpub_lesson(e, act) {
+	show_loading()
 	$(".head_tab_group").each(function () {
 		$(this).removeClass("active");
 	});
 	$("#body_tbl_list_standart").removeClass("hide");
 	less_pub_list.replaceData(
 		base_url + "/teacher/lesson/public/lesson-list/?subject_id=" + e
-	);
+	).then(function(){
+        hide_loading()
+    });
 	$("#" + act).addClass("active");
 }
 

@@ -163,11 +163,10 @@ function generate_view_attachment_s(e) {
     if (e.lesson_attachment_path != '') {
         let attach = JSON.parse(e.lesson_attachment_path)
         for (let i = 0; i < attach.length; i++) {
-            spl = attach[i].split("^");
+            spl = attach[i].split("/");
             btnn += `
-
                 <div class="btn-group m-1" role="group">
-                    <a href="${file_path + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
+                    <a href="${s3_url + e.attach_arr[i]}" download="${spl[4]}" target="_blank" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[4]}</a>
                 </div>
             `;
         }

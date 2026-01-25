@@ -45,21 +45,32 @@ class StandartLesson extends BaseController
     public function first_page() 
     {
         $req = $this->request->getVar();
-        
+        $grades = list_grade(userdata()['school_id']);
+
+        $ls = list_phase('phase');
+        $phase = [];
+        $grds = [];
+        foreach ($grades as $k => $v) {
+            $phase[] = $ls[$k];
+            $grds[] = $k;
+        }
+
         if($req['type'] == 1) {
             $total_lesson = $this->lesson_standart
                 ->select('lesson_standart_id')
                 ->where('lesson_standart_status < 9')
+                ->whereIn('lesson_standart_phase', $phase)
+                ->whereIn('lesson_standart_grade', $grds)
                 ->groupBy('lesson_standart_subject_id, lesson_standart_grade')
                 ->findAll();
             $total_chapter = $this->lesson_standart
                 ->select('lesson_standart_id')
                 ->where('lesson_standart_status < 9')
+                ->whereIn('lesson_standart_phase', $phase)
+                ->whereIn('lesson_standart_grade', $grds)
                 ->groupBy('lesson_standart_subject_id,lesson_standart_chapter, lesson_standart_grade')
                 ->findAll();
-            
-            $grades = list_grade(userdata()['school_id']);
-            
+             
             $res = [
                 't_less' => count($total_lesson),
                 't_chap' => count($total_chapter),
@@ -74,7 +85,9 @@ class StandartLesson extends BaseController
     public function lesson_list()
     {
         $req = $this->request->getVar();
-        $subject = $this->lesson_standart->list_first_page($req['grade']);
+
+        $phase = list_phase('phase');
+        $subject = $this->lesson_standart->list_first_page($req['grade'], $phase[$req['grade']]);
 
         $sub_list = [];
         foreach ($subject as $k => $v) {
@@ -82,7 +95,7 @@ class StandartLesson extends BaseController
             $sub_list[$v['subject_id']]['grade'] = $req['grade'];
             $sub_list[$v['subject_id']]['subj'] = $v['subject_name'];
             $sub_list[$v['subject_id']]['chapter'][$v['lesson_standart_chapter']] = $v['lesson_standart_chapter'];
-            $sub_list[$v['subject_id']]['subchapter'][$v['lesson_standart_subchapter']] = $v['lesson_standart_subchapter'];
+            $sub_list[$v['subject_id']]['subchapter'][$v['lesson_standart_subchapter'].$v['lesson_standart_id']] = $v['lesson_standart_subchapter'];
         }
 
         $data = [];
@@ -120,6 +133,7 @@ class StandartLesson extends BaseController
             '##' => 'Kelas ' . $grade,
         ];
 
+        
         $subs = $this->lesson_standart->list_subject($grade);
 
         $data['subjects'] = $subs;
@@ -139,24 +153,29 @@ class StandartLesson extends BaseController
             '#' => $this->title,
             '/teacher/lesson/standart' => 'Materi Standard',
             // '/teacher/lesson/standart/view-subject/' . $grade => 'Kelas ' . $grade,
-            '##' => $subs['subject_name'] . ' - ' . grade_label($grade)
+            '##' => $subs['subject_name'] . ' ' . grade_label($grade)
         ];
 
         $data['subject'] = $subject;
         $data['grade'] = $grade;
+
+        $phase = list_phase('phase');
 
         $chapter = $this->lesson_standart
             ->select('lesson_standart_id, lesson_standart_chapter')
             ->where('lesson_standart_status < 9')
             ->where('lesson_standart_subject_id', $subject)
             ->where('lesson_standart_grade', $grade)
+            ->where('lesson_standart_phase', $phase[$grade])
             ->groupBy('lesson_standart_chapter')
             ->findAll();
             
         foreach ($chapter as $k => $v) {
             $sub_chapter = $this->lesson_standart
                 ->where('lesson_standart_chapter', $v['lesson_standart_chapter'])
+                ->where('lesson_standart_subject_id', $subject)
                 ->where('lesson_standart_grade', $grade)
+                ->where('lesson_standart_phase', $phase[$grade])
                 ->where('lesson_standart_status < 9')
                 ->findAll();
 

@@ -66,7 +66,7 @@ class StandartLessonModel extends Model
         return $this->db->query($query)->getResultArray();
     }
 
-    public function list_first_page($grade) 
+    public function list_first_page($grade, $phase) 
     {
         $query = "
             SELECT
@@ -81,10 +81,12 @@ class StandartLessonModel extends Model
             JOIN master_subject ms ON
                 lls.lesson_standart_subject_id = ms.subject_id
             WHERE
-                 lls.lesson_standart_status < 9
+                lls.lesson_standart_subchapter != ''
+                and lls.lesson_standart_status < 9
                 and lls.lesson_standart_grade = $grade
+                and lls.lesson_standart_phase = '$phase'
         ";
-
+        
         return $this->db->query($query)->getResultArray();
 
     }
