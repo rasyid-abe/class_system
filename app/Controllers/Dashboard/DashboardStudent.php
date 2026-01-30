@@ -73,7 +73,7 @@ class DashboardStudent extends BaseController
         $rows = $this->activity
             ->where('activity_platform', 'LMS')
             ->where('activity_user_id', userdata()['id'])
-            ->orderBy('activity_id', 'desc')
+            ->orderBy('activity_timestamp', 'desc')
             ->findAll(5);
         
         $data['activity'] = $rows;

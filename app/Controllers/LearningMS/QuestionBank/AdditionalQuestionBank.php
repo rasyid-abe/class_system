@@ -8,11 +8,11 @@ use App\Models\Management\TeachingSubjectsModel;
 use App\Models\Profiles\TeacherModel;
 use App\Models\Masters\SubjectModel;
 use App\Models\Activities\ActivityModel;
-use PDO;
-use PhpOffice\PhpSpreadsheet\Style\Protection;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
+// use PDO;
+// use PhpOffice\PhpSpreadsheet\Style\Protection;
+// use PhpOffice\PhpSpreadsheet\Spreadsheet;
+// use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+// use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
 
 class AdditionalQuestionBank extends BaseController
 {
@@ -68,21 +68,6 @@ class AdditionalQuestionBank extends BaseController
             ])
             ->groupBy('student_group_id')
             ->findAll();
-        // $mysubs = $this->teacher_subject
-        //     ->select('student_group_id, student_group_name, student_group_grade, subject_id, subject_name')
-        //     ->join('manage_timetable', 'timetable_teaching_subjects_id = teaching_subjects_id', 'left')
-        //     ->join('master_student_group', 'student_group_id = timetable_group_id', 'left')
-        //     ->join('master_subject', 'subject_id = teaching_subjects_subject_id', 'left')
-        //     ->where('teaching_subjects_school_id', userdata()['school_id'])
-        //     ->where('teaching_subjects_teacher_id', userdata()['id_profile'])
-        //     ->where('teaching_subjects_status < 9')
-        //     ->orderBy('student_group_grade')
-        //     ->findAll();
-
-        // echo '<pre>';
-        // print_r($mysubs);
-        // echo '</pre>';
-        // die;
 
         $subs = [];
         foreach ($mysubs as $k => $v) {
@@ -215,6 +200,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'unshare task failed : ' . $sts['message']);
+
                 $res = [
                     'collapse' => 0,
                     'show_quest' => 0,
@@ -246,6 +233,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'share task failed : ' . $sts['message']);
+
                 $res = [
                     'collapse' => 0,
                     'show_quest' => 0,
@@ -285,8 +274,8 @@ class AdditionalQuestionBank extends BaseController
                 ->first();
             $title = $this->question_bank->select('question_bank_title')->where('question_bank_id', $d['question_bank_parent_id'])->first();
 
-            $opt = json_decode($d['question_bank_option']);
-            $ans = json_decode($d['question_bank_answer']);
+            $opt = $d['question_bank_option'] != '' && $d['question_bank_option'] != [] ? json_decode($d['question_bank_option']) : [];
+            $ans = $d['question_bank_answer'] != '' && $d['question_bank_answer'] != [] ? json_decode($d['question_bank_answer']) : [];
 
             $idx_ans = [];
             foreach ($ans as $k => $v) {
@@ -332,6 +321,8 @@ class AdditionalQuestionBank extends BaseController
             $this->question_bank->insert($ins);
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'add question bank title failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Judul Bank Soal gagal ditambahkan.',
@@ -361,6 +352,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'update question bank title failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Judul Bank Soal gagal diubah.',
@@ -402,6 +395,8 @@ class AdditionalQuestionBank extends BaseController
             $this->question_bank->insert($ins);
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'add task failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Soal gagal ditambahkan.',
@@ -438,6 +433,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'update task failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Soal gagal diubah.',
@@ -471,6 +468,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'update hint task failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Petunjuk Soal gagal diperbarui.',
@@ -504,6 +503,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'update explanation task failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Penjelasan Soal gagal diperbarui.',
@@ -537,6 +538,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'move task failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Pindah soal gagal.',
@@ -590,6 +593,8 @@ class AdditionalQuestionBank extends BaseController
             $this->question_bank->insert($ins);
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'copy task failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Salin soal gagal.',
@@ -599,7 +604,7 @@ class AdditionalQuestionBank extends BaseController
                     'id' => [$req['val'][1], $req['val'][0]],
                     'chid' => $this->question_bank->getInsertID(),
                     'coll_act' => 0,
-                    'src' => $req['val'][2]
+                    // 'src' => $req['val'][2]
                 ];
             } else {
                 if ($req['val'][2] == 2) {
@@ -626,7 +631,7 @@ class AdditionalQuestionBank extends BaseController
                     'id' => [$req['val'][1], $req['val'][0]],
                     'chid' => $this->question_bank->getInsertID(),
                     'coll_act' => 0,
-                    'src' => $req['val'][2]
+                    // 'src' => $req['val'][2]
 
                 ];
             }
@@ -649,6 +654,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'remove task failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Soal gagal dihapus.',
@@ -680,6 +687,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'remove question bank title failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Soal gagal dihapus.',
@@ -709,6 +718,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'remove hint task failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Petunjuk Soal gagal dihapus.',
@@ -742,6 +753,8 @@ class AdditionalQuestionBank extends BaseController
 
             $sts = $this->question_bank->error();
             if ($sts['code'] > 0) {
+                logging('error', 'remove explanation failed : ' . $sts['message']);
+
                 $res = [
                     'head' => '',
                     'msg' => 'Penjelasan Soal gagal dihapus.',
@@ -938,7 +951,9 @@ class AdditionalQuestionBank extends BaseController
                 }
                 $this->question_bank->db->transCommit();
             } catch (\Throwable $th) {
+                logging('error', 'import tasks failed : ' . $th->getMessage());
                 $this->question_bank->db->transRollback();
+
                 session()->setFlashdata('head', 'Gagal!');
                 session()->setFlashdata('icon', 'danger');
                 session()->setFlashdata('msg', 'Something went wrong!');
@@ -959,139 +974,4 @@ class AdditionalQuestionBank extends BaseController
         return redirect()->to('/teacher/question-bank/additional/view-content/' . $req['subject'] . '/' . $req['grade']);
     }
 
-    // public function upload_task()
-    // {
-    //     $req = $this->request->getVar();
-
-    //     $file = $_FILES['task_upload']['tmp_name'];
-
-    //     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file);
-    //     $spreadsheet = $reader->load($file);
-
-    //     $success = true;
-
-    //     $total_sheet = $spreadsheet->getSheetCount();
-    //     $all_task = [];
-    //     for ($i = 0; $i < $total_sheet; $i++) {
-    //         $sheetData = $spreadsheet->setActiveSheetIndex($i)->toArray();
-    //         $xlsObj = $spreadsheet->setActiveSheetIndex($i);
-
-    //         $arrImages = [];
-    //         foreach ($xlsObj->getDrawingCollection() as $key => $drawing) {
-    //             $imagePath = $drawing->getPath();
-    //             $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
-    //             $imageName = 'image_' . uniqid() . '.' . $extension;
-    //             $imageCoor = $drawing->getCoordinates2();
-    //             copy($imagePath, 'images/temp_upload/' . $imageName);
-    //             $imagedata = file_get_contents('images/temp_upload/' . $imageName);
-    //             $arrImages[$imageCoor] = base64_encode($imagedata);
-    //             unlink('images/temp_upload/' . $imageName);
-    //         }
-
-    //         $this->question_bank->db->transBegin();
-
-    //         try {
-    //             $arr_task = [];
-    //             $ii = 1;
-
-    //             foreach ($sheetData as $k => $v) {
-    //                 if ($v[0] != 'No' && ($v[2] != '' || $v[2] != null) && ($v[3] != '' || $v[3] != null) && ($v[1] != '' || $v[1] != null)) {
-    //                     $arr_task[$i . $ii]['question_bank_school_id'] = userdata()['school_id'];
-    //                     $arr_task[$i . $ii]['question_bank_teacher_id'] = userdata()['id_profile'];
-    //                     $arr_task[$i . $ii]['question_bank_subject_id'] = $req['subject'];
-    //                     $arr_task[$i . $ii]['question_bank_grade'] = $req['grade'];
-    //                     $arr_task[$i . $ii]['question_bank_parent_id'] = $req['id_quest'];
-    //                     $arr_task[$i . $ii]['question_bank_status'] = 1;
-    //                     $arr_task[$i . $ii]['question_bank_hint'] = '<p><br></p>';
-    //                     $arr_task[$i . $ii]['question_bank_explain'] = '<p><br></p>';
-    //                     $arr_task[$i . $ii]['question_bank_poin'] = $v[1];
-
-    //                     $img_q = array_key_exists("C" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["C" . $ii] . '"></p>' : '';
-    //                     $arr_task[$i . $ii]['question_bank_question'] = '<p>' . $v[2] . '</p>' . $img_q;
-
-
-    //                     if ($i == 0) {
-    //                         $arr_task[$i . $ii]['question_bank_type'] = 1;
-
-    //                         $img_opt_a = array_key_exists("E" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["E" . $ii] . '"></p>' : '';
-    //                         $img_opt_b = array_key_exists("F" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["F" . $ii] . '"></p>' : '';
-    //                         $img_opt_c = array_key_exists("G" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["G" . $ii] . '"></p>' : '';
-    //                         $img_opt_d = array_key_exists("H" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["H" . $ii] . '"></p>' : '';
-    //                         $img_opt_e = array_key_exists("I" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["I" . $ii] . '"></p>' : '';
-    //                         $opt = [
-    //                             array_key_exists(4, $v) ? '<p>' . $v[4] . '</p>' . $img_opt_a : '<p></p>',
-    //                             array_key_exists(5, $v) ? '<p>' . $v[5] . '</p>' . $img_opt_b : '<p></p>',
-    //                             array_key_exists(6, $v) ? '<p>' . $v[6] . '</p>' . $img_opt_c : '<p></p>',
-    //                             array_key_exists(7, $v) ? '<p>' . $v[7] . '</p>' . $img_opt_d : '<p></p>',
-    //                             array_key_exists(8, $v) ? '<p>' . $v[8] . '</p>' . $img_opt_e : '<p></p>',
-    //                         ];
-
-    //                         $arr_ans[0] = $opt[$v[3] - 1];
-    //                         $arr_task[$i . $ii]['question_bank_answer'] = json_encode($arr_ans);
-
-    //                         $clean_opt = array_diff($opt, ['<p></p>']);
-    //                         $arr_task[$i . $ii]['question_bank_option'] = json_encode($clean_opt);
-    //                     } else if ($i == 1) {
-    //                         $arr_task[$i . $ii]['question_bank_type'] = 2;
-
-    //                         $img_opt_a = array_key_exists("E" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["E" . $ii] . '"></p>' : '';
-    //                         $img_opt_b = array_key_exists("F" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["F" . $ii] . '"></p>' : '';
-    //                         $img_opt_c = array_key_exists("G" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["G" . $ii] . '"></p>' : '';
-    //                         $img_opt_d = array_key_exists("H" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["H" . $ii] . '"></p>' : '';
-    //                         $img_opt_e = array_key_exists("I" . $ii, $arrImages) ? '<p><img src="data:image/png;base64,' . $arrImages["I" . $ii] . '"></p>' : '';
-    //                         $opt = [
-    //                             array_key_exists(4, $v) ? '<p>' . $v[4] . '</p>' . $img_opt_a : '<p></p>',
-    //                             array_key_exists(5, $v) ? '<p>' . $v[5] . '</p>' . $img_opt_b : '<p></p>',
-    //                             array_key_exists(6, $v) ? '<p>' . $v[6] . '</p>' . $img_opt_c : '<p></p>',
-    //                             array_key_exists(7, $v) ? '<p>' . $v[7] . '</p>' . $img_opt_d : '<p></p>',
-    //                             array_key_exists(8, $v) ? '<p>' . $v[8] . '</p>' . $img_opt_e : '<p></p>',
-    //                         ];
-
-    //                         $omcx = explode("&", $v[3]);
-    //                         $arr_ans = [];
-    //                         foreach ($omcx as $x) {
-    //                             if (isset($v[$x + 2])) {
-    //                                 $arr_ans[] = $opt[$x - 1];
-    //                             } else {
-    //                                 throw new \Exception('index tidak ada');
-    //                             }
-    //                         }
-
-    //                         $arr_task[$i . $ii]['question_bank_answer'] = json_encode($arr_ans);
-
-    //                         $clean_opt = array_diff($opt, ['<p></p>']);
-    //                         $arr_task[$i . $ii]['question_bank_option'] = json_encode($clean_opt);
-    //                     } else if ($i == 2) {
-    //                         $arr_task[$i . $ii]['question_bank_type'] = 3;
-
-    //                         $tf = $v[3] == 'Benar' ? 1 : 2;
-    //                         $arr_task[$i . $ii]['question_bank_answer'] = json_encode([$tf]);
-    //                         $arr_task[$i . $ii]['question_bank_option'] = json_encode([1, 2]);
-    //                     }
-    //                 }
-    //                 $ii++;
-    //             }
-    //             $this->question_bank->insertBatch($arr_task);
-    //             $this->question_bank->db->transCommit();
-    //         } catch (\Throwable $th) {
-    //             $success = false;
-    //             echo '<pre>';
-    //             print_r($th);
-    //             echo '</pre>';
-    //             die;
-    //             $this->question_bank->db->transRollback();
-    //         }
-    //     }
-
-    //     session()->setFlashdata('head', 'Sukses!');
-    //     session()->setFlashdata('icon', 'success');
-    //     if ($success == true) {
-    //         session()->setFlashdata('msg', 'Soal berhasil di unggah');
-    //     } else {
-    //         session()->setFlashdata('msg', 'Soal gagal di unggah');
-    //     }
-    //     session()->setFlashdata('hide', 3000);
-
-    //     return redirect()->to('/teacher/question-bank/additional/view-content/' . $req['subject'] . '/' . $req['grade']);
-    // }
 }

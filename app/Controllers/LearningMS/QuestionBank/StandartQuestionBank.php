@@ -50,14 +50,29 @@ class StandartQuestionBank extends BaseController
     {
         $req = $this->request->getVar();
         
+        $grades = list_grade(userdata()['school_id']);
+
+        $ls = list_phase('phase');
+        $phase = [];
+        $grds = [];
+        foreach ($grades as $k => $v) {
+            $phase[] = $ls[$k];
+            $grds[] = $k;
+        }
+
         if($req['type'] == 1) {
             $total_title = $this->question_bank_standart
                 ->select('count(question_bank_standart_id) as total')
+                ->whereIn('question_bank_standart_phase', $phase)
+                ->whereIn('question_bank_standart_grade', $grds)
                 ->where('question_bank_standart_status < 9')
                 ->where('question_bank_standart_parent_id', 0)
                 ->first();
+
             $total_question = $this->question_bank_standart
                 ->select('count(question_bank_standart_id) as total')
+                ->whereIn('question_bank_standart_phase', $phase)
+                ->whereIn('question_bank_standart_grade', $grds)
                 ->where('question_bank_standart_status < 9')
                 ->where('question_bank_standart_parent_id > 0')
                 ->first();
@@ -81,36 +96,35 @@ class StandartQuestionBank extends BaseController
         $subject = $this->question_bank_standart->list_first_page($req['grade']);
 
         $sub_list = [];
-        $tquest = 0;
         foreach ($subject as $k => $v) {
             if ($v['parent'] < 1) {
-                $sub_list[$v['subject_id']]['title'] = $v['title'];
+                $sub_list[$v['subject_id']]['title'][$v['question_bank_standart_id']] = $v['title'];
             } else {
-                $tquest++;
+                $sub_list[$v['subject_id']]['quest_id'][$v['question_bank_standart_id']] = $v['question_bank_standart_id'];
             }
             $sub_list[$v['subject_id']]['subj_id'] = $v['subject_id'];
             $sub_list[$v['subject_id']]['grade'] = $req['grade'];
             $sub_list[$v['subject_id']]['subj'] = $v['subject_name'];
             $sub_list[$v['subject_id']]['qbid'] = $v['question_bank_standart_id'];
-            $sub_list[$v['subject_id']]['quest_id'][$v['question_bank_standart_id']] = $v['question_bank_standart_id'];
         }
 
         $data = [];
         foreach ($sub_list as $k => $v) {
+            $ctitle = count($v['title']);
+            $cquest = count($v['quest_id']);
             $lists = '
                 <div class="d-flex justify-content-between rounded">
                     <div class="d-flex align-items-start">
                         <a href="'.base_url('teacher/question-bank/standart/view-content/'. $v['subj_id'] .'/'. $v['grade']).'" class="btn btn-primary pl-10">Lihat Soal</a>
                         <div class="flex-grow-1 me-2 mx-10">
-                            <h3 class="mb-1">'.$v['title'].'</h3>
-                            <span class="text-gray-700 fw-semibold d-block">Total Soal: '.$tquest.'</span>
+                            <h3 class="mb-1">'.$v['subj'].'</h3>
+                            <span class="text-gray-700 fw-semibold d-block">Judul Bank Soal: '.$ctitle.' | Total Soal: '.$cquest.'</span>
                         </div>
                     </div>
 
                     <div class="additional-info">
                         <div class="d-flex align-items-end flex-column">
-                            <badge class="badge badge-info badge-block mb-1">'.grade_label($v['grade']).'</badge>
-                            <span class="text-gray-700 fw-semibold d-block">'.$v['subj'].'</span>
+                           
                         </div>
                     </div>
                 </div>
@@ -192,12 +206,24 @@ class StandartQuestionBank extends BaseController
     public function get_question()
     {
         $req = $this->request->getVar();
+
+        $teacher_grade = teacher_grades(userdata()['id_profile']);
+        $teacher_subjects = teacher_subjects(userdata()['id_profile']);
+        
         $d = $this->question_bank_standart
             ->where('question_bank_standart_id', $req['id'])
             ->first();
 
-        $opt = json_decode($d['question_bank_standart_option']);
-        $ans = json_decode($d['question_bank_standart_answer']);
+        $access = 0;
+        if (
+            $teacher_grade[0] == $d['question_bank_standart_grade'] && 
+            in_array($d['question_bank_standart_subject_id'], $teacher_subjects)
+        ) {
+          $access = 1;  
+        }
+
+        $opt = $d['question_bank_standart_option'] != '' && $d['question_bank_standart_option'] != [] ? json_decode($d['question_bank_standart_option']) : [];
+        $ans = $d['question_bank_standart_answer'] != '' && $d['question_bank_standart_answer'] != [] ? json_decode($d['question_bank_standart_answer']) : [];
 
         $idx_ans = [];
         foreach ($ans as $k => $v) {
@@ -218,6 +244,7 @@ class StandartQuestionBank extends BaseController
             'explain' => $d['question_bank_standart_explain'],
             'hint' => $d['question_bank_standart_hint'],
             'list_quest' => get_list('question_type'),
+            'access' => $access
         ];
         
         echo json_encode($res);
@@ -241,7 +268,6 @@ class StandartQuestionBank extends BaseController
     public function update_content()
     {
         $req = $this->request->getVar();
-        
         $d = $this->question_bank_standart->where('question_bank_standart_id', $req['id'])->first();
 
         $ins = [
@@ -264,6 +290,8 @@ class StandartQuestionBank extends BaseController
         $this->question_bank->insert($ins);
         $sts = $this->question_bank->error();
         if ($sts['code'] > 0) {
+            logging('error', 'copy task failed : ' . $sts['message']);
+
             $res = [
                 'head' => '',
                 'msg' => 'Salin soal gagal.',

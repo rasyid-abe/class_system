@@ -53,6 +53,7 @@ class Groups extends BaseController
                 student_last_name,
                 student_religion,
                 student_gender,
+                student_image,
                 student_address,
                 student_phone,
             ')
@@ -60,12 +61,19 @@ class Groups extends BaseController
             ->where('student_in_group_student_group_id',$req['id'])
             ->where('student_in_group_school_year_id',school_year()['id'])
             ->where('student_in_group_status < 9')
+            ->orderBy('student_first_name,student_last_name')
             ->findAll();
 
             $data = [];
             foreach ($get as $k => $v) {
                 $gender = $v['student_gender'] == 1 ? 'Laki-laki' : 'Perempuan';
                 $religi = get_list('religion')[$v['student_religion']];
+                
+                $img = '<img src="'.base_url('assets/media/avatars/').'blank.png" alt="P" class="w-100" />';
+                if ($v['student_image'] != 'default.png') {
+                    $img = '<img src="'.getenv()['S3_BUCKET_LINK'].$v['student_image'].'" alt="P" class="w-100" />';
+                }
+                
                 $lists = '
                     <div class="row bigrow-tabulator">
                         <div class="col-lg-4 mx-auto">
@@ -74,7 +82,7 @@ class Groups extends BaseController
                         
                                 <div class="d-flex flex-column">
                                     <div class="cursor-pointer symbol symbol-50px" data-kt-menu-trigger="click" data-kt-menu-overflow="true" data-kt-menu-placement="top-start" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-dismiss="click" title="" data-bs-original-title="User profile">
-                                        <img src="http://localhost:8080/assets/media/avatars/150-26.jpg" alt="image">
+                                        '.$img.'
                                     </div>
                                 </div>
                         

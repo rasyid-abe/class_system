@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\Lessons\StandartLessonModel;
 use App\Models\Lessons\AdditionalLessonModel;
 use App\Models\Lessons\PublicLessonModel;
+use App\Models\Masters\SubjectModel;
 use App\Models\Profiles\TeacherModel;
 
 
@@ -19,6 +20,7 @@ class PublicLesson extends BaseController
     protected $lesson_additional;
     protected $lesson_public;
     protected $teacher;
+    protected $subject;
 
     public function __construct()
     {
@@ -29,6 +31,7 @@ class PublicLesson extends BaseController
         $this->lesson_additional = new AdditionalLessonModel();
         $this->lesson_public = new PublicLessonModel();
         $this->teacher = new TeacherModel();
+        $this->subject = new SubjectModel();
     }
 
     public function index()
@@ -114,19 +117,21 @@ class PublicLesson extends BaseController
 
     public function view_content($id)
     {
-        $data["title"] = $this->title;
-        $data["page"] = $this->page;
-        $data["sidebar"] = $this->sidebar;
-
         $dt = $this->lesson_additional
             ->where('lesson_additional_id', $id)
             ->first();
-
+        
+        $sub = $this->subject->where('subject_id', $dt['lesson_additional_subject_id'])->first();
+        
+        $data["title"] = $sub['subject_name'] . ' - BAB ' . $dt['lesson_additional_chapter'] ." - Topik ". $dt['lesson_additional_subchapter'];
+        $data["page"] = $this->page;
+        $data["sidebar"] = $this->sidebar;
+        
+        
         $data["breadcrumb"] = [
             '#' => $this->title,
             '/teacher/lesson/public' => 'Materi Publik',
-            '###' => $dt['lesson_additional_chapter'],
-            '####' => $dt['lesson_additional_subchapter']
+            '###' => $sub['subject_name'] . ' BAB ' . $dt['lesson_additional_chapter'] ." Topik ". $dt['lesson_additional_subchapter']
         ];
 
 

@@ -52,8 +52,6 @@ function ajax_tree_mylessons(res = null) {
 }
 
 function generate_tree_mylessons(e, res) {
-    console.log(res);
-
     let trees = ''
     if (Object.keys(e).length > 0) {
         $.each(e, function (i, v) {
@@ -349,7 +347,7 @@ $(document.body).on('click', '#btn_update_content', function () {
                     <input type="hidden" name="title_topic" value="${topic}" />
                     <input type="hidden" name="chap_topic" value="${chap}" />
                     <input type="hidden" name="form_type" value="5" />
-                    <div id="editor_content"></div>
+                    <div id="editor_content" style="height: 250px"></div>
                     `;
 
             // <textarea id="content" name="content" class="tinymce-editor">${e.lesson_additional_content}</textarea>
@@ -639,7 +637,7 @@ function generate_view_attachment_a(e) {
                     <button onclick="remove_content_a(${e.lesson_additional_id}, 7, '${e.attach_arr[i]}', '${e.lesson_additional_subchapter}', '${spl[2]}', '${e.lesson_additional_chapter}');" type="button" class="btn btn-primary btn-sm btn-icon"><i class="bi bi-x fs-5"></i></button>
 
                     <div class="btn-group" role="group">
-                        <a href="${file_path + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>                
+                        <a href="${file_path + e.attach_arr[i]}" target="_blank" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>                
                     </div>
                 </div>
             `;
@@ -1296,23 +1294,25 @@ function generate_preview(e, act) {
     let num = 1
 
     if (e != null) {
-        $.each(JSON.parse(e.option), function (i, v) {
-            let lab = v
-            if (e.type == 3) {
-                lab = v == 1 ? 'Benar' : 'Salah'
-            }
-            opt += `
-                <div class="col-sm-6">
-                    <div class="alert alert-dismissible bg-light-secondary border border-dark d-flex flex-column flex-sm-row p-5 mb-5">
-                        <div class="d-flex flex-column pe-0 pe-sm-10">
-                            <h4 class="fw-semibold">Pilihan Jawaban ${num}</h4>
-                            ${lab}
+        if (e.option != '') {
+            $.each(JSON.parse(e.option), function (i, v) {
+                let lab = v
+                if (e.type == 3) {
+                    lab = v == 1 ? 'Benar' : 'Salah'
+                }
+                opt += `
+                    <div class="col-sm-6">
+                        <div class="alert alert-dismissible bg-light-secondary border border-dark d-flex flex-column flex-sm-row p-5 mb-5">
+                            <div class="d-flex flex-column pe-0 pe-sm-10">
+                                <h4 class="fw-semibold">Pilihan Jawaban ${num}</h4>
+                                ${lab}
+                            </div>
                         </div>
                     </div>
-                </div>
-            `
-            num++
-        })
+                `
+                num++
+            })
+        }
 
         html = `
             <div class="card">

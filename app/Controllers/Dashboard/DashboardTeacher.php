@@ -57,7 +57,7 @@ class DashboardTeacher extends BaseController
         $rows = $this->activity
             ->where('activity_platform', 'LMS')
             ->where('activity_user_id', userdata()['id'])
-            ->orderBy('activity_id', 'desc')
+            ->orderBy('activity_timestamp', 'desc')
             ->findAll(5);
 
         $data['activity'] = $rows;
@@ -133,10 +133,10 @@ class DashboardTeacher extends BaseController
         $total_sch_chapter['total'] = 0;
         $total_sch_subchap['total'] = 0;
 
-
         $year = school_year()['id'];
         $total_sch_chapter = $this->less_school->total_chapter($school_id, $year, $teacher_id);
         $total_sch_subchap = $this->less_school->total_subchapter($school_id, $year, $teacher_id);
+        
 
         $my_duty = $this->tassign
             ->select([
@@ -162,7 +162,7 @@ class DashboardTeacher extends BaseController
             ->orderBy('timetable_group_id')
             ->findAll();
 
-
+            
         $schk = $this->assessment->get_checked_assessment($school_id, $year, $teacher_id, datetimenow());
         $tchk = $this->task->get_checked_task($school_id, $teacher_id, datetimenow());
 

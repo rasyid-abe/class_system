@@ -9,7 +9,7 @@ class PublicLessonModel extends Model
     public function get_shared($teacher_id, $subject_id, $grade) 
     {
         $t_id = '"'. $teacher_id .'"';
-        $or_subject = count($subject_id) < 1 ? -1 : implode(",",$subject_id);
+        $or_subject = count($subject_id) < 1 ? -1 : implode("','",$subject_id);
         $or_grade = count($grade) < 0 ? -1 : implode("','",$grade);
 
         $query = "
@@ -43,7 +43,7 @@ class PublicLessonModel extends Model
     public function get_shared_list($teacher_id, $subject_id, $grade)
     {
         $t_id = '"'. $teacher_id .'"';
-        $or_subject = count($subject_id) < 1 ? -1 : implode(",",$subject_id);
+        $or_subject = count($subject_id) < 1 ? -1 : implode("','",$subject_id);
         $or_grade = count($grade) < 0 ? -1 : implode("','",$grade);
 
         $query = "

@@ -45,16 +45,15 @@ class AdditionalLessonModel extends Model
     {
         $sql = "
             select
-                distinct lla.lesson_additional_chapter
+                lla.lesson_additional_chapter
             from
                 lms_lesson_additional lla
             where
                 lla.lesson_additional_teacher_id = $teacher
                 and lla.lesson_additional_school_id = $school
                 and lla.lesson_additional_status < 9
-                
             group by
-                lla.lesson_additional_chapter
+                lla.lesson_additional_chapter, lla.lesson_additional_subject_id
         ";
 
         return $this->db->query($sql)->getResultArray();

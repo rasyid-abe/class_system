@@ -161,14 +161,27 @@ function generate_view_attachment_s(e) {
 
     let btnn = '';
     if (e.lesson_attachment_path != '') {
-        let attach = JSON.parse(e.lesson_attachment_path)
-        for (let i = 0; i < attach.length; i++) {
-            spl = attach[i].split("/");
-            btnn += `
-                <div class="btn-group m-1" role="group">
-                    <a href="${s3_url + e.attach_arr[i]}" download="${spl[4]}" target="_blank" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[4]}</a>
-                </div>
-            `;
+        if (e.lesson_attachment_path.includes('{')) {
+            for (let i = 0; i < e.attach_arr.length; i++) {
+                spl = e.attach_arr[i].split("^");
+                btnn += `
+                    <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Button group with nested dropdown">
+                        <div class="btn-group" role="group">
+                            <a href="${file_path + e.attach_arr[i]}" target="_blank" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>                
+                        </div>
+                    </div>
+                `;
+            }
+        } else {
+            let attach = JSON.parse(e.lesson_attachment_path)
+            for (let i = 0; i < attach.length; i++) {
+                spl = attach[i].split("/");
+                btnn += `
+                    <div class="btn-group m-1" role="group">
+                        <a href="${s3_url + e.attach_arr[i]}" download="${spl[4]}" target="_blank" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[4]}</a>
+                    </div>
+                `;
+            }
         }
     } else {
         btnn = 'Lampiran belum tersedia';
@@ -244,6 +257,11 @@ function view_content_s(id) {
         $('#content_value').removeClass('hide')
     }
 }
+
+$(document).on('click', '.lsstd', function() {
+    $('.lsstd').removeClass('underline fw-bolder').addClass('fw-semibold')
+    $(this).addClass('underline fw-bolder').removeClass('fw-semibold')
+})
 
 
 // function download_attach_s(file) {

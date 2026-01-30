@@ -510,7 +510,7 @@
 						<div class="col-sm-12" id="col_questansw_ass">
 							<div id="actass_question"></div>
 							<div id="actass_option"></div>
-							<div id="actass_essay_answer"></div>
+							<div id="actass_essay_answer" style="height: 250px"></div>
 						</div>
 						<div class="col_hintass" id="col_hintass"></div>
 					</div>
@@ -609,6 +609,9 @@
 						<input type="hidden" name="result_id" id="result_id">
 						<input type="hidden" name="stu_id" id="stu_id">
 						<input type="hidden" name="asse_id" id="asse_id">
+						<input type="hidden" name="asse_qb_id" id="asse_qb_id">
+						<input type="hidden" name="asse_qb_src" id="asse_qb_src">
+						<input type="hidden" name="asse_group_id" id="asse_group_id">
 					</div>
 				</div>
 
@@ -642,11 +645,14 @@
 					</div>
 					<div class="buttonn">
 						<span class="fw-bold mx-5 fs-3"><span id="left_time_task" class="hide"></span></span>
-						<button type="button" class="btn btn-danger" onclick="close_checking_modal_tsk()">Tutup</button>
+						<button type="button" class="btn btn-danger" id="btnclschktsk" onclick="close_checking_modal_tsk()">Tutup</button>
 						<button type="button" class="btn btn-primary" id="btn_submit_checking_tsk">Submit</button>
 						<input type="hidden" name="result_id_tsk" id="result_id_tsk">
 						<input type="hidden" name="stu_id_tsk" id="stu_id_tsk">
 						<input type="hidden" name="taskidd" id="taskidd">
+						<input type="hidden" name="taskgroupid" id="taskgroupid">
+						<input type="hidden" name="taskccheck" id="taskccheck">
+						<input type="hidden" name="taskallpoints" id="taskallpoints">
 					</div>
 				</div>
 
@@ -903,7 +909,7 @@
 									<div class="menu-content d-flex align-items-center px-3">
 										<!--begin::Avatar-->
 										<div class="symbol symbol-50px me-5">
-											<img alt="Logo" src="<?= base_url() ?>assets/media/avatars/150-26.jpg" />
+											<img alt="Logo" src="<?= userdata()['image'] != 'default.png' ? getenv()['S3_BUCKET_LINK'] . userdata()['image'] : base_url('assets/media/avatars/blank.png') ?>" />
 										</div>
 										<!--end::Avatar-->
 										<!--begin::Username-->
@@ -947,31 +953,22 @@
 							</div>
 							<!--end::Menu item-->
 							<!--begin::Menu separator-->
+							
+							<!--end::Menu item-->
+							<!--begin::Menu separator-->
+							<div class="separator my-2"></div>
+							<!--end::Menu separator-->
+							<!--begin::Menu item-->
+							<div class="menu-item px-5">
+								<span class="menu-link px-5"><?= datenow() ?></span>
+							</div>
+							<!--end::Menu item-->
 							<div class="separator my-2"></div>
 							<!--end::Menu separator-->
 							<!--begin::Menu item-->
 							<div class="menu-item px-5">
 								<a href="<?= base_url() ?>logout" class="menu-link px-5">Keluar</a>
 							</div>
-							<!--end::Menu item-->
-							<!--begin::Menu separator-->
-							<div class="separator my-2"></div>
-							<!--end::Menu separator-->
-							<!--begin::Menu item-->
-							<!-- <div class="menu-item px-5">
-								<div class="menu-content px-5">
-									<label
-										class="form-check form-switch form-check-custom form-check-solid pulse pulse-success"
-										for="kt_user_menu_dark_mode_toggle">
-										<input class="form-check-input w-30px h-20px" type="checkbox" value="1"
-											name="mode" id="kt_user_menu_dark_mode_toggle"
-											data-kt-url="../dist/index.html" />
-										<span class="pulse-ring ms-n1"></span>
-										<span class="form-check-label text-gray-600 fs-7">Dark Mode</span>
-									</label>
-								</div>
-							</div> -->
-							<!--end::Menu item-->
 						</div>
 						<!--end::Menu-->
 						<!--end::Menu wrapper-->
@@ -1184,6 +1181,7 @@
 		const base_url = document.getElementById('base').value;
 		const s3_url = '<?= getenv()['S3_BUCKET_LINK'] ?>';
 		
+		let datetimenow = '<?= datetimenow() ?>'
 		let idc_public = '<?= session()->getFlashdata('id_content') ?>'
 		let att_id = '<?= session()->getFlashdata('att_id') ?>'
 		let hostUrl = "<?= base_url() ?>assets/";
@@ -1252,7 +1250,7 @@
 
 		const Toast = Swal.mixin({
 			toast: true,
-			position: "bottom-end",
+			position: "top-end",
 			showConfirmButton: false,
 			timer: 5000,
 			timerProgressBar: true,

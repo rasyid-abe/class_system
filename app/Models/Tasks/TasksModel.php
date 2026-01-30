@@ -10,6 +10,8 @@ class TasksModel extends Model
     protected $primaryKey = 'task_id';
     protected $allowedFields = [
         'task_school_id', 
+        'task_school_year_id', 
+        'task_semester', 
         'task_teacher_id', 
         'task_grade', 
         'task_subject_id', 
@@ -247,6 +249,7 @@ class TasksModel extends Model
 
     public function get_checked_task($school_id, $teacher_id, $date)
     {
+        $whr_smt = semester() != '' ? "task_semester = ".semester()." and" : "";
         $sql = "
             select *
             from lms_task
@@ -254,6 +257,7 @@ class TasksModel extends Model
             where 
                 task_school_id = $school_id and
                 task_teacher_id = $teacher_id and
+                $whr_smt
                 task_religion in (0, ".userdata()['religi'].") and
                 task_status = 2 and
                 task_start <= '$date' and

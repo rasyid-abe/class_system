@@ -9,7 +9,7 @@ class PublicQuestionBankModel extends Model
     public function get_shared($teacher_id, $subject_id, $grade) 
     {
         $t_id = '"'. $teacher_id .'"';
-        $or_subject = count($subject_id) < 1 ? -1 : implode(",",$subject_id);
+        $or_subject = count($subject_id) < 1 ? -1 : implode("','",$subject_id);
         $or_grade = count($grade) < 0 ? -1 : implode("','",$grade);
 
         $query = "
@@ -43,7 +43,7 @@ class PublicQuestionBankModel extends Model
     public function get_shared_qb_list($teacher_id, $subject_id, $grade) 
     {
         $t_id = '"'. $teacher_id .'"';
-        $or_subject = count($subject_id) < 1 ? -1 : implode(",",$subject_id);
+        $or_subject = count($subject_id) < 1 ? -1 : implode("','",$subject_id);
         $or_grade = count($grade) < 0 ? -1 : implode("','",$grade);
 
         $query = "
@@ -88,7 +88,7 @@ class PublicQuestionBankModel extends Model
     public function get_shared_qb($teacher_id, $subject_id, $grade) 
     {
         $t_id = '"'. $teacher_id .'"';
-        $or_subject = count($subject_id) < 1 ? -1 : implode(",",$subject_id);
+        $or_subject = count($subject_id) < 1 ? -1 : implode("','",$subject_id);
         $or_grade = count($grade) < 0 ? -1 : implode("','",$grade);
 
         $query = "
@@ -131,7 +131,7 @@ class PublicQuestionBankModel extends Model
     public function get_list_title($teacher_id, $subject_id, $grade)
     {
         $t_id = '"'. $teacher_id .'"';
-        $or_subject = count($subject_id) < 1 ? -1 : implode(",",$subject_id);
+        $or_subject = count($subject_id) < 1 ? -1 : implode("','",$subject_id);
         $or_grade = count($grade) < 0 ? -1 : implode("','",$grade);
 
         $query = "

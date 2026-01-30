@@ -64,7 +64,7 @@
                                     <?php foreach ($v['sub_chapter'] as $key => $val): ?>
                                         <?php if ($val['lesson_standart_subchapter'] != '') : ?>
                                             <div class="d-flex justify-content-between">
-                                                <a href="#" class="text-primary opacity-75-hover fs-4 fw-semibold" onclick="view_content_s(<?= $val['lesson_standart_id'] ?>);"><?= $val['lesson_standart_subchapter'] ?></a>
+                                                <a href="#" class="text-primary opacity-75-hover fs-4 fw-semibold lsstd" onclick="view_content_s(<?= $val['lesson_standart_id'] ?>);"><?= $val['lesson_standart_subchapter'] ?></a>
                                             </div>
                                             <?= count($v['sub_chapter']) > 1 ? '<div class="separator separator-dashed my-3"></div>' : '' ?>
                                         <?php endif; ?>

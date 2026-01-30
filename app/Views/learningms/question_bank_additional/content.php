@@ -16,7 +16,7 @@
 
 <input type="hidden" name="form_type" value="" />
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_update_question_quest">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content" id="content_modal">
             <div class="modal-header">
                 <div id="head_content_modal"></div>
@@ -50,7 +50,7 @@
                         </div>
                         <div class="mt-10 hide" id="question_form">
                             <label for="exampleFormControlInput1" class="form-label">Pertanyaan</label>
-                            <div id="quilleditor_question"></div>
+                            <div id="quilleditor_question" style="height: 250px"></div>
                         </div>
 
                         <div class="hide" id="multiplechoice">
@@ -65,7 +65,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmc0" name="optmc0" class="optmc_n"></div>
+                                    <div id="quilleditor_optmc0" name="optmc0" class="optmc_n" style="height: 250px"></div>
                                 </div>
                             </div>
                             <div class="mt-5">
@@ -78,7 +78,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmc1" name="optmc1" class="optmc_n"></div>
+                                    <div id="quilleditor_optmc1" name="optmc1" class="optmc_n" style="height: 250px"></div>
                                 </div>
                             </div>
                             <div class="mt-5">
@@ -91,7 +91,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmc2" name="optmc2" class="optmc_n"></div>
+                                    <div id="quilleditor_optmc2" name="optmc2" class="optmc_n" style="height: 250px"></div>
                                 </div>
                             </div>
                             <div class="mt-5">
@@ -104,7 +104,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmc3" name="optmc3" class="optmc_n"></div>
+                                    <div id="quilleditor_optmc3" name="optmc3" class="optmc_n" style="height: 250px"></div>
                                 </div>
                             </div>
                             <div class="mt-5">
@@ -117,7 +117,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmc4" name="optmc4" class="optmc_n"></div>
+                                    <div id="quilleditor_optmc4" name="optmc4" class="optmc_n" style="height: 250px"></div>
                                 </div>
                             </div>
                             <div id="repeater_mc">
@@ -136,7 +136,7 @@
                                                         <button data-repeater-delete type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
                                                     </div>
                                                 </div>
-                                                <div id="quilleditor_optmc_n" name="optmc" class="mb-2 optmc_n"></div>
+                                                <div id="quilleditor_optmc_n" name="optmc" class="mb-2 optmc_n" style="height: 250px"></div>
                                             </div>
                                         </div>
                                         <input data-repeater-create type="button" class="btn btn-info btn-sm mt-2" value="Tambah Pilihan" />
@@ -157,7 +157,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmcx0" name="optmcx0" class="optmcx_n"></div>
+                                    <div id="quilleditor_optmcx0" name="optmcx0" class="optmcx_n" style="height: 250px"></div>
                                 </div>
                             </div>
                             <div class="mt-1">
@@ -170,7 +170,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmcx1" name="optmcx1" class="optmcx_n"></div>
+                                    <div id="quilleditor_optmcx1" name="optmcx1" class="optmcx_n" style="height: 250px"></div>
                                 </div>
                             </div>
                             <div class="mt-1">
@@ -183,7 +183,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmcx2" name="optmcx2" class="optmcx_n"></div>
+                                    <div id="quilleditor_optmcx2" name="optmcx2" class="optmcx_n" style="height: 250px"></div>
                                 </div>
                             </div>
                             <div class="mt-1">
@@ -196,7 +196,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmcx3" name="optmcx3" class="optmcx_n"></div>
+                                    <div id="quilleditor_optmcx3" name="optmcx3" class="optmcx_n" style="height: 250px"></div>
                                 </div>
                             </div>
                             <div class="mt-1">
@@ -209,7 +209,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div id="quilleditor_optmcx4" name="optmcx4" class="optmcx_n"></div>
+                                    <div id="quilleditor_optmcx4" name="optmcx4" class="optmcx_n" style="height: 250px"></div>
                                 </div>
                             </div>
                             <div class="repeater">
@@ -227,7 +227,7 @@
                                                     <button data-repeater-delete type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
                                                 </div>
                                             </div>
-                                            <div id="quilleditor_optmcx_n" name="optmcx" class="optmcx_n"></div>
+                                            <div id="quilleditor_optmcx_n" name="optmcx" class="optmcx_n" style="height: 250px"></div>
                                         </div>
                                     </div>
                                     <input data-repeater-create type="button" class="btn btn-info btn-sm mt-2" value="Tambah Pilihan" />
@@ -290,7 +290,7 @@
 </div>
 
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_update_task_mcx">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content" id="content_modal">
             <div class="modal-header">
                 <label for="chapter" class="form-label">Ubah Soal</label>
@@ -316,7 +316,7 @@
                                         <button data-repeater-delete type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
                                     </div>
                                 </div>
-                                <div id="quilleditor_optmcx_edit" name="optmc" class="mb-2 optmcx_n_edit"></div>
+                                <div id="quilleditor_optmcx_edit" name="optmc" class="mb-2 optmcx_n_edit" style="height: 250px"></div>
                             </div>
                         </div>
                         <input data-repeater-create type="button" class="btn btn-info btn-sm mt-2" value="Tambah Pilihan" />
@@ -332,7 +332,7 @@
 </div>
 
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_update_task">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content" id="content_modal">
             <div class="modal-header">
                 <label for="chapter" class="form-label title-update-task"></label>
@@ -358,7 +358,7 @@
                                         <button data-repeater-delete type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
                                     </div>
                                 </div>
-                                <div id="quilleditor_optmc_edit" name="optmc" class="mb-2 optmc_n_edit"></div>
+                                <div id="quilleditor_optmc_edit" name="optmc" class="mb-2 optmc_n_edit" style="height: 250px"></div>
                             </div>
                         </div>
                         <input data-repeater-create type="button" class="btn btn-info btn-sm mt-2" value="Tambah Pilihan" />
@@ -374,7 +374,7 @@
 </div>
 
 <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modal_update_content_quest">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content" id="content_modal">
             <div class="modal-header">
                 <div id="head_content_modal_std"></div>

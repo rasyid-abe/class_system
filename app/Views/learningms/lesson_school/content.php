@@ -48,7 +48,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-light-danger" onclick="close_modal_content();">Tutup</button>
-                <button type="sumbit" class="btn btn-sm btn-primary" onclick="save_content();">Simpan</button>
+                <button type="sumbit" class="btn btn-sm btn-primary svebtn" onclick="save_content();">Simpan</button>
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@
             <div class="" id="kt_accordion_1">
 
                 <?php if (count($chapters) > 0) : ?>
-                    <?php if(session()->get('c_role') == 11): ?>
+                    <?php if (in_array(11, session()->get('c_role'))): ?>
                     <div class="d-grid mb-2">
                         <div class="btn-group" role="group" aria-label="Basic outlined example">
                             <a href="#" onclick="form_chapter(4, '', '', '')" class="btn btn-primary" type="button"><i class="mb-1 fa fa-plus"></i> BAB Pelajaran &nbsp;</a>
@@ -74,7 +74,7 @@
                             <div class="accordion-body bg-secondary">
                                 <div class="d-flex justify-content-between">
                                     <a href="#" class="d-grid text-wrap d-grid fs-4 fw-bold" style=";width: 80%" onclick="toggle_collapse('<?= $v['lesson_school_id'] ?>');"><?= $v['lesson_school_chapter'] ?></a>
-                                    <?php if(session()->get('c_role') == 11): ?>
+                                    <?php if (in_array(11, session()->get('c_role'))): ?>
                                     <div class="d-flex align-items-center">
                                         <a href="#" class="" onclick="form_chapter(3, '<?= $v['lesson_school_chapter'] ?>', '', '<?= $parent ?>')">
                                             <i class="bi bi-plus-square-fill fs-3 text-primary"></i>
@@ -110,8 +110,8 @@
                                         <?php foreach ($v['sub_chapter'] as $key => $val): ?>
                                             <?php $lesson_id = $val['lesson_additional_id'] > 0 ? $val['lesson_additional_id'] : $val['lesson_standart_id']; ?>
                                             <div class="d-flex justify-content-between">
-                                                <a href="#" class="text-primary opacity-75-hover fs-4 fw-semibold text-wrap" style="width: 80%" onclick="view_content(<?= $lesson_id ?>, '<?= $val['lesson_source'] ?>');"><?= $val['lesson_subchapter'] ?></a>
-                                                <?php if(session()->get('c_role') == 11): ?>
+                                                <a href="#" class="text-primary opacity-75-hover fs-4 fw-semibold text-wrap lsstd" style="width: 80%" onclick="view_content(<?= $lesson_id ?>, '<?= $val['lesson_source'] ?>');"><?= $val['lesson_subchapter'] ?></a>
+                                                <?php if (in_array(11, session()->get('c_role'))): ?>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="menu-dropdown" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                                         <i class="bi bi-three-dots-vertical fs-3 text-gray-600"></i>

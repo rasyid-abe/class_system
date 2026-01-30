@@ -82,7 +82,8 @@ class StandartQuestionBankModel extends Model
             JOIN master_subject ms ON
                 qbs.question_bank_standart_subject_id = ms.subject_id
             WHERE
-                qbs.question_bank_standart_grade = $grade
+                qbs.question_bank_standart_grade = $grade and
+                qbs.question_bank_standart_status < 9
         ";
 
         return $this->db->query($query)->getResultArray();
