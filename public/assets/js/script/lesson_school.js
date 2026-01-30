@@ -22,6 +22,7 @@ $(document).on('click', '.parent_list', function(e) {
 
 function close_modal_content() {
     $('#modal_update_content').modal('hide')
+    $('.svebtn').removeClass('hide')
     $('#body_content_modal').html('')
     $('#select_tk_alert').addClass('hide')
     $('#private_tree').html('')
@@ -141,18 +142,32 @@ function generate_view_attachment(e) {
 
     let btnn = '';
     if (e.lesson_attachment_path != '') {
-        let attach = JSON.parse(e.lesson_attachment_path)
-        for (let i = 0; i < attach.length; i++) {
-            spl = attach[i].split("^");
-            btnn += `
-                    <div class="btn-group m-1" role="group">
-                        <a href="${file_path + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
+        if (e.lesson_attachment_path.includes('{')) {
+            for (let i = 0; i < e.attach_arr.length; i++) {
+                spl = e.attach_arr[i].split("^");
+                btnn += `
+                    <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Button group with nested dropdown">
+                        <div class="btn-group" role="group">
+                            <a href="${file_path + e.attach_arr[i]}" target="_blank" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>                
+                        </div>
                     </div>
                 `;
+            }
+        } else {
+            let attach = JSON.parse(e.lesson_attachment_path)
+            for (let i = 0; i < attach.length; i++) {
+                spl = attach[i].split("/");
+                btnn += `
+                    <div class="btn-group m-1" role="group">
+                        <a href="${s3_url + e.attach_arr[i]}" download="${spl[4]}" target="_blank" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[4]}</a>
+                    </div>
+                `;
+            }
         }
     } else {
         btnn = 'Lampiran belum tersedia';
     }
+
 
     $('#attachment_lesson').html(btnn)
 }
@@ -370,34 +385,41 @@ function form_chapter(e, chap = null, subchap = null, id = null, grade = null) {
             dataType: 'json',
             success: function (res) {
                 sort = ''
-                $.each(res, function(i,v) {
-                    sort += `
-                        <input type="hidden" class="idd" value="${v.lesson_school_id}" />
-                        <div class="col-sm-2">
-                            <input type="number" value="${v.lesson_school_order_child}" class="nsort form-control mb-2"/>
+                if (res.length > 0) {
+                    $.each(res, function(i,v) {
+                        sort += `
+                            <input type="hidden" class="idd" value="${v.lesson_school_id}" />
+                            <div class="col-sm-2">
+                                <input type="number" value="${v.lesson_school_order_child}" class="nsort form-control mb-2"/>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="text" value="${v.lesson_additional_subchapter != null ? v.lesson_additional_subchapter : v.lesson_standart_subchapter}" class="form-control mb-2" readonly/>
+                            </div>
+                        `
+                    })
+                    form = `
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <label for="">No Urut</label>
+                            </div>
+                            <div class="col-sm-10">
+                                <label for="">Topik Materi</label>
+                            </div>
+                            ${sort}
                         </div>
-                        <div class="col-sm-10">
-                            <input type="text" value="${v.lesson_additional_subchapter != null ? v.lesson_additional_subchapter : v.lesson_standart_subchapter}" class="form-control mb-2" readonly/>
-                        </div>
-                    `
-                })
+                        <input type="hidden" name="form_type" value="${e}" />
+                        <input type="hidden" name="lesson_id" value="${id}" />
+                        <input type="hidden" name="chapter" value="${chap}" />
+                    `;
 
-                form = `
-                    <div class="row">
-                        <div class="col-sm-2">
-                            <label for="">No Urut</label>
-                        </div>
-                        <div class="col-sm-10">
-                            <label for="">Topik Materi</label>
-                        </div>
-                        ${sort}
-                    </div>
-                    <input type="hidden" name="form_type" value="${e}" />
-                    <input type="hidden" name="lesson_id" value="${id}" />
-                    <input type="hidden" name="chapter" value="${chap}" />
-                `;
 
-                $('#head_content_modal').html(`<h3 class="modal-title">Urutkan Topik ${res[0].lesson_school_chapter}</h3>`)
+                    $('#head_content_modal').html(`<h3 class="modal-title">Urutkan Topik ${res[0].lesson_school_chapter}</h3>`)
+                } else {
+                    $('#head_content_modal').html(`<h3 class="modal-title">Urutkan Topik</h3>`)
+                    $('.svebtn').addClass('hide')
+                    form = 'Tidak ada topik yang bisa diurutkan.'
+                } 
+                
                 $('#body_content_modal').html(form)
                 
             }

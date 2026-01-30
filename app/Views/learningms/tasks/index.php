@@ -165,6 +165,13 @@
             </div>
 
             <div class="row mb-6">
+              <label class="col-lg-3 col-form-label fw-semibold fs-6">Sumber Materi</label>
+
+              <div class="col-lg-9 fv-row fv-plugins-icon-container">
+                <input type="text" name="source_lesson_task" class="form-control form-control-lg form-control-solid" />
+              </div>
+            </div>
+            <div class="row mb-6">
               <label class="col-lg-3 col-form-label fw-semibold fs-6">Materi</label>
 
               <div class="col-lg-9 fv-row fv-plugins-icon-container">
@@ -264,7 +271,7 @@
 
             <div class="row my-5 mt-10">
               <label for="instruction_task" class="form-label">Instruksi Pengerjaan</label>
-              <div id="instruction_task"></div>
+              <div id="instruction_task" style="height: 250px;"></div>
             </div>
           </div>
 

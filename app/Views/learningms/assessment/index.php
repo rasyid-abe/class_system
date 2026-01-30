@@ -243,7 +243,7 @@
 
             <div class="row my-5 mt-10">
               <label for="instruction_assessment" class="form-label">Instruksi Pengerjaan</label>
-              <div id="instruction_assessment"></div>
+              <div id="instruction_assessment" style="height: 250px"></div>
             </div>
           </div>
 

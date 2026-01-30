@@ -115,23 +115,64 @@ function modal_shared_task_view(e) {
   $("#modal_share_task").modal("show");
 }
 
+// const toolbarOptions = [
+//   ["bold", "italic", "underline", "strike"], // toggled buttons
+//   [{ align: [] }],
+//   ["link", "image", "formula"],
+
+//   //   [{ header: 1 }, { header: 2 }], // custom button values
+//   [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+//   [{ script: "sub" }, { script: "super" }], // superscript/subscript
+//   [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+//   //   [{ direction: "rtl" }], // text direction
+
+//   //   [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+//   [{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+//   [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+//   //   [{ font: [] }],
+//   ["clean", "code-block"], // remove formatting button
+// ];
+
 const toolbarOptions = [
-  ["bold", "italic", "underline", "strike"], // toggled buttons
-  [{ align: [] }],
-  ["link", "image", "formula"],
+    ["bold", "italic", "underline", "strike"], // toggled buttons
+    [{
+        align: []
+    }],
+    ["link", "image", "formula"],
 
-  //   [{ header: 1 }, { header: 2 }], // custom button values
-  [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
-  [{ script: "sub" }, { script: "super" }], // superscript/subscript
-  [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
-  //   [{ direction: "rtl" }], // text direction
+    //   [{ header: 1 }, { header: 2 }], // custom button values
+    [{
+        list: "ordered"
+    }, {
+        list: "bullet"
+    }, {
+        list: "check"
+    }],
+    [{
+        script: "sub"
+    }, {
+        script: "super"
+    }], // superscript/subscript
+    [{
+        indent: "-1"
+    }, {
+        indent: "+1"
+    }], // outdent/indent
+    //   [{ direction: "rtl" }], // text direction
 
-  //   [{ size: ["small", false, "large", "huge"] }], // custom dropdown
-  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    //   [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+    [{
+        header: [1, 2, 3, 4, 5, 6, false]
+    }],
 
-  [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-  //   [{ font: [] }],
-  ["clean", "code-block"], // remove formatting button
+    [{
+        color: []
+    }, {
+        background: []
+    }], // dropdown with defaults from theme
+    //   [{ font: [] }],
+    ["clean", "code-block"], // remove formatting button
 ];
 
 function view_question(id, type = null, notif = null) {
@@ -221,13 +262,15 @@ function generate_task(e) {
       </div>
     `;
   } else if (url.includes("question-bank/standart")) {
-    btnn = `
-      <div class="btn-qb">
-      <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-16, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-      </svg> Salin</button>
-      </div>
-    `;
+    if (e.access > 0) {
+      btnn = `
+        <div class="btn-qb">
+        <button type="button" class="btn btn-sm btn-success mx-2" onclick="show_form_edit(-16, ${e.id}, ${e.subj}, ${e.grad}, ${e.parent})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+        </svg> Salin</button>
+        </div>
+      `;
+    }
   } else {
     btnn = `
         <div class="btn-qb">
@@ -471,7 +514,7 @@ function show_edit_task(e, type, id, parent) {
                       </div>
                       <button onclick="rem_elem_id('opt_mc_rem${i}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
                   </div>
-                  <div id="edit_optmc${i}" name="optmc${i}" class="optmc_n_edit"></div>
+                  <div id="edit_optmc${i}" name="optmc${i}" class="optmc_n_edit" style="height: 250px"></div>
               </div>
           </div>
         `;
@@ -490,7 +533,7 @@ function show_edit_task(e, type, id, parent) {
                       </div>
                       <button onclick="rem_elem_id('opt_mcx_rem${i}')" type="button" class="m-2 btn btn-danger btn-sm btn-icon"><i class="bi bi-trash fs-2"></i></button>
                   </div>
-                  <div id="edit_optmcx${i}" name="optmcx${i}" class="optmcx_n_edit"></div>
+                  <div id="edit_optmcx${i}" name="optmcx${i}" class="optmcx_n_edit" style="height: 250px"></div>
               </div>
           </div>
         `;
@@ -540,7 +583,7 @@ function show_edit_task(e, type, id, parent) {
                 </div>
                 <div class="mt-10 mb-5" id="question_form">
                     <label for="exampleFormControlInput1" class="form-label">Pertanyaan</label>
-                    <div id="task_quest_edit"></div>
+                    <div id="task_quest_edit" style="height: 250px"></div>
                 </div>
                 ${viewopt}
             </div>
@@ -602,7 +645,7 @@ function show_edit_task(e, type, id, parent) {
     <input type="hidden" name="parent_hint" value="${parent}" />
     
         <div class="card" id="content_value">
-            <div id="hint_quest_edit"></div>
+            <div id="hint_quest_edit" style="height: 250px"></div>
         </div>
     </div>
     `;
@@ -623,7 +666,7 @@ function show_edit_task(e, type, id, parent) {
     <input type="hidden" name="id_quest_edit" value="${id}" />
     <input type="hidden" name="parent_hint" value="${parent}" />
         <div class="card" id="content_value">
-            <div id="explain_quest_edit"></div>
+            <div id="explain_quest_edit" style="height: 250px"></div>
         </div>
     </div>
     `;
@@ -721,7 +764,6 @@ function close_modal_content_quest() {
 function save_content_quest() {
   let type = $("input[name=form_type]").val();
   let form = true;
-  
   if (type == 1) {
     chap = $("input[name=chapter]").val();
     subj = $("input[name=subject]").val();
@@ -1072,6 +1114,8 @@ function store_content_quest(type, id, val) {
       show_loading()
     },
     success: function (e) {
+      console.log(e);
+      
       if (Object.keys(e).includes('src')) {
         if (e.src == "null") {
           ajax_content_qb(e)

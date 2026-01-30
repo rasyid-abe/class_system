@@ -12,6 +12,8 @@ class TasksResultModel extends Model
         'task_result_id',
         'task_result_task_id', 
         'task_result_school_id', 
+        'task_result_school_year_id', 
+        'task_result_semester', 
         'task_result_group_id', 
         'task_result_student_id', 
         'task_result_begin_task_datetime', 
@@ -24,6 +26,8 @@ class TasksResultModel extends Model
         'task_result_is_checked', 
     ];
 
+    protected $useAutoIncrement = false; // penting
+    
     public function getSingle($where = [])
     {
         if (count($where) < 1) {

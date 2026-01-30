@@ -42,7 +42,8 @@ class TeachingSubjectsModel extends Model
             ->where('teaching_subjects_teacher_id', $id)
             ->where('teaching_subjects_status < 9')
             // ->groupBy('student_group_grade')
-            ->orderBy('student_group_name')
+            ->orderBy('teaching_subjects_id')
+            ->distinct()
             ->findAll();
 
         return $query;

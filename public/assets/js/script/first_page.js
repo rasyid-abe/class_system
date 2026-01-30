@@ -406,31 +406,36 @@ $(document).ready(function () {
 
 function gen_dash_student(e) {
 	let my_lesson = ''
-	$.each(e.my_lesson, function (i, v) {
-		let teacher = v.teacher_degree != '' ? v.teacher_name + ' ,' + v.teacher_degree : v.teacher_name
-
-		my_lesson += `
-			<li class="li-timeline">
-				<div class="node green"></div>
-				<div class="text-content">
-					<h6 style="margin-right: 15px">${v.subject_name}</h6>
-					<p>${teacher}</p>
-					<p>${v.teaching_schedule_time} WIB</p>
-				</div>
-			</li>
-			<li>
-				<div class="divider green"></div>
-			</li>
-		`;
-
-		let all_lesson = `
-		<ul id="progress" style="padding-left: 1rem; list-style-type: none;">
-		${my_lesson}
-		</ul>
-    `;
+	let all_lesson = ''
+	if (e.my_lesson.length > 0) {
+		$.each(e.my_lesson, function (i, v) {
+			let teacher = v.teacher_degree != '' ? v.teacher_name + ' ,' + v.teacher_degree : v.teacher_name
+	
+			my_lesson += `
+				<li class="li-timeline">
+					<div class="node green"></div>
+					<div class="text-content">
+						<h6 style="margin-right: 15px">${v.subject_name}</h6>
+						<p>${teacher}</p>
+						<p>${v.teaching_schedule_time} WIB</p>
+					</div>
+				</li>
+				<li>
+					<div class="divider green"></div>
+				</li>
+			`;
+	
+			let all_lesson = `
+				<ul id="progress" style="padding-left: 1rem; list-style-type: none;">
+				${my_lesson}
+				</ul>
+			`;
+		})
+	} else {
+		all_lesson = '<span class="text-center">Tidak ada jadwal belajar hari ini.</span>'
+	}
 
 		$('#dash_my_lesson').html(all_lesson)
-	})
 
 	let list_assessment = ''
 	if (e.assessment.length > 0) {
@@ -612,7 +617,7 @@ function gen_dash_teacher(e) {
 				}
 			})
 
-			card += `
+		card += `
         <div class="card-task">
             <div class="card">
                 <div class="card-body container-body1 bg-light-info" style="border-radius: 10px;">

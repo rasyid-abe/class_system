@@ -81,7 +81,7 @@ function generate_view_attachment_p(e) {
             spl = attach[i].split("^");
             btnn += `
                 <div class="btn-group m-1" role="group">
-                    <a href="${file_path + e.attach_arr[i]}" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
+                    <a href="${file_path + e.attach_arr[i]}" target="_blank" download="${spl[2]}" class="btn btn-outline btn-outline-primary btn-outline-primary btn-active-light-primary btn-sm">${spl[2]}</a>
                 </div>
             `;
         }

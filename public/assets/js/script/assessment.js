@@ -305,7 +305,7 @@ function chk_range() {
     let dtstart = new Date(Date.parse(start.replace(" ", "T") + ":00Z"));
     let dtend = new Date(Date.parse(end.replace(" ", "T") + ":00Z"));
 
-    curr = new Date();
+    curr = new Date(datetimenow);
     if (dtstart < curr) {
       return 3;
     } else {
@@ -336,7 +336,7 @@ function save_assessment(status = null, save_type = null) {
   let random = $("#ass_random").hasClass("checked");
   let cheat = $("#ass_cheat").hasClass("checked");
   let submit = $("#autosumbit").hasClass("checked");
-  let insass = $("#instruction_assessment > .ql-editor").html();
+  let insass = id_ass != 0 ? $("#instruction_assessment_edit > .ql-editor").html() : $("#instruction_assessment > .ql-editor").html();
   let sch_year_id = $("input[name=schoolyearid]").val();
   let reli_sel = $('#select_religion_test').val();
   let show_hint = $("#ass_show_hint").hasClass("checked");
@@ -1022,7 +1022,8 @@ $(document).ready(function () {
 });
 
 function check_good_date(eds) {
-  let curr = new Date();
+  let curr = new Date(datetimenow);
+
   let result = []
   $.each(eds, function (i, v) {
     if (new Date(v) > curr) {
@@ -1034,7 +1035,7 @@ function check_good_date(eds) {
 
   return result.includes(false)
 }
-
+// kakka
 $(document).on('click', '.view_student', function (e) {
   e.preventDefault()
   let assessment_id = $(this).data('assessment_id')
@@ -1049,7 +1050,7 @@ $(document).on('click', '.view_student', function (e) {
   $('#modal_look_student_act_assessment').modal('show')
 })
 
-function data_result_student(result_id) {
+function data_result_student(result_id, chktrue, group_id) {
   $.ajax({
     url: base_url + "/teacher/assessment/check-result-assessment",
     data: { result_id },
@@ -1066,6 +1067,15 @@ function data_result_student(result_id) {
       $('#result_id').val(e.result_id)
       $('#stu_id').val(e.student_id)
       $('#asse_id').val(e.assessment_id)
+      $('#asse_qb_id').val(e.qb_id)
+      $('#asse_qb_src').val(e.qb_src)
+      $('#asse_group_id').val(group_id)
+      
+      if (chktrue < 1) {
+        $('#btn_submit_checking').addClass('hide')
+      } else {
+        $('#btn_submit_checking').removeClass('hide')
+      }
       checking_page(e)
       hide_loading()
     },
@@ -1088,8 +1098,13 @@ function checking_page(e = null) {
   }
 }
 
-function act_close_chkmdl() {
+function act_close_chkmdl(type, ass_id, grp_id) {
   $('#checking_modal_question').modal('hide')
+  if (type == 2) {
+    student_act.setData(
+      base_url + "/teacher/assessment/get-student-assessment?aid=" + ass_id + "&gid=" + grp_id
+    );
+  }
   $('#modal_look_student_act_assessment').modal('show')
 
   let asse_id = $('#asse_id').val()
@@ -1099,35 +1114,16 @@ function act_close_chkmdl() {
   localStorage.removeItem(key)
 }
 
-function close_checking_modal(type = 1) {
-  // if (type == 1) {
-  //   Swal.fire({ 
-  //     html: `<h3>Anda yakin menutup halaman pemeriksaan?</h3><br><p>Anda akan kehilahan data pemeriksaan jika menutup halamana ini.</p>`,
-  //     icon: "info",
-  //     buttonsStyling: false,
-  //     showCancelButton: true,
-  //     confirmButtonText: "Ya",
-  //     cancelButtonText: "Tidak",
-  //     customClass: {
-  //       confirmButton: "btn btn-sm btn-primary",
-  //       cancelButton: "btn btn-sm btn-danger",
-  //     },
-  //   }).then(function (confirm) {
-  //     if (confirm.isConfirmed) {
-  //       act_close_chkmdl()
-  //     }
-  //   });
-  // } else {
-    act_close_chkmdl()
+function close_checking_modal(type = 1, ass_id, grp_id) {
+    act_close_chkmdl(type, ass_id, grp_id)
     if (url.includes("dashboard/teacher")) {
       ajax_dash_teacher()
     }
-  // }
-
 }
 
 function actview_checking(sid, e, idx = 0, fix = false) {
   let data = JSON.parse(e)
+  
   $('#checking_title').html(data.title)
   $('#checking_subtitle').html(data.subject)
 
@@ -1197,13 +1193,14 @@ function view_question_act_chk(id, sid) {
 
   let my_assessment = localStorage.getItem('limecode_' + teacher_id + '_' + sid + '_' + asse_id)
   let data = JSON.parse(my_assessment)
-  
+  let mtans = data.assessment[id].right_answer
+
   let row = data.assessment[id]
   let qtype = data.assessment[id].type
   let spoin = data.assessment[id].res_poin
   let poin = data.assessment[id].poin
   let student_answer = data.assessment[id].student_answer
-  let right_answer = JSON.parse(data.assessment[id].right_answer)
+  let right_answer = mtans != '' ? JSON.parse(mtans) : mtans
   let nchk = data.assessment[id].note_check
   let ischk = data.assessment[id].checked
 
@@ -1332,7 +1329,7 @@ function view_question_act_chk(id, sid) {
       </div>
       ${setpoin}
       <span class="fw-bold d-block fs-3 text-primary my-2 ">Catatan</span>
-      <div id="checked_note"></div>
+      <div id="checked_note" style="height: 250px"></div>
       ${colorcode}
     </span>
   </div>  
@@ -1422,6 +1419,9 @@ $('#btn_submit_checking').on('click', function() {
   let asse_id = $('#asse_id').val()
   let title = $('#checking_subtitle2').html()
   let student = $('#checking_title').html()
+  let qb_id = $('#asse_qb_id').val()
+  let qb_src = $('#asse_qb_src').val()
+  let group_id = $('#asse_group_id').val()
 
   let key_storage = 'limecode_' + teacher_id + '_' + sid + '_' + asse_id;
   let my_data = JSON.parse(localStorage.getItem(key_storage))
@@ -1438,17 +1438,17 @@ $('#btn_submit_checking').on('click', function() {
   if (status_checked.includes(false)) {
     toast_act('Gagal!','Masih ada yang belum diperiksa!', 'error')
   } else {
-    submit_checking_act(my_data, resid, key_storage, student, title)
+    submit_checking_act(my_data, resid, key_storage, student, title, qb_id, qb_src, sid, asse_id, group_id)
   }
   
 })
 
-function submit_checking_act(e, res, key, student, title)
+function submit_checking_act(e, res, key, student, title, qb_id, qb_src, sid, asse_id, group_id)
 {
   let result = e.assessment
   $.ajax({
     url: base_url + "/teacher/assessment/submit-check-assessment",
-    data: { res, result, student, title },
+    data: { res, result, student, title, qb_id, qb_src, sid },
     method: "post",
     dataType: "json",
     beforeSend: function () {
@@ -1457,7 +1457,7 @@ function submit_checking_act(e, res, key, student, title)
     success: function (e) {
       if (e.sts) {
         // localStorage.removeItem(key)
-        close_checking_modal(2)
+        close_checking_modal(2, asse_id, group_id)
       }
       toast_act('', e.msg, e.icn)
       hide_loading()
@@ -2149,15 +2149,15 @@ function view_question_act_chk_done_ass(id, sid) {
   
   let my_assessment = localStorage.getItem('yellowcode_' + student_id + '_' + assid)
   let data = JSON.parse(my_assessment)
-  // console.log('yellowcode_' + student_id + '_' + assid);
-  // return false
+
+  let mtans = data.assessment[id].right_answer
 
   let row = data.assessment[id]
   let qtype = data.assessment[id].type
   let spoin = data.assessment[id].res_poin
   let poin = data.assessment[id].poin
   let student_answer = data.assessment[id].student_answer
-  let right_answer = JSON.parse(data.assessment[id].right_answer)
+  let right_answer = mtans != '' ? JSON.parse(mtans) : mtans
   let nchk = data.assessment[id].note_check
   let ischk = data.assessment[id].checked
   
@@ -2307,7 +2307,7 @@ function view_question_act_chk_done_ass(id, sid) {
       </div>
       <span class="fw-bold d-block fs-3 text-dark mb-2">Catatan</span>
       <span class="fw-semibold fs-3 text-dark">
-        <div id="checked_note_assdone"></div>
+        <div id="checked_note_assdone" style="height: 250px"></div>
       </span>
     </span>
   </div>  

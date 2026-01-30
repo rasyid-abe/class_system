@@ -13,6 +13,7 @@ class AssessmentResultModel extends Model
         'assessment_result_assessment_id', 
         'assessment_result_school_id', 
         'assessment_result_school_year_id',
+        'assessment_result_semester',
         'assessment_result_group_id', 
         'assessment_result_student_id', 
         'assessment_result_begin_assignment_datetime', 
@@ -26,6 +27,7 @@ class AssessmentResultModel extends Model
     ];
 
     protected $useTimestamps = true;
+    protected $useAutoIncrement = false; // penting
     protected $createdField  = 'assessment_result_created_date';
     protected $updatedField  = 'assessment_result_updated_date';
 

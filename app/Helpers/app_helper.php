@@ -2,6 +2,47 @@
 use Aws\S3\S3Client;
 use Dotenv\Dotenv;
 
+if (! function_exists('logging')) {
+
+    /**
+     * Logging helper with user context
+     *
+     * @param string $level   error|debug|info|notice|warning|critical|alert|emergency
+     * @param string $message Log message
+     * @param array  $context Additional context
+     */
+    function logging(string $level, string $message, array $context = []): void
+    {
+        try {
+            $request = service('request');
+
+            // User ID (jika login)
+            if (function_exists('userdata') && userdata()) {
+                $context['user_id'] = userdata()['id'] ?? null;
+            } else {
+                $context['user_id'] = 'guest';
+            }
+
+            // Request info
+            $context['ip']     = $request->getIPAddress();
+            $context['method'] = $request->getMethod();
+            $context['url']    = current_url();
+
+            // CLI detection
+            if (is_cli()) {
+                $context['method'] = 'CLI';
+                $context['url']    = 'CLI';
+            }
+
+            log_message($level, $message, $context);
+
+        } catch (\Throwable $e) {
+            // fallback agar logging tidak mematikan aplikasi
+            log_message('error', 'Logging failed: '.$e->getMessage());
+        }
+    }
+}
+
 if (!function_exists("session_sets")) {
     function session_sets($params) {
         $session = \Config\Services::session();

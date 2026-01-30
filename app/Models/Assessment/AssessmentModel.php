@@ -11,6 +11,7 @@ class AssessmentModel extends Model
     protected $allowedFields = [
         'assessment_school_id', 
         'assessment_school_year_id',
+        'assessment_semester',
         'assessment_teacher_id', 
         'assessment_grade', 
         'assessment_subject_id', 
@@ -84,10 +85,11 @@ class AssessmentModel extends Model
             $add_join .= "join lms_assessment_result on assessment_id = assessment_result_assessment_id AND assessment_result_student_id = " . userdata()['id_profile'];
             $add_where .= "assessment_status = 2 AND assessment_start <= '" . datetimenow() . "' AND assessment_end > '" . datetimenow() ."' AND assessment_result_submit_datetime is null ";
         } elseif ($type == 2) {
-            $add_where .= "assessment_status = 2 AND assessment_end < '" . datetimenow() . "'";
+            $add_where .= "assessment_status = 2 AND assessment_end < '" . datetimenow() . "' AND assessment_result_value is null";
+            $add_join .= "LEFT JOIN lms_assessment_result ON assessment_id=assessment_result_assessment_id and assessment_result_student_id = " . userdata()['id_profile'];
         } elseif ($type == 3) {
             $add_join .= "join lms_assessment_result on assessment_id = assessment_result_assessment_id";
-            $add_where .= "assessment_status = 2 AND assessment_result_student_id = ". userdata()['id_profile'] ." AND assessment_result_submit_datetime is not null ";
+            $add_where .= "assessment_status = 2 AND assessment_end < '" . datetimenow() . "' AND assessment_result_student_id = ". userdata()['id_profile'] ." AND assessment_result_submit_datetime is not null ";
         }
 
         $my_group = student_group();
@@ -217,6 +219,7 @@ class AssessmentModel extends Model
 
     public function get_checked_assessment($school_id, $year, $teacher_id, $date)
     {
+        $whr_smt = semester() != '' ? "assessment_semester = ".semester()." and" : "";
         $sql = "
             select *
             from lms_assessment
@@ -224,6 +227,7 @@ class AssessmentModel extends Model
             where 
                 assessment_school_id = $school_id and
                 assessment_school_year_id = $year and
+                $whr_smt
                 assessment_teacher_id = $teacher_id and
                 assessment_religion in (0, ".userdata()['religi'].") and
                 assessment_status = 2 and

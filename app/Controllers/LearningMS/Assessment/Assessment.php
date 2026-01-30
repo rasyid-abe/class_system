@@ -17,6 +17,7 @@ use App\Models\Result\ResultGradesModel;
 use App\Models\System\NotificationLMSModel;
 use App\Models\System\ReadNotificationLMSModel;
 use \Datetime;
+use Ramsey\Uuid\Uuid;
 use PDO;
 
 class Assessment extends BaseController
@@ -282,7 +283,6 @@ class Assessment extends BaseController
     {
         $req = $this->request->getVar();
         $semester = semester();
-
         if ($req['type'] == 1) {
             $d = json_decode($req['data']);
             $titlegrade = explode(' - ', $d[13]);
@@ -308,6 +308,7 @@ class Assessment extends BaseController
 
                     $upd = $this->assessment
                         ->where('assessment_id', $req['id'])
+                        ->set('assessment_semester', semester())
                         ->set('assessment_title', $d[0])
                         ->set('assessment_start', date('Y-m-d H:i:s', strtotime($d[4] . ':00')))
                         ->set('assessment_end', date('Y-m-d H:i:s', strtotime($d[5] . ':00')))
@@ -358,7 +359,7 @@ class Assessment extends BaseController
                         $data_exists_gv['result_grades_group_id'] = $v['id'];
                         $data_exists_gv['result_grades_school_id'] = userdata()['school_id'];
                         $data_exists_gv['result_grades_school_year_id'] = school_year()['id'];
-                        $data_exists_gv['result_grades_semester'] = $semester;
+                        // $data_exists_gv['result_grades_semester'] = $semester;
 
                         $this->result_grades->where($data_exists_gv)->delete();
                         $stsdelgv = $this->result_grades->error();
@@ -369,10 +370,11 @@ class Assessment extends BaseController
 
                         foreach ($students as $key => $val) {
                             $data_res = [];
-                            $data_res['assessment_result_id'] = $req['id'] . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'];
+                            $data_res['assessment_result_id'] = Uuid::uuid4()->toString();
                             $data_res['assessment_result_assessment_id'] = $req['id'];
                             $data_res['assessment_result_school_id'] = userdata()['school_id'];
                             $data_res['assessment_result_school_year_id'] = $d[17];
+                            $data_res['assessment_result_semester'] = $semester;
                             $data_res['assessment_result_group_id'] = $v['id'];
                             $data_res['assessment_result_student_id'] = $val['student_in_group_student_id'];
                             $data_res['assessment_result_is_checked'] = $should_chk;
@@ -386,7 +388,7 @@ class Assessment extends BaseController
                             }
 
                             $resval = [];
-                            $resval['result_grades_id'] = $req['id'] . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'] . $semester;
+                            $resval['result_grades_id'] = Uuid::uuid4()->toString();
                             $resval['result_grades_school_id'] = userdata()['school_id'];
                             $resval['result_grades_school_year_id'] = school_year()['id'];
                             $resval['result_grades_semester'] = $semester;
@@ -415,6 +417,7 @@ class Assessment extends BaseController
                         'icn' => $upd ? 'success' : 'error',
                     ];
                 } catch (\Throwable $th) {
+                    logging('error', 'update assessment failed : ' . $th->getMessage());
                     $this->assessment->db->transRollback();
                     $res = [
                         'typ' => $req['type'],
@@ -433,6 +436,7 @@ class Assessment extends BaseController
                     $data = [
                         'assessment_school_id' => userdata()['school_id'],
                         'assessment_school_year_id' => $d[17],
+                        'assessment_semester' => semester(),
                         'assessment_teacher_id' => userdata()['id_profile'],
                         'assessment_grade' => $d[2],
                         'assessment_subject_id' => $d[1],
@@ -472,10 +476,11 @@ class Assessment extends BaseController
 
                         foreach ($students as $key => $val) {
                             $data_res = [
-                                'assessment_result_id' => $this->assessment->getInsertID() . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'],
+                                'assessment_result_id' => Uuid::uuid4()->toString(),
                                 'assessment_result_assessment_id' => $this->assessment->getInsertID(),
                                 'assessment_result_school_id' => userdata()['school_id'],
                                 'assessment_result_school_year_id' => $d[17],
+                                'assessment_result_semester' => $semester,
                                 'assessment_result_group_id' => $v['id'],
                                 'assessment_result_student_id' => $val['student_in_group_student_id'],
                                 'assessment_result_is_checked' => $should_chk
@@ -489,7 +494,7 @@ class Assessment extends BaseController
                             }
 
                             $resval = [];
-                            $resval['result_grades_id'] = $this->assessment->getInsertID() . userdata()['school_id'] . $v['id'] . $val['student_in_group_student_id'] . $semester . $d[1] . 2;
+                            $resval['result_grades_id'] = Uuid::uuid4()->toString();
                             $resval['result_grades_school_id'] = userdata()['school_id'];
                             $resval['result_grades_school_year_id'] = school_year()['id'];
                             $resval['result_grades_semester'] = $semester;
@@ -519,6 +524,8 @@ class Assessment extends BaseController
                     ];
                     echo json_encode($res);
                 } catch (\Exception $e) {
+
+                    logging('error', 'add assessment failed : ' . $e->getMessage());
                     $this->assessment->db->transRollback();
                     $res = [
                         'typ' => $req['type'],
@@ -600,6 +607,7 @@ class Assessment extends BaseController
 
                     $sts_assess = $this->assessment->error();
                     if ($sts_assess['code'] > 0) {
+                        logging('error', 'transaction assessment failed : ' . $sts_assess['message']);
                         $message = $sts_assess['message'];
                         $ecode = $sts_assess['code'];
 
@@ -645,6 +653,7 @@ class Assessment extends BaseController
                         $sts_upd = $this->assessment_result->error();
 
                         if ($sts_upd['code'] > 0) {
+                            logging('error', 'reset assessment result failed : ' . $sts_assess['message']);
                             $message = $sts_upd['message'];
                             $ecode = $sts_upd['code'];
                             throw new \Exception($sts_upd['message']);
@@ -654,11 +663,12 @@ class Assessment extends BaseController
                         $data_exists_gv['result_grades_source_id'] = $req['id'];
                         $data_exists_gv['result_grades_school_id'] = userdata()['school_id'];
                         $data_exists_gv['result_grades_school_year_id'] = school_year()['id'];
-                        $data_exists_gv['result_grades_semester'] = $semester;
+                        // $data_exists_gv['result_grades_semester'] = $semester;
 
                         $this->result_grades->where($data_exists_gv)->delete();
                         $stsdelgv = $this->result_grades->error();
                         if ($stsdelgv['code'] > 0) {
+                            logging('error', 'reset result grades failed : ' . $sts_assess['message']);
                             throw new \Exception($stsdelgv['message']);
                             $message = $stsdelgv['message'];
                         }
@@ -666,6 +676,7 @@ class Assessment extends BaseController
                 }
                 $this->assessment->db->transCommit();
             } catch (\Throwable $th) {
+                logging('error', 'transaction result failed : ' . $th->getMessage());
                 $this->assessment->db->transRollback();
                 $success = false;
             }
@@ -695,6 +706,7 @@ class Assessment extends BaseController
             }
 
             if ($ecode > 0) {
+                logging('error', 'transaction '.$req['data'].' failed : ' . $message);
                 $res = [
                     'typ' => $req['type'],
                     'sts' => false,
@@ -1010,6 +1022,7 @@ class Assessment extends BaseController
         $rows = $this->assessment_result
             ->select('
                 assessment_result_id as result_id,
+                assessment_result_semester as result_semester,
                 assessment_result_assessment_id as assessment_id,
                 assessment_result_group_id as group_id,
                 assessment_result_student_id as student_id,
@@ -1020,13 +1033,15 @@ class Assessment extends BaseController
                 assessment_result_submit_message as submit_message,
                 student_nisn,
                 student_first_name,
-                student_last_name
+                student_last_name,
+                student_image
             ')
             ->join('profile_student', 'student_id=assessment_result_student_id', 'left')
             ->where('assessment_result_assessment_id', $req['aid'])
             ->where('assessment_result_school_id', userdata()['school_id'])
             ->where('assessment_result_school_year_id', school_year()['id'])
             ->where('assessment_result_group_id', $req['gid'])
+            ->orderBy('student_first_name,student_last_name')
             ->findAll();
 
         $data = [];
@@ -1036,7 +1051,10 @@ class Assessment extends BaseController
 
             // $value = $v['value'] != null ? '<badge class="badge badge-info my-1">Nilai : <b>' . $v['value'] . ' Poin</b></badge> &nbsp;' : '';
             $txtb = $v['is_checked'] > 0 ? 'Hasil : <b>' . $v['value'] . ' Poin</b>' : 'Periksa';
-            $value = $v['value'] != null ? '<a href="#" onclick="data_result_student(' . $v['result_id'] . ')" class="badge badge-info my-1">' . $txtb . '</a> &nbsp;' : '';
+            $txtbc = $v['is_checked'] > 0 ? 'info' : 'warning';
+            $resid = "'" . $v['result_id'] . "'";
+            $chktrue = semester() == $v['result_semester'] ? 1 : 0;
+            $value = $v['value'] != null ? '<a href="#" onclick="data_result_student(' . $resid . ', '.$chktrue.', '.$v['group_id'].')" class="badge badge-'.$txtbc.' my-1">' . $txtb . '</a> &nbsp;' : '';
             $desc = $v['submit_message'] != null ? 'Ket : ' . $v['submit_message'] : '';
 
             if ($v['value'] != null) {
@@ -1047,6 +1065,10 @@ class Assessment extends BaseController
 
             $duration = $v['value'] != null ? '<badge class="badge badge-danger my-1"><b>Dikerjakan selama ' . $interval->format('%h Jam %i Menit') . '</b></badge>' : '';
 
+            $img = '<img src="'.base_url('assets/media/avatars/').'blank.png" alt="P" class="w-100" />';
+            if ($v['student_image'] != 'default.png') {
+                $img = '<img src="'.getenv()['S3_BUCKET_LINK'].$v['student_image'].'" alt="P" class="w-100" />';
+            }
             $lists = '
                 <div class="row bigrow-tabulator">
                     <div class="col-lg-4 mx-auto">
@@ -1055,7 +1077,7 @@ class Assessment extends BaseController
                         
                                 <div class="d-flex flex-column">
                                     <div class="cursor-pointer symbol symbol-50px" data-kt-menu-trigger="click" data-kt-menu-overflow="true" data-kt-menu-placement="top-start" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-dismiss="click" title="" data-bs-original-title="User profile">
-                                        <img src="http://localhost:8080/assets/media/avatars/150-26.jpg" alt="image">
+                                       '.$img.'
                                     </div>
                                 </div>
                         
@@ -1141,15 +1163,18 @@ class Assessment extends BaseController
         foreach ($question_ as $k => $v) {
             $quests[$v['id']]['question_id'] = $v['id'];
             $quests[$v['id']]['question'] = $v['question'];
-            $opt = json_decode($v['option']);
 
+            $opt = $v['option'] != '' && $v['option'] != [] ? json_decode($v['option']) : [];
+            // $opt = json_decode($v['option']);
             $opts = [];
             foreach ($opt as $key => $val) {
                 $opts['optt_' . $key + 1] = $val;
             }
 
             $answ = [];
-            foreach (json_decode($result['assessment_result_answer']) as $idx => $value) {
+            $ans = $result['assessment_result_answer'] != '' && $result['assessment_result_answer'] != [] ? json_decode($result['assessment_result_answer']) : [];
+            // foreach (json_decode($result['assessment_result_answer']) as $idx => $value) {
+            foreach ($ans as $idx => $value) {
                 if ($value->answer->id == $v['id']) {
                     $answ[] = $v['type'] == 3 ? str_replace('"', '', $value->answer->student_answer) : $value->answer->student_answer;
                     if (isset($value->answer->poin)) {
@@ -1181,7 +1206,9 @@ class Assessment extends BaseController
             'student_id' => $result['assessment_result_student_id'],
             'result_id' => $result_id,
             'assessment_title' => $result['assessment_title'],
-            'assessment_id' => $result['assessment_id']
+            'assessment_id' => $result['assessment_id'],
+            'qb_id' => $result['assessment_question_bank_id'],
+            'qb_src' => $result['assessment_question_bank_src']
         ];
 
         echo json_encode($data);
@@ -1190,14 +1217,14 @@ class Assessment extends BaseController
     public function submit_check_assessment()
     {
         $req = $this->request->getVar();
-
         $result = $this->assessment_result
             ->where('assessment_result_id', $req['res'])->first();
 
-
         $arch_ans = [];
         $total_poin = 0;
-        foreach (json_decode($result['assessment_result_answer']) as $k => $v) {
+        $ans = $result['assessment_result_answer'] != '' && $result['assessment_result_answer'] != [] ? json_decode($result['assessment_result_answer']) : [];
+        // foreach (json_decode($result['assessment_result_answer']) as $k => $v) {
+        foreach ($ans as $k => $v) {
             $arch_ans[$k]['answer']['id'] = $k;
             $arch_ans[$k]['answer']['student_answer'] = $v->answer->student_answer;
             $arch_ans[$k]['answer']['note_check'] = $req['result'][$k]['note_check'];
@@ -1206,11 +1233,51 @@ class Assessment extends BaseController
             $total_poin += $req['result'][$k]['res_poin'];
         }
 
+        if ($req['qb_src'] == 1) {
+            $question_ = $this->question_bank_standart
+                ->select('
+                    question_bank_standart_poin as poin
+                ')
+                ->where('question_bank_standart_parent_id', $req['qb_id'])
+                ->findAll();
+        } else {
+            $question_ = $this->question_bank
+                ->select('
+                    question_bank_poin as poin
+                ')
+                ->where('question_bank_parent_id', $req['qb_id'])
+                ->findAll();
+        }
+
+        $total_quest_point = 0;
+        foreach ($question_ as $k => $v) {
+            $total_quest_point += $v['poin'];
+        }
+        $student_score = $total_poin / $total_quest_point * 100;
+
         $this->assessment_result->db->transBegin();
 
         $ecode = 0;
         $message = 'Something went wrong!';
         try {
+            $this->result_grades
+                ->where('result_grades_school_id', userdata()['school_id'])
+                ->where('result_grades_school_year_id', school_year()['id'])
+                ->where('result_grades_semester', semester())
+                ->where('result_grades_student_id', (int)$req['sid'])
+                ->where('result_grades_value_type', 2)
+                ->where('result_grades_source_id', (int) $result['assessment_result_assessment_id'])
+                ->set('result_grades_original_value', $student_score)
+                ->set('result_grades_adjust_value', $student_score)
+                ->update();
+
+            $sts_grd = $this->result_grades->error();
+            if ($sts_grd['code'] > 0) {
+                $message = $sts_grd['message'];
+                $ecode = $sts_grd['code'];
+                throw new \Exception($message);
+            }
+
             $this->assessment_result
                 ->set('assessment_result_answer', json_encode($arch_ans))
                 ->set('assessment_result_value', $total_poin)
@@ -1250,6 +1317,7 @@ class Assessment extends BaseController
                     $ecode = $sts_chk['code'];
                     throw new \Exception($message);
                 }
+                
             }
 
             if ($ecode > 0) {
@@ -1282,6 +1350,7 @@ class Assessment extends BaseController
 
             echo json_encode($return);
         } catch (\Throwable $th) {
+            logging('error', 'transaction submit check assessment result failed : ' . $th->getMessage());
             $this->assessment_result->db->transRollback();
             $return = [
                 'sts' => false,
@@ -1521,6 +1590,7 @@ class Assessment extends BaseController
                 ->where('assessment_result_assessment_id', $assessment_id)
                 ->where('assessment_result_school_id', userdata()['school_id'])
                 ->where('assessment_result_school_year_id', $sch_year_id)
+                ->where('assessment_result_semester', semester())
                 ->set('assessment_result_begin_assignment_datetime', datetimenow())
                 ->update();
 
@@ -1572,8 +1642,8 @@ class Assessment extends BaseController
             foreach ($question_ as $k => $v) {
                 $quests[$v['id']]['question_id'] = $v['id'];
                 $quests[$v['id']]['question'] = $v['question'];
-                $opt = json_decode($v['option']);
-
+                // $opt = json_decode($v['option']);
+                $opt = $v['option'] != '' && $v['option'] != [] ? json_decode($v['option']) : [];
                 if ($random) {
                     shuffle($opt);
                 }
@@ -1629,7 +1699,8 @@ class Assessment extends BaseController
 
         $arr_right_answer = [];
         foreach ($question_ as $k => $v) {
-            $ans = json_decode($v['answer']);
+            $ans = $v['answer'] != '' && $v['answer'] != [] ? json_decode($v['answer']) : [];
+            // $ans = json_decode($v['answer']);
             sort($ans);
             $arr_right_answer[$v['id']]['answer'] = $ans;
             $arr_right_answer[$v['id']]['poin'] = $v['poin'];
@@ -1698,6 +1769,7 @@ class Assessment extends BaseController
                 ->where('assessment_result_assessment_id', $row['assessment_id'])
                 ->where('assessment_result_school_id', userdata()['school_id'])
                 ->where('assessment_result_school_year_id', $row['sch_year_id'])
+                ->where('assessment_result_semester', semester())
                 ->set('assessment_result_begin_assignment_datetime', $row['begin_assign'])
                 ->set('assessment_result_submit_datetime', datetimenow())
                 ->set('assessment_result_end_datetime', $row['end_date'])
@@ -1749,11 +1821,8 @@ class Assessment extends BaseController
 
             $this->assessment_result->db->transCommit();
         } catch (\Throwable $th) {
+            logging('error', 'student submit assessment failed : ' . $th->getMessage());
             $this->assessment_result->db->transRollback();
-            echo '<pre>';
-            print_r($th);
-            echo '</pre>';
-            die;
         }
         
         echo json_encode($res);
@@ -1774,7 +1843,9 @@ class Assessment extends BaseController
         ];
 
         $notif = $this->notification->select('notification_lms_id id')->where($notif_whr)->first();
-        $this->notification_read->read_notification($notif['id']);
+        if ($notif) {
+            $this->notification_read->read_notification($notif['id']);
+        }
 
         // $result_id = $this->request->getVar('result_id');
         $ass_row = $this->assessment->where('assessment_id', $req['assessment'])->first();
@@ -1832,15 +1903,17 @@ class Assessment extends BaseController
         foreach ($question_ as $k => $v) {
             $quests[$v['id']]['question_id'] = $v['id'];
             $quests[$v['id']]['question'] = $v['question'];
-            $opt = json_decode($v['option']);
-
+            // $opt = json_decode($v['option']);
+            $opt = $v['option'] != '' && $v['option'] != [] ? json_decode($v['option']) : [];
             $opts = [];
             foreach ($opt as $key => $val) {
                 $opts['optt_' . $key + 1] = $val;
             }
 
             $answ = [];
-            foreach (json_decode($result['assessment_result_answer']) as $idx => $value) {
+            $ans = $result['assessment_result_answer'] != '' && $result['assessment_result_answer'] != [] ? json_decode($result['assessment_result_answer']) : [];
+            // foreach (json_decode($result['assessment_result_answer']) as $idx => $value) {
+            foreach ($ans as $idx => $value) {
                 if ($value->answer->id == $v['id']) {
                     $answ[] = $v['type'] == 3 ? str_replace('"', '', $value->answer->student_answer) : $value->answer->student_answer;
                     if (isset($value->answer->poin)) {
