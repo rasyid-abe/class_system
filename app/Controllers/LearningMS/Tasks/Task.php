@@ -264,7 +264,7 @@ class Task extends BaseController
         if ($req['type'] == 1) {
             $r = json_decode($req['param']);
             $titlegrade = explode(' - ', $r[10]);
-
+            
             $lsrc = null;
             if ($r[11] == 2) {
                 $lsrc = $this->lesson_standart
@@ -279,6 +279,7 @@ class Task extends BaseController
                     ->where('lesson_additional_status < 9')
                     ->first();
             }
+
 
             $should_chk = 1;
             if (!empty($lsrc['task'])) {
@@ -710,7 +711,6 @@ class Task extends BaseController
             }
             echo json_encode($res);
         } else if ($req['type'] == 3) {
-
             $tidd = [];
             foreach ($req['param'] as $k => $v) {
                 if (is_array($v)) {
@@ -724,6 +724,7 @@ class Task extends BaseController
 
             $type = array_column($tidd, 'type');
             if (in_array(4, $type)) {
+                $scheck = 0;
                 $t = $this->task->select('task_group')->where('task_id', $req['id'])->first();
                 $groups = [];
                 foreach (json_decode($t['task_group']) as $k => $v) {
@@ -736,6 +737,7 @@ class Task extends BaseController
                     ->set('task_updated_by', userdata()['user_id'])
                     ->update();
             } else {
+                $scheck = 1;
                 $t = $this->task->select('task_group')->where('task_id', $req['id'])->first();
                 $groups = [];
                 foreach (json_decode($t['task_group']) as $k => $v) {
@@ -748,6 +750,8 @@ class Task extends BaseController
                     ->set('task_updated_by', userdata()['user_id'])
                     ->update();
             }
+
+            $this->task_result->where('task_result_task_id', $req['id'])->set('task_result_is_checked', $scheck)->update();
 
             $task = [];
             $task['std'] = $req['param'][0];
@@ -768,7 +772,7 @@ class Task extends BaseController
                     'typ' => $req['type'],
                     'sts' => false,
                     'msg' => 'Latihan gagal di sesuaikan',
-                    'icon' => 'error'
+                    'icn' => 'error'
                 ];
             } else {
                 $this->activity->store_log('Tugas', 'update', 'mengatur ulang latihan tugas "' . $req['param'][3] . '"');
@@ -777,7 +781,7 @@ class Task extends BaseController
                     'typ' => $req['type'],
                     'sts' => true,
                     'msg' => 'Latihan berhasil di sesuaikan',
-                    'icon' => 'success'
+                    'icn' => 'success'
                 ];
             }
 
@@ -793,7 +797,7 @@ class Task extends BaseController
             if ($v != 'empty') {
                 foreach ($v as $key => $val) {
                     if ($k == 'std') {
-                        $arr_task[$k . $val] = $this->qc_std->select('DISTINCT(question_bank_sandart_type) as type')->where('question_bank_standart_id', $val)->first();
+                        $arr_task[$k . $val] = $this->qc_std->select('DISTINCT(question_bank_standart_type) as type')->where('question_bank_standart_id', $val)->first();
                     } else {
                         $arr_task[$k . $val] = $this->qc_me->select('DISTINCT(question_bank_type) as type')->where('question_bank_id', $val)->first();
                     }
@@ -1374,7 +1378,6 @@ class Task extends BaseController
 
             $sts = array_column($data, 'total');
 
-
             if (!in_array(0, $sts)) {
                 $task = $this->task->select('task_group')
                     ->where('task_id', $result['task_result_task_id'])
@@ -1534,7 +1537,8 @@ class Task extends BaseController
                     $button = '';
                     if ($req['page-task'] == 1) {
                         if ($v['task_end'] > datetimenow() || ($v['task_end'] < datetimenow() && $v['task_is_ignored_time_submit'] == 1)) {
-                            $button = '<a href="#" class="btn btn-primary pl-10" onclick="begin_task(' . $v['task_id'] . ', ' . $tmp_exists . ')">Kerjakan</a>';
+                            $tskttl = "'". $v['task_title'] ."'";
+                            $button = '<a href="#" class="btn btn-primary pl-10" onclick="begin_task(' . $v['task_id'] . ', ' . $tmp_exists . ', '. $tskttl .')">Kerjakan</a>';
                             $lists = '
                             <div class="row bigrow-tabulator">
                                 <div class="col-lg-4 mx-auto">
@@ -1772,10 +1776,12 @@ class Task extends BaseController
                 $quest = [];
                 foreach ($all_task as $k => $v) {
                     foreach ($v as $val) {
-                        $opt = json_decode($val['question_bank_option']);
                         $opts = [];
-                        foreach ($opt as $key => $value) {
-                            $opts['opt_' . $key + 1] = $value;
+                        if (isset($val['question_bank_option']) && $val['question_bank_option'] != null) {
+                            $opt = json_decode($val['question_bank_option']);
+                            foreach ($opt as $key => $value) {
+                                $opts['opt_' . $key + 1] = $value;
+                            }
                         }
 
                         $quest[$val['id']]['source'] = $k;
@@ -2039,7 +2045,9 @@ class Task extends BaseController
         ];
 
         $notif = $this->notification->select('notification_lms_id id')->where($notif_whr)->first();
-        $this->notification_read->read_notification($notif['id']);
+        if ($notif) {
+            $this->notification_read->read_notification($notif['id']);
+        }
 
         $result = $this->task_result
             ->join('lms_task', 'task_id=task_result_task_id', 'left')

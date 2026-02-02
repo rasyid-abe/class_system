@@ -1047,6 +1047,8 @@ $(document).on('click', '.view_student_task', function (e) {
 })
 
 function data_result_student_tsk(result_id, chktrue, group_id) {
+	console.log(chktrue);
+	
 	$.ajax({
 		url: base_url + "/teacher/task/check-result-task",
 		data: { result_id },
@@ -1102,7 +1104,7 @@ function actview_checking_tsk(sid, e, idx = 0, fix = false) {
 	let data = JSON.parse(e)
 
 	$('#cstt1').html(data.subject)
-
+	
 	let number_quest = ''
 	let num = 1
 	$.each(data.tasks, function (i, v) {
@@ -1170,12 +1172,14 @@ function view_question_act_chk_tsk(id, sid) {
 	let my_tasks = localStorage.getItem('aquacode_' + teacher_id + '_' + sid + '_' + tsk)
 	let data = JSON.parse(my_tasks)
 
+	let rrg = data.tasks[id].right_answer
+	
 	let row = data.tasks[id]
 	let qtype = data.tasks[id].type
 	let spoin = data.tasks[id].res_poin
 	let poin = data.tasks[id].poin
 	let student_answer = data.tasks[id].student_answer
-	let right_answer = JSON.parse(data.tasks[id].right_answer)
+	let right_answer = rrg != "" ? JSON.parse(rrg) : ""
 	let nchk = data.tasks[id].note_check
 	let ischk = data.tasks[id].checked
 
@@ -2045,12 +2049,14 @@ function view_question_act_chk_done_tsk(id, sid) {
 	let my_tasks = localStorage.getItem('browncode_' + student_id + '_' + tsk)
 	let data = JSON.parse(my_tasks)
 
+	let rra = data.tasks[id].right_answer
+
 	let row = data.tasks[id]
 	let qtype = data.tasks[id].type
 	let spoin = data.tasks[id].res_poin
 	let poin = data.tasks[id].poin
 	let student_answer = data.tasks[id].student_answer
-	let right_answer = JSON.parse(data.tasks[id].right_answer)
+	let right_answer = rra != "" ? JSON.parse(rra) : ""
 	let nchk = data.tasks[id].note_check
 	let ischk = data.tasks[id].checked
 
