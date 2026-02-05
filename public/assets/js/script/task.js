@@ -405,6 +405,12 @@ function view_edit_task(e) {
 		$("#religion_assign").removeClass("checked").prop("checked", false);
 	}
 
+	if (e.task_task_ids == null || e.task_task_ids == "") {
+		$('#edt_tsk_').addClass('hide')
+	} else {
+		$('#edt_tsk_').removeClass('hide')
+	}
+
 	let selected_group = [];
 	$.each(JSON.parse(e.task_group), function (i, v) {
 		selected_group.push(v.id);
@@ -1047,8 +1053,6 @@ $(document).on('click', '.view_student_task', function (e) {
 })
 
 function data_result_student_tsk(result_id, chktrue, group_id) {
-	console.log(chktrue);
-	
 	$.ajax({
 		url: base_url + "/teacher/task/check-result-task",
 		data: { result_id },
@@ -1300,7 +1304,7 @@ function view_question_act_chk_tsk(id, sid) {
       </div>
       ${setpoin}
       <span class="fw-bold d-block fs-3 text-primary my-2 ">Catatan</span>
-      <div id="checked_note_tsk"></div>
+      <div id="checked_note_tsk" style="height: 250px"></div>
       ${colorcode}
     </span>
   </div>  
@@ -1978,8 +1982,6 @@ function checking_page_done_tsk(e) {
 
 function actview_checking_done_tsk(sid, e, idx = 0, fix = false) {
 	let data = JSON.parse(e)
-	console.log(data);
-
 	$('#donesubject').html(data.subject)
 
 	let number_quest = ''

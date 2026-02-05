@@ -425,17 +425,18 @@ function gen_dash_student(e) {
 				</li>
 			`;
 	
-			let all_lesson = `
-				<ul id="progress" style="padding-left: 1rem; list-style-type: none;">
-				${my_lesson}
-				</ul>
-			`;
 		})
+		
+		all_lesson = `
+			<ul id="progress" style="padding-left: 1rem; list-style-type: none;">
+			${my_lesson}
+			</ul>
+		`;
 	} else {
 		all_lesson = '<span class="text-center">Tidak ada jadwal belajar hari ini.</span>'
 	}
 
-		$('#dash_my_lesson').html(all_lesson)
+	$('#dash_my_lesson').html(all_lesson)
 
 	let list_assessment = ''
 	if (e.assessment.length > 0) {
@@ -446,46 +447,46 @@ function gen_dash_student(e) {
 			let name = v.teacher_first_name + ' ' + v.teacher_last_name + deg
 
 			card_assessment += `
-        <div class="card-task">
-            <div class="card bg-light-primary card-bordered">
-                <div class="card-body container-body">
-                    <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
-                        <div class="mb-auto p-2 bd-highlight">
-                            <p class="fs-3 text-primary fw-bold mb-auto bd-highlight">${v.assessment_title}</p>
-                            <badge class="badge badge-info"><i class="bi-alarm text-white"></i> ${duration}</badge>
-                        </div>
-                        <div class="p-2 bd-highlight" style="margin-bottom: -17px;">
-                            <p class="card-text fs-5 text-dark fw-semibold">${v.subject_name}</p>
-                            <p class="text-dark">${ind_date(v.assessment_start)} s/d ${ind_date(v.assessment_end)}</p>
-                            <p class="card-text fs-6 mb-2">${name}</p>
-                            <button class="btn btn-primary btn-sm" onclick="alert_begin_assessment(${v.assessment_id})">Kerjakan</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-      `
+				<div class="card-task">
+					<div class="card bg-light-primary card-bordered">
+						<div class="card-body container-body">
+							<div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
+								<div class="mb-auto p-2 bd-highlight">
+									<p class="fs-3 text-primary fw-bold mb-auto bd-highlight">${v.assessment_title}</p>
+									<badge class="badge badge-info"><i class="bi-alarm text-white"></i> ${duration}</badge>
+								</div>
+								<div class="p-2 bd-highlight" style="margin-bottom: -17px;">
+									<p class="card-text fs-5 text-dark fw-semibold">${v.subject_name}</p>
+									<p class="text-dark">${ind_date(v.assessment_start)} s/d ${ind_date(v.assessment_end)}</p>
+									<p class="card-text fs-6 mb-2">${name}</p>
+									<button class="btn btn-primary btn-sm" onclick="alert_begin_assessment(${v.assessment_id}, '${v.assessment_title}')">Kerjakan</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			`
 		})
 		list_assessment = `
-      <div class="col-sm-12 mb-5" id="block-assessment">
-            <div class="alert alert-white" style="border-radius:10px;">
-                <div class="d-flex flex-stack text-white mb-3">
-                    <div class="flex-shrink-0">
-                        <span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Penilaian Aktif</span>
-                    </div>
+			<div class="col-sm-12 mb-5" id="block-assessment">
+					<div class="alert alert-white" style="border-radius:10px;">
+						<div class="d-flex flex-stack text-white mb-3">
+							<div class="flex-shrink-0">
+								<span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Penilaian Aktif</span>
+							</div>
 
-                    <a href="<?= base_url('student/assessment/present') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary pt-2 pr-4" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
-                        <i class="bi bi-three-dots text-dark fs-1"></i>
-                    </a>
-                </div>
-                <div class="container-card">
-                    <div class="row-task">
-                        ${card_assessment}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `
+							<a href="${base_url + 'student/assessment/present'}" class="btn btn-icon btn-color-gray-500 btn-active-color-primary pt-2 pr-4" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+								<i class="bi bi-arrow-up-right-square text-dark fs-1"></i>
+							</a>
+						</div>
+						<div class="container-card">
+							<div class="row-task">
+								${card_assessment}
+							</div>
+						</div>
+					</div>
+				</div>
+			`
 	}
 	$('#block-assessment').html(list_assessment)
 
@@ -506,47 +507,49 @@ function gen_dash_student(e) {
 						let bdg_exists = e.arr_temp_task.includes(v.task_id) ? '<badge class="badge badge-danger">Belum dikirim</badge>' : '<badge class="badge badge-info">Belum dikerjakan</badge>'
 
 						card_task += `
-              <div class="card-task">
-                  <div class="card bg-light-info card-bordered">
-                      <div class="card-body container-body">
-                          <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
-                              <div class="mb-auto p-2 bd-highlight">
-                                  <p class="fs-3 text-primary fw-bold mb-auto bd-highlight">${v.task_title}</p>
-                                  ${bdg_exists}
-                              </div>
-                              <div class="p-2 bd-highlight" style="margin-bottom: -17px;">
-                                  <p class="card-text fs-5 text-dark fw-semibold">${v.subject_name}<?= $v['subject_name'] ?></p>
-                                  <p class="text-dark">${ind_date(v.task_start)} s/d ${ind_date(v.task_end)}</p>
-                                  <p class="card-text fs-6 mb-2">${name}</p>
-                                  <button class="btn btn-primary btn-sm" onclick="begin_task(${v.task_id}, ${temp_exists}, '${v.task_title}')">Kerjakan</button>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-            `
+							<div class="card-task">
+								<div class="card bg-light-info card-bordered">
+									<div class="card-body container-body">
+										<div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
+											<div class="mb-auto p-2 bd-highlight">
+												<p class="fs-3 text-primary fw-bold mb-auto bd-highlight">${v.task_title}</p>
+												${bdg_exists}
+											</div>
+											<div class="p-2 bd-highlight" style="margin-bottom: -17px;">
+												<p class="card-text fs-5 text-dark fw-semibold">${v.subject_name}<?= $v['subject_name'] ?></p>
+												<p class="text-dark">${ind_date(v.task_start)} s/d ${ind_date(v.task_end)}</p>
+												<p class="card-text fs-6 mb-2">${name}</p>
+												<button class="btn btn-primary btn-sm" onclick="begin_task(${v.task_id}, ${temp_exists}, '${v.task_title}')">Kerjakan</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						`
 					}
 				}
 			})
 
-			list_task += `
-        <div class="alert alert-white" style="border-radius:10px;">
-            <div class="d-flex flex-stack text-white mb-3">
-                <div class="flex-shrink-0">
-                    <span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Tugas Aktif</span>
-                </div>
-  
-                <a href="<?= base_url('student/task/present') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start pt-2 pr-4" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
-                    <i class="bi bi-three-dots text-dark fs-1"></i>
-                </a>
-            </div>
-            <div class="container-card">
-                <div class="row-task">
-                    ${card_task}
-                </div>
-            </div>
-        </div>
-      `
+			if (card_task != '') {
+				list_task += `
+					<div class="alert alert-white" style="border-radius:10px;">
+						<div class="d-flex flex-stack text-white mb-3">
+							<div class="flex-shrink-0">
+								<span class="mb-3 p-3 fw-bold text-gray-900 fs-2 m-0">Tugas Aktif</span>
+							</div>
+			
+							<a href="${base_url + 'student/task/present'}" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-start pt-2 pr-4" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+								<i class="bi bi-arrow-up-right-square text-dark fs-1"></i>
+							</a>
+						</div>
+						<div class="container-card">
+							<div class="row-task">
+								${card_task}
+							</div>
+						</div>
+					</div>
+				`
+			}
 		}
 	}
 
@@ -618,49 +621,43 @@ function gen_dash_teacher(e) {
 			})
 
 		card += `
-        <div class="card-task">
-            <div class="card">
-                <div class="card-body container-body1 bg-light-info" style="border-radius: 10px;">
-                    <div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
-                        <div class="mb-auto p-2 bd-highlight">
-                            <p class="fs-3 text-primary fw-bold mb-2 bd-highlight">${v.title}</p>
-                            <badge class="badge badge-${v.type != 'Tugas' ? 'danger' : 'success'} mb-2">${v.type}</badge>
-                            ${group}
-                        </div>
-                        <div class="p-2 bd-highlight">
-                            <p class="card-text fs-5 text-dark fw-semibold">${v.subject}</p>
-                            <p class="text-dark">${ind_date(v.start)} s/d ${ind_date(v.end)}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-      `
+			<div class="card-task">
+				<div class="card">
+					<div class="card-body container-body1 bg-light-info" style="border-radius: 10px;">
+						<div class="d-flex align-items-start flex-column bd-highlight mb-3" style="height: 200px;">
+							<div class="mb-auto p-2 bd-highlight">
+								<p class="fs-3 text-primary fw-bold mb-2 bd-highlight">${v.title}</p>
+								<badge class="badge badge-${v.type != 'Tugas' ? 'danger' : 'success'} mb-2">${v.type}</badge>
+								${group}
+							</div>
+							<div class="p-2 bd-highlight">
+								<p class="card-text fs-5 text-dark fw-semibold">${v.subject}</p>
+								<p class="text-dark">${ind_date(v.start)} s/d ${ind_date(v.end)}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		`
 		})
 
 		content = `
-      <div class="col-md-12 col-xl-12 my-xl-5">
-          <div class="card h-md-100">
-              <div class="card-header align-items-center border-0">
-                  <h3 class="fw-bold text-gray-900 m-0">Butuh Diperiksa</h3>
-  
-                  <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
-  
-                      <i class="bi bi-three-dots fs-1"></i>
-                  </button>
-  
-              </div>
-              <div class="card-body pt-2">
-                  <div class="container-card">
-                      <div class="row-task" style="margin-left: -10px; margin-right: -15px;">
-                          ${card}
-                      </div>
-                  </div>
-                  
-              </div>
-          </div>
-      </div>
-    `
+			<div class="col-md-12 col-xl-12 my-xl-5">
+				<div class="card h-md-100">
+					<div class="card-header align-items-center border-0">
+						<h3 class="fw-bold text-gray-900 m-0">Butuh Diperiksa</h3>
+					</div>
+					<div class="card-body pt-2">
+						<div class="container-card">
+							<div class="row-task" style="margin-left: -10px; margin-right: -15px;">
+								${card}
+							</div>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		`
 	}
 
 	$('#checked_asstsk').html(content)

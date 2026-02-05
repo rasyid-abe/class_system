@@ -102,11 +102,6 @@ class TasksModel extends Model
                 AND task_group LIKE '%".$my_group['group_name']."%'
             GROUP BY task_id";
 
-        // echo '<pre>';
-        // print_r($sql);
-        // echo '</pre>';
-        // die;
-
         return $this->db->query($sql)->getResultArray();
     }
 

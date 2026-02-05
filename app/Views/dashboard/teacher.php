@@ -125,9 +125,9 @@
                     <div class="card-header align-items-center border-0">
                         <h3 class="fw-bold text-gray-900 m-0">BAB Pelajaran</h3>
 
-                        <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end">
+                        <!-- <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end">
                             <i class="bi bi-three-dots fs-1"></i>
-                        </button>
+                        </button> -->
                     </div>
 
                     <div class="card-body pt-2">
@@ -174,9 +174,9 @@
                     <div class="card-header align-items-center border-0">
                         <h3 class="fw-bold text-gray-900 m-0">Bank Soal</h3>
 
-                        <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end">
+                        <!-- <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end">
                             <i class="bi bi-three-dots fs-1"></i>
-                        </button>
+                        </button> -->
                     </div>
 
                     <div class="card-body pt-2">
@@ -226,7 +226,7 @@
             <div class="card-header align-items-center border-0">
                 <h3 class="fw-bold text-gray-900 m-0">Ringkasan Penilaian</h3>
 
-                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+                <!-- <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
 
                     <i class="bi bi-three-dots fs-1"></i>
                 </button>
@@ -292,7 +292,7 @@
                             </a>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
             </div>
             <div class="card-body pt-2">
@@ -315,8 +315,9 @@
                         </div> -->
                     </div>
 
-                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                    <a href="<?= base_url('teacher/assessment/index-draft') ?>" class="btn btn-sm btn-light-primary btn-icon"><i class="bi bi-arrow-up-right-square fs-2x"></i></a>
                 </div>
+                <div class="separator my-5"></div>
                 <div class="d-flex align-items-center mb-6">
                     <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
                     <i class="bi bi-file-earmark-spreadsheet-fill text-success fs-3x"></i>
@@ -335,8 +336,9 @@
                         </div> -->
                     </div>
 
-                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                    <a href="<?= base_url('teacher/assessment/index-scheduled') ?>" class="btn btn-sm btn-light-primary btn-icon"><i class="bi bi-arrow-up-right-square fs-2x"></i></a>
                 </div>
+                <div class="separator my-5"></div>
                 <div class="d-flex align-items-center mb-6">
                     <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
                     <i class="bi bi-file-earmark-text-fill text-info fs-3x"></i>
@@ -355,8 +357,9 @@
                         </div> -->
                     </div>
 
-                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                    <a href="<?= base_url('teacher/assessment/index-present') ?>" class="btn btn-sm btn-light-primary btn-icon"><i class="bi bi-arrow-up-right-square fs-2x"></i></a>
                 </div>
+                <div class="separator my-5"></div>
                 <div class="d-flex align-items-center mb-6">
                     <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
                     <i class="bi bi-file-earmark-check-fill text-danger fs-3x"></i>
@@ -375,7 +378,7 @@
                         </div> -->
                     </div>
 
-                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                    <a href="<?= base_url('teacher/assessment/index-done') ?>" class="btn btn-sm btn-light-primary btn-icon"><i class="bi bi-arrow-up-right-square fs-2x"></i></a>
                 </div>
             </div>
         </div>
@@ -386,7 +389,7 @@
             <div class="card-header align-items-center border-0">
                 <h3 class="fw-bold text-gray-900 m-0">Ringkasan Tugas</h3>
 
-                <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+                <!-- <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
 
                     <i class="bi bi-three-dots fs-1"></i>
                 </button>
@@ -452,7 +455,7 @@
                             </a>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
             </div>
             <div class="card-body pt-2">
@@ -475,8 +478,9 @@
                         </div> -->
                     </div>
 
-                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                    <a href="<?= base_url('teacher/task/index-draft') ?>" class="btn btn-sm btn-light-primary btn-icon"><i class="bi bi-arrow-up-right-square fs-2x"></i></a>
                 </div>
+                <div class="separator my-5"></div>
                 <div class="d-flex align-items-center mb-6">
                     <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
                     <i class="bi bi-file-earmark-spreadsheet-fill text-success fs-3x"></i>
@@ -495,8 +499,9 @@
                         </div> -->
                     </div>
 
-                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                    <a href="<?= base_url('teacher/task/index-scheduled') ?>" class="btn btn-sm btn-light-primary btn-icon"><i class="bi bi-arrow-up-right-square fs-2x"></i></a>
                 </div>
+                <div class="separator my-5"></div>
                 <div class="d-flex align-items-center mb-6">
                     <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
                     <i class="bi bi-file-earmark-text-fill text-info fs-3x"></i>
@@ -515,8 +520,9 @@
                         </div> -->
                     </div>
 
-                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                    <a href="<?= base_url('teacher/task/index-present') ?>" class="btn btn-sm btn-light-primary btn-icon"><i class="bi bi-arrow-up-right-square fs-2x"></i></a>
                 </div>
+                <div class="separator my-5"></div>
                 <div class="d-flex align-items-center mb-6">
                     <!-- <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-info"></span> -->
                     <i class="bi bi-file-earmark-check-fill text-danger fs-3x"></i>
@@ -535,7 +541,7 @@
                         </div> -->
                     </div>
 
-                    <a href="#" class="btn btn-sm btn-light-primary btn-icon" data-bs-toggle="modal" data-bs-target="#kt_modal_create_project"><i class="bi bi-file-earmark-post"></i></a>
+                    <a href="<?= base_url('teacher/task/index-done') ?>" class="btn btn-sm btn-light-primary btn-icon"><i class="bi bi-arrow-up-right-square fs-2x"></i></a>
                 </div>
             </div>
         </div>

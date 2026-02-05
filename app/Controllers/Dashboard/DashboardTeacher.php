@@ -158,7 +158,7 @@ class DashboardTeacher extends BaseController
                 'teaching_subjects_teacher_id' => $teacher_id,
                 'teaching_subjects_status < 9',
             ])
-            ->groupBy('student_group_id')
+            ->groupBy('student_group_id,subject_id')
             ->orderBy('timetable_group_id')
             ->findAll();
 

@@ -11,77 +11,81 @@
 </div> -->
 <?php endif ?>
 
-<?php if (count($subj_school) > 0): ?>
-    <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
-        <div class="col-xxl-6">
+<div class="row g-5 g-xl-5 mb-5 mb-xl-5">
+    <?php if (count($subj_school) > 0): ?>
+    <div class="col-xxl-<?= $full_sch > 0 ? '12' : '6' ?>">
 
-            <div class="card card-flush h-md-100" style="background: linear-gradient(112.14deg, #009EF7 0%, #293EB4 100%)">
-                <div class="card-body py-9">
-                    <div class="row gx-9 h-100">
+        <div class="card card-flush h-md-100" style="background: linear-gradient(112.14deg, #009EF7 0%, #293EB4 100%)">
+            <div class="card-body py-9">
+                <div class="row gx-9 h-100">
 
-                        <div class="col-sm-12">
-                            <div class="d-flex flex-column h-100">
-                                <div class="mb-7">
-                                    <div class="d-flex flex-stack text-white mb-6">
-                                        <div class="flex-shrink-0 me-5">
-                                            <span class="fs-7 fw-bold me-2 d-block lh-1 pb-1">Belajar Mandiri</span>
+                    <div class="col-sm-12">
+                        <div class="d-flex flex-column h-100">
+                            <div class="mb-7">
+                                <div class="d-flex flex-stack text-white mb-6">
+                                    <div class="flex-shrink-0 me-5">
+                                        <span class="fs-7 fw-bold me-2 d-block lh-1 pb-1">Belajar Mandiri</span>
 
-                                            <span class="fs-1 fw-bold">Materi Sekolah</span>
-                                        </div>
-
-                                        <a href="<?= base_url('student/lesson/school') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end align-items-baseline" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
-                                            <i class="bi bi-three-dots text-white fs-1"></i>
-                                        </a>
+                                        <span class="fs-1 fw-bold">Materi Sekolah</span>
                                     </div>
-                                    <?php foreach ($subj_school as $v): ?>
-                                        <a href="<?= base_url('student/lesson/school/view-content/' . $v['subject_id'] . '/' . $grade) ?>" class="badge badge-primary p-5 my-1"><?= $v['subject_name'] ?></a>
-                                    <?php endforeach; ?>
-                                </div>
 
+                                    <a href="<?= base_url('student/lesson/school') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end align-items-baseline" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+                                        <i class="bi bi-arrow-up-right-square text-white fs-1"></i>
+                                    </a>
+                                </div>
+                                <?php foreach ($subj_school as $v): ?>
+                                    <a href="<?= base_url('student/lesson/school/view-content/' . $v['subject_id'] . '/' . $grade) ?>" class="badge badge-primary p-5 my-1"><?= $v['subject_name'] ?></a>
+                                <?php endforeach; ?>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xxl-6">
+    </div>
+    <?php endif; ?>
+    <?php if(count($subj_standart) > 0): ?>
+        
+    <div class="col-xxl-<?= $full_std > 0 ? '12' : '6' ?>">
 
-            <div class="card card-flush h-md-100" style="background: linear-gradient(112.14deg, #293EB4 0%, #192440 100%)">
-                <div class="card-body py-9">
-                    <div class="row gx-9 h-100">
+        <div class="card card-flush h-md-100" style="background: linear-gradient(112.14deg, #293EB4 0%, #192440 100%)">
+            <div class="card-body py-9">
+                <div class="row gx-9 h-100">
 
-                        <div class="col-sm-12">
-                            <div class="d-flex flex-column h-100">
-                                <div class="mb-7">
-                                    <div class="d-flex flex-stack text-white mb-6">
-                                        <div class="flex-shrink-0 me-5">
-                                            <span class="fs-7 fw-bold me-2 d-block lh-1 pb-1">Belajar Mandiri</span>
+                    <div class="col-sm-12">
+                        <div class="d-flex flex-column h-100">
+                            <div class="mb-7">
+                                <div class="d-flex flex-stack text-white mb-6">
+                                    <div class="flex-shrink-0 me-5">
+                                        <span class="fs-7 fw-bold me-2 d-block lh-1 pb-1">Belajar Mandiri</span>
 
-                                            <span class="fs-1 fw-bold">Materi Standar</span>
-                                        </div>
-
-                                        <a href="<?= base_url('student/lesson/standart') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end align-items-baseline mt-2 mr-2" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
-                                            <i class="bi bi-three-dots text-white fs-1"></i>
-                                        </a>
+                                        <span class="fs-1 fw-bold">Materi Standar</span>
                                     </div>
 
-                                    <?php foreach ($subj_standart as $v): ?>
-                                        <a href="<?= base_url('student/lesson/standart/view-content/' . $v['subject_id'] . '/' . $grade) ?>" class="badge badge-light p-5 my-1"><?= $v['subject_name'] ?></a>
-                                    <?php endforeach; ?>
-
+                                    <a href="<?= base_url('student/lesson/standart') ?>" class="btn btn-icon btn-color-gray-500 btn-active-color-primary justify-content-end align-items-baseline mt-2 mr-2" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+                                        <i class="bi bi-arrow-up-right-square text-white fs-1"></i>
+                                    </a>
                                 </div>
 
+                                <?php foreach ($subj_standart as $v): ?>
+                                    <a href="<?= base_url('student/lesson/standart/view-content/' . $v['subject_id'] . '/' . $grade) ?>" class="badge badge-light p-5 my-1"><?= $v['subject_name'] ?></a>
+                                <?php endforeach; ?>
+
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
-
-
         </div>
+
 
     </div>
-<?php endif; ?>
+    <?php endif ?>
+
+</div>
+
 
 <div class="row" id="block-assessment-task">
     <div class="col-sm-12" id="block-assessment"></div>

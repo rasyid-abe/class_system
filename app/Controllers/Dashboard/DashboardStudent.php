@@ -68,6 +68,8 @@ class DashboardStudent extends BaseController
 
         $data['subj_school'] = $sub_list;
         $data['subj_standart'] = $std_less;
+        $data['full_sch'] = count($std_less) < 1 && count($sub_list) > 0 ? 1 : 0;
+        $data['full_std'] = count($sub_list) < 1 && count($std_less) > 0 ? 1 : 0;
         $data['grade'] = $my_group['grade'];
 
         $rows = $this->activity
@@ -139,23 +141,6 @@ class DashboardStudent extends BaseController
             }
         }
 
-        
-
-        // $my_group = student_group();
-        // $sub_list = [];
-        // if (!empty(year_active())) {
-        //     $sub_list = $this->lesson_school->student_list_subject($my_group['grade'], $my_group['group_id']);
-        // }
-
-        // $std_less = $this->lesson_standart
-        //     ->select('subject_id,subject_name,lesson_standart_id, lesson_standart_chapter, lesson_standart_subchapter')
-        //     ->join('master_subject', 'subject_id=lesson_standart_subject_id', 'left')
-        //     ->where('lesson_standart_grade', $my_group['grade'])
-        //     ->where('lesson_standart_status < 9')
-        //     ->groupBy('subject_id')
-        //     ->findAll();
-
-            
         $data = [];
         $data['my_lesson'] = $my_lesson;
         $data['assessment'] = $assess;
@@ -163,9 +148,6 @@ class DashboardStudent extends BaseController
         $data['arr_temp_task'] = $arr_temp_task;
         $data['list_idx'] = $list_idx;
         $data['learning_today'] = $matrix;
-        // $data['subj_school'] = $sub_list;
-        // $data['subj_standart'] = $std_less;
-        // $data['grade'] = $my_group['grade'];
 
         echo json_encode($data);
     }
