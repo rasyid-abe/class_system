@@ -1436,8 +1436,9 @@ class Assessment extends BaseController
                     $name = $v['teacher_first_name'] . ' ' . $v['teacher_last_name'] . $deg;
                     $duration = $v['assessment_duration'] > 0 ? $v['assessment_duration'] . " Menit" : '-';
                     $button = '';
+                    $ttl = "'" . $v['assessment_title'] . "'";
                     if ($req['page-ass'] == 1) {
-                        $button = '<a href="#" class="btn btn-primary pl-10" onclick="alert_begin_assessment(' . $v['assessment_id'] . ')">Kerjakan</a>';
+                        $button = '<a href="#" class="btn btn-primary pl-10" onclick="alert_begin_assessment(' . $v['assessment_id'] . ', '.$ttl.')">Kerjakan</a>';
                     }
 
                     $lists = '

@@ -39,42 +39,42 @@ class SchoolLessonModel extends Model
 
     }
 
-    public function get_list()
-    {
-        $sql = "
-            select 
-                lla.lesson_additional_grade,
-                lla.lesson_additional_subject_id,
-                lla.lesson_additional_chapter,
-                lla.lesson_additional_subchapter,
-                lla.lesson_additional_content,
-                lla.lesson_additional_content_path,
-                lla.lesson_additional_video_path,
-                lla.lesson_additional_attachment_path,
-                lla.lesson_additional_task,
-                'additional' as source_lesson
-            from lms_lesson_school lls
-            left join lms_lesson_additional lla on lla.lesson_additional_id = lls.lesson_school_lesson_additional_id 
-            where lls.lesson_school_lesson_standart_id = 0
-            UNION 
-            select 
-                ls.lesson_standart_grade, 
-                ls.lesson_standart_subject_id, 
-                ls.lesson_standart_chapter, 
-                ls.lesson_standart_subchapter, 
-                ls.lesson_standart_content, 
-                ls.lesson_standart_content_path, 
-                ls.lesson_standart_video_path, 
-                ls.lesson_standart_attachment_path, 
-                ls.lesson_standart_tasks,
-                'standard' as source_lesson
-            from lms_lesson_school lls2 
-            left join lms_lesson_standart ls on ls.lesson_standart_id = lls2.lesson_school_lesson_standart_id
-            where lls2.lesson_school_lesson_additional_id = 0
-        ";
+    // public function get_list()
+    // {
+    //     $sql = "
+    //         select 
+    //             lla.lesson_additional_grade,
+    //             lla.lesson_additional_subject_id,
+    //             lla.lesson_additional_chapter,
+    //             lla.lesson_additional_subchapter,
+    //             lla.lesson_additional_content,
+    //             lla.lesson_additional_content_path,
+    //             lla.lesson_additional_video_path,
+    //             lla.lesson_additional_attachment_path,
+    //             lla.lesson_additional_task,
+    //             'additional' as source_lesson
+    //         from lms_lesson_school lls
+    //         left join lms_lesson_additional lla on lla.lesson_additional_id = lls.lesson_school_lesson_additional_id 
+    //         where lls.lesson_school_lesson_standart_id = 0
+    //         UNION 
+    //         select 
+    //             ls.lesson_standart_grade, 
+    //             ls.lesson_standart_subject_id, 
+    //             ls.lesson_standart_chapter, 
+    //             ls.lesson_standart_subchapter, 
+    //             ls.lesson_standart_content, 
+    //             ls.lesson_standart_content_path, 
+    //             ls.lesson_standart_video_path, 
+    //             ls.lesson_standart_attachment_path, 
+    //             ls.lesson_standart_tasks,
+    //             'standard' as source_lesson
+    //         from lms_lesson_school lls2 
+    //         left join lms_lesson_standart ls on ls.lesson_standart_id = lls2.lesson_school_lesson_standart_id
+    //         where lls2.lesson_school_lesson_additional_id = 0
+    //     ";
 
-        return $this->db->query($query)->getResultArray();
-    }
+    //     return $this->db->query($query)->getResultArray();
+    // }
 
     public function total_chapter($school, $school_year, $teacher)
     {
@@ -200,7 +200,11 @@ class SchoolLessonModel extends Model
             join master_teaching_schedule on master_teaching_schedule.teaching_schedule_id = timetable_teaching_schedule_id 
             join profile_teacher on teacher_id = teaching_subjects_teacher_id
             join master_subject on subject_id = teaching_subjects_subject_id
-            where timetable_group_id = '.$params['group'].' and subject_religion in (0, '.$params['religion'].')
+            where 
+                timetable_group_id = '.$params['group'].' and 
+                subject_religion in (0, '.$params['religion'].') and
+                timetable_school_id = '.userdata()['school_id'].' and
+                timetable_school_year_id = '.school_year()['id'].'
             order by teaching_schedule_day, teaching_schedule_time
         ';
 

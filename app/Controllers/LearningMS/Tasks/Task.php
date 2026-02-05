@@ -260,6 +260,7 @@ class Task extends BaseController
     public function store_data()
     {
         $req = $this->request->getVar();
+        
         $semester = semester();
         if ($req['type'] == 1) {
             $r = json_decode($req['param']);
@@ -282,6 +283,17 @@ class Task extends BaseController
 
 
             $should_chk = 1;
+            if ($req['id'] > 0) {
+                $teasub = $this->task
+                    ->select('task_teacher_id teacher, task_subject_id subject, task_task_ids task')
+                    ->where('task_id', $req['id'])
+                    ->where('task_status < 9')
+                    ->first();
+
+                if ($teasub['task'] != null) {
+                    $should_chk = $this->should_check($teasub['task']);
+                }
+            }
             if (!empty($lsrc['task'])) {
                 $should_chk = $this->should_check($lsrc['task']);
             }
@@ -298,12 +310,6 @@ class Task extends BaseController
 
                 $message = 'Something went wrong!';
                 try {
-                    $teasub = $this->task
-                        ->select('task_teacher_id teacher, task_subject_id subject')
-                        ->where('task_id', $req['id'])
-                        ->where('task_status < 9')
-                        ->first();
-
                     $upd = $this->task
                         ->where('task_id', $req['id'])
                         ->set('task_semester', $semester)
@@ -914,6 +920,20 @@ class Task extends BaseController
                 }
             }
 
+            $tsk_ex = [];
+            if ($v['task_task_ids'] != null) {
+                foreach (json_decode($v['task_task_ids']) as $vaa) {
+                    $tsk_ex[] = $vaa != 'emtpy' ? 1 : 0;
+                }
+            }
+
+            $tasks_exsists = '';
+            if (in_array(1, $tsk_ex)) {
+                $tasks_exsists = '<badge class="badge badge-success" data-tooltip="Latihan Tersedia" data-tooltip-location="top"><i class="bi bi-grid-fill text-white fs-4"></i></badge>';
+            } else {
+                $tasks_exsists = '<badge class="badge badge-secondary" data-tooltip="Latihan Tidak Tersedia" data-tooltip-location="top"><i class="bi bi-grid text-white fs-4"></i></badge>';
+            }
+
             $chap_title = '';
             if ($v['task_lesson_src'] == 2) {
                 $chap_title = $v['lesson_standart_chapter'] . ' - ' . $v['lesson_standart_subchapter'];
@@ -943,11 +963,12 @@ class Task extends BaseController
                 $right = '<badge class="badge badge-success" data-tooltip="Jawaban Benar" data-tooltip-location="top"><i class="bi bi-eye text-white fs-4"></i></badge>';
             }
 
-            $badge_t = $hint.' '.$time;
+            $badge_t = $tasks_exsists.' '.$hint.' '.$time;
             if ($req['page-task'] == 4) {
-                $badge_t = $hint.' '.$time.' '.$explain.' '.$right;
+                $badge_t = $tasks_exsists.' '.$hint.' '.$time.' '.$explain.' '.$right;
             }
 
+            
             $lists = '';
             if ($req['page-task'] == 1) {
                 $acts = '
@@ -1524,6 +1545,7 @@ class Task extends BaseController
 
             if ($req['page-task'] == 1 || $req['page-task'] == 2) {
                 $tmp_exists = in_array($v['task_id'], $arr_temp_task) ? 1 : 0;
+                
                 $bdg_exsists = '';
                 if (in_array($v['task_id'], $arr_temp_task)) {
                     $bdg_exsists = '<badge class="badge badge-danger">Belum dikirim</badge>';

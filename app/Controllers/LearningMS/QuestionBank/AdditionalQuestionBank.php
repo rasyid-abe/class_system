@@ -66,7 +66,7 @@ class AdditionalQuestionBank extends BaseController
                 'teaching_subjects_teacher_id' => userdata()['id_profile'],
                 'teaching_subjects_status < 9',
             ])
-            ->groupBy('student_group_id')
+            ->groupBy('student_group_id,subject_id')
             ->findAll();
 
         $subs = [];

@@ -1467,9 +1467,9 @@ function submit_checking_act(e, res, key, student, title, qb_id, qb_src, sid, as
 }
 
 // Begin Action Assessment
-function alert_begin_assessment(assessment) {
+function alert_begin_assessment(assessment, title) {
   Swal.fire({
-    html: `Apakah anda yakin ingin mulai mengerjakan?`,
+    html: `Apakah anda yakin ingin mulai mengerjakan penilaian <b>${title}</b>?`,
     icon: "info",
     buttonsStyling: false,
     showCancelButton: true,

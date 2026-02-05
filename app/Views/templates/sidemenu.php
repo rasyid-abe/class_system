@@ -73,7 +73,7 @@
                         </h4>
                         <br>
                     </div>
-                    <div class="me-7 mb-4 d-flex justify-content-center">
+                    <div class="mb-4 d-flex justify-content-center">
                         <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                             <img src="<?= userdata()['image'] != 'default.png' ? getenv()['S3_BUCKET_LINK'] . userdata()['image'] : base_url('assets/media/avatars/blank.png') ?>" alt="image">
                             <!-- <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div> -->
@@ -370,7 +370,7 @@
             <div class="mx-5">
                 <div class="mb-12">
                     <h4 class="fw-semibold text-gray-700 text-center lh-lg">Selamat Datang</h4>
-                    <div class="me-7 mb-4 d-flex justify-content-center">
+                    <div class="mb-4 d-flex justify-content-center">
                         <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                             <img src="<?= userdata()['image'] != 'default.png' ? getenv()['S3_BUCKET_LINK'] . userdata()['image'] : base_url('assets/media/avatars/blank.png') ?>" alt="image">
                             <!-- <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div> -->

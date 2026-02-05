@@ -850,9 +850,15 @@
 					<!--begin::Logo-->
 					<div class="aside-logo d-none d-lg-flex flex-column align-items-center flex-column-auto py-10"
 						id="kt_aside_logo">
-						<a href="../dist/index.html">
-							<img alt="Logo" src="<?= base_url() ?>assets/media/logos/logo-default.svg" class="h-50px" />
-						</a>
+						<?php if(in_array(11, session()->get('c_role'))): ?>
+							<a href="<?= base_url('dashboard/teacher') ?>">
+								<img alt="Logo" src="<?= base_url() ?>assets/media/logos/logo-default.svg" class="h-50px" />
+							</a>
+						<?php else: ?>
+							<a href="<?= base_url('dashboard/student') ?>">
+								<img alt="Logo" src="<?= base_url() ?>assets/media/logos/logo-default.svg" class="h-50px" />
+							</a>
+						<?php endif; ?>
 					</div>
 					<!--end::Logo-->
 					<!--begin::Nav-->
@@ -1177,6 +1183,7 @@
 	</div>
 
 	<script>
+		const url_base = "<?= base_url() ?>";
 		const url = window.location.href;
 		const base_url = document.getElementById('base').value;
 		const s3_url = '<?= getenv()['S3_BUCKET_LINK'] ?>';
