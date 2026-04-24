@@ -3,7 +3,7 @@
 
 <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
     <a href="<?= base_url('/') ?>" class="mb-12">
-        <img alt="Logo" src="<?= base_url() ?>assets/media/logos/logo-default.svg" class="h-60px" />
+        <img alt="Logo" src="<?= base_url() ?>assets/media/logos/eschoolms.png" class="h-100px" />
     </a>
 
     <div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">

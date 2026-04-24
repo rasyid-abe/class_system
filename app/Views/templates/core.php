@@ -17,7 +17,7 @@
 	<meta charset="utf-8" />
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:type" content="article" />
-	<link rel="shortcut icon" href="<?= base_url() ?>assets/media/logos/favicon.ico" />
+	<link rel="shortcut icon" href="<?= base_url() ?>assets/media/logos/icon.ico" />
 	<!--begin::Fonts-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 	<!--end::Fonts-->
@@ -852,11 +852,11 @@
 						id="kt_aside_logo">
 						<?php if(in_array(11, session()->get('c_role'))): ?>
 							<a href="<?= base_url('dashboard/teacher') ?>">
-								<img alt="Logo" src="<?= base_url() ?>assets/media/logos/logo-default.svg" class="h-50px" />
+								<img alt="Logo" src="<?= base_url() ?>assets/media/logos/eschoolms.png" class="h-50px" />
 							</a>
 						<?php else: ?>
 							<a href="<?= base_url('dashboard/student') ?>">
-								<img alt="Logo" src="<?= base_url() ?>assets/media/logos/logo-default.svg" class="h-50px" />
+								<img alt="Logo" src="<?= base_url() ?>assets/media/logos/eschoolms.png" class="h-50px" />
 							</a>
 						<?php endif; ?>
 					</div>
@@ -1074,7 +1074,7 @@
 						<!--end::Aside mobile toggle-->
 						<!--begin::Logo-->
 						<a href="../dist/index.html" class="d-flex align-items-center">
-							<img alt="Logo" src="<?= base_url() ?>assets/media/logos/logo-default.svg"
+							<img alt="Logo" src="<?= base_url() ?>assets/media/logos/eschoolms.png"
 								class="h-40px" />
 						</a>
 						<!--end::Logo-->
