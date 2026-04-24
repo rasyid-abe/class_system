@@ -16,7 +16,7 @@
     <meta property="og:url" content="https://keenthemes.com/products/seven-html-pro" />
     <meta property="og:site_name" content="Seven HTML Free by Keenthemes" />
     <link rel="canonical" href="https://preview.keenthemes.com/seven-html-pro" />
-    <link rel="shortcut icon" href="<?= base_url() ?>assets/media/logos/favicon.ico" />
+    <link rel="shortcut icon" href="<?= base_url() ?>assets/media/logos/icon.ico" />
 
     <link href="<?= base_url() ?>assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="<?= base_url() ?>assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
