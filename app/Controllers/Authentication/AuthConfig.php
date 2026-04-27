@@ -66,10 +66,10 @@ class AuthConfig extends BaseController
         
         if ($cly['code'] < 1) {
             if ($user) {
-                if (strlen($user['user_password']) > 10) {
+                if (strlen($user['user_password']) > 24) {
                     $pass = password_verify($req['password'], $user['user_password']);
                 } else {
-                    $pass = $req['password'] === $user['user_password'];
+                    $pass = $req['password'] === decryptabe($user['user_password']);
                 }
                 // dd($user);
                 if ($pass) {
