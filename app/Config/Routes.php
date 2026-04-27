@@ -16,6 +16,11 @@ $routes->get('/logout', 'Authentication\AuthConfig::logout');
 $routes->get('/blocked', 'Authentication\AuthConfig::blocked');
 $routes->get('/notfound', 'Authentication\AuthConfig::notfound');
 
+$routes->group('api', ['namespace' => 'App\Controllers\Api'], function ($routes) {
+    $routes->get('home', 'Home::index');
+    $routes->post('stresstest', 'Home::stresstest');
+});
+
 $routes->post('/config-teacher-student/active-year/list-year', 'Configs\ActiveYear::show_years', ['filter' => 'auth']);
 $routes->post('/config-teacher-student/active-year/set-year', 'Configs\ActiveYear::set_year', ['filter' => 'auth']);
 
